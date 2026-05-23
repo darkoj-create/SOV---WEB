@@ -1,18 +1,27 @@
-# SOV WEB build v0.8
+# SOV WEB build v0.9 full-site-fixed
 
-Što je dodano:
-- `data/sov-baza.json` kao statična JSON baza.
-- `baza.html` kao SOV Karta web app.
-- TK25 WMS je glavni sloj, OSM je fallback.
-- Search i filteri po bazi.
-- Export trenutno filtriranih/pronađenih objekata u KML.
-- Označavanje područja na karti i generiranje MBTiles paketa u browseru.
+Ovaj ZIP je full site build, ne samo registered portal.
 
-Napomena za MBTiles:
-Browser generira MBTiles pomoću sql.js i dohvaća TK25 tileove iz WMS-a. Ako Geoportal blokira CORS ili ako označiš preveliko područje/zoom, download može pasti. Za veće pakete kasnije je pametnije napraviti server-side generator.
+Sadrži:
+- javni portal: index.html
+- o društvu: o-drustvu.html
+- povijest: povijest.html
+- Velebitaški duh: velebitaski-duh.html
+- login + dashboard
+- SOV Karta: baza.html
+- JSON baza: data/sov-baza.json
 
+Popravci:
+- SOV Karta koristi DGU TK WMS endpoint kao glavni sloj:
+  https://geoportal.dgu.hr/services/tk/wms
+- OSM je samo fallback i jasno piše kad je aktivan.
+- Statusi objekata:
+  zelena = u katastru
+  crvena = nije u katastru / za unos
+  siva = na provjeri / nije objekt / nejasno
+- Export filtriranih objekata u KML.
+- Označavanje offline područja generira manifest za MBTiles backend/script.
 
-## v0.8.3
-- TK25 WMS endpoint prebačen na DGU Geoportal: https://geoportal.dgu.hr/services/tk/wms
-- WMS verzija postavljena na 1.1.1 radi kompatibilnosti s DGU serverom.
-- TK25 je glavni sloj, OSM je fallback.
+Napomena:
+Browser sam ne može pouzdano generirati pravi raster MBTiles iz DGU WMS-a bez backend procesa.
+Zato `baza.html` generira bbox manifest koji backend/script može pretvoriti u .mbtiles.
