@@ -1,17 +1,12 @@
-# SOV Portal v0.3
+# SOV WEB build v0.8
 
-Prva statička verzija modernog SOV web portala.
+Što je dodano:
+- `data/sov-baza.json` kao statična JSON baza.
+- `baza.html` kao SOV Karta web app.
+- TK25 WMS je glavni sloj, OSM je fallback.
+- Search i filteri po bazi.
+- Export trenutno filtriranih/pronađenih objekata u KML.
+- Označavanje područja na karti i generiranje MBTiles paketa u browseru.
 
-## Što je unutra
-
-- `index.html` — javni portal: vijesti, društvo, povijest, speleoškola, Velebit, putopisi i kontakt.
-- `login.html` — odvojena članska zona / prijava.
-- Registracija je zamišljena kao zahtjev za pristup uz admin approval.
-
-## Napomena
-
-Logo je trenutno ugrađen direktno u HTML kao data URI kako bi prvi GitHub deploy radio bez dodatnih asset datoteka.
-
-## Sljedeći korak
-
-Ovo se može direktno spojiti na GitHub Pages ili Vercel, a kasnije pretvoriti u pravi portal s CMS/admin dijelom i login sustavom.
+Napomena za MBTiles:
+Browser generira MBTiles pomoću sql.js i dohvaća TK25 tileove iz WMS-a. Ako Geoportal blokira CORS ili ako označiš preveliko područje/zoom, download može pasti. Za veće pakete kasnije je pametnije napraviti server-side generator.
