@@ -1,7 +1,7 @@
 # TODO
 
-1. Spojiti pravi backend za login/registraciju/admin approval.
-2. Potvrditi stvarni DGU TK25 WMS layer name iz GetCapabilities.
-3. MBTiles generiranje spojiti na backend/script jer browser ne smije pouzdano skidati masovno WMS tileove.
-4. Uvezati vijesti s jednostavnim editorom/admin approvalom.
-5. Dovršiti Oružarstvo model: oprema, najam, povrat, servis.
+- Spojiti pravi backend za auth umjesto localStorage demo auth.
+- Provjeriti točan DGU WMS layer name ako TK25 ne renderira na Vercelu.
+- Napraviti backend generator za stvarni MBTiles iz TK25/WMS zbog CORS ograničenja browsera.
+- Dodati CMS za vijesti.
+- Dodati stvarne fotografije i Maliganove ilustracije u assets/img.

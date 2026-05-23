@@ -1,17 +1,17 @@
-# BUILD NOTES — SOV WEB
+# Build notes
 
-## Ne pregaziti
-- `index.html` javni portal
-- `povijest.html`
-- `velebitaski-duh.html`
-- `o-drustvu.html`
-- `login.html` i `assets/auth.js`
-- `data/sov-baza.json`
+Ne raditi parcijalni ZIP koji pregazi javni portal.
+Svaki build mora sadržavati:
+- index.html
+- o-drustvu.html
+- povijest.html
+- velebitaski-duh.html
+- vijesti.html
+- speleoskola.html
+- login.html
+- dashboard.html
+- baza.html
+- data/sov-baza.json
+- CHANGELOG.md / BUILD_NOTES.md / TODO.md / VERSION.txt
 
-## Login trenutno
-Frontend/localStorage demo flow:
-- admin: `admin@sov.local` / `sovadmin`
-- registracija -> pending
-- admin approval -> approved
-
-Za produkciju se ovo kasnije mijenja Supabase/Firebase/Auth backendom, ali UI i flow ostaju.
+SOV Karta je članski app iza login-a. Javni portal ne smije izgledati kao admin dashboard.

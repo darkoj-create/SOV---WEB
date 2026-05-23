@@ -1,1 +1,1 @@
-v1.2-auth-connected-full-site
+1.3-redesign-full

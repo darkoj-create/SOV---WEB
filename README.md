@@ -1,8 +1,8 @@
-# SOV WEB v1.0 recovered full
+# SOV web build v1.3
 
-Full site build: javni portal + puna povijest + Velebitaški duh + SOV Cloud + SOV Karta.
+Prelijepi sadržaj ZIP-a u root GitHub repoa i commit/push.
+Vercel će povući statični site.
 
-Prelijepi sve u root GitHub repozitorija i commit/push. Vercel povuče automatski.
-
-Baza: data/sov-baza.json
-SOV Karta: baza.html
+Demo login:
+- admin@sov.local
+- admin
