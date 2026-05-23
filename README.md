@@ -10,3 +10,9 @@
 
 Napomena za MBTiles:
 Browser generira MBTiles pomoću sql.js i dohvaća TK25 tileove iz WMS-a. Ako Geoportal blokira CORS ili ako označiš preveliko područje/zoom, download može pasti. Za veće pakete kasnije je pametnije napraviti server-side generator.
+
+
+## v0.8.3
+- TK25 WMS endpoint prebačen na DGU Geoportal: https://geoportal.dgu.hr/services/tk/wms
+- WMS verzija postavljena na 1.1.1 radi kompatibilnosti s DGU serverom.
+- TK25 je glavni sloj, OSM je fallback.
