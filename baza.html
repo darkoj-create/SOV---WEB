@@ -6,156 +6,51 @@
 <title>SOV Karta</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/sql-wasm.js"></script>
 <style>
-:root{--bg:#050707;--panel:#0d1215;--panel2:#121b20;--text:#f3f6f5;--muted:#9aacaf;--line:rgba(255,255,255,.13);--accent:#d7f66f;--green:#42f27b;--red:#ff5555;--gray:#9aa3a6;--blue:#78d7ff}
-*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:Inter,system-ui,sans-serif;background:#050707;color:var(--text);overflow:hidden}.app{height:100%;display:grid;grid-template-rows:72px 1fr}.top{display:flex;align-items:center;justify-content:space-between;padding:0 18px;border-bottom:1px solid var(--line);background:#071012}.brand{display:flex;gap:12px;align-items:center;font-weight:950}.mark{width:44px;height:44px;border-radius:15px;border:1px solid var(--line);display:grid;place-items:center;background:#111b20}.nav{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.btn{border:1px solid var(--line);border-radius:999px;padding:10px 13px;background:rgba(255,255,255,.04);color:#dce6e6;text-decoration:none;font-weight:850;font-size:13px;cursor:pointer}.btn.primary{background:var(--accent);color:#101400;border:0}.shell{display:grid;grid-template-columns:1fr 480px;min-height:0}.mapWrap{position:relative;min-width:0}#map{height:100%;width:100%;background:#0c1114}.mapTools{position:absolute;z-index:500;left:14px;top:14px;display:flex;gap:8px;flex-wrap:wrap;max-width:calc(100% - 28px)}.legend{position:absolute;z-index:500;left:14px;bottom:16px;background:rgba(7,12,14,.92);border:1px solid var(--line);border-radius:18px;padding:12px;display:grid;gap:7px;font-size:13px}.dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px;border:2px solid rgba(255,255,255,.9)}.dot.green{background:var(--green)}.dot.red{background:var(--red)}.dot.gray{background:var(--gray)}.wmsStatus{position:absolute;z-index:600;right:14px;top:14px;max-width:360px;border:1px solid var(--line);border-radius:18px;padding:12px 14px;background:rgba(7,12,14,.94);color:#dce6e6;font-size:13px;line-height:1.45}.wmsStatus.err{border-color:rgba(255,85,85,.65);color:#ffdede}.side{border-left:1px solid var(--line);background:linear-gradient(180deg,#0e1417,#080c0e);padding:18px;overflow:auto}.side h1{font-size:40px;letter-spacing:-.055em;line-height:1;margin:0 0 8px}.muted{color:var(--muted);line-height:1.5}.search{width:100%;border:1px solid rgba(215,246,111,.22);border-radius:20px;background:#071012;color:#fff;padding:18px 18px;font-size:18px;outline:none;margin:16px 0 12px}.search:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(215,246,111,.08)}.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}.chip{border:1px solid var(--line);border-radius:999px;padding:8px 10px;background:rgba(255,255,255,.035);color:#dde7e7;font-size:12px;cursor:pointer}.chip.active{background:var(--accent);color:#101400;border-color:transparent;font-weight:950}.counts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}.count{border:1px solid var(--line);border-radius:16px;padding:10px;background:rgba(255,255,255,.035)}.count b{display:block;font-size:20px}.results{display:grid;gap:10px}.result{border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.045);padding:14px;cursor:pointer}.result:hover{border-color:rgba(215,246,111,.35)}.resultTop{display:flex;gap:10px;align-items:flex-start}.result b{display:block;font-size:16px}.meta{color:var(--muted);font-size:13px;line-height:1.45;margin-top:4px}.details{border:1px solid var(--line);border-radius:20px;background:rgba(255,255,255,.04);padding:15px;margin:15px 0}.details h2{font-size:24px;letter-spacing:-.04em;margin:0 0 8px}.kv{display:grid;grid-template-columns:120px 1fr;gap:6px;font-size:13px;border-top:1px solid rgba(255,255,255,.07);padding-top:8px;margin-top:8px}.kv span:nth-child(odd){color:var(--muted)}.leaflet-popup-content-wrapper,.leaflet-control-layers{background:#10181d;color:#fff;border:1px solid var(--line)}.leaflet-popup-tip{background:#10181d}@media(max-width:980px){html,body{overflow:auto}.app{height:auto;min-height:100%}.shell{grid-template-columns:1fr}.mapWrap{height:64vh}.side{border-left:0;border-top:1px solid var(--line)}.top{height:auto;min-height:72px;padding:12px}.shell{min-height:0}}
+:root{--bg:#050707;--panel:#0d1215;--text:#f3f6f5;--muted:#98a8aa;--line:rgba(255,255,255,.12);--accent:#d7f66f;--blue:#78d7ff;--orange:#ffb15f;--red:#ff7474;--green:#2ee66b;--grey:#9aa3a6}*{box-sizing:border-box}body{margin:0;height:100vh;overflow:hidden;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}.app{height:100vh;display:grid;grid-template-rows:72px 1fr}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 18px;border-bottom:1px solid var(--line);background:rgba(5,8,9,.96)}.brand{display:flex;align-items:center;gap:12px;font-weight:900}.mark{width:44px;height:44px;border-radius:15px;border:1px solid var(--line);display:grid;place-items:center;background:#111b20}.nav{display:flex;gap:10px;flex-wrap:wrap}.btn{border:1px solid var(--line);border-radius:999px;padding:10px 13px;background:rgba(255,255,255,.04);color:#dce6e6;text-decoration:none;font-weight:800;font-size:13px;cursor:pointer}.btn.primary{background:var(--accent);color:#101400;border:0}.btn.warn{background:rgba(255,177,95,.13);border-color:rgba(255,177,95,.35);color:#ffd4aa}.shell{display:grid;grid-template-columns:minmax(0,1fr) minmax(460px,520px);min-height:0}.mapWrap{position:relative;min-width:0}#map{height:100%;width:100%;background:#111}.toolbar{position:absolute;z-index:500;left:16px;top:16px;display:flex;gap:8px;flex-wrap:wrap;max-width:calc(100% - 32px)}.panel{border-left:1px solid var(--line);background:linear-gradient(180deg,rgba(13,18,21,.985),rgba(7,10,12,.985));padding:22px;overflow:auto;box-shadow:-22px 0 70px rgba(0,0,0,.28)}.panel h1{font-size:42px;line-height:.96;letter-spacing:-.06em;margin:0 0 10px}.panel h2{font-size:21px;margin:22px 0 10px;letter-spacing:-.03em}.muted{color:var(--muted);line-height:1.55}.search{width:100%;border:1px solid rgba(215,246,111,.24);border-radius:22px;padding:19px 20px;background:#071013;color:#fff;margin:18px 0 14px;font-size:17px;font-weight:700;outline:none;box-shadow:0 0 0 4px rgba(215,246,111,.035),0 18px 48px rgba(0,0,0,.22)}.search::placeholder{color:#718084}.search:focus{border-color:rgba(215,246,111,.58);box-shadow:0 0 0 4px rgba(215,246,111,.09),0 18px 48px rgba(0,0,0,.28)}.filters{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:18px}.chip{border:1px solid var(--line);border-radius:999px;padding:9px 12px;font-size:13px;color:#dce6e6;background:rgba(255,255,255,.035);cursor:pointer;font-weight:800}.chip.active{background:rgba(215,246,111,.16);border-color:rgba(215,246,111,.35);color:#fff}.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:16px 0 18px}.stat{border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.04);padding:13px}.stat b{display:block}.stat span{font-size:12px;color:var(--muted)}.result{border:1px solid var(--line);border-radius:20px;background:rgba(255,255,255,.045);padding:16px;margin-bottom:12px;cursor:pointer;transition:.15s ease}.result:hover{border-color:rgba(215,246,111,.35)}.result b{display:block;font-size:17px;letter-spacing:-.02em;margin:3px 0 4px}.result small{color:var(--accent);font-weight:900}.details,.offline{margin-top:18px;border:1px solid var(--line);border-radius:24px;background:rgba(255,255,255,.045);padding:18px}.details h2{margin:0 0 10px;font-size:28px;letter-spacing:-.05em;line-height:1}.kv{display:grid;grid-template-columns:140px 1fr;gap:10px;border-top:1px solid var(--line);padding-top:12px;margin-top:12px;font-size:14px}.kv div:nth-child(odd){color:var(--muted)}.offlineGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.offline input,.offline select{width:100%;border:1px solid var(--line);border-radius:12px;background:#091013;color:#fff;padding:10px}.progress{height:8px;border-radius:999px;background:#111b20;overflow:hidden;margin-top:10px}.bar{height:100%;width:0;background:var(--accent)}.leaflet-control-layers,.leaflet-popup-content-wrapper{background:#10181d;color:#fff;border:1px solid var(--line)}.wmsStatus{position:absolute;z-index:525;left:16px;top:68px;border:1px solid var(--line);border-radius:999px;background:rgba(8,12,14,.92);padding:9px 12px;color:#dce6e6;font-size:12px;font-weight:900;box-shadow:0 18px 50px rgba(0,0,0,.35)}.wmsStatus.bad{border-color:rgba(255,116,116,.55);color:#ffb3b3}.legend{position:absolute;z-index:520;left:16px;bottom:16px;border:1px solid var(--line);border-radius:18px;background:rgba(8,12,14,.92);backdrop-filter:blur(10px);padding:12px 14px;display:grid;gap:8px;box-shadow:0 18px 50px rgba(0,0,0,.35)}.legendRow{display:flex;align-items:center;gap:9px;color:#dce6e6;font-size:13px;font-weight:800}.dot{width:14px;height:14px;border-radius:50%;box-shadow:0 0 0 3px rgba(255,255,255,.08)}.dot.green{background:var(--green)}.dot.red{background:var(--red)}.dot.grey{background:var(--grey)}.statusDot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:7px;vertical-align:-1px;box-shadow:0 0 0 3px rgba(255,255,255,.06)}@media(max-width:900px){body{overflow:auto}.app{height:auto;min-height:100vh}.top{height:auto;padding:12px;align-items:flex-start}.shell{grid-template-columns:1fr}.mapWrap{height:62vh}.panel{border-left:0;border-top:1px solid var(--line)}}
 </style>
 </head>
 <body>
-<div class="app">
-<header class="top"><div class="brand"><div class="mark">SOV</div><div>SOV Karta<br><small style="color:var(--accent)">TK25 / baza / export</small></div></div><nav class="nav"><a class="btn" href="dashboard.html">Dashboard</a><button class="btn" onclick="downloadKml()">Export KML</button><button class="btn primary" onclick="startArea()">Označi offline područje</button></nav></header>
-<main class="shell">
-<section class="mapWrap">
-  <div id="wmsStatus" class="wmsStatus">Učitavam TK25 WMS kao glavni sloj…</div>
-  <div class="mapTools">
-    <button class="btn primary" onclick="useTK25()">TK25 DGU</button>
-    <button class="btn" onclick="useOSM()">OSM fallback</button>
-    <button class="btn" onclick="fitFiltered()">Prikaži rezultate</button>
-    <button class="btn" onclick="cycleTkLayer()">Promijeni TK layer</button>
-  </div>
-  <div id="map"></div>
-  <div class="legend">
-    <div><span class="dot green"></span>u katastru</div>
-    <div><span class="dot red"></span>nije u katastru / za unos</div>
-    <div><span class="dot gray"></span>na provjeri / nije objekt / nejasno</div>
-  </div>
-</section>
-<aside class="side">
-  <h1>Pretraga objekata</h1>
-  <p class="muted">Statusi su strogo odvojeni: zeleno je samo objekt u katastru, crveno je nije u katastru ili za unos, sivo je sve nejasno/na provjeri/nije objekt.</p>
-  <input id="q" class="search" placeholder="Traži naziv, mjesto, općinu, broj..." oninput="applyFilters()">
-  <div class="filters">
-    <button class="chip active" data-filter="all" onclick="setFilter('all')">Svi</button>
-    <button class="chip" data-filter="katastar" onclick="setFilter('katastar')">U katastru</button>
-    <button class="chip" data-filter="nije" onclick="setFilter('nije')">Nije u katastru</button>
-    <button class="chip" data-filter="izmedju" onclick="setFilter('izmedju')">Između</button>
-    <button class="chip" data-type="jama" onclick="setType('jama')">Jame</button>
-    <button class="chip" data-type="spilja" onclick="setType('spilja')">Špilje</button>
-  </div>
-  <div class="counts"><div class="count"><b id="cAll">0</b><span class="muted">rezultata</span></div><div class="count"><b id="cKat">0</b><span class="muted">katastar</span></div><div class="count"><b id="cNije">0</b><span class="muted">nije</span></div></div>
-  <div id="details" class="details"><h2>Odaberi objekt</h2><p class="muted">Klikni marker ili rezultat za detalje.</p></div>
-  <div id="results" class="results"></div>
-</aside>
-</main>
-</div>
+<div class="app"><header class="top"><div class="brand"><div class="mark">SOV</div><div>SOV Karta<br><small style="color:var(--accent)">DGU TK25 WMS / JSON baza / KML / MBTiles</small></div></div><nav class="nav"><a class="btn" href="dashboard.html">Dashboard</a><button class="btn primary" onclick="exportVisibleKml()">Export KML</button><button class="btn warn" onclick="startSelectArea()">Označi offline područje</button></nav></header>
+<main class="shell"><section class="mapWrap"><div class="toolbar"><button class="btn primary" onclick="setBase('tk25')">DGU TK25</button><button class="btn" onclick="setBase('osm')">OSM</button><button class="btn" onclick="fitAll()">Svi objekti</button><button class="btn" onclick="toggleMarkers()">Markeri</button><button class="btn warn" onclick="downloadMbtiles()">Skini MBTiles</button></div><div id="tk25Status" class="wmsStatus">DGU TK25 WMS: geoportal.dgu.hr/services/tk/wms</div><div class="legend"><div class="legendRow"><span class="dot green"></span>U katastru</div><div class="legendRow"><span class="dot red"></span>Nije u katastru</div><div class="legendRow"><span class="dot grey"></span>Na provjeri / između</div></div><div id="map"></div></section>
+<aside class="panel"><h1>Pretraga objekata</h1><p class="muted">Baza se učitava iz <code>data/sov-baza.json</code>. Glavni sloj je stvarni DGU TK25 WMS (<code>services/tk/wms</code>), OSM ostaje fallback.</p><input class="search" id="q" placeholder="Traži objekt, lokaciju, dubinu..." oninput="render()"><div class="filters"><button class="chip active" data-filter="all" onclick="setFilter('all')">Sve</button><button class="chip" data-filter="jama" onclick="setFilter('jama')">Jame</button><button class="chip" data-filter="spilja" onclick="setFilter('spilja')">Špilje</button><button class="chip" data-filter="katastar" onclick="setFilter('katastar')">U katastru</button><button class="chip" data-filter="nije" onclick="setFilter('nije')">Nije u katastru</button></div><div class="stats"><div class="stat"><b id="total">0</b><span>ukupno</span></div><div class="stat"><b id="shown">0</b><span>prikazano</span></div><div class="stat"><b id="marked">0</b><span>na karti</span></div></div><div class="offline"><h2>Offline MBTiles područje</h2><p class="muted" id="bboxText">Klikni “Označi offline područje”, pa klikni dva kuta na karti.</p><div class="offlineGrid"><label>Min zoom<input id="zmin" type="number" min="5" max="17" value="10"></label><label>Max zoom<input id="zmax" type="number" min="5" max="17" value="14"></label></div><p class="muted" id="tileCount">Nema odabranog područja.</p><div class="progress"><div class="bar" id="bar"></div></div></div><div id="results"></div><div id="details" class="details"><h2>Odaberi objekt</h2><p class="muted">Klik na marker ili rezultat otvara detalje ovdje.</p></div></aside></main></div>
 <script>
-const DGU_TK_WMS='https://geoportal.dgu.hr/services/tk/wms';
-const TK_LAYERS=['TK25','tk25','TK_25','Topografska_karta_25','topografska_karta_25'];
-let activeTkIndex=0, activeStatus='all', activeType='all', allObjects=[], filtered=[], map, osm, tk, markers, areaMode=false, areaPts=[], areaRect=null, tkErrors=0;
-
-function statusOf(o){
-  const cs=String(o.cadastre_status||'').toLowerCase().trim();
-  const rs=String(o.record_status||'').toLowerCase().trim();
-  if(o.in_cadastre_bool===true || cs==='u_katastru' || cs==='u_katastru_editirati') return 'katastar';
-  if(cs.startsWith('nije_u_katastru') || cs==='za_unos_u_katastar' || rs==='za_unos_u_katastar') return 'nije';
-  return 'izmedju';
-}
-function colorOf(s){return s==='katastar'?'#42f27b':s==='nije'?'#ff5555':'#9aa3a6'}
-function typeNorm(o){const t=String(o.object_type_final||o.name||'').toLowerCase(); if(t.includes('jama')) return 'jama'; if(t.includes('špil')||t.includes('spil')) return 'spilja'; return 'ostalo'}
-function safe(v){return (v===null||v===undefined||v==='')?'—':String(v)}
-function textOf(o){return [o.name,o.nearest_place,o.locality,o.municipality,o.county,o.cadastral_number,o.plate_number,o.object_type_final].join(' ').toLowerCase()}
-
-function initMap(){
-  map=L.map('map',{preferCanvas:true}).setView([44.8,15.4],7);
-  osm=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'OSM'});
-  markers=L.layerGroup().addTo(map);
-  useTK25();
-  map.on('click', e=>{ if(areaMode) addAreaPoint(e.latlng); });
-}
-function buildTkLayer(){
-  if(tk){tk.off('tileerror'); map.removeLayer(tk);}
-  tkErrors=0;
-  const layer=TK_LAYERS[activeTkIndex];
-  tk=L.tileLayer.wms(DGU_TK_WMS,{
-    layers:layer,format:'image/png',transparent:false,version:'1.1.1',
-    attribution:'DGU TK WMS',maxZoom:19
-  });
-  tk.on('tileload',()=>setWmsStatus('TK25 WMS aktivan: '+layer,false));
-  tk.on('tileerror',()=>{tkErrors++; if(tkErrors>2)setWmsStatus('TK25 WMS ne vraća pločice za layer "'+layer+'". Klikni “Promijeni TK layer” ili provjeri DGU layer name.',true);});
-  return tk;
-}
-function useTK25(){ if(osm && map.hasLayer(osm)) map.removeLayer(osm); buildTkLayer().addTo(map); setWmsStatus('TK25 WMS aktivan: '+TK_LAYERS[activeTkIndex],false); }
-function useOSM(){ if(tk && map.hasLayer(tk)) map.removeLayer(tk); osm.addTo(map); setWmsStatus('OSM fallback je aktivan. TK25 nije trenutno prikazan.',true); }
-function cycleTkLayer(){ activeTkIndex=(activeTkIndex+1)%TK_LAYERS.length; useTK25(); }
-function setWmsStatus(msg,isErr){const el=document.getElementById('wmsStatus'); el.textContent=msg; el.className='wmsStatus'+(isErr?' err':'');}
-
-async function loadData(){
-  const r=await fetch('data/sov-baza.json'); allObjects=(await r.json()).filter(o=>Number.isFinite(+o.lat)&&Number.isFinite(+o.lon));
-  applyFilters();
-}
-function setFilter(f){activeStatus=f; document.querySelectorAll('[data-filter]').forEach(x=>x.classList.toggle('active',x.dataset.filter===f)); applyFilters();}
-function setType(t){activeType=activeType===t?'all':t; document.querySelectorAll('[data-type]').forEach(x=>x.classList.toggle('active',activeType===x.dataset.type)); applyFilters();}
-function applyFilters(){
-  const q=document.getElementById('q').value.toLowerCase().trim();
-  filtered=allObjects.filter(o=>{
-    const s=statusOf(o); const typ=typeNorm(o);
-    if(activeStatus!=='all' && s!==activeStatus) return false;
-    if(activeType!=='all' && typ!==activeType) return false;
-    return !q || textOf(o).includes(q);
-  });
-  renderMarkers(); renderResults(); renderCounts();
-}
-function renderCounts(){
-  document.getElementById('cAll').textContent=filtered.length;
-  document.getElementById('cKat').textContent=filtered.filter(o=>statusOf(o)==='katastar').length;
-  document.getElementById('cNije').textContent=filtered.filter(o=>statusOf(o)==='nije').length;
-}
-function renderMarkers(){
-  markers.clearLayers();
-  filtered.forEach(o=>{
-    const s=statusOf(o), c=colorOf(s);
-    L.circleMarker([+o.lat,+o.lon],{radius:7,color:'#fff',weight:1.5,fillColor:c,fillOpacity:.95})
-      .on('click',()=>showDetails(o,true))
-      .bindPopup('<b>'+safe(o.name)+'</b><br>'+labelStatus(s))
-      .addTo(markers);
-  });
-}
-function renderResults(){
-  const box=document.getElementById('results'); box.innerHTML='';
-  filtered.slice(0,220).forEach(o=>{
-    const s=statusOf(o), c=colorOf(s);
-    const div=document.createElement('div'); div.className='result';
-    div.innerHTML='<div class="resultTop"><span class="dot" style="background:'+c+'"></span><div><b>'+safe(o.name)+'</b><div class="meta">'+labelStatus(s)+' · '+safe(o.object_type_final)+' · '+safe(o.county)+' · dubina '+safe(o.depth_m)+' m</div></div></div>';
-    div.onclick=()=>showDetails(o,true); box.appendChild(div);
-  });
-}
-function labelStatus(s){return s==='katastar'?'u katastru':s==='nije'?'nije u katastru':'između / na provjeri'}
-function showDetails(o,zoom){
-  document.getElementById('details').innerHTML='<h2>'+safe(o.name)+'</h2><p class="muted">'+labelStatus(statusOf(o))+'</p>'+
-    '<div class="kv"><span>Tip</span><b>'+safe(o.object_type_final)+'</b><span>Katastar</span><b>'+safe(o.cadastral_number)+'</b><span>Lokacija</span><b>'+safe(o.locality||o.nearest_place)+'</b><span>Dubina</span><b>'+safe(o.depth_m)+' m</b><span>Duljina</span><b>'+safe(o.length_m)+' m</b><span>Pristup</span><b>'+safe(o.access_description)+'</b><span>Tehnički opis</span><b>'+safe(o.technical_description)+'</b></div>';
-  if(zoom) map.setView([+o.lat,+o.lon],14);
-}
-function fitFiltered(){
-  if(!filtered.length)return;
-  const b=L.latLngBounds(filtered.map(o=>[+o.lat,+o.lon])); map.fitBounds(b.pad(.15));
-}
-function escXml(s){return String(s??'').replace(/[<>&'"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;',"'":'&apos;','"':'&quot;'}[c]));}
-function downloadKml(){
-  const styles='<Style id="katastar"><IconStyle><color>ff7bf242</color><scale>1.1</scale><Icon><href>http://maps.google.com/mapfiles/kml/shapes/placemark_circle.png</href></Icon></IconStyle></Style><Style id="nije"><IconStyle><color>ff5555ff</color><scale>1.1</scale><Icon><href>http://maps.google.com/mapfiles/kml/shapes/placemark_circle.png</href></Icon></IconStyle></Style><Style id="izmedju"><IconStyle><color>ffa6a39a</color><scale>1.1</scale><Icon><href>http://maps.google.com/mapfiles/kml/shapes/placemark_circle.png</href></Icon></IconStyle></Style>';
-  const placemarks=filtered.map(o=>'<Placemark><name>'+escXml(o.name)+'</name><styleUrl>#'+statusOf(o)+'</styleUrl><description>'+escXml(labelStatus(statusOf(o))+' | '+safe(o.object_type_final)+' | dubina '+safe(o.depth_m)+' m')+'</description><Point><coordinates>'+o.lon+','+o.lat+',0</coordinates></Point></Placemark>').join('');
-  download('sov_export_'+filtered.length+'_objekata.kml','application/vnd.google-earth.kml+xml','<?xml version="1.0" encoding="UTF-8"?><kml xmlns="http://www.opengis.net/kml/2.2"><Document>'+styles+placemarks+'</Document></kml>');
-}
-function startArea(){areaMode=true;areaPts=[]; if(areaRect){map.removeLayer(areaRect);areaRect=null;} setWmsStatus('Klikni dvije točke na karti za offline područje.',false);}
-function addAreaPoint(ll){
-  areaPts.push(ll);
-  if(areaPts.length===2){
-    const b=L.latLngBounds(areaPts); areaRect=L.rectangle(b,{color:'#d7f66f',weight:2,fillOpacity:.08}).addTo(map); areaMode=false;
-    const manifest={type:'sov-offline-area',format:'mbtiles-request',note:'Browser priprema bbox. Stvarni MBTiles generira backend/script iz ovog bboxa.',bbox:{south:b.getSouth(),west:b.getWest(),north:b.getNorth(),east:b.getEast()},source:{type:'WMS',url:DGU_TK_WMS,layer:TK_LAYERS[activeTkIndex]},zooms:[12,13,14,15,16]};
-    download('sov_offline_area_manifest.json','application/json',JSON.stringify(manifest,null,2));
-    setWmsStatus('Offline područje označeno. Skinut je manifest za MBTiles generator.',false);
-  }
-}
-function download(name,type,content){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
-initMap(); loadData();
+const DATA_URL='data/sov-baza.json';
+const TK25_WMS_URL='https://geoportal.dgu.hr/services/tk/wms';
+const TK25_WMS_LAYER='TK25';
+const TK25_CAPABILITIES='http://geoportal.dgu.hr/services/tk/wms?SERVICE=WMS&REQUEST=GetCapabilities';
+let all=[],visible=[],activeFilter='all',markersVisible=true,markerLayer,selectMode=false,firstCorner=null,selectedRect=null,selectedBounds=null;
+const map=L.map('map',{zoomControl:true}).setView([44.8,15.4],7);
+const osm=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'OSM'}).addTo(map);
+const tk25=L.tileLayer.wms(TK25_WMS_URL,{layers:TK25_WMS_LAYER,styles:'',format:'image/png',transparent:false,version:'1.1.1',uppercase:true,attribution:'DGU TK25 WMS'}).addTo(map);
+tk25.on('tileerror',()=>{document.getElementById('tk25Status')?.classList.add('bad')});
+markerLayer=L.layerGroup().addTo(map);L.control.layers({'DGU TK25 WMS':tk25,'OSM fallback':osm},{'SOV objekti':markerLayer}).addTo(map);
+function norm(v){return (v==null?'':String(v)).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
+function isSpilja(o){return norm(o.object_type_final+' '+o.name).includes('spilj')||norm(o.object_type_final+' '+o.name).includes('pec')}
+function isJama(o){return norm(o.object_type_final+' '+o.name).includes('jama')||norm(o.object_type_final+' '+o.name).includes('jaz')||norm(o.object_type_final+' '+o.name).includes('brez')}
+function matchesFilter(o){if(activeFilter==='all')return true;if(activeFilter==='jama')return isJama(o);if(activeFilter==='spilja')return isSpilja(o);if(activeFilter==='katastar')return !!o.in_cadastre_bool;if(activeFilter==='nije')return !o.in_cadastre_bool;return true}
+function searchable(o){return norm([o.name,o.county,o.municipality,o.nearest_place,o.locality,o.cadastre_status,o.record_status,o.object_type_final,o.cadastral_number,o.plate_number].join(' '))}
+function setFilter(f){activeFilter=f;document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('active',c.dataset.filter===f));render()}
+function render(){const q=norm(document.getElementById('q').value);visible=all.filter(o=>Number.isFinite(o.lat)&&Number.isFinite(o.lon)&&matchesFilter(o)&&searchable(o).includes(q));document.getElementById('total').textContent=all.length;document.getElementById('shown').textContent=visible.length;drawMarkers();drawResults()}
+function statusType(o){const st=norm([o.record_status,o.cadastre_status,o.workflow_raw].join(' '));if(o.in_cadastre_bool || st.includes('u_katastru'))return 'green';if(st.includes('nije_u_katastru') || st.includes('za_unos_u_katastar'))return 'red';return 'grey'}function color(o){const t=statusType(o);return t==='green'?'#2ee66b':t==='red'?'#ff7474':'#9aa3a6'}function statusLabel(o){const t=statusType(o);return t==='green'?'U katastru':t==='red'?'Nije u katastru':'Na provjeri / između'}
+function drawMarkers(){markerLayer.clearLayers();if(!markersVisible){document.getElementById('marked').textContent=0;return}visible.slice(0,1600).forEach(o=>L.circleMarker([o.lat,o.lon],{radius:8,color:'#071013',weight:2,fillColor:color(o),fillOpacity:.95}).bindPopup('<b>'+esc(o.name)+'</b><br><span style="color:'+color(o)+';font-weight:900">● '+statusLabel(o)+'</span><br>'+esc(o.object_type_final||'objekt')).on('click',()=>showDetails(o)).addTo(markerLayer));document.getElementById('marked').textContent=Math.min(visible.length,1600)}
+function drawResults(){const box=document.getElementById('results');box.innerHTML='';visible.slice(0,90).forEach(o=>{const d=document.createElement('div');d.className='result';d.innerHTML='<small><span class="statusDot" style="background:'+color(o)+'"></span>'+statusLabel(o)+' · '+esc(o.object_type_final||o.record_status||'objekt')+'</small><b>'+esc(o.name)+'</b><span class="muted">'+esc([o.nearest_place,o.municipality,o.county].filter(Boolean).join(' · '))+'</span>';d.onclick=()=>{map.setView([o.lat,o.lon],14);showDetails(o)};box.appendChild(d)});if(visible.length>90){const more=document.createElement('p');more.className='muted';more.textContent='Prikazano prvih 90 rezultata. Suzite pretragu za preciznije.';box.appendChild(more)}}
+function showDetails(o){document.getElementById('details').innerHTML='<h2>'+esc(o.name)+'</h2><p class="muted"><span class="statusDot" style="background:'+color(o)+'"></span>'+statusLabel(o)+' · '+esc([o.object_type_final,o.record_status,o.cadastral_number].filter(Boolean).join(' · '))+'</p><div class="kv"><div>Koordinate</div><div>'+fmt(o.lat)+', '+fmt(o.lon)+'</div><div>Dubina</div><div>'+val(o.depth_m,'m')+'</div><div>Duljina</div><div>'+val(o.length_m,'m')+'</div><div>Mjesto</div><div>'+esc([o.nearest_place,o.locality,o.municipality].filter(Boolean).join(' · '))+'</div><div>Pristup</div><div>'+esc(o.access_description||'—')+'</div><div>Opis</div><div>'+esc(o.technical_description||'—')+'</div><div>Napomena</div><div>'+esc(o.note||'—')+'</div></div>'}
+function val(v,s){return v==null||v===''?'—':esc(v)+' '+s}function fmt(n){return Number(n).toFixed(6)}function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function setBase(b){if(b==='tk25'){if(!map.hasLayer(tk25))tk25.addTo(map)}else{if(map.hasLayer(tk25))map.removeLayer(tk25);if(!map.hasLayer(osm))osm.addTo(map)}}
+function fitAll(){const pts=visible.slice(0,1600).map(o=>[o.lat,o.lon]);if(pts.length)map.fitBounds(pts,{padding:[30,30]})}function toggleMarkers(){markersVisible=!markersVisible;drawMarkers()}
+function kmlStyleId(o){return statusType(o)==='green'?'uKatastru':statusType(o)==='red'?'nijeKatastru':'izmedju'}function exportVisibleKml(){let k='<?xml version="1.0" encoding="UTF-8"?><kml xmlns="http://www.opengis.net/kml/2.2"><Document><name>SOV export</name><Style id="uKatastru"><IconStyle><color>ff6be62e</color><scale>1.15</scale></IconStyle></Style><Style id="nijeKatastru"><IconStyle><color>ff7474ff</color><scale>1.15</scale></IconStyle></Style><Style id="izmedju"><IconStyle><color>ffa6a39a</color><scale>1.05</scale></IconStyle></Style>';visible.forEach(o=>{k+='<Placemark><name>'+esc(o.name)+'</name><styleUrl>#'+kmlStyleId(o)+'</styleUrl><description>'+esc([statusLabel(o),o.record_status,o.object_type_final,o.cadastral_number].filter(Boolean).join(' | '))+'</description><Point><coordinates>'+o.lon+','+o.lat+',0</coordinates></Point></Placemark>'});k+='</Document></kml>';downloadBlob(k,'sov-visible-objects.kml','application/vnd.google-earth.kml+xml')}
+function startSelectArea(){selectMode=true;firstCorner=null;document.getElementById('bboxText').textContent='Odaberi prvi kut područja na karti.';map.getContainer().style.cursor='crosshair'}
+map.on('click',e=>{if(!selectMode)return;if(!firstCorner){firstCorner=e.latlng;document.getElementById('bboxText').textContent='Odaberi drugi kut područja.';return}selectedBounds=L.latLngBounds(firstCorner,e.latlng);if(selectedRect)selectedRect.remove();selectedRect=L.rectangle(selectedBounds,{color:'#d7f66f',weight:2,fillOpacity:.08}).addTo(map);selectMode=false;map.getContainer().style.cursor='';updateBboxText()});
+function updateBboxText(){if(!selectedBounds)return;const b=selectedBounds;document.getElementById('bboxText').textContent='BBOX: '+b.getWest().toFixed(5)+', '+b.getSouth().toFixed(5)+', '+b.getEast().toFixed(5)+', '+b.getNorth().toFixed(5);document.getElementById('tileCount').textContent='Procjena tileova: '+estimateTiles()}
+function lon2tile(lon,z){return Math.floor((lon+180)/360*Math.pow(2,z))}function lat2tile(lat,z){const r=lat*Math.PI/180;return Math.floor((1-Math.log(Math.tan(r)+1/Math.cos(r))/Math.PI)/2*Math.pow(2,z))}
+function tile2merc(x,y,z){const n=Math.pow(2,z),lon1=x/n*360-180,lon2=(x+1)/n*360-180;const lat1=rad2deg(Math.atan(Math.sinh(Math.PI*(1-2*y/n))));const lat2=rad2deg(Math.atan(Math.sinh(Math.PI*(1-2*(y+1)/n))));return [lon1,lat2,lon2,lat1].map(llToMerc)}function rad2deg(r){return r*180/Math.PI}function llToMerc(v,i,a){const lon=i%2===0?v:null;if(lon!==null)return lon*20037508.34/180;let lat=Math.max(Math.min(v,85.05112878),-85.05112878);return Math.log(Math.tan((90+lat)*Math.PI/360))/(Math.PI/180)*20037508.34/180}
+function tilesForSelection(){if(!selectedBounds)throw new Error('Nema označenog područja.');let zmin=+document.getElementById('zmin').value,zmax=+document.getElementById('zmax').value;if(zmax<zmin)[zmin,zmax]=[zmax,zmin];const b=selectedBounds;let arr=[];for(let z=zmin;z<=zmax;z++){let x1=lon2tile(b.getWest(),z),x2=lon2tile(b.getEast(),z),y1=lat2tile(b.getNorth(),z),y2=lat2tile(b.getSouth(),z);for(let x=x1;x<=x2;x++)for(let y=y1;y<=y2;y++)arr.push({z,x,y})}return arr}
+function estimateTiles(){try{return tilesForSelection().length}catch(e){return 0}}
+function wmsTileUrl(t){const bb=tile2merc(t.x,t.y,t.z).join(',');return TK25_WMS_URL+'?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&LAYERS='+encodeURIComponent(TK25_WMS_LAYER)+'&STYLES=&FORMAT=image/png&TRANSPARENT=false&SRS=EPSG:3857&BBOX='+bb+'&WIDTH=256&HEIGHT=256'}
+async function downloadMbtiles(){if(!selectedBounds){alert('Prvo označi offline područje.');return}const tiles=tilesForSelection();if(tiles.length>1800&&!confirm('Ovo je '+tiles.length+' tileova. Nastaviti?'))return;const SQL=await initSqlJs({locateFile:f=>'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/'+f});const db=new SQL.Database();db.run('CREATE TABLE metadata (name text, value text);CREATE TABLE tiles (zoom_level integer, tile_column integer, tile_row integer, tile_data blob);CREATE UNIQUE INDEX tile_index on tiles (zoom_level, tile_column, tile_row);');db.run('INSERT INTO metadata VALUES (?,?),(?,?),(?,?),(?,?)',['name','SOV TK25 offline','type','baselayer','format','png','bounds',[selectedBounds.getWest(),selectedBounds.getSouth(),selectedBounds.getEast(),selectedBounds.getNorth()].join(',')]);const stmt=db.prepare('INSERT OR REPLACE INTO tiles VALUES (?,?,?,?)');let done=0;for(const t of tiles){try{const r=await fetch(wmsTileUrl(t),{mode:'cors'});if(!r.ok)throw new Error(r.status);const buf=new Uint8Array(await r.arrayBuffer());stmt.run([t.z,t.x,Math.pow(2,t.z)-1-t.y,buf])}catch(e){console.warn('Tile failed',t,e)}done++;document.getElementById('bar').style.width=(done/tiles.length*100)+'%';document.getElementById('tileCount').textContent='MBTiles: '+done+' / '+tiles.length}stmt.free();const data=db.export();downloadBlob(data,'sov-tk25-offline.mbtiles','application/octet-stream')}
+function downloadBlob(data,name,type){const blob=new Blob([data],{type});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+fetch(DATA_URL).then(r=>r.json()).then(d=>{all=d.filter(o=>Number.isFinite(o.lat)&&Number.isFinite(o.lon));render();fitAll()}).catch(e=>{document.getElementById('results').innerHTML='<p class="muted">Ne mogu učitati JSON bazu. Provjeri da je data/sov-baza.json u repou.</p>'})
 </script>
 </body></html>
