@@ -1,3 +1,8 @@
+# Build notes
+
+## v1.5 rule
+Ne pregaziti javni landing, SOV Cloud ni SOV Karta prilikom uređivanja pojedinačnih javnih stranica. Ovaj build mijenja samo povijest i dokumentaciju verzije.
+
 # BUILD NOTES — SOV WEB v1.4
 
 Ovaj build je recovery build. Ne smije se pregaziti javni portal samo dashboardom.

@@ -1,3 +1,11 @@
+# Changelog
+
+## v1.5-modern-history
+- Redizajnirana `povijest.html` stranica iz wall-of-text forme u moderni editorial/timeline layout.
+- Dodan veliki cinematic hero, uvodni sažetak, timeline po razdobljima, quote sekcija, foto grid i linkovi na povezane javne stranice.
+- Cijeli stari arhivski tekst nije obrisan: premješten je u collapsible sekciju "Cijeli arhivski tekst povijesti".
+- Ostatak builda ostaje iz v1.4 recovery baze da se ne pregazi landing, login, SOV karta i Velebitaški duh.
+
 # CHANGELOG
 
 ## v1.4-recovery-og-landing
