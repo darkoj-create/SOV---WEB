@@ -1,17 +1,12 @@
-# Build notes
+# BUILD NOTES — SOV WEB v1.4
 
-Ne raditi parcijalni ZIP koji pregazi javni portal.
-Svaki build mora sadržavati:
-- index.html
-- o-drustvu.html
-- povijest.html
-- velebitaski-duh.html
-- vijesti.html
-- speleoskola.html
-- login.html
-- dashboard.html
-- baza.html
-- data/sov-baza.json
-- CHANGELOG.md / BUILD_NOTES.md / TODO.md / VERSION.txt
+Ovaj build je recovery build. Ne smije se pregaziti javni portal samo dashboardom.
 
-SOV Karta je članski app iza login-a. Javni portal ne smije izgledati kao admin dashboard.
+Mora uvijek sadržavati:
+- OG cinematic landing `index.html`
+- javne stranice: `o-drustvu.html`, `povijest.html`, `velebitaski-duh.html`, `vijesti.html`, `speleoskola.html`
+- članski dio: `login.html`, `dashboard.html`, `admin-users.html`
+- SOV karta: `baza.html` + `data/sov-baza.json`
+- original WordPress arhivu u `archive-original-wordpress/`
+
+Pravilo: svaka nova verzija mora biti FULL SITE build, ne parcijalni overwrite.
