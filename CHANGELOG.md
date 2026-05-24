@@ -1,3 +1,10 @@
+# v4.6 - Brand header logo fit fix
+
+- Zaobljen i uklopljen crni SOV wordmark u gornjem headeru.
+- Dodan clipping/overflow fix da logo ne izlazi iz okvira.
+- Hero logo dobio isti nenametljiv rounded treatment.
+- Nema promjena funkcionalnosti.
+
 # v4.5 — Pročelništvo restore + hero logo fix
 
 - Vraćen jasan ulaz na Pročelništvo iz stranice O društvu.
@@ -181,3 +188,9 @@
 - Dodani PDS Velebit, Komisija za speleologiju HPS, HPS, HGSS, Katastar speleoloških objekata RH i UIS.
 - Ubačeni priloženi logotipi u assets/links.
 - Dodan nav link na #linkovi i responsive/mobile layout.
+
+## v4.7 — Mobile nav fit
+- Dodatno sređen mobile header.
+- Navigacija je horizontalni scroll bez lomljenja riječi.
+- Kratke stavke poput “Video” ostaju u jednom redu.
+- Brand/logo u headeru se skaluje unutar širine ekrana.
