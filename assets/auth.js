@@ -174,7 +174,6 @@
     const p = pageName();
     if(!REGISTERED_PAGES.has(p)) return;
     if(p === 'admin-users.html') await requireAdmin();
-    else if(p === 'oruzarstvo.html') await requireArmory();
     else await requireApproved();
     await renderUserBadge();
   }

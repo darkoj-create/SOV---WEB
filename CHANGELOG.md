@@ -206,3 +206,16 @@
 - O nama preuređen u jasan flow: hero, pregled, pročelništvo, povijest, Velebitaški duh.
 - Pročelništvo i Povijest ostaju integrirani kao subsekcije O nama.
 - Dodatno ispoliran gornji lijevi SOV logo i responsive ponašanje navigacije.
+
+
+## v4.22 — Oružarstvo role + inventure
+- Oružarstvo je dostupno svim odobrenim članovima kao katalog i zahtjev za opremu.
+- Oružar/admin vide interne module: zahtjevi, užad, inventure, nabava, rashod, izgubljeno i oprema na terenu.
+- Dodan `data/oruzarstvo-data.json` generiran iz XLS inventure.
+- Dashboard link za Oružarstvo više nije sakriven običnim korisnicima.
+
+
+## v4.23 — Oružarstvo XLS v1 model import
+- Zamijenjen oružarski data model novim `SOV_Oruzarstvo_v1.xlsx` importom.
+- Dodani katalog, komadi, užad, posudbe, inventure, servis, nabava, rashod, izgubljeno i oprema na terenu kao čiste JSON cjeline.
+- Oružarstvo UI prilagođen novom modelu: član vidi katalog/zahtjeve, oružar/admin vidi interne panele.

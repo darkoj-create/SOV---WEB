@@ -1,1 +1,1 @@
-v4.13-mobile-optimization-plus
+v4.23 — Oružarstvo XLS v1 model import
