@@ -1,1 +1,1 @@
-v4.23 — Oružarstvo XLS v1 model import
+v4.24 Oružarstvo Supabase SQL backend

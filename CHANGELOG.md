@@ -219,3 +219,10 @@
 - Zamijenjen oružarski data model novim `SOV_Oruzarstvo_v1.xlsx` importom.
 - Dodani katalog, komadi, užad, posudbe, inventure, servis, nabava, rashod, izgubljeno i oprema na terenu kao čiste JSON cjeline.
 - Oružarstvo UI prilagođen novom modelu: član vidi katalog/zahtjeve, oružar/admin vidi interne panele.
+
+## v4.24 — Oružarstvo Supabase SQL backend
+- Dodan kompletan SQL schema/RLS za Oružarstvo.
+- Dodan Supabase bridge za zahtjeve opreme.
+- Dodana import stranica za početni katalog iz Claude XLS JSON modela.
+- Obični članovi mogu slati zahtjeve; oružar/admin vide i obrađuju sve zahtjeve.
+- Local storage ostaje samo dev fallback ako Supabase nije konfiguriran.
