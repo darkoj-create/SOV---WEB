@@ -79,3 +79,12 @@
 - Desna kartica sada ima: Kalendar izleta, Oružarstvo, Zapisnici, SOV app.
 - Izbačeni su admin approval i nepotrebni statistički/module blokovi s dashboarda.
 - Sredina je očišćena: SOV logo + kratki CTA.
+
+
+## v3.0 — Kalendar izleta Android sync
+- Dodan `kalendar-izleta.html` kao web verzija Android logike za zajednički raspored.
+- Učitavanje izleta iz Apps Script endpointa `action=listTrips`.
+- Prijava na izlet preko `signupTrip`, uključujući opciju vozača.
+- Raspored automobila preko `kreirajTab` + spremanje URL-a preko `updateRasporedUrl`.
+- Weather integracija preko Open‑Meteo geocoding/forecast logike.
+- Dashboard link `Kalendar izleta` sada vodi na novu dedicated stranicu.
