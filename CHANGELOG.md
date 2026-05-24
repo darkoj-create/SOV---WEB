@@ -111,3 +111,12 @@
 - “Spremi i pošalji” sprema zapisnik za urednika i generira DOCX download.
 - Dodan `pregled-zapisnika.html`: lista pending zapisnika, preview, approve, edit, delete i DOCX export.
 - Dodan `zapisnici-skupstine.html` kao posebna arhiva skupštinskih zapisnika.
+
+
+## v3.5 — Nacrti / TopoDroid Drive match
+- U Baza dodan panel za Nacrti / TopoDroid.
+- Dodan link na glavni Google Drive folder nacrta.
+- Dodan lokalni upload/index nacrta i TopoDroid exporta.
+- Web automatski matcha fileove s objektima po nazivu jame/spilje.
+- Full kartica objekta prikazuje pronađene nacrte s Prikaži / Skini akcijama.
+- Dodan export lokalnog indexa nacrta kao JSON za kasnije spajanje na backend/Drive API.
