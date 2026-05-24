@@ -1,3 +1,10 @@
+# v2.7 — Dashboard extra actions
+
+- Dashboard: dodana lijeva ikona/menu item **Speleo zapisnik**.
+- Dashboard: dodana desna ikona/menu item **Napiši članak**.
+- Dodane privremene static stranice `speleo-zapisnik.html` i `napisi-clanak.html` za dev preview.
+- Javni news dio i baza nisu dirani.
+
 
 ## v2.6 — Baza alphabetic + SOV app link
 - `pregled-baze.html` pretvoren u konkretan abecedni popis objekata.
