@@ -1,3 +1,10 @@
+# v4.5 — Pročelništvo restore + hero logo fix
+
+- Vraćen jasan ulaz na Pročelništvo iz stranice O društvu.
+- O društvu više nije prazna/placeholder stranica nego ima aktualno pročelništvo i jasne linkove.
+- Popravljen hero SOV logo gore desno da crni wordmark ne izlazi iz okvira.
+- Dodan Pročelništvo link u glavnu navigaciju/quick links.
+
 
 ## v4.4 — Pridruži nam se
 - Dodana nova javna stranica `pridruzi-nam-se.html`.
