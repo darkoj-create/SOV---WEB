@@ -1,3 +1,11 @@
+# v2.9 — YouTube video integration
+
+- Main page Video section now embeds the SOV YouTube uploads list.
+- Added standalone `videos.html` page.
+- Added direct links to `https://www.youtube.com/@speleologija/videos` and channel fallback.
+- No YouTube API key required for this static build.
+- Public news, dashboard and registered modules preserved.
+
 
 ## v2.8 — Gallery + Video on main page
 - Main page now includes a cinematic Galerija section.
