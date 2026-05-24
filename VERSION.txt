@@ -1,1 +1,1 @@
-v4.7-mobile-nav-fit
+v4.8-main-nav-brand-cleanup
