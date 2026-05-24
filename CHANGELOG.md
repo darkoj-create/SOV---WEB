@@ -1,3 +1,10 @@
+
+## v2.8 — Gallery + Video on main page
+- Main page now includes a cinematic Galerija section.
+- Added Video section with embedded Velebitaški duh video and SOV YouTube channel link.
+- Added Galerija and Video anchors to top navigation.
+- Copied same update to vijesti.html so the news landing stays consistent.
+
 # v2.7 — Dashboard extra actions
 
 - Dashboard: dodana lijeva ikona/menu item **Speleo zapisnik**.
