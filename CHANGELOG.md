@@ -41,3 +41,10 @@
 - Regeneriran kronološki news feed i /novosti article stranice.
 - Poboljšan fallback za naslovne slike: og:image → prva velika slika iz članka → default SOV hero.
 - Javni i registered/dashboard dijelovi nisu funkcionalno mijenjani.
+
+## v2.5 — Dashboard menu layout
+- Dashboard pojednostavljen na jedan hero/cockpit ekran.
+- Lijeva kartica sada je stvarni glavni izbornik: SOV Karta, Baza, Izleti, GPX/KML.
+- Desna kartica sada ima: Kalendar izleta, Oružarstvo, Zapisnici, SOV app.
+- Izbačeni su admin approval i nepotrebni statistički/module blokovi s dashboarda.
+- Sredina je očišćena: SOV logo + kratki CTA.

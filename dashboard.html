@@ -8,83 +8,40 @@
   <script src="assets/auth.js"></script>
   <style>
     :root{
-      --dash-bg:#050708;
-      --glass:rgba(9,16,19,.72);
-      --glass2:rgba(255,255,255,.055);
-      --glass3:rgba(255,255,255,.085);
-      --stroke:rgba(255,255,255,.12);
-      --stroke2:rgba(215,246,111,.23);
-      --lime:#d7f66f;
-      --cyan:#78d7ff;
-      --amber:#ffb15f;
-      --red:#ff6f6f;
-      --green:#66e28d;
-      --ink:#f3f7f5;
-      --muted2:#9aabad;
+      --bg:#030506;--panel:rgba(9,15,17,.76);--panel2:rgba(255,255,255,.055);--stroke:rgba(255,255,255,.13);
+      --lime:#d7f66f;--cyan:#78d7ff;--amber:#ffb15f;--ink:#f5f8f7;--muted:#9dadad;--soft:#d8e4e3;
     }
-    body.dashboard-page{
-      min-height:100vh;
-      background:
-        radial-gradient(circle at 86% 8%,rgba(120,215,255,.18),transparent 26%),
-        radial-gradient(circle at 14% 12%,rgba(215,246,111,.13),transparent 28%),
-        radial-gradient(circle at 55% 86%,rgba(255,177,95,.07),transparent 28%),
-        linear-gradient(180deg,#020304 0%,#071114 48%,#030405 100%);
-    }
-    body.dashboard-page:after{
-      content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;
-      background:
-        linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.72)),
-        url("data:image/svg+xml,%3Csvg width='260' height='260' viewBox='0 0 260 260' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='rgba(255,255,255,0.045)' stroke-width='1'%3E%3Cpath d='M0 160 C45 130 83 170 130 140 S220 110 260 135'/%3E%3Cpath d='M0 95 C52 118 84 78 130 98 S213 142 260 110'/%3E%3Cpath d='M35 0 C45 55 78 78 70 134 S62 213 100 260'/%3E%3Cpath d='M178 0 C150 54 180 93 163 135 S130 211 154 260'/%3E%3C/g%3E%3C/svg%3E");
-      opacity:.72;
-      mask-image:linear-gradient(to bottom,#000,rgba(0,0,0,.8),transparent 92%);
-    }
-    .dash-shell{width:min(1440px,calc(100% - 36px));margin:0 auto 70px}
+    body.dashboard-page{min-height:100vh;background:
+      radial-gradient(circle at 82% 12%,rgba(120,215,255,.18),transparent 28%),
+      radial-gradient(circle at 12% 18%,rgba(215,246,111,.14),transparent 26%),
+      radial-gradient(circle at 50% 92%,rgba(255,177,95,.08),transparent 30%),
+      linear-gradient(180deg,#020303 0%,#071012 52%,#020303 100%);color:var(--ink);}
+    body.dashboard-page:after{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;opacity:.62;background:
+      linear-gradient(180deg,rgba(0,0,0,.1),rgba(0,0,0,.78)),
+      url("data:image/svg+xml,%3Csvg width='320' height='320' viewBox='0 0 320 320' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='rgba(255,255,255,.045)' stroke-width='1.2'%3E%3Cpath d='M0 205 C60 152 105 214 166 165 S265 115 320 154'/%3E%3Cpath d='M0 112 C70 145 115 82 178 119 S262 172 320 132'/%3E%3Cpath d='M55 0 C62 68 100 100 88 169 S76 260 126 320'/%3E%3Cpath d='M225 0 C188 70 230 119 205 176 S165 260 195 320'/%3E%3C/g%3E%3C/svg%3E");}
+    .dash-shell{width:min(1460px,calc(100% - 36px));margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
     .dash-top{min-height:84px;display:flex;align-items:center;justify-content:space-between;gap:18px}
-    .dash-nav{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-    .dash-nav a{color:#d8e4e3;text-decoration:none;border:1px solid var(--stroke);border-radius:999px;padding:10px 13px;background:rgba(255,255,255,.035);font-weight:850;font-size:13px;backdrop-filter:blur(18px)}
-    .dash-nav a.primary{background:var(--lime);color:#101400;border:0;box-shadow:0 0 30px rgba(215,246,111,.18)}
-    .user-chip{display:flex;gap:10px;align-items:center;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.055);border-radius:999px;padding:8px 12px;color:#dce8e8;font-weight:850;font-size:13px}
-    .status-dot{width:9px;height:9px;border-radius:999px;background:var(--green);box-shadow:0 0 20px rgba(102,226,141,.7)}
+    .brand{display:flex;gap:12px;align-items:center;text-decoration:none;color:#fff}.mark{width:44px;height:44px;border-radius:16px;display:grid;place-items:center;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);font-weight:1000}.brand strong{display:block;font-size:14px}.brand small{display:block;color:var(--lime);font-weight:900;margin-top:2px}
+    .dash-nav{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.dash-nav a{color:#d8e4e3;text-decoration:none;border:1px solid var(--stroke);border-radius:999px;padding:10px 13px;background:rgba(255,255,255,.035);font-weight:850;font-size:13px;backdrop-filter:blur(18px)}.dash-nav a.primary{background:var(--lime);color:#101400;border:0;box-shadow:0 0 30px rgba(215,246,111,.18)}
+    .user-chip{display:flex;gap:10px;align-items:center;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.055);border-radius:999px;padding:8px 12px;color:#dce8e8;font-weight:850;font-size:13px}.status-dot{width:9px;height:9px;border-radius:999px;background:#66e28d;box-shadow:0 0 20px rgba(102,226,141,.7)}
     .dash-hero{position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.13);border-radius:38px;background:
-      linear-gradient(120deg,rgba(8,12,14,.92) 0%,rgba(8,12,14,.72) 48%,rgba(8,12,14,.36) 100%),
-      radial-gradient(circle at 78% 24%,rgba(215,246,111,.16),transparent 26%),
-      linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.02));
-      box-shadow:0 28px 100px rgba(0,0,0,.55);
-      min-height:510px;
-    }
-    .dash-hero:before{content:"";position:absolute;inset:0;background:
-      url("data:image/svg+xml,%3Csvg width='980' height='620' viewBox='0 0 980 620' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='rgba(255,255,255,.09)' stroke-width='2'%3E%3Cpath d='M75 470 C160 395 244 438 305 368 C371 292 454 326 515 258 C590 175 704 230 787 146 C851 82 914 106 960 74'/%3E%3Cpath d='M76 520 C200 486 251 528 365 458 C448 407 511 424 602 337 C696 247 805 286 943 196'/%3E%3Cpath d='M210 0 C175 93 205 173 178 260 C150 350 174 432 118 620'/%3E%3Cpath d='M630 0 C594 96 628 194 580 286 C534 376 548 486 497 620'/%3E%3Ccircle cx='787' cy='146' r='7'/%3E%3Ccircle cx='515' cy='258' r='5'/%3E%3Ccircle cx='305' cy='368' r='6'/%3E%3C/g%3E%3C/svg%3E") right bottom/68% auto no-repeat;
-      opacity:.85;
-    }
-    .dash-hero:after{content:"";position:absolute;right:-14%;top:-38%;width:620px;height:620px;border-radius:50%;background:radial-gradient(circle,rgba(120,215,255,.24),transparent 62%);filter:blur(8px);opacity:.82}
-    .hero-grid{position:relative;z-index:2;display:grid;grid-template-columns:minmax(0,1.06fr) 440px;gap:30px;padding:54px}
-    .kicker{display:inline-flex;align-items:center;gap:10px;border:1px solid var(--stroke2);background:rgba(215,246,111,.08);color:var(--lime);border-radius:999px;padding:9px 13px;font-size:12px;font-weight:1000;letter-spacing:.14em;text-transform:uppercase}
-    .kicker:before{content:"";width:8px;height:8px;border-radius:999px;background:var(--lime);box-shadow:0 0 22px rgba(215,246,111,.85)}
-    .dash-hero h1{font-size:clamp(54px,6.7vw,108px);line-height:.86;letter-spacing:-.085em;margin:22px 0 18px;max-width:880px}
-    .dash-lead{font-size:20px;line-height:1.62;color:#d9e3e3;max-width:760px;margin:0 0 28px}
-    .hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
-    .hero-actions a,.soft-button{display:inline-flex;align-items:center;gap:10px;border-radius:999px;padding:14px 18px;text-decoration:none;font-weight:950;border:1px solid rgba(255,255,255,.14);color:#ecf7f6;background:rgba(255,255,255,.055);backdrop-filter:blur(18px)}
-    .hero-actions a.main{background:var(--lime);color:#101400;border:0;box-shadow:0 16px 42px rgba(215,246,111,.17)}
-    .ops-panel{align-self:stretch;border:1px solid rgba(255,255,255,.14);background:rgba(5,9,11,.58);backdrop-filter:blur(20px);border-radius:30px;padding:22px;box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
-    .ops-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}
-    .ops-head b{font-size:21px;letter-spacing:-.04em}.ops-head span{color:var(--muted2);font-size:13px;font-weight:850}
-    .ops-list{display:grid;gap:12px}
-    .ops-item{border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.045);border-radius:22px;padding:15px;display:grid;grid-template-columns:42px 1fr auto;gap:13px;align-items:center}
-    .ops-icon{width:42px;height:42px;border-radius:16px;display:grid;place-items:center;background:rgba(120,215,255,.1);border:1px solid rgba(120,215,255,.2);font-size:19px}.ops-icon.lime{background:rgba(215,246,111,.11);border-color:rgba(215,246,111,.25)}.ops-icon.amber{background:rgba(255,177,95,.1);border-color:rgba(255,177,95,.25)}
-    .ops-item strong{display:block;font-size:15px}.ops-item small{display:block;color:var(--muted2);margin-top:4px;line-height:1.35}.pill{border:1px solid rgba(255,255,255,.11);background:rgba(255,255,255,.06);border-radius:999px;padding:6px 9px;font-size:11px;font-weight:950;color:#dfe9e8;white-space:nowrap}
-    .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:18px 0 28px}.stat{border:1px solid var(--stroke);background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.032));border-radius:26px;padding:22px;box-shadow:0 12px 40px rgba(0,0,0,.22)}.stat small{display:block;color:var(--muted2);font-weight:900;letter-spacing:.08em;text-transform:uppercase;font-size:11px}.stat b{display:block;font-size:38px;letter-spacing:-.06em;margin-top:9px}.stat span{display:block;color:#cbd8d8;font-size:13px;margin-top:7px;line-height:1.45}
-    .dash-layout{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:22px;align-items:start}.section-title{display:flex;justify-content:space-between;align-items:end;gap:20px;margin:0 0 16px}.section-title h2{font-size:34px;letter-spacing:-.06em;margin:0}.section-title p{margin:5px 0 0;color:var(--muted2);line-height:1.5}.module-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.module-card{position:relative;min-height:260px;overflow:hidden;border:1px solid rgba(255,255,255,.12);border-radius:30px;background:linear-gradient(160deg,rgba(255,255,255,.08),rgba(255,255,255,.026));box-shadow:0 18px 55px rgba(0,0,0,.28);text-decoration:none;color:var(--ink);padding:25px;display:flex;flex-direction:column;justify-content:space-between;transition:transform .18s ease,border-color .18s ease,background .18s ease}.module-card:hover{transform:translateY(-3px);border-color:rgba(215,246,111,.34);background:linear-gradient(160deg,rgba(255,255,255,.105),rgba(255,255,255,.03))}.module-card.big{grid-column:span 2;min-height:340px}.module-card:before{content:"";position:absolute;right:-120px;top:-120px;width:270px;height:270px;border-radius:50%;background:radial-gradient(circle,rgba(120,215,255,.16),transparent 64%)}.module-card.map:before{background:radial-gradient(circle,rgba(215,246,111,.18),transparent 64%)}.module-card.trip:before{background:radial-gradient(circle,rgba(255,177,95,.17),transparent 64%)}.module-top{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:flex-start;gap:14px}.module-icon{width:58px;height:58px;border-radius:22px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);display:grid;place-items:center;font-size:27px;box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}.module-card h3{position:relative;z-index:2;font-size:clamp(30px,4vw,58px);line-height:.92;letter-spacing:-.07em;margin:24px 0 14px}.module-card:not(.big) h3{font-size:34px}.module-card p{position:relative;z-index:2;color:#cdd9d9;line-height:1.58;margin:0;max-width:690px}.module-meta{position:relative;z-index:2;display:flex;gap:9px;flex-wrap:wrap;margin-top:22px}.meta-chip{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.055);border-radius:999px;padding:7px 10px;font-size:12px;color:#d8e5e5;font-weight:850}.arrow{position:absolute;right:24px;bottom:22px;font-size:30px;color:var(--lime)}
-    .side-stack{display:grid;gap:18px}.side-card{border:1px solid rgba(255,255,255,.12);border-radius:30px;background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.028));padding:22px;box-shadow:0 18px 55px rgba(0,0,0,.25)}.side-card h3{font-size:24px;letter-spacing:-.045em;margin:0 0 15px}.mini-map{height:250px;border-radius:24px;border:1px solid rgba(255,255,255,.1);background:
-      radial-gradient(circle at 62% 44%,rgba(215,246,111,.35) 0 4px,transparent 5px),
-      radial-gradient(circle at 40% 60%,rgba(255,111,111,.35) 0 4px,transparent 5px),
-      radial-gradient(circle at 72% 62%,rgba(160,170,170,.35) 0 4px,transparent 5px),
-      linear-gradient(135deg,rgba(120,215,255,.10),transparent 35%),
-      url("data:image/svg+xml,%3Csvg width='440' height='280' viewBox='0 0 440 280' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='rgba(255,255,255,.13)' stroke-width='1.4'%3E%3Cpath d='M0 207 C64 176 97 215 164 178 C236 139 277 161 337 106 C376 70 411 83 440 56'/%3E%3Cpath d='M0 113 C57 135 88 99 139 116 C200 136 229 95 284 122 C345 152 382 122 440 141'/%3E%3Cpath d='M73 0 C88 44 66 84 92 124 C116 162 88 213 110 280'/%3E%3Cpath d='M280 0 C250 62 278 97 258 150 C236 208 259 238 232 280'/%3E%3C/g%3E%3C/svg%3E") center/cover,
-      #071114;position:relative;overflow:hidden}.mini-map:after{content:"TK25 / SOV";position:absolute;left:14px;bottom:14px;border:1px solid rgba(215,246,111,.25);background:rgba(4,7,8,.72);color:var(--lime);font-weight:1000;font-size:11px;letter-spacing:.1em;border-radius:999px;padding:7px 9px}.legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.legend span{display:flex;align-items:center;gap:7px;font-size:12px;color:#d3dfdf;font-weight:850}.legend i{width:10px;height:10px;border-radius:99px;display:block}.g{background:#66e28d}.r{background:#ff6f6f}.s{background:#9aa5a6}
-    .activity{display:grid;gap:12px}.activity-item{display:grid;grid-template-columns:12px 1fr;gap:12px}.activity-item i{width:12px;height:12px;border-radius:50%;background:var(--cyan);margin-top:4px;box-shadow:0 0 18px rgba(120,215,255,.6)}.activity-item:nth-child(2) i{background:var(--lime);box-shadow:0 0 18px rgba(215,246,111,.6)}.activity-item:nth-child(3) i{background:var(--amber);box-shadow:0 0 18px rgba(255,177,95,.6)}.activity-item b{display:block;font-size:14px}.activity-item small{display:block;color:var(--muted2);line-height:1.45;margin-top:3px}.quick-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}.quick-actions a{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.045);color:#e9f3f2;border-radius:18px;padding:13px;text-decoration:none;font-weight:900;font-size:13px;line-height:1.25}.quick-actions a:hover{border-color:rgba(215,246,111,.28)}
+      linear-gradient(120deg,rgba(6,10,11,.94),rgba(7,13,15,.76) 52%,rgba(9,20,23,.55)),
+      radial-gradient(circle at 49% 45%,rgba(215,246,111,.13),transparent 22%),
+      radial-gradient(circle at 87% 20%,rgba(120,215,255,.18),transparent 28%),
+      linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.02));box-shadow:0 28px 100px rgba(0,0,0,.55);min-height:calc(100vh - 130px);display:flex;align-items:stretch}
+    .dash-hero:before{content:"";position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='1080' height='680' viewBox='0 0 1080 680' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='rgba(255,255,255,.08)' stroke-width='2'%3E%3Cpath d='M60 515 C160 410 260 468 338 382 C420 292 515 330 590 246 C690 135 805 220 913 112 C986 39 1038 76 1070 45'/%3E%3Cpath d='M55 570 C210 525 280 568 412 488 C520 422 595 440 705 340 C810 244 930 285 1075 193'/%3E%3Cpath d='M250 0 C205 112 245 190 212 294 C178 405 200 500 138 680'/%3E%3Cpath d='M710 0 C662 104 708 210 650 315 C595 415 615 542 558 680'/%3E%3Ccircle cx='913' cy='112' r='7'/%3E%3Ccircle cx='590' cy='246' r='5'/%3E%3Ccircle cx='338' cy='382' r='6'/%3E%3C/g%3E%3C/svg%3E") center/90% auto no-repeat;opacity:.72}
+    .cloud-grid{position:relative;z-index:2;width:100%;display:grid;grid-template-columns:390px minmax(280px,1fr) 390px;gap:28px;padding:54px;align-items:center}
+    .menu-panel{border:1px solid rgba(255,255,255,.14);background:rgba(5,9,11,.62);backdrop-filter:blur(22px);border-radius:30px;padding:22px;box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 20px 70px rgba(0,0,0,.28)}
+    .panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}.panel-head b{font-size:22px;letter-spacing:-.04em}.panel-head span{color:var(--muted);font-size:13px;font-weight:850}.panel-head .dot{width:9px;height:9px;border-radius:50%;background:var(--lime);box-shadow:0 0 22px rgba(215,246,111,.75)}
+    .menu-list{display:grid;gap:12px}.menu-item{border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.045);border-radius:22px;padding:15px;display:grid;grid-template-columns:44px 1fr auto;gap:13px;align-items:center;text-decoration:none;color:inherit;transition:transform .16s ease,border-color .16s ease,background .16s ease}.menu-item:hover{transform:translateY(-2px);border-color:rgba(215,246,111,.34);background:rgba(255,255,255,.07)}
+    .menu-icon{width:44px;height:44px;border-radius:16px;display:grid;place-items:center;background:rgba(120,215,255,.1);border:1px solid rgba(120,215,255,.22);font-size:20px}.menu-icon.lime{background:rgba(215,246,111,.12);border-color:rgba(215,246,111,.28)}.menu-icon.amber{background:rgba(255,177,95,.11);border-color:rgba(255,177,95,.27)}.menu-icon.green{background:rgba(102,226,141,.1);border-color:rgba(102,226,141,.22)}
+    .menu-item strong{display:block;font-size:15px}.menu-item small{display:block;color:var(--muted);margin-top:4px;line-height:1.38}.pill{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);border-radius:999px;padding:6px 9px;font-size:11px;font-weight:950;color:#dfe9e8;white-space:nowrap}
+    .center-stage{min-height:560px;display:grid;place-items:center;text-align:center;position:relative}.center-stage:before{content:"";position:absolute;width:min(520px,90%);height:min(520px,90%);border-radius:50%;background:radial-gradient(circle,rgba(215,246,111,.15),rgba(120,215,255,.08) 38%,transparent 66%);filter:blur(2px)}
+    .center-logo{position:relative;display:grid;place-items:center;gap:26px}.logo-card{width:min(430px,82vw);aspect-ratio:2.6/1;border:1px solid rgba(255,255,255,.16);border-radius:30px;background:rgba(0,0,0,.5);box-shadow:0 26px 90px rgba(0,0,0,.55),0 0 70px rgba(215,246,111,.08);display:grid;place-items:center;padding:22px}.logo-card img{max-width:100%;max-height:100%;object-fit:contain;filter:drop-shadow(0 16px 24px rgba(0,0,0,.45))}
+    .center-stage h1{font-size:clamp(44px,5.3vw,86px);line-height:.88;letter-spacing:-.075em;margin:0;max-width:720px}.center-stage p{font-size:18px;line-height:1.55;color:#cbd8d8;max-width:620px;margin:0 auto}.center-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}.center-actions a{display:inline-flex;align-items:center;gap:9px;border-radius:999px;padding:13px 17px;text-decoration:none;font-weight:950;border:1px solid rgba(255,255,255,.14);color:#ecf7f6;background:rgba(255,255,255,.055);backdrop-filter:blur(18px)}.center-actions a.main{background:var(--lime);color:#101400;border:0;box-shadow:0 16px 42px rgba(215,246,111,.17)}
     .dev-open{position:fixed;right:14px;bottom:14px;z-index:99999;border:1px solid rgba(215,246,111,.35);background:rgba(7,13,15,.92);color:#d7f66f;border-radius:999px;padding:9px 12px;font:800 12px Inter,system-ui,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.35)}
-    @media(max-width:1180px){.hero-grid{grid-template-columns:1fr}.ops-panel{max-width:none}.dash-layout{grid-template-columns:1fr}.side-stack{grid-template-columns:1fr 1fr}.stats-row{grid-template-columns:repeat(2,1fr)}}
-    @media(max-width:820px){.dash-shell{width:min(100% - 24px,720px)}.dash-top{align-items:flex-start;flex-direction:column;padding:16px 0}.dash-nav{width:100%;overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px}.dash-nav a{white-space:nowrap}.hero-grid{padding:28px}.dash-hero{border-radius:28px;min-height:auto}.dash-hero h1{font-size:54px}.module-grid,.side-stack,.stats-row{grid-template-columns:1fr}.module-card.big{grid-column:auto}.ops-item{grid-template-columns:42px 1fr}.ops-item .pill{grid-column:2}.quick-actions{grid-template-columns:1fr}.dev-open{left:12px;right:auto;bottom:12px}}
+    @media(max-width:1180px){.cloud-grid{grid-template-columns:1fr 1fr;align-items:stretch}.center-stage{grid-column:1/-1;grid-row:1;min-height:430px}.menu-panel{align-self:start}}
+    @media(max-width:780px){.dash-shell{width:min(100% - 24px,720px)}.dash-top{align-items:flex-start;flex-direction:column;padding:16px 0}.dash-nav{width:100%;overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px}.dash-nav a{white-space:nowrap}.dash-hero{border-radius:28px;min-height:auto}.cloud-grid{grid-template-columns:1fr;padding:22px;gap:18px}.center-stage{grid-column:auto;grid-row:auto;min-height:380px}.center-stage h1{font-size:48px}.logo-card{border-radius:24px}.menu-item{grid-template-columns:44px 1fr}.menu-item .pill{grid-column:2}.dev-open{left:12px;right:auto;bottom:12px}}
   </style>
 </head>
 <body class="dashboard-page">
@@ -95,138 +52,44 @@
         <div><strong>Speleološki odsjek Velebit</strong><small>SOV Cloud</small></div>
       </a>
       <nav class="dash-nav" aria-label="Glavna navigacija">
-        <a href="index.html">Novosti</a>
-        <a href="o-drustvu.html">O društvu</a>
-        <a href="povijest.html">Povijest</a>
-        <a href="baza.html" class="primary">SOV Karta</a>
-        <a href="izleti.html">Izleti</a>
-        <span class="user-chip"><i class="status-dot"></i> DEV preview</span>
+        <a href="index.html">Novosti</a><a href="o-drustvu.html">O društvu</a><a href="povijest.html">Povijest</a><a href="dashboard.html" class="primary">SOV Cloud</a><span class="user-chip"><i class="status-dot"></i> DEV preview</span>
       </nav>
     </header>
 
-    <main>
-      <section class="dash-hero">
-        <div class="hero-grid">
-          <div>
-            <div class="kicker">Članska zona</div>
-            <h1>Teren, baza, karte i oprema u jednom centru.</h1>
-            <p class="dash-lead">Operativni prostor za pripremu izleta, pregled speleoloških objekata, map download, exporte, opremu i internu dokumentaciju. Dizajnirano da radi kao jednostavan terenski cockpit, ne kao još jedan dosadan admin panel.</p>
-            <div class="hero-actions">
-              <a href="baza.html" class="main">Otvori SOV Kartu →</a>
-              <a href="izleti.html">Kreiraj izlet</a>
-              <a href="dokumentacija.html">Dokumentacija</a>
-            </div>
+    <main class="dash-hero">
+      <div class="cloud-grid">
+        <aside class="menu-panel" aria-label="Glavni izbornik">
+          <div class="panel-head"><b>Glavni izbornik</b><span>teren i baza</span></div>
+          <div class="menu-list">
+            <a class="menu-item" href="baza.html"><div class="menu-icon lime">⌖</div><div><strong>SOV Karta</strong><small>TK25 karta, objekti, statusi, search, exporti i Map download.</small></div><div class="pill">GIS</div></a>
+            <a class="menu-item" href="pregled-baze.html"><div class="menu-icon green">≡</div><div><strong>Baza</strong><small>Pregled objekata, detalji, filtriranje i čisti prikaz podataka.</small></div><div class="pill">Objekti</div></a>
+            <a class="menu-item" href="izleti.html"><div class="menu-icon amber">⇄</div><div><strong>Izleti</strong><small>Kreiranje izleta, područje karte, ekipa, oprema i paket za teren.</small></div><div class="pill">Plan</div></a>
+            <a class="menu-item" href="baza.html#import"><div class="menu-icon">⌁</div><div><strong>GPX / KML</strong><small>Import trackova i waypointa, pregled na karti i export za teren.</small></div><div class="pill">Import</div></a>
           </div>
-
-          <aside class="ops-panel" aria-label="Operativni pregled">
-            <div class="ops-head"><b>Danas u fokusu</b><span>brzi ulaz</span></div>
-            <div class="ops-list">
-              <a class="ops-item" href="baza.html" style="text-decoration:none;color:inherit">
-                <div class="ops-icon lime">⌖</div>
-                <div><strong>SOV Karta i objekti</strong><small>Pretraga baze, marker statusi, KML/GeoJSON/CSV export i Map download.</small></div>
-                <div class="pill">GIS</div>
-              </a>
-              <a class="ops-item" href="izleti.html" style="text-decoration:none;color:inherit">
-                <div class="ops-icon amber">⇄</div>
-                <div><strong>Priprema izleta</strong><small>Područje karte, trackovi, ekipa, oprema i paket za teren.</small></div>
-                <div class="pill">Plan</div>
-              </a>
-              <a class="ops-item" href="oruzarstvo.html" style="text-decoration:none;color:inherit">
-                <div class="ops-icon">◈</div>
-                <div><strong>Oružarstvo</strong><small>Pregled, rezervacije, najam i povrat opreme.</small></div>
-                <div class="pill">Oprema</div>
-              </a>
-              <a class="ops-item" href="admin-users.html" style="text-decoration:none;color:inherit">
-                <div class="ops-icon">✓</div>
-                <div><strong>Admin approval</strong><small>Privremeni flow za odobravanje korisnika prije Supabase autha.</small></div>
-                <div class="pill">Admin</div>
-              </a>
-            </div>
-          </aside>
-        </div>
-      </section>
-
-      <section class="stats-row" aria-label="Brzi status">
-        <div class="stat"><small>Baza</small><b>JSON</b><span>Lokalni import SOV baze spreman za web alat i kasniji Supabase sync.</span></div>
-        <div class="stat"><small>Karta</small><b>TK25</b><span>DGU WMS kao primarni sloj, OSM fallback samo kad zatreba.</span></div>
-        <div class="stat"><small>Exporti</small><b>4</b><span>KML, GeoJSON, CSV i pojedinačni objekt export iz karte.</span></div>
-        <div class="stat"><small>Login</small><b>OPEN</b><span>Dev preview bez login provjere dok se ne spoji Supabase.</span></div>
-      </section>
-
-      <section class="dash-layout">
-        <div>
-          <div class="section-title">
-            <div><h2>Glavni moduli</h2><p>Najvažnije stvari za teren i društvo, složene kao jasni alati.</p></div>
-          </div>
-          <div class="module-grid">
-            <a class="module-card big map" href="baza.html">
-              <div class="module-top"><div class="module-icon">⌖</div><span class="pill">Najvažnije</span></div>
-              <div>
-                <h3>SOV Karta</h3>
-                <p>Centralni kartografski alat: TK25, objekti, statusi u katastru, search, full objekt pločice, exporti i Map download za offline područje.</p>
-                <div class="module-meta"><span class="meta-chip">TK25 WMS</span><span class="meta-chip">Waypointi</span><span class="meta-chip">KML/GeoJSON/CSV</span><span class="meta-chip">Map download</span></div>
-              </div>
-              <div class="arrow">→</div>
-            </a>
-
-            <a class="module-card trip" href="izleti.html">
-              <div class="module-top"><div class="module-icon">▣</div><span class="pill">Teren</span></div>
-              <div><h3>Izleti</h3><p>Kreiranje izleta, definiranje područja, trackovi, ekipa, oprema i priprema paketa.</p><div class="module-meta"><span class="meta-chip">GPX/KML</span><span class="meta-chip">Ekipa</span><span class="meta-chip">Oprema</span></div></div>
-              <div class="arrow">→</div>
-            </a>
-
-            <a class="module-card" href="pregled-baze.html">
-              <div class="module-top"><div class="module-icon">≡</div><span class="pill">Baza</span></div>
-              <div><h3>Pregled baze</h3><p>Čist tablični/tekstualni pregled objekata iz JSON baze, bez karte.</p><div class="module-meta"><span class="meta-chip">Detalji</span><span class="meta-chip">Filteri</span></div></div>
-              <div class="arrow">→</div>
-            </a>
-
-            <a class="module-card" href="oruzarstvo.html">
-              <div class="module-top"><div class="module-icon">◈</div><span class="pill">Oprema</span></div>
-              <div><h3>Oružarstvo</h3><p>Pregled opreme, rezervacije, najam, zaduženja i povrat.</p><div class="module-meta"><span class="meta-chip">Rezervacije</span><span class="meta-chip">Povrat</span></div></div>
-              <div class="arrow">→</div>
-            </a>
-
-            <a class="module-card" href="dokumentacija.html">
-              <div class="module-top"><div class="module-icon">▤</div><span class="pill">Arhiva</span></div>
-              <div><h3>Dokumentacija</h3><p>Zapisnici, pravilnici, PDF-ovi, nacrti i interni materijali društva.</p><div class="module-meta"><span class="meta-chip">PDF</span><span class="meta-chip">Arhiva</span></div></div>
-              <div class="arrow">→</div>
-            </a>
-          </div>
-        </div>
-
-        <aside class="side-stack">
-          <section class="side-card">
-            <h3>Karta — brzi pregled</h3>
-            <div class="mini-map" role="img" aria-label="Stilizirani pregled karte"></div>
-            <div class="legend"><span><i class="g"></i> u katastru</span><span><i class="r"></i> nije u katastru</span><span><i class="s"></i> provjera</span></div>
-          </section>
-
-          <section class="side-card">
-            <h3>Brze akcije</h3>
-            <div class="quick-actions">
-              <a href="baza.html">Pretraži objekte</a>
-              <a href="baza.html">Skini mapu</a>
-              <a href="izleti.html">Novi izlet</a>
-              <a href="oruzarstvo.html">Rezerviraj opremu</a>
-              <a href="dokumentacija.html">Otvori arhivu</a>
-              <a href="admin-users.html">Korisnici</a>
-            </div>
-          </section>
-
-          <section class="side-card">
-            <h3>Razvojni status</h3>
-            <div class="activity">
-              <div class="activity-item"><i></i><div><b>Registered dio otvoren</b><small>Privremeno bez login guarda dok se ne postavi Supabase.</small></div></div>
-              <div class="activity-item"><i></i><div><b>News-first landing</b><small>Novosti su sada glavna javna stranica.</small></div></div>
-              <div class="activity-item"><i></i><div><b>Sljedeće</b><small>Supabase auth, pravi storage dokumenata i stvarni backend za Map download.</small></div></div>
-            </div>
-          </section>
         </aside>
-      </section>
+
+        <section class="center-stage" aria-label="SOV Cloud">
+          <div class="center-logo">
+            <div class="logo-card"><img src="assets/sov-logo.png" alt="Speleološki odsjek Velebit"></div>
+            <h1>SOV Cloud</h1>
+            <p>Jednostavan ulaz u karte, bazu, izlete, dokumentaciju i interne alate odsjeka.</p>
+            <div class="center-actions"><a class="main" href="baza.html">Otvori SOV Kartu →</a><a href="izleti.html">Novi izlet</a></div>
+          </div>
+        </section>
+
+        <aside class="menu-panel" aria-label="Društvo i interna zona">
+          <div class="panel-head"><b>Interno i društvo</b><span>organizacija</span></div>
+          <div class="menu-list">
+            <a class="menu-item" href="izleti.html#kalendar"><div class="menu-icon amber">▦</div><div><strong>Kalendar izleta</strong><small>Pregled planiranih akcija, škola, vježbi i terenskih termina.</small></div><div class="pill">Kalendar</div></a>
+            <a class="menu-item" href="oruzarstvo.html"><div class="menu-icon">◈</div><div><strong>Oružarstvo</strong><small>Oprema, rezervacije, najam, zaduženja i povrat.</small></div><div class="pill">Oprema</div></a>
+            <a class="menu-item" href="dokumentacija.html#zapisnici"><div class="menu-icon green">▤</div><div><strong>Zapisnici</strong><small>Dokumenti, odluke, zapisnici i interna arhiva društva.</small></div><div class="pill">Arhiva</div></a>
+            <a class="menu-item" href="dokumentacija.html#sov-app"><div class="menu-icon lime">⬡</div><div><strong>SOV app</strong><small>Linkovi, buildovi, upute i sinkronizacija weba s Android aplikacijom.</small></div><div class="pill">App</div></a>
+          </div>
+        </aside>
+      </div>
     </main>
   </div>
-  <script>SOVAuth.renderUserBadge()</script>
+  <script>SOVAuth.renderUserBadge && SOVAuth.renderUserBadge()</script>
   <div class="dev-open">DEV PREVIEW — bez login provjere</div>
 </body>
 </html>
