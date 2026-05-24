@@ -1,3 +1,8 @@
+
+## v3.1 notes
+Ne dirati javni portal/news. Promjene su samo: `kalendar-izleta.html`, `izleti.html`, dokumentacija verzije.
+Google Sheet endpoint ostaje isti kao Android app: `action=addTripV2` prema FIELD_TRIPS webappu.
+
 # Build notes
 
 VAŽNO:

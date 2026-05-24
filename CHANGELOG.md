@@ -1,3 +1,17 @@
+## v3.2 — Dokumenti + Speleo zapisnik link
+- Dashboard: **Speleo zapisnik** sada vodi na službeni Google Forms link.
+- Sekcija **Zapisnici** preimenovana u **Dokumenti**.
+- `dokumentacija.html` podijeljena na: Zapisnici, Upute, Dopuštenja.
+- `speleo-zapisnik.html` pretvoren u jednostavnu landing stranicu s gumbom za otvaranje obrasca.
+
+
+## v3.1 — Kalendar arhiva + kreiranje izleta u Sheet
+- Kalendar izleta sada ima eksplicitan pregled prošlih izleta / arhive.
+- Gumb Kreiraj izlet vodi na postojeću stranicu `izleti.html`.
+- `izleti.html` sada šalje izlet u isti Google Sheet endpoint i istom `addTripV2` logikom kao Android app.
+- Dodano polje Grad / regija za prognozu (`weatherCity`) koje se sprema u Sheet i koristi za vremensku prognozu u kalendaru.
+- Ako browser/CORS blokira upis, payload se sprema u `localStorage.sov_pending_web_trips` za debug.
+
 # v2.9 — YouTube video integration
 
 - Main page Video section now embeds the SOV YouTube uploads list.
