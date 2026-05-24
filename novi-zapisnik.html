@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="hr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Novi zapisnik — SOV Cloud</title>
+  <link rel="stylesheet" href="assets/site.css">
+  <script src="assets/auth.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <style>
+    :root{--bg:#040708;--panel:rgba(255,255,255,.055);--panel2:rgba(8,14,16,.78);--stroke:rgba(255,255,255,.13);--lime:#d7f66f;--cyan:#78d7ff;--amber:#ffb15f;--muted:#aab8b7;--ink:#f5f8f7}
+    body{background:radial-gradient(circle at 82% 10%,rgba(120,215,255,.14),transparent 27%),radial-gradient(circle at 15% 20%,rgba(215,246,111,.13),transparent 28%),linear-gradient(180deg,#020303,#071012 50%,#020303);color:var(--ink)}
+    .rec-shell{width:min(1480px,calc(100% - 34px));margin:0 auto 70px}.rec-hero{padding:58px 0 22px;display:grid;grid-template-columns:1fr auto;gap:22px;align-items:end}.rec-hero h1{font-size:clamp(50px,8vw,104px);letter-spacing:-.075em;line-height:.88;margin:10px 0 10px}.rec-hero p{max-width:760px;color:#bfcccc;font-size:18px;line-height:1.65;margin:0}.hero-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}.btn{border:1px solid var(--stroke);background:rgba(255,255,255,.055);color:#eef7f6;border-radius:999px;padding:12px 15px;text-decoration:none;font-weight:950;cursor:pointer}.btn.primary{background:var(--lime);color:#101400;border:0}.btn.amber{background:rgba(255,177,95,.14);border-color:rgba(255,177,95,.28)}.btn:disabled{opacity:.45;cursor:not-allowed}
+    .rec-grid{display:grid;grid-template-columns:minmax(360px,560px) 1fr;gap:22px;align-items:start}.editor-panel,.preview-panel{border:1px solid var(--stroke);background:var(--panel2);backdrop-filter:blur(22px);border-radius:30px;box-shadow:0 26px 90px rgba(0,0,0,.38);overflow:hidden}.panel-title{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px 20px;border-bottom:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.035)}.panel-title b{font-size:20px;letter-spacing:-.035em}.panel-title span{font-size:12px;font-weight:900;color:var(--lime);text-transform:uppercase;letter-spacing:.08em}.form{padding:20px;display:grid;gap:16px}.field{display:grid;gap:7px}.field label{color:#d7e2e1;font-weight:900;font-size:13px}.field input,.field textarea{width:100%;box-sizing:border-box;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:#f4faf9;border-radius:16px;padding:13px 14px;font:inherit;outline:none}.field input:focus,.field textarea:focus{border-color:rgba(215,246,111,.45);box-shadow:0 0 0 4px rgba(215,246,111,.08)}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.section-card{border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.035);border-radius:22px;padding:14px}.section-card h3{margin:0 0 10px;font-size:16px;letter-spacing:-.025em}.section-card textarea{min-height:150px;resize:vertical}.hint{color:#9cadad;font-size:12px;line-height:1.45}.status{display:none;border-radius:18px;padding:12px 14px;background:rgba(102,226,141,.1);border:1px solid rgba(102,226,141,.24);color:#dff9e7;font-weight:850}.status.show{display:block}
+    .preview-wrap{padding:26px;max-height:calc(100vh - 190px);overflow:auto}.paper{background:#fff;color:#111;border-radius:10px;box-shadow:0 26px 90px rgba(0,0,0,.45);width:min(860px,100%);min-height:980px;margin:0 auto;padding:76px 76px 60px;box-sizing:border-box;font-family:Georgia,'Times New Roman',serif}.paper .org{text-align:center;font-weight:700;margin-bottom:60px}.paper h2{text-align:left;font-size:25px;margin:0 0 24px;font-weight:700}.paper h3{font-size:17px;margin:25px 0 8px;font-weight:800;text-transform:uppercase;letter-spacing:.03em}.paper p{white-space:pre-wrap;line-height:1.44;margin:0 0 13px}.paper .footer-meta{margin-top:40px;display:grid;gap:6px}.paper .empty{color:#777;font-style:italic}.send-box{margin-top:16px;border:1px solid rgba(215,246,111,.22);background:rgba(215,246,111,.08);border-radius:22px;padding:16px;color:#dce8e8;line-height:1.55}.send-box b{color:var(--lime)}
+    .dev-open{position:fixed;right:14px;bottom:14px;z-index:99999;border:1px solid rgba(215,246,111,.35);background:rgba(7,13,15,.92);color:#d7f66f;border-radius:999px;padding:9px 12px;font:800 12px Inter,system-ui,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+    @media(max-width:1050px){.rec-hero{grid-template-columns:1fr}.hero-actions{justify-content:flex-start}.rec-grid{grid-template-columns:1fr}.preview-wrap{max-height:none}.paper{padding:42px 28px}.row{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<header class="top wrap"><a class="brand" href="index.html"><div class="mark">SOV</div><div><strong>Speleološki odsjek Velebit</strong><small>Zagreb</small></div></a><nav class="nav"><a href="dashboard.html">SOV Cloud</a><a href="dokumentacija.html">Dokumenti</a><a href="pregled-zapisnika.html">Pregled zapisnika</a></nav></header>
+<main class="rec-shell">
+  <section class="rec-hero">
+    <div><div class="eyebrow">Dokumenti / zapisnici</div><h1>Novi zapisnik</h1><p>Editor za sastanak koji sam povlači datum, vodi korisnika kroz stalne sekcije i iz previewa šalje zapisnik uredniku kao DOCX.</p></div>
+    <div class="hero-actions"><button class="btn" id="previewBtn">Preview</button><button class="btn amber" id="saveBtn">Spremi draft</button><button class="btn primary" id="sendBtn">Spremi i pošalji</button></div>
+  </section>
+  <section class="rec-grid">
+    <aside class="editor-panel">
+      <div class="panel-title"><b>Unos zapisnika</b><span>korak 1</span></div>
+      <div class="form">
+        <div class="row">
+          <div class="field"><label>Datum sastanka</label><input id="date" readonly></div>
+          <div class="field"><label>Naslov</label><input id="title" value="Zapisnik sastanka"></div>
+        </div>
+        <div class="row">
+          <div class="field"><label>Tko vodi sastanak?</label><input id="lead" placeholder="npr. Ivona Lišanin"></div>
+          <div class="field"><label>Tko je zapisničar?</label><input id="recorder" placeholder="npr. Tibor Jakrlin"></div>
+        </div>
+        <div class="hint">Format je složen prema primjeru zapisnika: naslov, stalne sekcije, pa na kraju “Sastanak vodio” i “Zapisnik vodila”.</div>
+        <div class="section-card"><h3>SPELEO IZLETI</h3><div class="field"><textarea id="speleIzleti" placeholder="Unesi speleo izlete, datume, sudionike, objekt i kratki tijek akcije..."></textarea></div></div>
+        <div class="section-card"><h3>INI IZLETI</h3><div class="field"><textarea id="iniIzleti" placeholder="Ostali izleti, ferate, ronjenja, planinarske aktivnosti..."></textarea></div></div>
+        <div class="section-card"><h3>NAJAVE</h3><div class="field"><textarea id="najave" placeholder="Najave vježbi, izleta, predavanja, ekspedicija, rokova..."></textarea></div></div>
+        <div class="section-card"><h3>RAZNO</h3><div class="field"><textarea id="razno" placeholder="Ostale informacije, odluke, dogovori, linkovi, obavijesti..."></textarea></div></div>
+        <div id="status" class="status"></div>
+      </div>
+    </aside>
+    <section class="preview-panel">
+      <div class="panel-title"><b>Preview zapisnika</b><span>DOCX stil</span></div>
+      <div class="preview-wrap"><article class="paper" id="paper"></article><div class="send-box"><b>Kako radi slanje:</b> u ovoj statičkoj verziji “Spremi i pošalji” sprema zapisnik u pending listu urednika i automatski skida DOCX. Kad spojimo Supabase/Drive, isti gumb šalje dokument uredniku bez lokalnog storagea.</div></div>
+    </section>
+  </section>
+</main>
+<footer class="footer"><div class="wrap">© Speleološki odsjek Velebit</div></footer><div class="dev-open">DEV PREVIEW — bez login provjere</div>
+<script>
+const $=id=>document.getElementById(id);
+function pad(n){return String(n).padStart(2,'0')}
+function todayHr(){const d=new Date();return `${pad(d.getDate())}.${pad(d.getMonth()+1)}.${d.getFullYear()}.`}
+function fileDate(){const d=new Date();return `${d.getFullYear()}_${pad(d.getMonth()+1)}_${pad(d.getDate())}`}
+function esc(s){return String(s||'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]))}
+function data(){return {id:localStorage.getItem('sov_record_current_id')||('zap_'+Date.now()),createdAt:new Date().toISOString(),status:'draft',date:$('date').value,title:$('title').value||'Zapisnik sastanka',lead:$('lead').value,recorder:$('recorder').value,speleIzleti:$('speleIzleti').value,iniIzleti:$('iniIzleti').value,najave:$('najave').value,razno:$('razno').value}}
+function render(){const d=data(); const block=(t,v)=>`<h3>${t}</h3><p class="${v?'':'empty'}">${esc(v)||'—'}</p>`; $('paper').innerHTML=`<div class="org">Speleološki odsjek PDS Velebit</div><h2>${esc(d.title)} ${esc(d.date)}</h2>${block('SPELEO IZLETI',d.speleIzleti)}${block('INI IZLETI',d.iniIzleti)}${block('NAJAVE',d.najave)}${block('RAZNO',d.razno)}<div class="footer-meta"><p>Sastanak vodio: ${esc(d.lead)||'—'}</p><p>Zapisnik vodila: ${esc(d.recorder)||'—'}</p></div>`}
+function show(msg){$('status').textContent=msg;$('status').classList.add('show');setTimeout(()=>$('status').classList.remove('show'),4000)}
+function saveDraft(){const d=data(); localStorage.setItem('sov_record_current_id',d.id); localStorage.setItem('sov_record_draft',JSON.stringify(d)); show('Draft je spremljen u browser.'); render();}
+function addPending(d){let arr=[];try{arr=JSON.parse(localStorage.getItem('sov_records_pending')||'[]')}catch(e){} d.status='pending'; d.sentAt=new Date().toISOString(); arr=[d,...arr.filter(x=>x.id!==d.id)]; localStorage.setItem('sov_records_pending',JSON.stringify(arr)); localStorage.removeItem('sov_record_current_id');}
+function paragraph(text, opts={}){const align=opts.align?`<w:jc w:val="${opts.align}"/>`:''; const bold=opts.bold?'<w:b/>':''; const size=opts.size?`<w:sz w:val="${opts.size}"/>`:''; const caps=opts.caps?'<w:caps/>':''; const safe=esc(text).replace(/\n/g,'</w:t></w:r></w:p><w:p><w:r><w:t>'); return `<w:p><w:pPr>${align}</w:pPr><w:r><w:rPr>${bold}${size}${caps}</w:rPr><w:t xml:space="preserve">${safe}</w:t></w:r></w:p>`}
+async function makeDocx(d){
+  if(!window.JSZip){alert('DOCX generator nije učitan. Provjeri internet/CDN.'); return;}
+  const zip=new JSZip();
+  zip.file('[Content_Types].xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>`);
+  zip.folder('_rels').file('.rels',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`);
+  zip.folder('word').file('styles.xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:rPr><w:rFonts w:ascii="Aptos" w:hAnsi="Aptos"/><w:sz w:val="22"/></w:rPr></w:style></w:styles>`);
+  const sect=(name,val)=> paragraph(name,{bold:true,caps:true})+paragraph(val||'');
+  const body = paragraph('Speleološki odsjek PDS Velebit',{align:'center',bold:true}) + paragraph('',{}) + paragraph(`${d.title} ${d.date}`,{bold:true,size:30}) + sect('SPELEO IZLETI',d.speleIzleti) + sect('INI IZLETI',d.iniIzleti) + sect('NAJAVE',d.najave) + sect('RAZNO',d.razno) + paragraph('',{}) + paragraph(`Sastanak vodio: ${d.lead||''}`) + paragraph(`Zapisnik vodila: ${d.recorder||''}`);
+  zip.folder('word').file('document.xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${body}<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440"/></w:sectPr></w:body></w:document>`);
+  const blob=await zip.generateAsync({type:'blob'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`Zapisnik sastanka ${fileDate()}.docx`; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),3000);
+}
+function send(){const d=data(); if(!d.lead || !d.recorder){show('Prvo unesi tko vodi sastanak i tko je zapisničar.'); return;} addPending(d); render(); makeDocx(d); show('Zapisnik je spremljen za urednika i skinut kao DOCX.');}
+function load(){ $('date').value=todayHr(); try{const d=JSON.parse(localStorage.getItem('sov_record_draft')||'{}'); ['title','lead','recorder','speleIzleti','iniIzleti','najave','razno'].forEach(k=>{ if(d[k]) $(k).value=d[k]; }); }catch(e){} render();}
+['title','lead','recorder','speleIzleti','iniIzleti','najave','razno'].forEach(id=>$(id).addEventListener('input',render));
+$('previewBtn').onclick=render; $('saveBtn').onclick=saveDraft; $('sendBtn').onclick=send; load();
+</script>
+</body>
+</html>

@@ -102,3 +102,12 @@
 - Raspored automobila preko `kreirajTab` + spremanje URL-a preko `updateRasporedUrl`.
 - Weather integracija preko Open‑Meteo geocoding/forecast logike.
 - Dashboard link `Kalendar izleta` sada vodi na novu dedicated stranicu.
+
+## v3.4 — Zapisnici editor + DOCX workflow
+- Dokumenti: Zapisnici sada imaju samo Novi zapisnik, Pregled zapisnika i Zapisnici skupštine.
+- Dodan `novi-zapisnik.html`: datum se automatski popunjava, traži se tko vodi sastanak i tko je zapisničar.
+- Editor koristi stalni format prema primjeru: SPELEO IZLETI, INI IZLETI, NAJAVE, RAZNO, Sastanak vodio, Zapisnik vodila.
+- Dodan live preview u stilu zapisnika.
+- “Spremi i pošalji” sprema zapisnik za urednika i generira DOCX download.
+- Dodan `pregled-zapisnika.html`: lista pending zapisnika, preview, approve, edit, delete i DOCX export.
+- Dodan `zapisnici-skupstine.html` kao posebna arhiva skupštinskih zapisnika.
