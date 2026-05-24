@@ -172,5 +172,99 @@
     result.inventories=await upsertRows('inventory_sessions',inventories,'legacy_id');
     return result;
   }
-  window.SOVArmoryDB={configured,loadRequests,createRequest,updateRequestStatus,importStaticData};
+
+  async function requireArmory(){
+    if(!configured()) throw new Error('Supabase nije konfiguriran.');
+    if(!(await SOVAuth.can('armory'))) throw new Error('Samo admin ili oružar.');
+    return sb();
+  }
+  async function createEquipmentItem(row){
+    const client=await requireArmory();
+    const payload={
+      legacy_id:row.legacy_id || row.sku || ('manual-'+Date.now()),
+      catalog_id:row.catalog_id || row.sku || null,
+      name:row.name,
+      category_name:row.category_name || row.category || null,
+      subcategory:row.subcategory || null,
+      unit:row.unit || 'kom',
+      tracking_type:row.tracking_type || 'po vrsti',
+      quantity:Number(row.quantity)||1,
+      loaned:0,
+      available:Number(row.available)||Number(row.quantity)||1,
+      minimum:row.minimum || null,
+      status:row.status || 'aktivno',
+      availability:row.availability || 'dostupno',
+      member_visible:row.member_visible !== false,
+      internal_note:row.note || row.internal_note || null,
+      source_sheet:'manual-web'
+    };
+    const {data,error}=await client.from('equipment_items').upsert(payload,{onConflict:'legacy_id'}).select('*').single();
+    if(error) throw error;
+    return data;
+  }
+  async function createEquipmentPiece(row){
+    const client=await requireArmory();
+    const payload={
+      legacy_id:row.legacy_id || row.sku || ('piece-'+Date.now()),
+      catalog_legacy_id:row.catalog_legacy_id || null,
+      name:row.name,
+      sku:row.sku || row.legacy_id || null,
+      manufacturer:row.manufacturer || null,
+      model:row.model || null,
+      purchase_date:toDate(row.purchase_date),
+      location_name:row.location_name || row.location || null,
+      status:row.status || 'U društvu',
+      next_service:toDate(row.next_service),
+      note:row.note || null
+    };
+    const {data,error}=await client.from('equipment_pieces').upsert(payload,{onConflict:'legacy_id'}).select('*').single();
+    if(error) throw error;
+    return data;
+  }
+  async function createEquipmentPieces(rows){
+    if(!rows || !rows.length) return 0;
+    const client=await requireArmory();
+    const payload=rows.map(row=>({legacy_id:row.legacy_id||row.sku,name:row.name,sku:row.sku||row.legacy_id||null,location_name:row.location_name||row.location||null,status:row.status||'U društvu',note:row.note||null}));
+    const {error}=await client.from('equipment_pieces').upsert(payload,{onConflict:'legacy_id'});
+    if(error) throw error;
+    return payload.length;
+  }
+  async function createRope(row){
+    const client=await requireArmory();
+    const payload={
+      legacy_id:row.legacy_id || row.sku || ('rope-'+Date.now()),
+      sku:normalizedSku(row.sku || row.legacy_id),
+      name:row.name,
+      diameter_mm:String(row.diameter_mm||'').replace(',','.') || null,
+      length_m:Number(row.length_m)||null,
+      manufacturer:row.manufacturer || null,
+      model:row.model || null,
+      standard:row.standard || null,
+      production_year:Number(row.production_year)||null,
+      in_use_since:toDate(row.in_use_since),
+      color:row.color || null,
+      supplier:row.supplier || null,
+      location_name:row.location_name || row.location || null,
+      status:row.status || 'U društvu',
+      note:row.note || null
+    };
+    const {data,error}=await client.from('equipment_ropes').upsert(payload,{onConflict:'sku'}).select('*').single();
+    if(error) throw error;
+    return data;
+  }
+  async function updateEquipmentStatus(kind,id,status,note){
+    const client=await requireArmory();
+    const table=kind==='rope'?'equipment_ropes':(kind==='piece'?'equipment_pieces':'equipment_items');
+    const patch={status,updated_at:new Date().toISOString()};
+    if(table==='equipment_items') patch.availability='nedostupno';
+    if(note) patch.note=note;
+    let q=client.from(table).update(patch);
+    if(kind==='rope') q=q.or(`id.eq.${id},sku.eq.${id},legacy_id.eq.${id}`);
+    else q=q.or(`id.eq.${id},legacy_id.eq.${id}`);
+    const {error}=await q;
+    if(error) throw error;
+    return true;
+  }
+
+  window.SOVArmoryDB={configured,loadRequests,createRequest,updateRequestStatus,importStaticData,createEquipmentItem,createEquipmentPiece,createEquipmentPieces,createRope,updateEquipmentStatus};
 })();
