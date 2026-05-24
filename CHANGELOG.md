@@ -194,3 +194,8 @@
 - Navigacija je horizontalni scroll bez lomljenja riječi.
 - Kratke stavke poput “Video” ostaju u jednom redu.
 - Brand/logo u headeru se skaluje unutar širine ekrana.
+
+## v4.10 Modern polish + O nama logic
+- Header logo refined into stable pill layout.
+- Main nav simplified: O nama contains Pregled, Pročelništvo, Povijest, Velebitaški duh.
+- O nama rebuilt as a clean, modern sectioned page.
