@@ -8,6 +8,11 @@
   const ADMIN_ROLES = ['admin'];
   const EDITOR_ROLES = ['admin','editor'];
   const ARMORY_ROLES = ['admin','oruzar'];
+  const BOOTSTRAP_ADMIN_EMAILS = ['darko.jeras@gmail.com'];
+  function isBootstrapAdminEmail(email){ return BOOTSTRAP_ADMIN_EMAILS.includes(String(email||'').trim().toLowerCase()); }
+  function bootstrapAdminProfile(user){
+    return {id:user.id,email:user.email,full_name:'Darko Jeras',role:'admin',status:'approved',bootstrap_admin:true};
+  }
   let client = null;
   let profileCache = null;
   let readyPromise = null;
@@ -48,7 +53,26 @@
     const {user} = await getSession();
     if(!user) return null;
     const {data,error} = await sb.from('profiles').select('*').eq('id',user.id).maybeSingle();
-    if(error){ console.error(error); return null; }
+    if(error){ console.error(error); }
+    if(data && data.status === 'approved'){
+      profileCache = {...data,email:user.email};
+      return profileCache;
+    }
+    if(isBootstrapAdminEmail(user.email)){
+      profileCache = data ? {...data,email:user.email,role:'admin',status:'approved',bootstrap_admin:true} : bootstrapAdminProfile(user);
+      try{
+        await sb.from('profiles').upsert({
+          id:user.id,
+          email:user.email,
+          full_name:profileCache.full_name || 'Darko Jeras',
+          role:'admin',
+          status:'approved',
+          approved_at:new Date().toISOString(),
+          approved_by:user.id
+        },{onConflict:'id'});
+      }catch(e){ console.warn('Bootstrap admin profile sync skipped.', e); }
+      return profileCache;
+    }
     profileCache = data ? {...data,email:user.email} : {id:user.id,email:user.email,full_name:user.email,role:'user',status:'pending'};
     return profileCache;
   }

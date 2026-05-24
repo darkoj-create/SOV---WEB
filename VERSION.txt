@@ -1,1 +1,1 @@
-v4.25-supabase-config-connected
+v4.27 bootstrap admin login fix
