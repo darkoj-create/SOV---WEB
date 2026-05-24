@@ -1,1 +1,1 @@
-v2.5-dashboard-menu-layout
+v2.6-baza-alphabetic-sov-app-link

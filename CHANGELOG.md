@@ -1,3 +1,12 @@
+
+## v2.6 — Baza alphabetic + SOV app link
+- `pregled-baze.html` pretvoren u konkretan abecedni popis objekata.
+- Dodan search po nazivu, lokaciji, pločici, katastru i opisu.
+- Klik na objekt otvara full info panel.
+- Dodan link na SOV Kartu s direktnim otvaranjem odabranog objekta.
+- Dodan link na nacrte/dokumentaciju kada je nacrt evidentiran u bazi.
+- Dashboard SOV app kartica sada vodi na Google Drive link za aktualni Android build.
+
 # Changelog
 
 ## v2.2-news-first-editorial — 2026-05-24
