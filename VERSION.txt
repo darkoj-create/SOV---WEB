@@ -1,1 +1,1 @@
-v4.24 Oružarstvo Supabase SQL backend
+v4.25-supabase-config-connected
