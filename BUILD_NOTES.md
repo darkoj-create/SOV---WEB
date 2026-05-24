@@ -34,3 +34,21 @@ Od ove verzije registered dio više nije dev-open. Koristi se Supabase Auth.
 Prije deploya obavezno upisati URL i anon key u `assets/supabase-config.js` i pokrenuti SQL iz `SUPABASE_SETUP.md`.
 
 Ne vraćati lokalni `sovCloudUsers` auth kao produkcijsku logiku.
+
+
+## Mobile rules from v3.9
+- Ne dirati desktop dizajn ako nije nužno.
+- Sve nove stranice moraju učitati `assets/mobile.css`.
+- Karte na mobitelu: karta ide gore, alati/search ispod, horizontalni scroll za toolbare.
+- Minimalni touch target: 44px.
+
+
+## v4.1 SOV hero brand refresh
+- Zamijenjen glavni header/hero photo fotografijom ulaza u Munižabu.
+- Dodan okrugli SOV logo i SOV wordmark u gornji header i hero zonu.
+- Dodan diskretan dark overlay i responsive logo ponašanje za mobile.
+
+
+## v4.2
+- Dodan Kontakt u top navigaciju na main pageu.
+- Dodana Kontakt sekcija: pročelnik, tajnik, adresa, Google Maps i Wednesday open hours.

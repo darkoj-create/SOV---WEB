@@ -150,3 +150,20 @@
 - Oružarstvo is limited to `admin` and `oruzar`.
 - Admin-only user approval is hidden from non-admin users.
 - Added `SUPABASE_SETUP.md` with SQL and setup instructions.
+
+
+## v3.9 — Mobile-first UX polish
+- Dodan globalni `assets/mobile.css` koji se učitava na svim HTML stranicama.
+- Sređena mobilna navigacija: sticky header, horizontalni scroll meniji, veći touch targeti.
+- Dashboard preuređen za mobitel: logo kompaktniji, kartice čitljivije, izbornici u jednoj koloni.
+- SOV Karta/Baza prilagođena mobitelu: karta gore, search i detalji ispod, toolbar i filteri skrolabilni.
+- Kalendar izleta, dokumenti, zapisnici, editor članaka i admin panel dobili responsive kartice i forme.
+- Poboljšani inputi, gumbi, dialogi, tablice, article stranice i news kartice na malim ekranima.
+- Desktop layout ostaje netaknut; izmjene su aktivne samo na tablet/mobile breakpointovima.
+
+
+## v4.0 Links main home
+- Dodana sekcija Linkovi na glavnu stranicu.
+- Dodani PDS Velebit, Komisija za speleologiju HPS, HPS, HGSS, Katastar speleoloških objekata RH i UIS.
+- Ubačeni priloženi logotipi u assets/links.
+- Dodan nav link na #linkovi i responsive/mobile layout.
