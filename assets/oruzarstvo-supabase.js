@@ -1,7 +1,39 @@
 (function(){
   function sb(){ return window.SOVAuth && SOVAuth.getClient ? SOVAuth.getClient() : null; }
   function configured(){ return !!(window.SOVAuth && SOVAuth.isConfigured && SOVAuth.isConfigured() && sb()); }
-  function toDate(v){ return v || null; }
+  function toDate(v){
+    if(v===null || v===undefined) return null;
+    if(v instanceof Date && !isNaN(v)) return v.toISOString().slice(0,10);
+    let s=String(v).trim();
+    if(!s || s==='-' || s==='—' || /^n\/?a$/i.test(s)) return null;
+    if(/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+    let m=s.match(/^(\d{4})-(\d{1,2})$/);
+    if(m) return `${m[1]}-${String(m[2]).padStart(2,'0')}-01`;
+    m=s.match(/^(\d{1,2})\/(\d{4})$/);
+    if(m) return `${m[2]}-${String(m[1]).padStart(2,'0')}-01`;
+    m=s.match(/^(\d{1,2})\.(\d{4})\.?$/);
+    if(m) return `${m[2]}-${String(m[1]).padStart(2,'0')}-01`;
+    m=s.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})\.?$/);
+    if(m) return `${m[3]}-${String(m[2]).padStart(2,'0')}-${String(m[1]).padStart(2,'0')}`;
+    m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if(m) return `${m[3]}-${String(m[2]).padStart(2,'0')}-${String(m[1]).padStart(2,'0')}`;
+    m=s.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
+    if(m) return `${m[3]}-${String(m[2]).padStart(2,'0')}-${String(m[1]).padStart(2,'0')}`;
+    m=s.match(/^(\d{1,2})\.\/(\d{1,2})\.(\d{1,2})\.(\d{4})\.?$/);
+    if(m) return `${m[4]}-${String(m[3]).padStart(2,'0')}-${String(m[1]).padStart(2,'0')}`;
+    m=s.match(/^(\d{1,2})\.\/(\d{1,2})\.(\d{4})\.?$/);
+    if(m) return `${m[3]}-${String(m[2]).padStart(2,'0')}-${String(m[1]).padStart(2,'0')}`;
+    m=s.match(/^(\d{1,2})\.(\d{1,2})\.?$/);
+    if(m) return null;
+    if(/^\d+(\.0)?$/.test(s)){
+      const n=Number(s);
+      if(n>25000 && n<80000){
+        const d=new Date(Date.UTC(1899,11,30)+n*86400000);
+        return d.toISOString().slice(0,10);
+      }
+    }
+    return null;
+  }
   function requestToUi(r, items){
     return {
       id:r.id,
@@ -89,12 +121,12 @@
     const cats=(data.categories||[]).map((c,idx)=>({legacy_id:String(c.id||idx+1),name:c.name,description:c.description||null,type:c.type||null,sort_order:idx}));
     const locs=(data.locations||[]).map((l,idx)=>({legacy_id:String(l.id||idx+1),name:l.name,description:l.description||null,type:l.type||null}));
     const items=(data.items||[]).map(i=>({legacy_id:i.id,catalog_id:String(i.catalog_id||''),name:i.name,category_name:i.category||null,subcategory:i.subcategory||null,unit:i.unit||'kom',tracking_type:i.tracking_type||'po vrsti',quantity:Number(i.quantity)||0,loaned:Number(i.loaned)||0,available:Number(i.available)||0,minimum:i.minimum===''?null:Number(i.minimum)||null,status:i.status||'aktivno',availability:i.availability||'dostupno',member_visible:i.member_visible!==false,internal_note:i.internal_note||null,source_sheet:i.source_sheet||null}));
-    const pieces=(data.pieces||[]).map(p=>({legacy_id:p.id,catalog_legacy_id:String(p.catalog_id||''),name:p.name,sku:p.sku||null,manufacturer:p.manufacturer||null,model:p.model||null,purchase_date:p.purchase_date||null,location_name:p.location||null,status:p.status||'U društvu',next_service:p.next_service||null,note:p.note||null}));
-    const ropes=(data.ropes||[]).map(r=>({legacy_id:r.id,sku:r.sku||r.id,name:r.name,diameter_mm:String(r.diameter_mm||'').replace(',','.')||null,length_m:Number(r.length_m)||null,manufacturer:r.manufacturer||null,model:r.model||null,standard:r.standard||null,production_year:Number(r.year)||null,in_use_since:r.in_use_since||null,color:r.color||null,supplier:r.supplier||null,location_name:r.location||null,status:r.status||'U društvu',note:r.note||null}));
-    const procurement=(data.procurement||[]).map(p=>({legacy_id:p.id,equipment_legacy_id:String(p.catalog_id||''),item_name:p.name,quantity:Number(p.quantity)||null,unit_price:Number(p.unit_price)||null,total_price:Number(p.total_price)||null,supplier:p.supplier||null,status:p.status||'Zaprimljeno',purchase_date:p.date||null,requested_by:p.person||null,note:p.note||null}));
-    const disposals=[...(data.disposed||[]),...(data.lost||[])].map(d=>({legacy_id:d.id,disposal_date:d.date||null,disposal_type:d.type||'Rashod',equipment_legacy_id:String(d.catalog_id||''),item_name:d.name,quantity:Number(d.quantity)||null,reason:d.reason||null,location_name:d.location||null,person_name:d.person||null,note:d.note||null}));
-    const field=(data.field||[]).map(f=>({legacy_id:f.id,recorded_at:f.date||null,equipment_legacy_id:String(f.catalog_id||''),item_name:f.name,quantity:Number(f.quantity)||null,field_location:f.location||f.reason||null,responsible_person:f.person||null,status:'na terenu',note:f.note||null}));
-    const inventories=(data.inventories||[]).map(i=>({legacy_id:i.id,name:i.name,inventory_date:i.date||new Date().toISOString().slice(0,10),owner_name:i.owner||null,status:i.status||'Završena',note:i.note||null}));
+    const pieces=(data.pieces||[]).map(p=>({legacy_id:p.id,catalog_legacy_id:String(p.catalog_id||''),name:p.name,sku:p.sku||null,manufacturer:p.manufacturer||null,model:p.model||null,purchase_date:toDate(p.purchase_date),location_name:p.location||null,status:p.status||'U društvu',next_service:toDate(p.next_service),note:p.note||null}));
+    const ropes=(data.ropes||[]).map(r=>({legacy_id:r.id,sku:r.sku||r.id,name:r.name,diameter_mm:String(r.diameter_mm||'').replace(',','.')||null,length_m:Number(r.length_m)||null,manufacturer:r.manufacturer||null,model:r.model||null,standard:r.standard||null,production_year:Number(r.year)||null,in_use_since:toDate(r.in_use_since),color:r.color||null,supplier:r.supplier||null,location_name:r.location||null,status:r.status||'U društvu',note:r.note||null}));
+    const procurement=(data.procurement||[]).map(p=>({legacy_id:p.id,equipment_legacy_id:String(p.catalog_id||''),item_name:p.name,quantity:Number(p.quantity)||null,unit_price:Number(p.unit_price)||null,total_price:Number(p.total_price)||null,supplier:p.supplier||null,status:p.status||'Zaprimljeno',purchase_date:toDate(p.date),requested_by:p.person||null,note:p.note||null}));
+    const disposals=[...(data.disposed||[]),...(data.lost||[])].map(d=>({legacy_id:d.id,disposal_date:toDate(d.date),disposal_type:d.type||'Rashod',equipment_legacy_id:String(d.catalog_id||''),item_name:d.name,quantity:Number(d.quantity)||null,reason:d.reason||null,location_name:d.location||null,person_name:d.person||null,note:d.note||null}));
+    const field=(data.field||[]).map(f=>({legacy_id:f.id,recorded_at:toDate(f.date),equipment_legacy_id:String(f.catalog_id||''),item_name:f.name,quantity:Number(f.quantity)||null,field_location:f.location||f.reason||null,responsible_person:f.person||null,status:'na terenu',note:f.note||null}));
+    const inventories=(data.inventories||[]).map(i=>({legacy_id:i.id,name:i.name,inventory_date:toDate(i.date)||new Date().toISOString().slice(0,10),owner_name:i.owner||null,status:i.status||'Završena',note:i.note||null}));
     const result={};
     result.categories=await upsertRows('equipment_categories',cats,'legacy_id');
     result.locations=await upsertRows('equipment_locations',locs,'legacy_id');

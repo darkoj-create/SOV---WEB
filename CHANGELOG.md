@@ -226,3 +226,12 @@
 - Dodana import stranica za početni katalog iz Claude XLS JSON modela.
 - Obični članovi mogu slati zahtjeve; oružar/admin vide i obrađuju sve zahtjeve.
 - Local storage ostaje samo dev fallback ako Supabase nije konfiguriran.
+
+
+## v4.28 Armory quick packages
+- Dodani brzi paketi za zahtjeve opreme: osobna oprema, postavljanje i crtanje.
+- Količine u zahtjevu mogu se doraditi plus/minus kontrolama prije slanja.
+
+
+## v4.29
+- Oružarstvo import: popravljena normalizacija datuma (`09/2022` → `2022-09-01`) za Supabase.
