@@ -22,3 +22,8 @@
 - MBTiles wording preimenovan u Map download.
 - Download odabranog područja ostaje stvarni .mbtiles generiran iz WMS tileova u browseru.
 
+
+## v2.3 — Dashboard redesign
+- Registered dashboard redizajniran kao premium SOV Cloud cockpit.
+- Dodan veliki cinematic hero, operativni panel, status kartice, glavni moduli, mini-map preview, quick actions i razvojni status.
+- Javni news-first landing, novosti i registered open preview nisu dirani.

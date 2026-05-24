@@ -15,3 +15,6 @@ Do not remove public pages when updating registered tools. Always ship full site
 # Build notes
 
 Ne dirati javni landing/Povijest/Velebitaški duh u map-only fixevima. Registered SOV Karta je u `baza.html`.
+
+## v2.3 note
+Ne pregaziti `index.html`, `vijesti.html`, `/novosti/*` ni postojeće registered alate. Ovaj build mijenja dashboard vizualno i UX-strukturno, ali ne mijenja auth guard logiku.
