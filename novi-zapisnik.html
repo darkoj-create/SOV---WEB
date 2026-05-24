@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Novi zapisnik — SOV Cloud</title>
   <link rel="stylesheet" href="assets/site.css">
-  <script src="assets/auth.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="assets/supabase-config.js"></script><script src="assets/auth.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <style>
     :root{--bg:#040708;--panel:rgba(255,255,255,.055);--panel2:rgba(8,14,16,.78);--stroke:rgba(255,255,255,.13);--lime:#d7f66f;--cyan:#78d7ff;--amber:#ffb15f;--muted:#aab8b7;--ink:#f5f8f7}
@@ -50,7 +50,7 @@
     </section>
   </section>
 </main>
-<footer class="footer"><div class="wrap">© Speleološki odsjek Velebit</div></footer><div class="dev-open">DEV PREVIEW — bez login provjere</div>
+<footer class="footer"><div class="wrap">© Speleološki odsjek Velebit</div></footer>
 <script>
 const $=id=>document.getElementById(id);
 function pad(n){return String(n).padStart(2,'0')}

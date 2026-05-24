@@ -1,3 +1,20 @@
+
+## v3.7 — DOF + Geo karta layeri
+- Iz Android app WMS preset logike preneseni DGU DOF i Geo karta/HOK layeri.
+- SOV Karta sada ima TK25, DOF, Geo karta/HOK i OSM fallback kao base layere.
+- Izleti karta dobila iste layer gumbe i Leaflet layer control.
+- TopoDroid/Nacrti karta dobila isti skup base layera za pregled nacrta uz teren.
+- TK25 ostaje default.
+
+
+## v3.6 — TopoDroid web bridge
+- Dodana nova stranica `topodroid.html` za nacrte, TopoDroid exporte i survey fileove.
+- Upload nacrta/exporta u browseru s automatskim matchanjem na objekte iz `data/sov-baza.json`.
+- Dodan preview/download, link na Drive arhiv, link na full objekt u Bazi i lokalni JSON index export.
+- Dodano osnovno georeferenciranje: station, azimut, procijenjena duljina i napomena; prikaz smjera/protegnutosti na karti.
+- Dashboard dobio direktan ulaz `Nacrti / TopoDroid`; SOV Karta dobila link i bogatiji panel za nacrte.
+- Pripremljena logika za budući backend: Supabase/Drive sync, thumbnail cache, offline izlet paket i pravi TopoDroid parser.
+
 ## v3.2 — Dokumenti + Speleo zapisnik link
 - Dashboard: **Speleo zapisnik** sada vodi na službeni Google Forms link.
 - Sekcija **Zapisnici** preimenovana u **Dokumenti**.
@@ -120,3 +137,16 @@
 - Web automatski matcha fileove s objektima po nazivu jame/spilje.
 - Full kartica objekta prikazuje pronađene nacrte s Prikaži / Skini akcijama.
 - Dodan export lokalnog indexa nacrta kao JSON za kasnije spajanje na backend/Drive API.
+
+## v3.8 — Supabase login + role permissions
+
+- Replaced localStorage/dev-preview auth with Supabase Auth flow.
+- Added `assets/supabase-config.js` for Supabase URL/anon key.
+- Added `profiles` role/status model: `admin`, `user`, `editor`, `oruzar`.
+- Registration now creates pending user profile.
+- Login blocks users until admin approval.
+- Admin approval page now loads users from Supabase and supports approve/reject/role changes.
+- Registered pages are protected again.
+- Oružarstvo is limited to `admin` and `oruzar`.
+- Admin-only user approval is hidden from non-admin users.
+- Added `SUPABASE_SETUP.md` with SQL and setup instructions.

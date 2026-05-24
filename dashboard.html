@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>SOV Cloud — Dashboard</title>
   <link rel="stylesheet" href="assets/site.css">
-  <script src="assets/auth.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="assets/supabase-config.js"></script><script src="assets/auth.js"></script>
   <style>
     :root{
       --bg:#030506;--panel:rgba(9,15,17,.76);--panel2:rgba(255,255,255,.055);--stroke:rgba(255,255,255,.13);
@@ -52,7 +52,7 @@
         <div><strong>Speleološki odsjek Velebit</strong><small>SOV Cloud</small></div>
       </a>
       <nav class="dash-nav" aria-label="Glavna navigacija">
-        <a href="index.html">Novosti</a><a href="o-drustvu.html">O društvu</a><a href="povijest.html">Povijest</a><a href="dashboard.html" class="primary">SOV Cloud</a><span class="user-chip"><i class="status-dot"></i> DEV preview</span>
+        <a href="index.html">Novosti</a><a href="o-drustvu.html">O društvu</a><a href="povijest.html">Povijest</a><a href="dashboard.html" class="primary">SOV Cloud</a><span class="user-chip"><i class="status-dot"></i> <span data-user-role>SOV Cloud</span>
       </nav>
     </header>
 
@@ -65,6 +65,7 @@
             <a class="menu-item" href="pregled-baze.html"><div class="menu-icon green">≡</div><div><strong>Baza</strong><small>Pregled objekata, detalji, filtriranje i čisti prikaz podataka.</small></div><div class="pill">Objekti</div></a>
             <a class="menu-item" href="izleti.html"><div class="menu-icon amber">⇄</div><div><strong>Izleti</strong><small>Kreiranje izleta, područje karte, ekipa, oprema i paket za teren.</small></div><div class="pill">Plan</div></a>
             <a class="menu-item" href="baza.html#import"><div class="menu-icon">⌁</div><div><strong>GPX / KML</strong><small>Import trackova i waypointa, pregled na karti i export za teren.</small></div><div class="pill">Import</div></a>
+            <a class="menu-item" href="topodroid.html"><div class="menu-icon lime">⌬</div><div><strong>Nacrti / TopoDroid</strong><small>Match nacrta s objektima, survey fileovi, georeferenciranje i terenski paketi.</small></div><div class="pill">Survey</div></a>
             <a class="menu-item" href="https://google.com/url?sa=D&q=https://forms.gle/xXK6uBU8m9myL9YNA&ust=1779696240000000&usg=AOvVaw3-5YHTAqbpAJJ1UVgzNyVr&hl=en&source=gmail" target="_blank" rel="noopener"><div class="menu-icon green">✎</div><div><strong>Speleo zapisnik</strong><small>Otvara službeni Google Forms zapisnik za terenski unos podataka.</small></div><div class="pill">Form</div></a>
           </div>
         </aside>
@@ -82,8 +83,9 @@
           <div class="panel-head"><b>Interno i društvo</b><span>organizacija</span></div>
           <div class="menu-list">
             <a class="menu-item" href="kalendar-izleta.html"><div class="menu-icon amber">▦</div><div><strong>Kalendar izleta</strong><small>Pregled planiranih akcija, škola, vježbi i terenskih termina.</small></div><div class="pill">Kalendar</div></a>
-            <a class="menu-item" href="oruzarstvo.html"><div class="menu-icon">◈</div><div><strong>Oružarstvo</strong><small>Oprema, rezervacije, najam, zaduženja i povrat.</small></div><div class="pill">Oprema</div></a>
+            <a class="menu-item" href="oruzarstvo.html" data-role-armory><div class="menu-icon">◈</div><div><strong>Oružarstvo</strong><small>Oprema, rezervacije, najam, zaduženja i povrat.</small></div><div class="pill">Oprema</div></a>
             <a class="menu-item" href="dokumentacija.html"><div class="menu-icon green">▤</div><div><strong>Dokumenti</strong><small>Zapisnici, upute, dopuštenja i interna arhiva društva.</small></div><div class="pill">Arhiva</div></a>
+            <a class="menu-item" href="admin-users.html" data-role-admin><div class="menu-icon amber">◎</div><div><strong>Korisnici</strong><small>Odobravanje registracija i dodjela rola.</small></div><div class="pill">Admin</div></a>
             <a class="menu-item" href="https://drive.google.com/file/d/1iLSKkdOQTxBe8l_2ZUstqDl2-6yZbLOr/view?usp=sharing" target="_blank" rel="noopener"><div class="menu-icon lime">⬡</div><div><strong>SOV app</strong><small>Direktan download / pregled aktualnog SOV Android builda na Google Driveu.</small></div><div class="pill">App</div></a>
             <a class="menu-item" href="napisi-clanak.html"><div class="menu-icon amber">✦</div><div><strong>Napiši članak</strong><small>Jednostavan editor za vijesti: naslov, uvod, tekst, slike i priprema za objavu.</small></div><div class="pill">Novosti</div></a>
           </div>
@@ -92,6 +94,6 @@
     </main>
   </div>
   <script>SOVAuth.renderUserBadge && SOVAuth.renderUserBadge()</script>
-  <div class="dev-open">DEV PREVIEW — bez login provjere</div>
+  
 </body>
 </html>

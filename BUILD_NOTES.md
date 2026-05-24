@@ -27,3 +27,10 @@ Ne pregaziti `index.html`, `vijesti.html`, `/novosti/*` ni postojeće registered
 
 ## v3.0 Kalendar izleta
 Izvor logike je Android app: `FieldPackageSheetSyncClient.kt` i `FieldPackageFeature.kt`. Web je statički i koristi direktan browser fetch prema Apps Scriptu; ako CORS blokira poziv, prikazuje demo podatke. Za produkciju preporuka: dodati Vercel API proxy `/api/trips`.
+
+## v3.8 Auth baseline
+
+Od ove verzije registered dio više nije dev-open. Koristi se Supabase Auth.
+Prije deploya obavezno upisati URL i anon key u `assets/supabase-config.js` i pokrenuti SQL iz `SUPABASE_SETUP.md`.
+
+Ne vraćati lokalni `sovCloudUsers` auth kao produkcijsku logiku.
