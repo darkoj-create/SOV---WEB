@@ -27,3 +27,17 @@
 - Registered dashboard redizajniran kao premium SOV Cloud cockpit.
 - Dodan veliki cinematic hero, operativni panel, status kartice, glavni moduli, mini-map preview, quick actions i razvojni status.
 - Javni news-first landing, novosti i registered open preview nisu dirani.
+
+
+## v2.4 — dodatne vijesti
+- Dodane nove vijesti: Zec il žaba, Duman, Žumberački odred za čistoću, Fugro/QGIS/Orux.
+- Regeneriran kronološki news feed i /novosti article stranice.
+- Poboljšan fallback za naslovne slike: og:image → prva velika slika iz članka → default SOV hero.
+- Javni i registered/dashboard dijelovi nisu funkcionalno mijenjani.
+
+
+## v2.4 — dodatne vijesti
+- Dodane nove vijesti: Zec il žaba, Duman, Žumberački odred za čistoću, Fugro/QGIS/Orux.
+- Regeneriran kronološki news feed i /novosti article stranice.
+- Poboljšan fallback za naslovne slike: og:image → prva velika slika iz članka → default SOV hero.
+- Javni i registered/dashboard dijelovi nisu funkcionalno mijenjani.
