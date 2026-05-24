@@ -2,7 +2,7 @@
   const REGISTERED_PAGES = new Set([
     'dashboard.html','baza.html','pregled-baze.html','izleti.html','kalendar-izleta.html',
     'dokumentacija.html','pregled-zapisnika.html','zapisnici-skupstine.html','novi-zapisnik.html',
-    'speleo-zapisnik.html','topodroid.html','napisi-clanak.html','oruzarstvo.html','admin-users.html'
+    'speleo-zapisnik.html','topodroid.html','napisi-clanak.html','oruzarstvo.html','oruzarstvo-import.html','admin-users.html'
   ]);
   const ROLE_LABELS = {admin:'Admin',editor:'Urednik',oruzar:'Oružar',user:'Član'};
   const ADMIN_ROLES = ['admin'];
@@ -198,6 +198,7 @@
     const p = pageName();
     if(!REGISTERED_PAGES.has(p)) return;
     if(p === 'admin-users.html') await requireAdmin();
+    else if(p === 'oruzarstvo-import.html') await requireArmory();
     else await requireApproved();
     await renderUserBadge();
   }
