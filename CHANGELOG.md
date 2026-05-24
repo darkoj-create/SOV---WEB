@@ -1,4 +1,11 @@
 
+## v4.4 — Pridruži nam se
+- Dodana nova javna stranica `pridruzi-nam-se.html`.
+- Dodan link/ikona “Pridruži nam se” u glavni navigacijski header i quick links.
+- Sadržaj prilagođen SOV portalu iz PDS Velebit članstvo stranice.
+- Uključen direktan link na radno vrijeme činovnika.
+
+
 ## v3.7 — DOF + Geo karta layeri
 - Iz Android app WMS preset logike preneseni DGU DOF i Geo karta/HOK layeri.
 - SOV Karta sada ima TK25, DOF, Geo karta/HOK i OSM fallback kao base layere.

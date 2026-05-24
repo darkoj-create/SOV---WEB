@@ -1,12 +1,13 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="hr">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>SOV Cloud — Kalendar izleta</title>
-  <link rel="stylesheet" href="assets/site.css">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="assets/supabase-config.js"></script><script src="assets/auth.js"></script>
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>SOV Cloud — Kalendar izleta</title>
+<link href="assets/site.css" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="assets/supabase-config.js"></script><script src="assets/auth.js"></script>
+<style>
     :root{--bg:#030607;--panel:rgba(10,16,18,.78);--panel2:rgba(255,255,255,.055);--stroke:rgba(255,255,255,.13);--lime:#d7f66f;--cyan:#78d7ff;--amber:#ffb15f;--red:#ff7777;--green:#74e69a;--ink:#f5f8f7;--muted:#9dadad;--soft:#d8e4e3}
     body{margin:0;background:radial-gradient(circle at 83% 9%,rgba(120,215,255,.16),transparent 30%),radial-gradient(circle at 10% 20%,rgba(215,246,111,.13),transparent 28%),linear-gradient(180deg,#020303 0%,#071012 54%,#020303 100%);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
     body:after{content:"";position:fixed;inset:0;z-index:-1;opacity:.45;background:url("data:image/svg+xml,%3Csvg width='360' height='360' viewBox='0 0 360 360' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='rgba(255,255,255,.055)' stroke-width='1.1'%3E%3Cpath d='M0 240 C80 170 136 235 206 169 S308 95 360 138'/%3E%3Cpath d='M45 0 C64 78 105 122 85 190 S66 281 120 360'/%3E%3Cpath d='M255 0 C210 88 260 142 225 221 S184 300 214 360'/%3E%3C/g%3E%3C/svg%3E") center/360px 360px}
@@ -16,33 +17,33 @@
     dialog{border:1px solid rgba(255,255,255,.15);background:#091012;color:#fff;border-radius:26px;padding:0;box-shadow:0 30px 90px rgba(0,0,0,.58);width:min(520px,calc(100% - 24px))}dialog::backdrop{background:rgba(0,0,0,.62);backdrop-filter:blur(8px)}.modal{padding:24px}.modal h3{margin:0 0 12px;font-size:26px}.modal input{width:100%;box-sizing:border-box;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);border-radius:16px;color:#fff;padding:13px;font-weight:800}.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap}.check{display:flex;gap:10px;align-items:center;margin-top:14px;color:#dce8e8;font-weight:850}.check input{width:auto}.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#101719;border:1px solid rgba(255,255,255,.16);color:#fff;border-radius:999px;padding:12px 16px;z-index:1000;box-shadow:0 14px 45px rgba(0,0,0,.4);display:none;font-weight:850}.toast.show{display:block}
     @media(max-width:1100px){.hero-grid,.layout{grid-template-columns:1fr}.side{position:static}.quick{grid-template-columns:repeat(3,1fr)}.trip-inner{grid-template-columns:100px 1fr}.trip-actions{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr)}}@media(max-width:720px){.shell{width:calc(100% - 22px)}.top{height:auto;align-items:flex-start;flex-direction:column;padding:14px 0}.nav{overflow-x:auto;flex-wrap:nowrap;width:100%;padding-bottom:3px}.nav a{white-space:nowrap}.hero{border-radius:26px;padding:22px}.toolbar{grid-template-columns:1fr}.quick,.weather-row,.trip-actions{grid-template-columns:1fr}.trip-inner{grid-template-columns:1fr}.datebox{min-height:92px}.trip-main h2{font-size:24px}}
   </style>
-  <link rel="stylesheet" href="assets/mobile.css">
+<link href="assets/mobile.css" rel="stylesheet"/>
 </head>
 <body>
 <div class="shell">
-  <header class="top">
-    <a class="brand" href="dashboard.html"><div class="mark">SOV</div><div><strong>Speleološki odsjek Velebit</strong><small>SOV Cloud</small></div></a>
-    <nav class="nav"><a href="dashboard.html">Dashboard</a><a href="baza.html">SOV Karta</a><a href="pregled-baze.html">Baza</a><a href="izleti.html">Izleti</a><a class="primary" href="kalendar-izleta.html">Kalendar izleta</a></nav>
-  </header>
-  <section class="hero">
-    <div class="hero-grid">
-      <div><span class="eyebrow">Zajednički raspored</span><h1>Kalendar izleta.</h1><p class="lead">Web verzija logike iz Android appa: čita zajednički raspored iz Google Sheeta, prikazuje buduće i prošle izlete, prognozu za teren, prijave i raspored automobila.</p></div>
-      <div class="quick"><div class="stat"><b id="statUpcoming">—</b><span>budućih izleta</span></div><div class="stat"><b id="statWeather">—</b><span>s prognozom</span></div><div class="stat"><b id="statDrivers">—</b><span>prijavljenih vozača</span></div></div>
-    </div>
-    <div class="toolbar"><input id="search" placeholder="Pretraži lokaciju, voditelja, cilj, opis…"><select id="filter"><option value="upcoming">Budući izleti</option><option value="past">Prošli izleti / arhiva</option><option value="all">Svi izleti</option><option value="mine">Moje prijave</option></select><button id="refresh" class="btn lime">↻ Osvježi</button><a class="btn" href="izleti.html">＋ Kreiraj izlet</a><button class="btn" id="showPastTrips">📜 Prošli izleti</button></div>
-    <div id="status" class="status">Spremno za učitavanje rasporeda…</div>
-  </section>
-  <main class="layout">
-    <section id="tripList" class="trip-list"></section>
-    <aside class="side">
-      <section class="panel"><h3>Brza prijava</h3><p>Ime se sprema lokalno u browseru za bržu prijavu na sljedeće izlete.</p><div class="form-grid"><input id="quickName" placeholder="Ime i prezime"><button id="saveName" class="btn lime">Spremi ime</button></div></section>
-      <section class="panel"><h3>Izvor podataka</h3><p class="small">Raspored: Google Apps Script endpoint iz Android appa.<br>Akcije: <b>listTrips</b>, <b>signupTrip</b>, <b>kreirajTab</b>, <b>updateRasporedUrl</b>.<br>Vrijeme: Open‑Meteo geocoding + forecast.</p><button id="openSheetSource" class="btn">Otvori Apps Script endpoint</button></section>
-      <section class="panel"><h3>Napomena za web</h3><p class="small">Ako browser blokira direktan poziv prema Apps Scriptu zbog CORS-a, stranica pokazuje testne podatke i u konzoli vidiš grešku. Za produkciju je najbolje dodati mali Vercel API proxy.</p></section>
-    </aside>
-  </main>
+<header class="top">
+<a class="brand" href="dashboard.html"><div class="mark">SOV</div><div><strong>Speleološki odsjek Velebit</strong><small>SOV Cloud</small></div></a>
+<nav class="nav"><a href="dashboard.html">Dashboard</a><a href="baza.html">SOV Karta</a><a href="pregled-baze.html">Baza</a><a href="izleti.html">Izleti</a><a class="primary" href="kalendar-izleta.html">Kalendar izleta</a></nav>
+</header>
+<section class="hero">
+<div class="hero-grid">
+<div><span class="eyebrow">Zajednički raspored</span><h1>Kalendar izleta.</h1><p class="lead">Web verzija logike iz Android appa: čita zajednički raspored iz Google Sheeta, prikazuje buduće i prošle izlete, prognozu za teren, prijave i raspored automobila.</p></div>
+<div class="quick"><div class="stat"><b id="statUpcoming">—</b><span>budućih izleta</span></div><div class="stat"><b id="statWeather">—</b><span>s prognozom</span></div><div class="stat"><b id="statDrivers">—</b><span>prijavljenih vozača</span></div></div>
 </div>
-<dialog id="signupDialog"><div class="modal"><h3 id="signupTitle">Prijava na izlet</h3><p id="signupMeta" class="small"></p><input id="signupName" placeholder="Ime i prezime"><label class="check"><input id="signupDriving" type="checkbox"> Mogu voziti / idem autom</label><div class="modal-actions"><button class="btn" onclick="signupDialog.close()">Odustani</button><button id="confirmSignup" class="btn lime">Pošalji prijavu</button></div></div></dialog>
-<div id="toast" class="toast"></div>
+<div class="toolbar"><input id="search" placeholder="Pretraži lokaciju, voditelja, cilj, opis…"/><select id="filter"><option value="upcoming">Budući izleti</option><option value="past">Prošli izleti / arhiva</option><option value="all">Svi izleti</option><option value="mine">Moje prijave</option></select><button class="btn lime" id="refresh">↻ Osvježi</button><a class="btn" href="izleti.html">＋ Kreiraj izlet</a><button class="btn" id="showPastTrips">📜 Prošli izleti</button></div>
+<div class="status" id="status">Spremno za učitavanje rasporeda…</div>
+</section>
+<main class="layout">
+<section class="trip-list" id="tripList"></section>
+<aside class="side">
+<section class="panel"><h3>Brza prijava</h3><p>Ime se sprema lokalno u browseru za bržu prijavu na sljedeće izlete.</p><div class="form-grid"><input id="quickName" placeholder="Ime i prezime"/><button class="btn lime" id="saveName">Spremi ime</button></div></section>
+<section class="panel"><h3>Izvor podataka</h3><p class="small">Raspored: Google Apps Script endpoint iz Android appa.<br/>Akcije: <b>listTrips</b>, <b>signupTrip</b>, <b>kreirajTab</b>, <b>updateRasporedUrl</b>.<br/>Vrijeme: Open‑Meteo geocoding + forecast.</p><button class="btn" id="openSheetSource">Otvori Apps Script endpoint</button></section>
+<section class="panel"><h3>Napomena za web</h3><p class="small">Ako browser blokira direktan poziv prema Apps Scriptu zbog CORS-a, stranica pokazuje testne podatke i u konzoli vidiš grešku. Za produkciju je najbolje dodati mali Vercel API proxy.</p></section>
+</aside>
+</main>
+</div>
+<dialog id="signupDialog"><div class="modal"><h3 id="signupTitle">Prijava na izlet</h3><input id="signupName" placeholder="Ime i prezime"/><label class="check"><input id="signupDriving" type="checkbox"/> Mogu voziti / idem autom</label><div class="modal-actions"><button class="btn" onclick="signupDialog.close()">Odustani</button><button class="btn lime" id="confirmSignup">Pošalji prijavu</button></div></div></dialog>
+<div class="toast" id="toast"></div>
 <script>
 const TRIPS_WEBAPP_URL='https://script.google.com/macros/s/AKfycbybGi7p6_ImXAXEErJ6P9K0GYHy8lHW850K9cQe2py8yUV2oJO6UW1DJi00quorVTHOGQ/exec';
 const RASPORED_WEBAPP_URL='https://script.google.com/macros/s/AKfycbxtn2jOfQjOVBlYJrl8sNKDkBfP2rpONy-lZSaySYHx0sAf72BEdPNybqc4yNvhJDsJ/exec';
@@ -63,7 +64,7 @@ function tripCoords(t){let lat=parseFloat(t.centerLat), lon=parseFloat(t.centerL
 function weatherLabel(code){if(code===0)return'☀️ Vedro'; if([1,2].includes(code))return'🌤 Vedro'; if(code===3)return'☁️ Oblačno'; if([45,48].includes(code))return'🌫 Magla'; if([51,53,55].includes(code))return'🌦 Rosulja'; if([61,63,65].includes(code))return'🌧 Kiša'; if([71,73,75,77,85,86].includes(code))return'🌨 Snijeg'; if([80,81,82,95,96,99].includes(code))return'⛈ Nestabilno'; return'🌡 Vrijeme'}
 function speleoWarning(code,precip){if(precip>=20)return'⚠️ Visoke oborine — rizik od poplave špilje.'; if(precip>=8)return'⚠️ Značajne oborine — pazi na vodotoke u špilji.'; if([95,96,99].includes(code))return'⚠️ Grmljavina — oprez s pristupom i metalnom opremom.'; if([71,73,75,77,85,86].includes(code))return'⚠️ Snijeg — provjeri pristupni put.'; return''}
 async function fetchTrips(){ $('status').textContent='Učitavam zajednički raspored iz Google Sheeta…'; const url=TRIPS_WEBAPP_URL+(TRIPS_WEBAPP_URL.includes('?')?'&':'?')+'action=listTrips'; try{ const res=await fetch(url,{method:'GET'}); if(!res.ok)throw new Error('HTTP '+res.status); const json=await res.json(); if(!json.ok)throw new Error(json.error||'Apps Script nije vratio ok=true'); trips=(json.trips||[]).map(t=>({...t,rowNumber:Number(t.rowNumber||0)})); $('status').textContent='Učitano '+trips.length+' izleta iz zajedničkog rasporeda.'; }catch(e){ console.warn(e); $('status').textContent='Nisam mogao direktno učitati Apps Script iz browsera — prikazujem testne web podatke.'; trips=demoTrips(); } render(); loadVisibleWeather(); }
-function demoTrips(){return[{rowNumber:2,date:'14.06.2026.',leader:'Vedran Ferenčak',location:'Sjeverni Velebit',description:'Testni izlet iz web previewa. Kad Apps Script dopusti fetch, ovdje se prikazuju stvarni podaci iz Sheeta.',goal:'Istraživanje',participants:'Darko, Ivona',drivers:'Darko',weatherCity:'Krasno',centerLat:44.82,centerLon:15.02,rasporedUrl:''},{rowNumber:3,date:'28.06.2026.',leader:'Ivona Lišanin',location:'Žumberak',description:'Vježba i pregled objekata na terenu.',goal:'Izletiranje',participants:'',drivers:'',weatherCity:'Samobor',centerLat:45.80,centerLon:15.59,rasporedUrl:''}]}
+function demoTrips(){return[{rowNumber:2,date:'14.06.2026.',leader:'Vedran Ferenčak',location:'Sjeverni Velebit',description:'Istraživanje i pregled objekata na terenu.',goal:'Istraživanje',participants:'',drivers:'',weatherCity:'Krasno',centerLat:44.82,centerLon:15.02,rasporedUrl:''},{rowNumber:3,date:'28.06.2026.',leader:'Ivona Lišanin',location:'Žumberak',description:'Vježba i obilazak terena.',goal:'Izletiranje',participants:'',drivers:'',weatherCity:'Samobor',centerLat:45.80,centerLon:15.59,rasporedUrl:''}]}
 async function getCoordsByCity(city){const q=clean(city); if(!q)return null; const url='https://geocoding-api.open-meteo.com/v1/search?name='+enc(q+', Croatia')+'&count=1&language=hr&format=json&countryCode=HR'; const r=await fetch(url); const j=await r.json(); const first=j.results&&j.results[0]; return first?{lat:first.latitude,lon:first.longitude}:null}
 async function fetchWeather(t){const key=tripKey(t); if(weatherCache[key])return weatherCache[key]; let c=tripCoords(t); if(!c)c=await getCoordsByCity(t.weatherCity||t.location); if(!c)return null; const d=parseDate(t.date)||new Date(); const start=d.toISOString().slice(0,10); const end=new Date(d.getTime()+3*86400000).toISOString().slice(0,10); const url=`https://api.open-meteo.com/v1/forecast?latitude=${c.lat}&longitude=${c.lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max,weathercode&timezone=auto&start_date=${start}&end_date=${end}`; const r=await fetch(url); const j=await r.json(); const daily=j.daily; if(!daily)return null; const days=daily.time.map((date,i)=>({date,tempMax:daily.temperature_2m_max[i],tempMin:daily.temperature_2m_min[i],precip:daily.precipitation_sum[i],wind:daily.windspeed_10m_max[i],code:daily.weathercode[i]})); weatherCache[key]=days; return days}
 async function loadVisibleWeather(){const visible=getFiltered().slice(0,8); for(const t of visible){try{const days=await fetchWeather(t); if(days) renderWeather(t,days)}catch(e){console.warn('weather',e)}} updateStats();}

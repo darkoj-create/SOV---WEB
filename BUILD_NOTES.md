@@ -52,3 +52,12 @@ Ne vraćati lokalni `sovCloudUsers` auth kao produkcijsku logiku.
 ## v4.2
 - Dodan Kontakt u top navigaciju na main pageu.
 - Dodana Kontakt sekcija: pročelnik, tajnik, adresa, Google Maps i Wednesday open hours.
+
+
+## v4.3 UI cleanup verified
+- cleaned public copy on O društvu, Pročelništvo, Speleoškola, Dokumenti and dashboard
+- removed development-style explanatory text and placeholder labels
+- hid dev-preview floating badges from production UI
+- added safer responsive wrapping to prevent overlapping words/letters in nav, cards and headings
+- removed WordPress ad/share/like cruft from imported article pages
+- preserved existing public pages, registered modules, Supabase auth and content structure

@@ -31,3 +31,17 @@
 .contact-card .map-link{display:inline-flex;width:max-content;max-width:100%;font-size:14px;padding:10px 14px;border-radius:999px;background:rgba(207,255,79,.14);border:1px solid rgba(207,255,79,.26);color:#d7ff6a}
 @media (max-width: 900px){.contact-grid{grid-template-columns:1fr 1fr}.contact-band{padding:60px 18px}}
 @media (max-width: 560px){.contact-grid{grid-template-columns:1fr}.contact-card{min-height:auto}.contact-card strong{font-size:19px}}
+
+
+/* v4.3 verified cleanup: no floating dev badge, safer text wrapping and cleaner responsive behavior */
+.dev-open{display:none!important}
+.nav,.navlinks,.dash-nav{min-width:0;flex-wrap:wrap}
+.nav a,.navlinks a,.dash-nav a{white-space:nowrap}
+h1,h2,h3,.card b,.menu-item strong,.news-copy strong,.portal-hero h1{overflow-wrap:anywhere;text-wrap:balance}
+p,.lead,.portal-sub,.news-copy em,.card span,.doc-card p,.contact-card p{overflow-wrap:anywhere}
+.brand,.brand-sov{min-width:0}.brand span,.brand strong{overflow:hidden;text-overflow:ellipsis}.brand-wordmark{max-width:min(260px,42vw);height:auto!important}.brand-round{flex:0 0 auto}
+.section-head p:empty{display:none!important}.section-head{gap:18px}.section-head p{max-width:640px}
+.article img,.wp-block-image img,.article figure img{max-width:100%;height:auto;border-radius:20px}
+.wordads-ad-wrapper,.sharedaddy,.jetpack-likes-widget-wrapper,.sd-block{display:none!important}
+@media(max-width:980px){.nav,.navlinks{justify-content:flex-start;gap:10px}.topbar .nav{align-items:flex-start}.portal-hero{min-height:58vh}.portal-hero-inner{padding-top:72px}.news-lead{grid-template-columns:1fr!important}.contact-grid,.links-grid{grid-template-columns:1fr 1fr}.hero-logos{margin-top:14px}}
+@media(max-width:680px){.nav,.navlinks{overflow-x:auto;flex-wrap:nowrap;width:100%;padding-bottom:6px}.nav a,.navlinks a{flex:0 0 auto}.portal-hero h1{font-size:clamp(42px,16vw,72px);letter-spacing:-.06em}.portal-sub{font-size:17px}.news-section{padding-left:16px;padding-right:16px}.news-grid{grid-template-columns:1fr!important}.contact-grid,.links-grid{grid-template-columns:1fr}.brand-wordmark{max-width:180px}.hero-logos img{max-width:150px}.card,.doc-card,.contact-card,.link-card{border-radius:22px}.article{border-radius:24px}.article h1{font-size:clamp(38px,13vw,60px)}}

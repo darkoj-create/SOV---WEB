@@ -1,12 +1,13 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="hr">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dokumenti — SOV Cloud</title>
-  <link rel="stylesheet" href="assets/site.css">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="assets/supabase-config.js"></script><script src="assets/auth.js"></script>
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>Dokumenti — SOV Cloud</title>
+<link href="assets/site.css" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="assets/supabase-config.js"></script><script src="assets/auth.js"></script>
+<style>
     :root{--lime:#d7f66f;--cyan:#78d7ff;--amber:#ffb15f;--ink:#f4f7f6;--muted:#9dadad;--stroke:rgba(255,255,255,.13)}
     body{background:#05090b;color:var(--ink)}
     .doc-hero{padding:76px 0 28px}.doc-hero h1{font-size:clamp(56px,8vw,112px);line-height:.88;letter-spacing:-.075em;margin:10px 0 18px}.doc-hero p{max-width:820px;color:#b8c4c3;font-size:19px;line-height:1.65}
@@ -15,22 +16,22 @@
     .doc-card:before{content:"";position:absolute;inset:auto -40px -70px auto;width:190px;height:190px;border-radius:50%;background:rgba(215,246,111,.09);filter:blur(4px)}.doc-card h2{font-size:30px;margin:18px 0 10px;letter-spacing:-.045em}.doc-card p{color:#adbbbb;line-height:1.6}.doc-icon{width:56px;height:56px;border-radius:20px;display:grid;place-items:center;background:rgba(215,246,111,.12);border:1px solid rgba(215,246,111,.25);font-size:25px}.doc-list{display:grid;gap:10px;margin-top:22px}.doc-link{display:flex;justify-content:space-between;gap:12px;align-items:center;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.045);border-radius:16px;padding:12px 13px;color:#eef7f5;text-decoration:none;font-weight:900}.doc-link:hover{border-color:rgba(215,246,111,.34);background:rgba(255,255,255,.07)}.doc-link small{color:#9dadad;font-weight:800}.dev-open{position:fixed;right:14px;bottom:14px;z-index:99999;border:1px solid rgba(215,246,111,.35);background:rgba(7,13,15,.92);color:#d7f66f;border-radius:999px;padding:9px 12px;font:800 12px Inter,system-ui,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.35)}
     @media(max-width:920px){.new-record{grid-template-columns:1fr}.doc-grid{grid-template-columns:1fr}.doc-card{min-height:220px}}
   </style>
-  <link rel="stylesheet" href="assets/mobile.css">
+<link href="assets/mobile.css" rel="stylesheet"/>
 </head>
 <body>
 <header class="top wrap"><a class="brand" href="index.html"><div class="mark">SOV</div><div><strong>Speleološki odsjek Velebit</strong><small>Zagreb</small></div></a><nav class="nav"><a href="dashboard.html">SOV Cloud</a><a href="baza.html">SOV Karta</a><a href="kalendar-izleta.html">Kalendar izleta</a><a href="index.html">Novosti</a></nav></header>
 <main>
-  <section class="doc-hero wrap"><div class="eyebrow">SOV Cloud</div><h1>Dokumenti</h1><p>Interna arhiva društva. Zapisnici su pojednostavljeni za stvarni rad: novi zapisnik, pregled postojećih zapisnika i zasebni zapisnici skupštine.</p></section>
-  <section class="new-record wrap">
-    <div><h2>Novi zapisnik</h2><p>Brzi editor za sastanak: automatski datum, voditelj, zapisničar, sekcije sastanka, lijep preview i slanje zapisnika u DOCX formatu.</p></div>
-    <a href="novi-zapisnik.html">Otvori editor →</a>
-  </section>
-  <section class="doc-grid wrap">
-    <article class="doc-card" id="zapisnici"><div class="doc-icon">▤</div><h2>Pregled zapisnika</h2><p>Zapisnici redovnih sastanaka, spremljeni draftovi i zapisnici poslani uredniku na pregled.</p><div class="doc-list"><a class="doc-link" href="pregled-zapisnika.html"><span>Otvori pregled</span><small>lista</small></a><a class="doc-link" href="novi-zapisnik.html"><span>Novi zapisnik</span><small>editor</small></a></div></article>
-    <article class="doc-card" id="skupstine"><div class="doc-icon">◇</div><h2>Zapisnici skupštine</h2><p>Posebna arhiva izbornih i redovnih skupština, odluka i službenih zaključaka.</p><div class="doc-list"><a class="doc-link" href="zapisnici-skupstine.html"><span>Otvori skupštine</span><small>arhiva</small></a></div></article>
-    <article class="doc-card" id="upute"><div class="doc-icon">☰</div><h2>Upute</h2><p>Operativne upute za teren, opremu, sigurnost, karte, bazu i digitalne alate.</p><div class="doc-list"><a class="doc-link" href="#"><span>Upute za teren</span><small>uskoro</small></a><a class="doc-link" href="#"><span>Upute za SOV Cloud</span><small>uskoro</small></a><a class="doc-link" href="#"><span>Upute za opremu</span><small>uskoro</small></a></div></article>
-  </section>
-<section class="content-section"><h2>Nacrti i TopoDroid</h2><p>Alat za povezivanje nacrta, TopoDroid exporta i objekata u bazi.</p><p><a class="btn primary" href="topodroid.html">Otvori TopoDroid bridge</a></p></section>
+<section class="doc-hero wrap"><div class="eyebrow">SOV Cloud</div><h1>Dokumenti</h1><p>Interna arhiva društva: zapisnici, upute, dopuštenja i materijali za rad Odsjeka.</p></section>
+<section class="new-record wrap">
+<div><h2>Novi zapisnik</h2><p>Novi zapisnik sastanka s datumom, voditeljem, zapisničarom, previewom i DOCX izvozom.</p></div>
+<a href="novi-zapisnik.html">Otvori editor →</a>
+</section>
+<section class="doc-grid wrap">
+<article class="doc-card" id="zapisnici"><div class="doc-icon">▤</div><h2>Pregled zapisnika</h2><p>Zapisnici redovnih sastanaka Odsjeka.</p><div class="doc-list"><a class="doc-link" href="pregled-zapisnika.html"><span>Otvori pregled</span><small>lista</small></a><a class="doc-link" href="novi-zapisnik.html"><span>Novi zapisnik</span><small>editor</small></a></div></article>
+<article class="doc-card" id="skupstine"><div class="doc-icon">◇</div><h2>Zapisnici skupštine</h2><p>Arhiva izbornih i redovnih skupština, odluka i službenih zaključaka.</p><div class="doc-list"><a class="doc-link" href="zapisnici-skupstine.html"><span>Otvori skupštine</span><small>arhiva</small></a></div></article>
+<article class="doc-card" id="upute"><div class="doc-icon">☰</div><h2>Upute</h2><p>Upute za teren, opremu, sigurnost, karte, bazu i digitalne alate.</p><div class="doc-list"><a class="doc-link" href="javascript:void(0)"><span>Upute za teren</span></a><a class="doc-link" href="javascript:void(0)"><span>Upute za SOV Cloud</span></a><a class="doc-link" href="javascript:void(0)"><span>Upute za opremu</span></a></div></article>
+</section>
+<section class="content-section"><h2>Nacrti i TopoDroid</h2><p>Povezivanje nacrta, TopoDroid exporta i objekata u bazi.</p><p><a class="btn primary" href="topodroid.html">TopoDroid i nacrti</a></p></section>
 </main>
 <footer class="footer"><div class="wrap">© Speleološki odsjek Velebit</div></footer>
 </body>
