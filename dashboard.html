@@ -34,7 +34,16 @@
     .menu-panel{border:1px solid rgba(255,255,255,.14);background:rgba(5,9,11,.62);backdrop-filter:blur(22px);border-radius:30px;padding:22px;box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 20px 70px rgba(0,0,0,.28)}
     .panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}.panel-head b{font-size:22px;letter-spacing:-.04em}.panel-head span{color:var(--muted);font-size:13px;font-weight:850}.panel-head .dot{width:9px;height:9px;border-radius:50%;background:var(--lime);box-shadow:0 0 22px rgba(215,246,111,.75)}
     .menu-list{display:grid;gap:12px}.menu-item{border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.045);border-radius:22px;padding:15px;display:grid;grid-template-columns:44px 1fr auto;gap:13px;align-items:center;text-decoration:none;color:inherit;transition:transform .16s ease,border-color .16s ease,background .16s ease}.menu-item:hover{transform:translateY(-2px);border-color:rgba(215,246,111,.34);background:rgba(255,255,255,.07)}
-    .menu-icon{width:44px;height:44px;border-radius:16px;display:grid;place-items:center;background:rgba(120,215,255,.1);border:1px solid rgba(120,215,255,.22);font-size:20px}.menu-icon.lime{background:rgba(215,246,111,.12);border-color:rgba(215,246,111,.28)}.menu-icon.amber{background:rgba(255,177,95,.11);border-color:rgba(255,177,95,.27)}.menu-icon.green{background:rgba(102,226,141,.1);border-color:rgba(102,226,141,.22)}
+    .menu-icon{width:44px;height:44px;border-radius:16px;display:grid;place-items:center;color:#fff}
+    .menu-icon svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+    .menu-icon.blue{background:rgba(56,139,255,.15);border:1px solid rgba(56,139,255,.32);color:#7ab7ff}
+    .menu-icon.teal{background:rgba(45,195,180,.13);border:1px solid rgba(45,195,180,.30);color:#4dd9c8}
+    .menu-icon.amber{background:rgba(255,177,95,.13);border:1px solid rgba(255,177,95,.30);color:#ffb15f}
+    .menu-icon.purple{background:rgba(160,100,255,.13);border:1px solid rgba(160,100,255,.30);color:#b07fff}
+    .menu-icon.lime{background:rgba(215,246,111,.12);border:1px solid rgba(215,246,111,.28);color:#d7f66f}
+    .menu-icon.red{background:rgba(255,80,80,.12);border:1px solid rgba(255,80,80,.28);color:#ff7070}
+    .menu-icon.gray{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);color:#9dadad}
+    .menu-icon.green{background:rgba(102,226,141,.11);border:1px solid rgba(102,226,141,.26);color:#66e28d}
     .menu-item strong{display:block;font-size:15px}.menu-item small{display:block;color:var(--muted);margin-top:4px;line-height:1.38}.pill{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);border-radius:999px;padding:6px 9px;font-size:11px;font-weight:950;color:#dfe9e8;white-space:nowrap}
     .center-stage{min-height:560px;display:grid;place-items:center;text-align:center;position:relative}.center-stage:before{content:"";position:absolute;width:min(520px,90%);height:min(520px,90%);border-radius:50%;background:radial-gradient(circle,rgba(215,246,111,.15),rgba(120,215,255,.08) 38%,transparent 66%);filter:blur(2px)}
     .center-logo{position:relative;display:grid;place-items:center;gap:26px}.logo-card{width:min(430px,82vw);aspect-ratio:2.6/1;border:1px solid rgba(255,255,255,.16);border-radius:30px;background:rgba(0,0,0,.5);box-shadow:0 26px 90px rgba(0,0,0,.55),0 0 70px rgba(215,246,111,.08);display:grid;place-items:center;padding:22px}.logo-card img{max-width:100%;max-height:100%;object-fit:contain;filter:drop-shadow(0 16px 24px rgba(0,0,0,.45))}
@@ -62,12 +71,43 @@
         <aside class="menu-panel" aria-label="Glavni izbornik">
           <div class="panel-head"><b>Glavni izbornik</b><span>teren i baza</span></div>
           <div class="menu-list">
-            <a class="menu-item" href="baza.html"><div class="menu-icon lime">⌖</div><div><strong>SOV Karta</strong><small>TK25 karta, objekti, statusi, search, exporti i Map download.</small></div><div class="pill">GIS</div></a>
-            <a class="menu-item" href="pregled-baze.html"><div class="menu-icon green">≡</div><div><strong>Baza</strong><small>Pregled objekata, detalji, filtriranje i čisti prikaz podataka.</small></div><div class="pill">Objekti</div></a>
-            <a class="menu-item" href="izleti.html"><div class="menu-icon amber">⇄</div><div><strong>Izleti</strong><small>Kreiranje izleta, područje karte, ekipa, oprema i paket za teren.</small></div><div class="pill">Plan</div></a>
-            <a class="menu-item" href="baza.html#import"><div class="menu-icon">⌁</div><div><strong>GPX / KML</strong><small>Import trackova i waypointa, pregled na karti i export za teren.</small></div><div class="pill">Import</div></a>
-            <a class="menu-item" href="topodroid.html"><div class="menu-icon lime">⌬</div><div><strong>Nacrti / TopoDroid</strong><small>Match nacrta s objektima, survey fileovi, georeferenciranje i terenski paketi.</small></div><div class="pill">Survey</div></a>
-            <a class="menu-item" href="https://google.com/url?sa=D&q=https://forms.gle/xXK6uBU8m9myL9YNA&ust=1779696240000000&usg=AOvVaw3-5YHTAqbpAJJ1UVgzNyVr&hl=en&source=gmail" target="_blank" rel="noopener"><div class="menu-icon green">✎</div><div><strong>Speleo zapisnik</strong><small>Otvara službeni Google Forms zapisnik za terenski unos podataka.</small></div><div class="pill">Form</div></a>
+
+            <a class="menu-item" href="baza.html">
+              <div class="menu-icon blue"><svg viewBox="0 0 24 24"><path d="M3 7a9 9 0 0 1 18 0v1a9 9 0 0 1-18 0V7z"/><path d="M3 8v8a9 9 0 0 0 18 0V8"/><path d="M12 12m-1 0a1 1 0 1 0 2 0 1 1 0 0 0-2 0"/><path d="M8 12h0m8 0h0"/></svg></div>
+              <div><strong>SOV Karta</strong><small>TK25 karta, objekti, statusi, search, exporti i Map download.</small></div>
+              <div class="pill">GIS</div>
+            </a>
+
+            <a class="menu-item" href="pregled-baze.html">
+              <div class="menu-icon teal"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v4c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 9v4c0 1.66 4.03 3 9 3s9-1.34 9-3V9"/><path d="M3 13v4c0 1.66 4.03 3 9 3s9-1.34 9-3v-4"/></svg></div>
+              <div><strong>Baza</strong><small>Pregled objekata, detalji, filtriranje i čisti prikaz podataka.</small></div>
+              <div class="pill">Objekti</div>
+            </a>
+
+            <a class="menu-item" href="izleti.html">
+              <div class="menu-icon amber"><svg viewBox="0 0 24 24"><path d="M3 17l4-8 4 4 4-6 4 10"/><path d="M3 21h18"/></svg></div>
+              <div><strong>Izleti</strong><small>Kreiranje izleta, područje karte, ekipa, oprema i paket za teren.</small></div>
+              <div class="pill">Plan</div>
+            </a>
+
+            <a class="menu-item" href="baza.html#import">
+              <div class="menu-icon purple"><svg viewBox="0 0 24 24"><path d="M12 19V5m-7 7 7-7 7 7"/><path d="M5 19h14"/></svg></div>
+              <div><strong>GPX / KML</strong><small>Import trackova i waypointa, pregled na karti i export za teren.</small></div>
+              <div class="pill">Import</div>
+            </a>
+
+            <a class="menu-item" href="topodroid.html">
+              <div class="menu-icon lime"><svg viewBox="0 0 24 24"><path d="M12 3L2 9l10 6 10-6-10-6z"/><path d="M2 15l10 6 10-6"/><path d="M2 12l10 6 10-6"/></svg></div>
+              <div><strong>Nacrti / TopoDroid</strong><small>Match nacrta s objektima, survey fileovi, georeferenciranje i terenski paketi.</small></div>
+              <div class="pill">Survey</div>
+            </a>
+
+            <a class="menu-item" href="https://google.com/url?sa=D&q=https://forms.gle/xXK6uBU8m9myL9YNA&ust=1779696240000000&usg=AOvVaw3-5YHTAqbpAJJ1UVgzNyVr&hl=en&source=gmail" target="_blank" rel="noopener">
+              <div class="menu-icon red"><svg viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6M7 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1"/><path d="M9 4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1V4z"/></svg></div>
+              <div><strong>Speleo zapisnik</strong><small>Otvara službeni Google Forms zapisnik za terenski unos podataka.</small></div>
+              <div class="pill">Form</div>
+            </a>
+
           </div>
         </aside>
 
@@ -83,12 +123,43 @@
         <aside class="menu-panel" aria-label="Društvo i interna zona">
           <div class="panel-head"><b>Interno i društvo</b><span>organizacija</span></div>
           <div class="menu-list">
-            <a class="menu-item" href="kalendar-izleta.html"><div class="menu-icon amber">▦</div><div><strong>Kalendar izleta</strong><small>Pregled planiranih akcija, škola, vježbi i terenskih termina.</small></div><div class="pill">Kalendar</div></a>
-            <a class="menu-item" href="oruzarstvo.html" data-role-armory><div class="menu-icon">◈</div><div><strong>Oružarstvo</strong><small>Oprema, rezervacije, najam, zaduženja i povrat.</small></div><div class="pill">Oprema</div></a>
-            <a class="menu-item" href="dokumentacija.html"><div class="menu-icon green">▤</div><div><strong>Dokumenti</strong><small>Zapisnici, upute, dopuštenja i interna arhiva društva.</small></div><div class="pill">Arhiva</div></a>
-            <a class="menu-item" href="admin-users.html" data-role-admin><div class="menu-icon amber">◎</div><div><strong>Korisnici</strong><small>Odobravanje registracija i dodjela rola.</small></div><div class="pill">Admin</div></a>
-            <a class="menu-item" href="https://drive.google.com/file/d/1iLSKkdOQTxBe8l_2ZUstqDl2-6yZbLOr/view?usp=sharing" target="_blank" rel="noopener"><div class="menu-icon lime">⬡</div><div><strong>SOV app</strong><small>Direktan download / pregled aktualnog SOV Android builda na Google Driveu.</small></div><div class="pill">App</div></a>
-            <a class="menu-item" href="napisi-clanak.html"><div class="menu-icon amber">✦</div><div><strong>Napiši članak</strong><small>Jednostavan editor za vijesti: naslov, uvod, tekst, slike i priprema za objavu.</small></div><div class="pill">Novosti</div></a>
+
+            <a class="menu-item" href="kalendar-izleta.html">
+              <div class="menu-icon blue"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg></div>
+              <div><strong>Kalendar izleta</strong><small>Pregled planiranih akcija, škola, vježbi i terenskih termina.</small></div>
+              <div class="pill">Kalendar</div>
+            </a>
+
+            <a class="menu-item" href="oruzarstvo.html" data-role-armory>
+              <div class="menu-icon amber"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+              <div><strong>Oružarstvo</strong><small>Oprema, rezervacije, najam, zaduženja i povrat.</small></div>
+              <div class="pill">Oprema</div>
+            </a>
+
+            <a class="menu-item" href="dokumentacija.html">
+              <div class="menu-icon gray"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
+              <div><strong>Dokumenti</strong><small>Zapisnici, upute, dopuštenja i interna arhiva društva.</small></div>
+              <div class="pill">Arhiva</div>
+            </a>
+
+            <a class="menu-item" href="admin-users.html" data-role-admin>
+              <div class="menu-icon red"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+              <div><strong>Korisnici</strong><small>Odobravanje registracija i dodjela rola.</small></div>
+              <div class="pill">Admin</div>
+            </a>
+
+            <a class="menu-item" href="https://drive.google.com/file/d/1iLSKkdOQTxBe8l_2ZUstqDl2-6yZbLOr/view?usp=sharing" target="_blank" rel="noopener">
+              <div class="menu-icon lime"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/><path d="M9 6h6M9 10h6M9 14h4"/></svg></div>
+              <div><strong>SOV app</strong><small>Direktan download / pregled aktualnog SOV Android builda na Google Driveu.</small></div>
+              <div class="pill">App</div>
+            </a>
+
+            <a class="menu-item" href="napisi-clanak.html">
+              <div class="menu-icon green"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
+              <div><strong>Napiši članak</strong><small>Jednostavan editor za vijesti: naslov, uvod, tekst, slike i priprema za objavu.</small></div>
+              <div class="pill">Novosti</div>
+            </a>
+
           </div>
         </aside>
       </div>
