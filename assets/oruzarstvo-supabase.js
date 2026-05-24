@@ -115,6 +115,39 @@
     }
     return total;
   }
+
+  function normalizedSku(v){
+    const s = (v === null || v === undefined) ? '' : String(v).trim();
+    return s || null;
+  }
+  function dedupeByKey(rows, keyFn){
+    const map = new Map();
+    for(const row of rows || []){
+      const key = keyFn(row);
+      if(!key){
+        map.set(`__no_key__:${map.size}`, row);
+      }else{
+        map.set(key, row);
+      }
+    }
+    return Array.from(map.values());
+  }
+  async function upsertRopes(rows){
+    if(!rows || !rows.length) return 0;
+
+    // equipment_ropes has TWO unique keys: legacy_id and sku.
+    // Old import used legacy_id as the conflict key, so a repeated/renamed rope with
+    // the same SKU crashed with: duplicate key value violates constraint equipment_ropes_sku_key.
+    // SKU is the real physical rope identifier, so rows with SKU are deduped and upserted by sku.
+    const withSku = dedupeByKey(rows.filter(r => normalizedSku(r.sku)), r => normalizedSku(r.sku));
+    const withoutSku = dedupeByKey(rows.filter(r => !normalizedSku(r.sku)), r => r.legacy_id ? String(r.legacy_id) : null);
+
+    let total = 0;
+    total += await upsertRows('equipment_ropes', withSku, 'sku');
+    total += await upsertRows('equipment_ropes', withoutSku, 'legacy_id');
+    return total;
+  }
+
   async function importStaticData(data){
     if(!configured()) throw new Error('Supabase nije konfiguriran.');
     if(!(await SOVAuth.can('armory'))) throw new Error('Import može raditi samo admin ili oružar.');
@@ -122,7 +155,7 @@
     const locs=(data.locations||[]).map((l,idx)=>({legacy_id:String(l.id||idx+1),name:l.name,description:l.description||null,type:l.type||null}));
     const items=(data.items||[]).map(i=>({legacy_id:i.id,catalog_id:String(i.catalog_id||''),name:i.name,category_name:i.category||null,subcategory:i.subcategory||null,unit:i.unit||'kom',tracking_type:i.tracking_type||'po vrsti',quantity:Number(i.quantity)||0,loaned:Number(i.loaned)||0,available:Number(i.available)||0,minimum:i.minimum===''?null:Number(i.minimum)||null,status:i.status||'aktivno',availability:i.availability||'dostupno',member_visible:i.member_visible!==false,internal_note:i.internal_note||null,source_sheet:i.source_sheet||null}));
     const pieces=(data.pieces||[]).map(p=>({legacy_id:p.id,catalog_legacy_id:String(p.catalog_id||''),name:p.name,sku:p.sku||null,manufacturer:p.manufacturer||null,model:p.model||null,purchase_date:toDate(p.purchase_date),location_name:p.location||null,status:p.status||'U društvu',next_service:toDate(p.next_service),note:p.note||null}));
-    const ropes=(data.ropes||[]).map(r=>({legacy_id:r.id,sku:r.sku||r.id,name:r.name,diameter_mm:String(r.diameter_mm||'').replace(',','.')||null,length_m:Number(r.length_m)||null,manufacturer:r.manufacturer||null,model:r.model||null,standard:r.standard||null,production_year:Number(r.year)||null,in_use_since:toDate(r.in_use_since),color:r.color||null,supplier:r.supplier||null,location_name:r.location||null,status:r.status||'U društvu',note:r.note||null}));
+    const ropes=(data.ropes||[]).map(r=>({legacy_id:r.id,sku:normalizedSku(r.sku||r.id),name:r.name,diameter_mm:String(r.diameter_mm||'').replace(',','.')||null,length_m:Number(r.length_m)||null,manufacturer:r.manufacturer||null,model:r.model||null,standard:r.standard||null,production_year:Number(r.year)||null,in_use_since:toDate(r.in_use_since),color:r.color||null,supplier:r.supplier||null,location_name:r.location||null,status:r.status||'U društvu',note:r.note||null}));
     const procurement=(data.procurement||[]).map(p=>({legacy_id:p.id,equipment_legacy_id:String(p.catalog_id||''),item_name:p.name,quantity:Number(p.quantity)||null,unit_price:Number(p.unit_price)||null,total_price:Number(p.total_price)||null,supplier:p.supplier||null,status:p.status||'Zaprimljeno',purchase_date:toDate(p.date),requested_by:p.person||null,note:p.note||null}));
     const disposals=[...(data.disposed||[]),...(data.lost||[])].map(d=>({legacy_id:d.id,disposal_date:toDate(d.date),disposal_type:d.type||'Rashod',equipment_legacy_id:String(d.catalog_id||''),item_name:d.name,quantity:Number(d.quantity)||null,reason:d.reason||null,location_name:d.location||null,person_name:d.person||null,note:d.note||null}));
     const field=(data.field||[]).map(f=>({legacy_id:f.id,recorded_at:toDate(f.date),equipment_legacy_id:String(f.catalog_id||''),item_name:f.name,quantity:Number(f.quantity)||null,field_location:f.location||f.reason||null,responsible_person:f.person||null,status:'na terenu',note:f.note||null}));
@@ -132,7 +165,7 @@
     result.locations=await upsertRows('equipment_locations',locs,'legacy_id');
     result.items=await upsertRows('equipment_items',items,'legacy_id');
     result.pieces=await upsertRows('equipment_pieces',pieces,'legacy_id');
-    result.ropes=await upsertRows('equipment_ropes',ropes,'legacy_id');
+    result.ropes=await upsertRopes(ropes);
     result.procurement=await upsertRows('procurement_plan',procurement,'legacy_id');
     result.disposals=await upsertRows('equipment_disposals',disposals,'legacy_id');
     result.field=await upsertRows('equipment_field_items',field,'legacy_id');
