@@ -1,5 +1,4 @@
 # TODO
 
-- Dodati fotografije aktualnog pročelništva kada budu dostupne.
-- Provjeriti pravopis imena u povijesnom timelineu.
-- Po potrebi dopuniti nedostajuće funkcije za godine gdje kronologija ne navodi sve uloge.
+- Kad se spoji backend, Map download može generirati MBTiles server-side za veće površine.
+- Provjeriti finalni DGU TK25 layer name ako Geoportal promijeni capabilities.

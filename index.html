@@ -1,291 +1,62 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="hr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Speleološki odsjek Velebit — SOV Portal</title>
-  <meta name="description" content="Moderni portal Speleološkog odsjeka PDS Velebit: vijesti, speleoškola, povijest, Velebit, putopisi i kontakt." />
-  <style>
-    :root{
-      --bg:#050607; --bg2:#0b0f12; --card:#10161a; --card2:#141d22;
-      --text:#f5f7f7; --muted:#a8b2b5; --line:rgba(255,255,255,.12);
-      --sov:#ffffff; --accent:#d7f66f; --orange:#ff9c3a; --blue:#7ed7ff;
-      --danger:#ff5b5b; --ok:#82ffb2;
-      --radius:24px;
-    }
-    *{box-sizing:border-box}
-    html{scroll-behavior:smooth}
-    body{
-      margin:0; font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background:
-        radial-gradient(circle at 18% 8%, rgba(126,215,255,.16), transparent 30%),
-        radial-gradient(circle at 80% 20%, rgba(215,246,111,.10), transparent 28%),
-        linear-gradient(180deg,#030404 0%,#0b0f12 42%,#060707 100%);
-      color:var(--text); overflow-x:hidden;
-    }
-    body:before{
-      content:""; position:fixed; inset:0; pointer-events:none; opacity:.34; z-index:-1;
-      background-image:
-        linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
-      background-size:46px 46px;
-      mask-image:linear-gradient(to bottom, black, transparent 78%);
-    }
-    a{color:inherit;text-decoration:none}
-    .wrap{width:min(1180px, calc(100% - 32px)); margin:0 auto}
-    header{
-      position:sticky; top:0; z-index:30; backdrop-filter:blur(18px);
-      background:rgba(5,6,7,.76); border-bottom:1px solid var(--line)
-    }
-    .nav{display:flex;align-items:center;gap:18px;min-height:76px}
-    .brand{display:flex;align-items:center;gap:14px;min-width:220px}
-    .brand img{height:48px;width:auto;border-radius:8px}
-    .brand span{font-weight:800;letter-spacing:.06em;font-size:12px;color:var(--muted);text-transform:uppercase}
-    nav{display:flex;gap:18px;align-items:center;flex:1;justify-content:center;font-size:14px;color:#dce3e5}
-    nav a{opacity:.86}
-    nav a:hover{opacity:1;color:var(--accent)}
-    .actions{display:flex;gap:10px}
-    .btn{
-      border:1px solid var(--line); background:rgba(255,255,255,.06); color:white;
-      padding:11px 15px; border-radius:999px; font-weight:750; font-size:14px;
-      display:inline-flex;align-items:center;gap:8px; cursor:pointer
-    }
-    .btn.primary{background:var(--text); color:#070808; border-color:transparent}
-    .btn.accent{background:var(--accent); color:#101405; border-color:transparent}
-    .hero{position:relative; padding:74px 0 44px; min-height:650px; overflow:hidden}
-    .hero:before{
-      content:""; position:absolute; inset:0; z-index:-2;
-      background:
-        linear-gradient(90deg, rgba(5,6,7,.82), rgba(5,6,7,.38), rgba(5,6,7,.94)),
-        linear-gradient(180deg, rgba(5,6,7,.1), #050607 94%),
-        url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=2200&q=80');
-      background-size:cover; background-position:center;
-      filter:saturate(.75) contrast(1.1) brightness(.65);
-    }
-    .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:36px;align-items:center}
-    .eyebrow{display:inline-flex;gap:10px;align-items:center;padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.06);color:var(--muted);font-size:13px;font-weight:750}
-    .dot{width:8px;height:8px;border-radius:999px;background:var(--accent);box-shadow:0 0 22px var(--accent)}
-    h1{font-size:clamp(42px,7vw,92px);line-height:.92;margin:22px 0 18px;letter-spacing:-.07em}
-    .lead{font-size:clamp(18px,2.1vw,24px);line-height:1.5;color:#d7dedf;max-width:720px}
-    .hero-cards{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:28px}
-    .stat{padding:18px;border:1px solid var(--line);background:rgba(10,15,18,.72);border-radius:20px;box-shadow:0 20px 80px rgba(0,0,0,.25)}
-    .stat b{font-size:26px}.stat p{margin:6px 0 0;color:var(--muted);font-size:13px}
-    .portal-card{border:1px solid var(--line);background:linear-gradient(160deg,rgba(255,255,255,.1),rgba(255,255,255,.025));border-radius:34px;padding:24px;box-shadow:0 30px 120px rgba(0,0,0,.45)}
-    .portal-card img{width:100%;border-radius:20px;background:#000;margin-bottom:18px}
-    .terminal{font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-size:13px; color:#b9fbd6; background:#030505;border:1px solid rgba(130,255,178,.22);border-radius:18px;padding:16px;line-height:1.7}
-    section{padding:78px 0}
-    .section-head{display:flex;justify-content:space-between;gap:24px;align-items:end;margin-bottom:24px}
-    .section-head h2{font-size:clamp(30px,4vw,56px);margin:0;letter-spacing:-.045em}
-    .section-head p{max-width:520px;color:var(--muted);line-height:1.6;margin:0}
-    .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-    .grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
-    .card{border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.035));border-radius:var(--radius);padding:22px;min-height:190px;position:relative;overflow:hidden}
-    .card:hover{transform:translateY(-2px);transition:.2s;border-color:rgba(215,246,111,.38)}
-    .card h3{font-size:22px;margin:0 0 10px}
-    .card p,.card li{color:var(--muted);line-height:1.6}
-    .tag{display:inline-flex;align-items:center;gap:8px;color:#111;background:var(--accent);border-radius:999px;padding:6px 10px;font-weight:800;font-size:12px;margin-bottom:18px}
-    .tag.dark{background:rgba(255,255,255,.08);color:#e6eeee;border:1px solid var(--line)}
-    .news .card{min-height:260px}
-    .meta{font-size:12px;color:#8b9699;text-transform:uppercase;letter-spacing:.08em;font-weight:800}
-    .split{display:grid;grid-template-columns:.9fr 1.1fr;gap:20px;align-items:stretch}
-    .mapbox{
-      min-height:460px;border-radius:32px;border:1px solid var(--line);overflow:hidden;position:relative;
-      background:
-        radial-gradient(circle at 50% 50%,rgba(215,246,111,.16),transparent 20%),
-        repeating-linear-gradient(30deg,rgba(255,255,255,.04) 0 1px,transparent 1px 16px),
-        #0e1518;
-    }
-    .mapbox:before{content:"";position:absolute;inset:18px;border:1px solid rgba(255,255,255,.12);border-radius:24px}
-    .pin{position:absolute;width:14px;height:14px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 10px rgba(215,246,111,.12)}
-    .p1{left:62%;top:24%}.p2{left:48%;top:54%;background:var(--orange);box-shadow:0 0 0 10px rgba(255,156,58,.12)}.p3{left:70%;top:68%;background:var(--blue);box-shadow:0 0 0 10px rgba(126,215,255,.12)}
-    .member{background:linear-gradient(135deg,#10161a,#071016 55%,#111400);border:1px solid rgba(215,246,111,.28)}
-    .feature-list{display:grid;gap:12px;margin-top:18px}
-    .feature{display:flex;gap:12px;align-items:flex-start;padding:13px;border-radius:16px;background:rgba(255,255,255,.05);border:1px solid var(--line)}
-    .feature span{width:24px;height:24px;border-radius:8px;background:rgba(215,246,111,.18);display:grid;place-items:center;color:var(--accent);font-weight:900;flex:0 0 auto}
-    .admin{background:#f3f5f2;color:#101315;border-radius:32px;padding:24px}
-    .admin h3{color:#101315}.admin p{color:#5b6366}
-    .admin-ui{background:white;border:1px solid #d9dfdc;border-radius:22px;padding:18px;box-shadow:0 30px 70px rgba(0,0,0,.16)}
-    .field{margin-bottom:12px}
-    .field label{display:block;font-size:12px;font-weight:800;color:#64706c;text-transform:uppercase;margin-bottom:6px}
-    input,textarea,select{width:100%;border:1px solid #d9dfdc;border-radius:14px;padding:13px;font:inherit}
-    textarea{min-height:110px;resize:vertical}
-    .footer{padding:38px 0 60px;border-top:1px solid var(--line);color:var(--muted)}
-    .mobile{display:none}
-    @media(max-width:900px){
-      nav{display:none}.mobile{display:inline-flex}.actions .btn:not(.primary){display:none}
-      .hero-grid,.split,.grid2,.grid3{grid-template-columns:1fr}
-      .hero{padding-top:44px}
-      .hero-cards{grid-template-columns:1fr 1fr}
-      .section-head{display:block}
-      .portal-card{margin-top:8px}
-    }
-    @media(max-width:560px){
-      .wrap{width:min(100% - 22px,1180px)}
-      .brand img{height:38px}.brand span{display:none}
-      .hero-cards{grid-template-columns:1fr}
-      .btn{padding:10px 12px}
-      section{padding:52px 0}
-    }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Speleološki odsjek PDS Velebit — Novosti</title>
+<link rel="stylesheet" href="assets/site.css" />
+<link rel="icon" href="assets/sov-logo.png" />
+<style>
+:root{--bg:#05070a;--panel:#10171f;--muted:#9aa6b2;--line:rgba(255,255,255,.12);--gold:#d5a85b;--blue:#7ab7ff}
+body{margin:0;background:radial-gradient(circle at 15% 5%,rgba(213,168,91,.14),transparent 32%),linear-gradient(180deg,#05070a,#0b1016 45%,#05070a);color:#f6f0e7;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+.topbar{position:sticky;top:0;z-index:50;background:rgba(5,7,10,.76);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
+.nav{max-width:1220px;margin:auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.brand{display:flex;gap:12px;align-items:center;text-decoration:none;color:#fff;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+.brand img{width:38px;height:38px;object-fit:contain}
+.navlinks{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.navlinks a{color:#dce3ea;text-decoration:none;font-size:14px}
+.navlinks .login{border:1px solid rgba(213,168,91,.48);color:#f0c477;border-radius:999px;padding:9px 14px}
+.portal-hero{min-height:72vh;display:grid;align-items:end;position:relative;background:linear-gradient(180deg,rgba(0,0,0,.28),rgba(0,0,0,.75)),url('novosti/Sve što je lijepo kratko traje, osim puta do Velebitaškog duha – Speleološki odsjek PDS Velebit_files/autorica-teksta-na-izlazu-iz-dvojame_paula-skelin.jpg') center/cover}
+.portal-hero-inner{max-width:1220px;margin:0 auto;padding:96px 24px 58px;width:100%;box-sizing:border-box}
+.eyebrow{display:inline-flex;border:1px solid rgba(213,168,91,.52);border-radius:999px;padding:8px 12px;color:#f0c477;text-transform:uppercase;letter-spacing:.16em;font-size:12px;background:rgba(0,0,0,.28)}
+.portal-hero h1{font-size:clamp(48px,9vw,118px);line-height:.88;margin:24px 0 22px;letter-spacing:-.075em;max-width:1060px}
+.portal-sub{font-size:clamp(18px,2vw,24px);color:#d8e0e8;max-width:760px;line-height:1.45}
+.news-section{max-width:1220px;margin:0 auto;padding:54px 24px 90px}
+.section-head{display:flex;align-items:end;justify-content:space-between;margin-bottom:26px;gap:16px}
+.section-head h2{font-size:clamp(34px,5vw,64px);margin:0;letter-spacing:-.05em}
+.section-head p{margin:0;color:var(--muted);max-width:440px;line-height:1.5}
+.news-lead{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(320px,.8fr);gap:28px;margin-bottom:34px}
+.news-featured,.news-side-card,.news-card{text-decoration:none;color:#fff;background:rgba(255,255,255,.045);border:1px solid var(--line);border-radius:28px;overflow:hidden;display:block;box-shadow:0 18px 70px rgba(0,0,0,.28);transition:transform .2s ease,border-color .2s ease}
+.news-featured:hover,.news-side-card:hover,.news-card:hover{transform:translateY(-4px);border-color:rgba(213,168,91,.45)}
+.news-featured .news-img{height:520px}
+.news-img{display:block;background-size:cover;background-position:center;height:230px}
+.news-copy{display:block;padding:24px}
+.news-meta{display:block;color:#f0c477;font-size:12px;text-transform:uppercase;letter-spacing:.12em;margin-bottom:12px}
+.news-copy strong{display:block;font-size:clamp(24px,3vw,42px);line-height:1.02;letter-spacing:-.04em;margin-bottom:12px}
+.news-copy em{display:block;color:#b9c4cf;font-style:normal;line-height:1.55}
+.news-stack{display:grid;gap:20px}
+.news-side-card{display:grid;grid-template-columns:150px 1fr;min-height:160px}
+.news-side-card .news-img{height:100%}
+.news-side-card .news-copy{padding:18px}
+.news-side-card .news-copy strong{font-size:22px}
+.news-side-card .news-copy em{font-size:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.news-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+.news-card .news-copy strong{font-size:25px}
+.news-card .news-copy em{font-size:15px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.quick-links{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:rgba(255,255,255,.035)}
+.quick-inner{max-width:1220px;margin:0 auto;padding:34px 24px;display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.quick-inner a{color:#fff;text-decoration:none;border:1px solid var(--line);border-radius:22px;padding:22px;background:rgba(255,255,255,.035)}
+.quick-inner strong{display:block;font-size:22px;margin-bottom:6px}
+.quick-inner span{color:var(--muted);font-size:14px;line-height:1.4}
+.footer{max-width:1220px;margin:0 auto;padding:40px 24px 60px;color:#7f8b96}
+@media(max-width:940px){.news-lead{grid-template-columns:1fr}.news-grid{grid-template-columns:1fr 1fr}.quick-inner{grid-template-columns:1fr 1fr}.navlinks{display:none}}
+@media(max-width:620px){.portal-hero{min-height:64vh}.news-grid,.quick-inner{grid-template-columns:1fr}.news-side-card{grid-template-columns:1fr}.news-side-card .news-img{height:220px}.news-featured .news-img{height:320px}}
+</style>
 </head>
 <body>
-<header>
-  <div class="wrap nav">
-    <a class="brand" href="#"><img src="assets/sov-logo.png" alt="SOV logo"><span>Speleološki odsjek Velebit</span></a>
-    <nav>
-      <a href="vijesti.html">Novosti</a><a href="o-drustvu.html">O nama</a><a href="povijest.html">Povijest</a><a href="speleoskola.html">Speleoškola</a><a href="velebitaski-duh.html">Velebit</a><a href="velebitaski-duh.html">Putopisi</a><a href="o-drustvu.html#kontakt">Kontakt</a>
-    </nav>
-    <div class="actions"><a class="btn mobile" href="#menu">☰</a><a class="btn" href="#admin">Admin Lite</a><a class="btn primary" href="login.html">Login</a></div>
-  </div>
-</header>
-
-<main>
-  <section class="hero">
-    <div class="wrap hero-grid">
-      <div>
-        <div class="eyebrow"><span class="dot"></span> Dobrodošli u svijet podzemlja</div>
-        <h1>Speleologija, Velebit i ekspedicije — na jednom modernom portalu.</h1>
-        <p class="lead">Aktivnosti speleološkog odsjeka online: istraživanja podzemlja, izleti, savjeti, speleoškola, putopisi i članska platforma povezana sa SOV terenskom aplikacijom.</p>
-        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:28px">
-          <a class="btn accent" href="vijesti.html">Pogledaj novosti</a>
-          <a class="btn" href="speleoskola.html">Speleoškola</a>
-          <a class="btn" href="o-drustvu.html#kontakt">Kontakt</a>
-        </div>
-        <div class="hero-cards">
-          <div class="stat"><b>1954.</b><p>početci speleološke djelatnosti u PDS Velebitu</p></div>
-          <div class="stat"><b>1971.</b><p>duga tradicija speleološke škole i edukacije</p></div>
-          <div class="stat"><b>Srijedom</b><p>sastanci i druženje iza 20h u Klaićevoj 42/1</p></div>
-          <div class="stat"><b>SOV Cloud</b><p>privatni dio dostupan samo kroz login</p></div>
-        </div>
-      </div>
-      <aside class="portal-card">
-        <img src="assets/sov-logo.png" alt="SOV identitet">
-        <div class="terminal">
-          > javni portal: vijesti / povijest / škola<br>
-          > javno: vijesti / škola / povijest / Velebit<br>
-          > privatno: login za članove / admin approval<br>
-          > app sync: field packages / KML / GPX
-        </div>
-      </aside>
-    </div>
-  </section>
-
-  <section id="novosti" class="news">
-    <div class="wrap">
-      <div class="section-head">
-        <h2>Novosti</h2>
-        <p>Mjesto za obavijesti, istraživanja, školu, izlete i priče s terena. U pravoj verziji ovo se puni kroz ultra jednostavan WordPress-style editor.</p>
-      </div>
-      <div class="grid3">
-        <article class="card"><div class="meta">Speleoškola · 05.05.2026</div><h3>Pa po užetu dol’ pa po užetu gor’!</h3><p>Priča iz škole: prvi susret s užetom, spuštanje u jamu i onaj trenutak kad strah zamijeni osmijeh.</p><a class="btn" href="#">Čitaj više</a></article>
-        <article class="card"><div class="meta">Speleoškola</div><h3>Kako se učlaniti</h3><p>Svake srijede iza 20h održavaju se sastanci i druženje u Klaićevoj 42/1 u Zagrebu. Dođi, pitaj, upoznaj ekipu.</p><a class="btn" href="o-drustvu.html#kontakt">Pitaj nas</a></article>
-        <article class="card"><div class="meta">Velebiten</div><h3>Časopis Velebiten</h3><p>Službeno glasilo PDS Velebit s temama iz planinarstva, alpinizma, speleologije i srodnih područja.</p><a class="btn" href="velebitaski-duh.html">Detalji</a></article>
-      </div>
-    </div>
-  </section>
-
-  <section id="onama">
-    <div class="wrap split">
-      <div>
-        <div class="tag">O nama</div>
-        <h2 style="font-size:clamp(34px,5vw,64px);margin:0 0 18px;letter-spacing:-.05em">SOV kao javni portal i privatni terenski sustav.</h2>
-        <p class="lead">Speleološki odsjek Velebit okuplja ljude koje zanima istraživanje krša i podzemlja, edukacija, terenski rad i dokumentiranje speleoloških objekata.</p>
-      </div>
-      <div class="grid2">
-        <div class="card"><h3>Javno</h3><p>Vijesti, povijest, informacije o društvu, speleoškola, putopisi, Velebit, edukacija i kontakt dostupni su svima.</p></div>
-        <div class="card"><h3>Privatno</h3><p>Karte, baze, nacrti, trackovi, exporti, planiranje izleta i dijeljenje dostupni su samo odobrenim korisnicima.</p></div>
-      </div>
-    </div>
-  </section>
-
-  <section id="povijest">
-    <div class="wrap">
-      <div class="section-head"><h2>Povijest</h2><p>Nova stranica zadržava bogatu arhivu stare SOV stranice, ali je prikazuje modernije, čitljivije i preglednije.</p></div>
-      <div class="grid3">
-        <div class="card"><span class="tag dark">Početci</span><h3>1954.</h3><p>Početci speleološke djelatnosti u Planinarskom društvu Sveučilišta “Velebit”.</p></div>
-        <div class="card"><span class="tag dark">Ekspedicije</span><h3>Sjeverni Velebit</h3><p>Istraživanja Velebita, Slovačke jame, Rožanskih kukova i drugih područja ostaju posebna okosnica identiteta.</p></div>
-        <div class="card"><span class="tag dark">Arhiva</span><h3>Putovanja i istraživanja</h3><p>Namibija, Alpe, Makedonija, Tibet, Maroko, BiH, Kuba, Mađarska, Bolivija i brojne druge destinacije iz arhive.</p></div>
-      </div>
-    </div>
-  </section>
-
-  <section id="skola">
-    <div class="wrap">
-      <div class="section-head"><h2>Speleoškola</h2><p>Edukacijski dio portala: uvod u speleologiju, česta pitanja, priče školaraca, instruktori i stručni nazivi.</p></div>
-      <div class="grid3">
-        <div class="card"><h3>Povijest od 1971.</h3><p>Duga tradicija školovanja novih generacija speleologa i speleologa pripravnika.</p></div>
-        <div class="card"><h3>Edukacija</h3><p>Oprema, tehnike kretanja po užetu, topografsko snimanje, osnove geologije, krš, sigurnost i rad na terenu.</p></div>
-        <div class="card"><h3>Česta pitanja</h3><p>Što trebam znati prije škole? Kakva oprema treba? Koliko traje? Kako se učlaniti? Sve na jednom mjestu.</p></div>
-      </div>
-    </div>
-  </section>
-
-  <section id="velebit">
-    <div class="wrap split">
-      <div class="mapbox" aria-label="stilizirana karta Velebita"><span class="pin p1"></span><span class="pin p2"></span><span class="pin p3"></span></div>
-      <div>
-        <div class="tag">Velebit</div>
-        <h2 style="font-size:clamp(34px,5vw,64px);margin:0 0 18px;letter-spacing:-.05em">Planina, krš, jame i ekspedicijski duh.</h2>
-        <p class="lead">Sekcija za Velebit treba biti posebna: velika vizualna priča, pregled istraživanja, ekspedicije, karte, arhiva, fotografije i poveznica s terenskom aplikacijom.</p>
-        <div class="feature-list">
-          <div class="feature"><span>✓</span><div><b>Javni storytelling</b><br><small>priče, fotografije, istraživanja, edukacija</small></div></div>
-          <div class="feature"><span>⌁</span><div><b>Privatne karte</b><br><small>dostupne samo odobrenim članovima</small></div></div>
-          <div class="feature"><span>↗</span><div><b>Export u app</b><br><small>izleti, područja, GPX/KML i field packageovi</small></div></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="putopisi">
-    <div class="wrap">
-      <div class="section-head"><h2>Putopisi i priče</h2><p>Arhiva tekstova s putovanja, škola, akcija i ekspedicija — očišćena od starog layouta i spremna za moderno čitanje.</p></div>
-      <div class="grid3">
-        <div class="card"><h3>Priče školaraca</h3><p>Osobni doživljaji prvih jama, prvih užeta i prvih terena.</p></div>
-        <div class="card"><h3>Istraživanja</h3><p>Izvještaji s ekspedicija i istraživačkih akcija.</p></div>
-        <div class="card"><h3>Galerija</h3><p>Fotografije iz podzemlja, s terena, s užeta i iz logora.</p></div>
-      </div>
-    </div>
-  </section>
-
-
-  <section id="admin">
-    <div class="wrap admin">
-      <div class="section-head"><h2>Admin Lite</h2><p>Namjerno jednostavno. Za ljude koji žele dodati vijest bez borbe sa sustavom.</p></div>
-      <div class="grid2">
-        <div>
-          <h3>WordPress-style, ali bez kaosa</h3>
-          <p>Naslov, uvod, tekst, slika, kategorija, objavi. To je to. Verzije, skice i odobravanje korisnika mogu doći kasnije.</p>
-          <div class="feature-list">
-            <div class="feature"><span>1</span><div><b>Dodaj vijest</b><br><small>jednostavan editor</small></div></div>
-            <div class="feature"><span>2</span><div><b>Odobri korisnika</b><br><small>registracije idu kroz admin approval</small></div></div>
-            <div class="feature"><span>3</span><div><b>Objavi</b><br><small>vijest odmah ide na javni portal i u app</small></div></div>
-          </div>
-        </div>
-        <div class="admin-ui">
-          <div class="field"><label>Naslov vijesti</label><input value="Nova speleološka akcija na Velebitu"></div>
-          <div class="field"><label>Kratki uvod</label><input value="Kratki opis koji se prikazuje na naslovnici."></div>
-          <div class="field"><label>Kategorija</label><select><option>Novosti</option><option>Speleoškola</option><option>Istraživanja</option><option>Velebit</option><option>Obavijesti</option></select></div>
-          <div class="field"><label>Tekst</label><textarea>Ovdje ide tekst vijesti. Editor mora biti jednostavan, velik i razumljiv.</textarea></div>
-          <button class="btn accent" type="button">Objavi</button>
-          <button class="btn" style="color:#111" type="button">Spremi skicu</button>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="kontakt">
-    <div class="wrap">
-      <div class="section-head"><h2>Pitajte nas</h2><p>Kontakt forma, upute za dolazak srijedom, linkovi na društvene mreže i osnovne informacije za nove članove.</p></div>
-      <div class="card"><h3>Dođi srijedom iza 20h</h3><p>Klaićeva 42/1, Zagreb. U pravoj verziji ovdje ide karta, kontakt forma i najvažnije upute za učlanjenje.</p></div>
-    </div>
-  </section>
-</main>
-
-<footer class="footer">
-  <div class="wrap">
-    <b>Speleološki odsjek PDS Velebit</b><br>
-    Moderni javni portal + odvojena SOV Cloud login zona. Demo HTML v0.3.
-  </div>
-</footer>
-</body>
-</html>
+<header class="topbar"><nav class="nav"><a class="brand" href="index.html"><img src="assets/sov-logo.png"/>SOV Velebit</a><div class="navlinks"><a href="index.html">Novosti</a><a href="o-drustvu.html">O društvu</a><a href="povijest.html">Povijest</a><a href="velebitaski-duh.html">Velebitaški duh</a><a href="speleoskola.html">Speleoškola</a><a class="login" href="dashboard.html">SOV Cloud</a></div></nav></header>
+<section class="portal-hero"><div class="portal-hero-inner"><span class="eyebrow">Novosti · Speleološki odsjek PDS Velebit</span><h1>Iz podzemlja, s terena i iz društva.</h1><p class="portal-sub">Najnovije objave, speleoškola, istraživanja, ekspedicije i Velebitaški duh — kronološki, jasno i u stilu SOV-a.</p></div></section>
+<main class="news-section"><div class="section-head"><h2>Najnovije</h2><p>Vijesti su sada glavna stranica portala. Tekstovi članaka nisu mijenjani, samo su presloženi u novi vizualni sustav.</p></div><div class="news-lead"><a class="news-featured" href="novosti/sve-sto-je-lijepo-kratko-traje-osim-puta-do-velebitaskog-duha.html"><span class="news-img" style="background-image:url('novosti/Sve što je lijepo kratko traje, osim puta do Velebitaškog duha – Speleološki odsjek PDS Velebit_files/autorica-teksta-na-izlazu-iz-dvojame_paula-skelin.jpg')"></span><span class="news-copy"><span class="news-meta">Speleoškola · 07.05.2026.</span><strong>Sve što je lijepo kratko traje, osim puta do Velebitaškog duha</strong><em>Možda tek pišući ovaj tekst shvaćam koliki smo uspjeh postigli. U šest tjedana školice napravili smo nešto što ja osobno nisam mogla zamisliti da ću ikada postići.</em></span></a><div class="news-stack"><a class="news-side-card" href="novosti/pa-po-uzetu-dol-pa-po-uzetu-gor.html"><span class="news-img" style="background-image:url('novosti/Pa po užetu dol’ pa po užetu gor’! – Speleološki odsjek PDS Velebit_files/1f60a.svg')"></span><span class="news-copy"><span class="news-meta">Speleoškola · 05.05.2026.</span><strong>Pa po užetu dol’ pa po užetu gor’!</strong><em>Školarci se po redu spuštaju u jamu, sa osmjehom za koji nisam sigurna da li je od sreće ili straha. Ma kakav strah, čim sam ukopčala stop descender i počela se spuštati nestalo je sve</em></span></a><a class="news-side-card" href="novosti/spust-u-jamu.html"><span class="news-img" style="background-image:url('novosti/Spust u jamu – Speleološki odsjek PDS Velebit_files/grupno-crtanje_klara-krsticevic.jpg')"></span><span class="news-copy"><span class="news-meta">Speleoškola · 28.04.2026.</span><strong>Spust u jamu</strong><em>I konačno je stigao dan da se spustimo u jamu, donekle, ili barem u špilju s jamskim ulazom, Jopićevu špilju, dovoljno blizu da budemo sretni.</em></span></a><a class="news-side-card" href="novosti/hej-haj-terihaj-i-gorsko.html"><span class="news-img" style="background-image:url('novosti/Hej, haj Terihaj (i Gorsko) – Speleološki odsjek PDS Velebit_files/gorsko-zrcalo-na-stijeni_petra-jagodic.jpg')"></span><span class="news-copy"><span class="news-meta">Speleoškola · 20.04.2026.</span><strong>Hej, haj Terihaj (i Gorsko)</strong><em>O HGSS-u smo već slušali na predavanjima, ali ovo je bio prvi put da smo ih vidjeli kako djeluju u praksi</em></span></a></div></div><div class="news-grid"><a class="news-card" href="novosti/56-zagrebacka-speleoskola.html"><span class="news-img" style="background-image:url('https://i0.wp.com/sovelebit.wordpress.com/wp-content/uploads/2025/04/ponorac-na-stijeni-mikic-t.jpg?fit=1200%2C800&ssl=1')"></span><span class="news-copy"><span class="news-meta">Speleoškola · 20.01.2026.</span><strong>56. ZAGREBAČKA SPELEOŠKOLA</strong><em>Eto nas opet! Ne gubi vrijeme, pročitaj što piše i prijavi se prije nego li se mjesta popune!</em></span></a><a class="news-card" href="novosti/novi-velebiten.html"><span class="news-img" style="background-image:url('novosti/Novi Velebiten! – Speleološki odsjek PDS Velebit_files/sadrzaj.jpg')"></span><span class="news-copy"><span class="news-meta">Velebiten · 15.12.2025.</span><strong>Novi Velebiten!</strong><em>Novi broj našeg časopisa Velebiten je tu! Pregršt priča iz planinarstva, visokogorstva, speleologije, putopisa i punom vrećom prekrasnih fotografija</em></span></a><a class="news-card" href="novosti/izlet-iz-snova.html"><span class="news-img" style="background-image:url('novosti/Izlet iz snova – Speleološki odsjek PDS Velebit_files/kucica.jpg')"></span><span class="news-copy"><span class="news-meta">Istraživanja · 02.10.2025.</span><strong>Izlet iz snova</strong><em>…Pitamo se gdje je svemu ovome kraj, padaju oklade.  Kanal buja na sve strane i završava dvoranom u kojoj je duboki blatni krater, ogroman penj i lijepa pješčana zaravan, gdje se može leći i …</em></span></a><a class="news-card" href="novosti/speleoloska-ekspedicija-sjeverni-velebit-2025.html"><span class="news-img" style="background-image:url('https://i0.wp.com/sovelebit.wordpress.com/wp-content/uploads/2024/07/img_20240615_185331.jpg?fit=900%2C1200&ssl=1')"></span><span class="news-copy"><span class="news-meta">Ekspedicije · 07.07.2025.</span><strong>Speleološka ekspedicija “Sjeverni Velebit 2025.”</strong><em>SO PDS Velebit vas poziva na speleološku ekspediciju „Sjeverni Velebit 2025“ koja će se održati na području Hajdučkih kukova unutar Nacionalnog Parka Sjeverni Velebit u razdoblju od 26. 7. – 10. 8.…</em></span></a><a class="news-card" href="novosti/istrazivanja-na-gubackom-vrhu.html"><span class="news-img" style="background-image:url('novosti/Istraživanja na Gubačkom vrhu – Speleološki odsjek PDS Velebit_files/gubacki-vrh-2025.jpg')"></span><span class="news-copy"><span class="news-meta">Istraživanja · 30.04.2025.</span><strong>Istraživanja na Gubačkom vrhu</strong><em>U nedjelju, 27. travnja 2025. godine mala ali motivirana ekipa antropologa, arheologa i speleologa se uputila ka Gubačkom vrhu,</em></span></a></div></main>
+<section class="quick-links"><div class="quick-inner"><a href="o-drustvu.html"><strong>O društvu</strong><span>Pročelništvo, uredništvo, kontakt i osnovne informacije.</span></a><a href="povijest.html"><strong>Povijest</strong><span>Velika priča Speleološkog odsjeka Velebit.</span></a><a href="velebitaski-duh.html"><strong>Velebitaški duh</strong><span>Tradicija, pjesma i identitet odsjeka.</span></a><a href="dashboard.html"><strong>SOV Cloud</strong><span>Karte, izleti, baza, dokumentacija i članski alati.</span></a></div></section>
+<footer class="footer">Speleološki odsjek PDS Velebit · Moderni statički portal · v2.2</footer>
+</body></html>

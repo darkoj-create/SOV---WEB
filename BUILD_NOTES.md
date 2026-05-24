@@ -1,11 +1,17 @@
 # Build notes
 
-Aktivna verzija: v1.7-procelnistvo-timeline
+VAŽNO:
+- Ne pregaziti javni portal parcijalnim registered buildom.
+- Novosti su glavna stranica (`index.html`).
+- Article tekstovi se ne prepravljaju ručno; dizajn mijenja layout, ne sadržaj.
+- Registered dijelovi su u ovom dev buildu otvoreni bez login provjere dok se ne spoji Supabase.
 
-Ne pregaziti:
-- javni landing
-- `povijest.html`
-- `velebitaski-duh.html`
-- registered/SOV Karta alat
+# Build notes — v2.1
 
-Ovaj build mijenja samo javni dio O nama / Pročelništvo.
+This is a DEV PREVIEW build. Registered pages are intentionally open without login until Supabase auth is connected.
+
+Do not remove public pages when updating registered tools. Always ship full site + SOV Cloud together.
+
+# Build notes
+
+Ne dirati javni landing/Povijest/Velebitaški duh u map-only fixevima. Registered SOV Karta je u `baza.html`.
