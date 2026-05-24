@@ -128,3 +128,138 @@
   .topbar .brand .brand-wordmark,
   .topbar .brand img.brand-wordmark{max-width:min(205px, calc(100vw - 66px))!important;}
 }
+
+/* v4.11 mobile nav polish */
+@media(max-width:768px){.about-switchboard{position:relative!important;top:auto!important}.about-tabs{position:relative!important;top:auto!important}.brand-sov .brand-wordmark{object-fit:contain!important;background:transparent!important}}
+
+/* v4.13 — stronger mobile optimization rebuild
+   Cilj: nema horizontalnog overflowa, nema preklapanja headera, veći touch targeti,
+   jasniji single-column flow na svim javnim i SOV Cloud stranicama. */
+@media (max-width: 900px){
+  *,*::before,*::after{box-sizing:border-box!important}
+  html,body{width:100%!important;max-width:100%!important;overflow-x:hidden!important}
+  body{padding-left:0!important;padding-right:0!important}
+  main,section,header,footer,article,aside{max-width:100%!important}
+  img,svg,canvas,video,iframe{max-width:100%!important;height:auto!important}
+  a,button,.btn,.button,.pill,.chip{touch-action:manipulation;-webkit-tap-highlight-color:rgba(215,246,111,.18)}
+
+  /* Globalni header: jedan kompaktan blok, bez plutanja preko teksta */
+  .topbar,.top,.dash-top{
+    position:sticky!important;top:0!important;z-index:2000!important;
+    width:100%!important;max-width:100%!important;
+    background:rgba(4,8,10,.96)!important;backdrop-filter:blur(18px)!important;
+    border-bottom:1px solid rgba(255,255,255,.11)!important;
+    box-shadow:0 14px 40px rgba(0,0,0,.28)!important;
+  }
+  .topbar .nav,.top .wrap,.dash-top .dash-shell{
+    width:100%!important;max-width:100%!important;margin:0!important;
+    padding:10px 12px!important;display:flex!important;flex-direction:column!important;
+    align-items:stretch!important;gap:9px!important;min-height:0!important;
+  }
+  .brand,.brand-sov,.topbar .brand{
+    width:100%!important;max-width:100%!important;display:flex!important;align-items:center!important;
+    justify-content:flex-start!important;gap:10px!important;min-width:0!important;overflow:hidden!important;
+  }
+  .brand img:not(.brand-wordmark),.brand-sov img:not(.brand-wordmark),.topbar .brand img:not(.brand-wordmark){
+    width:38px!important;height:38px!important;min-width:38px!important;flex:0 0 38px!important;
+    object-fit:contain!important;border-radius:12px!important;
+  }
+  .brand-wordmark,.brand-sov .brand-wordmark,.topbar .brand .brand-wordmark{
+    max-width:calc(100vw - 76px)!important;width:auto!important;max-height:42px!important;
+    object-fit:contain!important;object-position:left center!important;border-radius:12px!important;
+    background:transparent!important;display:block!important;overflow:hidden!important;
+  }
+  .brand strong,.brand-title,.brand span{font-size:13px!important;line-height:1.05!important;white-space:normal!important;overflow-wrap:anywhere!important}
+  .brand small{font-size:10px!important;line-height:1.05!important;white-space:normal!important}
+
+  .navlinks,.nav,.dash-nav,.topActions{
+    width:100%!important;max-width:100%!important;display:flex!important;flex-direction:row!important;
+    flex-wrap:nowrap!important;align-items:center!important;justify-content:flex-start!important;
+    gap:7px!important;overflow-x:auto!important;overflow-y:hidden!important;padding:2px 1px 8px!important;
+    -webkit-overflow-scrolling:touch!important;scroll-snap-type:x proximity!important;
+  }
+  .navlinks::-webkit-scrollbar,.nav::-webkit-scrollbar,.dash-nav::-webkit-scrollbar,.topActions::-webkit-scrollbar{display:none!important}
+  .navlinks a,.nav a,.dash-nav a,.topActions a,.topActions .btn{
+    flex:0 0 auto!important;scroll-snap-align:start!important;white-space:nowrap!important;
+    min-height:38px!important;height:38px!important;line-height:38px!important;
+    padding:0 11px!important;border-radius:999px!important;font-size:12px!important;font-weight:850!important;
+    max-width:none!important;text-align:center!important;
+  }
+
+  /* Tipografija i spacing */
+  .wrap,.page,.content,.section,.article,.video-page,.news-page,.about-page,.doc-shell,.calendar-shell,.admin,.editor,.writer,.meeting-editor{
+    width:calc(100% - 22px)!important;max-width:760px!important;margin-left:auto!important;margin-right:auto!important;
+  }
+  h1{font-size:clamp(34px,11vw,56px)!important;line-height:.94!important;letter-spacing:-.055em!important;overflow-wrap:break-word!important}
+  h2{font-size:clamp(26px,8vw,38px)!important;line-height:1!important;letter-spacing:-.035em!important;overflow-wrap:break-word!important}
+  h3{font-size:clamp(20px,6vw,28px)!important;line-height:1.1!important}
+  p,li{font-size:16px!important;line-height:1.62!important;overflow-wrap:break-word!important}
+  .lead{font-size:16px!important;line-height:1.55!important;max-width:100%!important}
+  .eyebrow,.kicker{font-size:11px!important;letter-spacing:.12em!important}
+
+  /* Hero i kartice */
+  .hero,.portal-hero,.about-hero,.dash-hero,.video-hero{
+    margin:12px auto 18px!important;border-radius:24px!important;min-height:0!important;overflow:hidden!important;
+  }
+  .heroInner,.portal-hero-inner,.about-hero-inner,.video-hero{padding:24px 16px!important}
+  .grid,.cards,.gallery,.story-grid,.peopleGrid,.photo-grid,.news-grid,.link-grid,.about-grid,.about-cards,.portal-grid,.cloud-grid{
+    display:grid!important;grid-template-columns:1fr!important;gap:14px!important;width:100%!important;
+  }
+  .card,.news-card,.article-card,.link-card,.person-card,.about-card,.doc-card,.trip-card,.menu-panel,.panel,.box{
+    border-radius:22px!important;padding:18px!important;max-width:100%!important;min-width:0!important;overflow:hidden!important;
+  }
+  .card img,.news-card img,.article-card img,.link-card img{width:100%!important;max-height:260px!important;object-fit:cover!important;border-radius:18px!important}
+
+  /* O nama: logičan mobitel flow */
+  .about-switchboard,.about-tabs{
+    position:relative!important;top:auto!important;display:flex!important;flex-direction:row!important;
+    overflow-x:auto!important;gap:8px!important;padding:8px 0!important;margin:0 0 14px!important;
+    background:transparent!important;border:0!important;box-shadow:none!important;
+  }
+  .about-switchboard a,.about-tabs a{
+    flex:0 0 auto!important;white-space:nowrap!important;min-height:40px!important;padding:0 13px!important;
+    display:inline-flex!important;align-items:center!important;border-radius:999px!important;font-size:12px!important;
+  }
+  .about-section,.about-block{scroll-margin-top:108px!important;border-radius:24px!important;padding:18px!important;margin-bottom:16px!important}
+
+  /* Dashboard: izbornik prvo, logo ne pojede ekran */
+  .dash-shell{width:calc(100% - 16px)!important;max-width:760px!important;margin:auto!important}
+  .cloud-grid{display:flex!important;flex-direction:column!important;padding:14px!important;gap:14px!important}
+  .menu-panel{order:1!important}.center-stage{order:0!important;min-height:0!important;padding:10px 0!important}
+  .logo-card{width:min(230px,70vw)!important;padding:14px!important;border-radius:20px!important}.center-stage h1{font-size:36px!important}.center-stage p{font-size:14px!important}
+  .menu-item{display:grid!important;grid-template-columns:40px 1fr!important;gap:11px!important;align-items:center!important;padding:13px!important;border-radius:18px!important;min-width:0!important}
+  .menu-item b,.menu-item span{overflow-wrap:anywhere!important}.menu-item small{font-size:12px!important;line-height:1.35!important}.menu-item .pill{grid-column:1/-1!important;margin-left:51px!important;justify-self:start!important}
+
+  /* Editori, forme, tablice */
+  input,select,textarea,[contenteditable="true"]{width:100%!important;max-width:100%!important;font-size:16px!important;border-radius:16px!important}
+  textarea,[contenteditable="true"]{min-height:220px!important}
+  .actions,.editor-actions,.trip-actions,.drawActions,.toolbar,.filters{display:flex!important;flex-wrap:wrap!important;gap:8px!important;justify-content:flex-start!important}
+  .actions .btn,.editor-actions .btn,.trip-actions .btn,.drawActions .btn,.toolbar .btn{flex:1 1 auto!important;min-width:138px!important;justify-content:center!important;text-align:center!important}
+  table{display:block!important;width:100%!important;overflow-x:auto!important;white-space:nowrap!important}
+
+  /* Map/app stranice: mapa pa panel, bez bočnog izlijetanja */
+  .app,.shell{width:100%!important;max-width:100%!important;overflow-x:hidden!important}
+  .app .shell,.map-shell{display:flex!important;flex-direction:column!important}
+  .mapWrap,#map{width:100%!important;height:52dvh!important;min-height:320px!important;border-radius:0!important}
+  .side,.map-side,.object-side{width:100%!important;max-width:100%!important;border-left:0!important;border-top:1px solid rgba(255,255,255,.12)!important;padding:14px!important;overflow:visible!important}
+  .searchBox{position:relative!important;top:auto!important;margin:0 0 12px!important;padding:0!important;background:transparent!important}
+  .filters,.meta{display:flex!important;flex-wrap:nowrap!important;overflow-x:auto!important;padding-bottom:7px!important}.chip,.pill{flex:0 0 auto!important;white-space:nowrap!important}
+  .stats,.toolGrid{grid-template-columns:1fr 1fr!important;gap:10px!important}
+
+  /* YouTube/video i embedovi */
+  .youtube-channel{grid-template-columns:1fr!important;gap:14px!important}
+  .youtube-frame{min-height:240px!important;border-radius:22px!important}
+  iframe[src*="youtube"],.video-embed{aspect-ratio:16/9!important;height:auto!important;min-height:0!important}
+}
+
+@media (max-width: 430px){
+  .wrap,.page,.content,.section,.article,.video-page,.news-page,.about-page,.doc-shell,.calendar-shell,.admin,.editor,.writer,.meeting-editor{width:calc(100% - 16px)!important}
+  .topbar .nav,.top .wrap,.dash-top .dash-shell{padding:8px 8px!important}
+  .brand img:not(.brand-wordmark),.brand-sov img:not(.brand-wordmark),.topbar .brand img:not(.brand-wordmark){width:34px!important;height:34px!important;min-width:34px!important;flex-basis:34px!important}
+  .brand-wordmark,.brand-sov .brand-wordmark,.topbar .brand .brand-wordmark{max-width:calc(100vw - 62px)!important;max-height:38px!important}
+  .navlinks a,.nav a,.dash-nav a,.topActions a,.topActions .btn{font-size:11px!important;padding:0 9px!important;height:36px!important;line-height:36px!important;min-height:36px!important}
+  h1{font-size:36px!important}.heroInner,.portal-hero-inner,.about-hero-inner,.video-hero{padding:20px 14px!important}
+  .card,.news-card,.article-card,.link-card,.person-card,.about-card,.doc-card,.trip-card,.menu-panel,.panel,.box{padding:15px!important;border-radius:20px!important}
+  .stats,.toolGrid{grid-template-columns:1fr!important}.mapWrap,#map{height:48dvh!important;min-height:300px!important}.youtube-frame{min-height:210px!important}
+  .actions .btn,.editor-actions .btn,.trip-actions .btn,.drawActions .btn,.toolbar .btn{min-width:100%!important}
+}

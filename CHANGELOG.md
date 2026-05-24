@@ -199,3 +199,10 @@
 - Header logo refined into stable pill layout.
 - Main nav simplified: O nama contains Pregled, Pročelništvo, Povijest, Velebitaški duh.
 - O nama rebuilt as a clean, modern sectioned page.
+
+
+## v4.11 Modern O nama polish
+- Uklonjen osjećaj dva menija u O nama: interna navigacija više nije sticky/floating i ne prelazi preko sadržaja.
+- O nama preuređen u jasan flow: hero, pregled, pročelništvo, povijest, Velebitaški duh.
+- Pročelništvo i Povijest ostaju integrirani kao subsekcije O nama.
+- Dodatno ispoliran gornji lijevi SOV logo i responsive ponašanje navigacije.

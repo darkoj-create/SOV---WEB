@@ -9,3 +9,6 @@
 - Polished main navigation and logo containment.
 - Pročelništvo and Povijest integrated under O nama navigation.
 - Rebuilt O nama page with internal sections/tabs and cleaner card logic.
+
+
+v4.11: Polished O nama UX, removed floating duplicate internal menu behavior, improved logo fit and responsive nav.
