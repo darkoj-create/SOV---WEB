@@ -6,10 +6,16 @@ const synonyms={krol:'croll',crol:'croll',croll:'croll',busilica:'bušilica',bus
 function qnorm(s){let x=lower(s); Object.entries(synonyms).forEach(([a,b])=>{x=x.replaceAll(a,lower(b));}); return x;}
 
 function countInt(v, fallback=0){
-  let n = Number(v);
+  // Armory quantities are whole pieces. Old imports may contain strings, commas,
+  // Excel/date fragments or decimals such as 201.2 / 854.05. Never display those.
+  if(v === null || v === undefined || v === '') v = fallback;
+  let raw = String(v).trim().replace(',', '.');
+  // Values that look like month.year/date are not quantities. Fall back instead.
+  if(/^\d{1,2}[./]\d{4}$/.test(raw) || /^\d{1,2}[./]\d{1,2}[./]\d{2,4}$/.test(raw)) raw = String(fallback ?? 0);
+  let n = Number(raw);
   if(!Number.isFinite(n)) n = Number(fallback);
   if(!Number.isFinite(n)) return 0;
-  n = Math.trunc(n);
+  n = Math.round(n);
   return n < 0 ? 0 : n;
 }
 function sumQty(rows, key){ return rows.reduce((s,r)=>s+countInt(r[key]),0); }
@@ -41,7 +47,7 @@ async function loadData(){
   let d=null, source='fallback';
   try{ if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.loadAllData){ d=await SOVArmoryDB.loadAllData(); if(d) source='supabase'; }}catch(e){console.warn('[clean master] supabase load failed',e)}
   if(!d){ try{ d=await fetch('data/oruzarstvo-data.json',{cache:'no-store'}).then(r=>r.json()); }catch(e){console.warn('[clean master] json load failed',e); d={items:[],ropes:[],pieces:[],categories:[]};}}
-  STATE.data=d||{}; STATE.source=source; STATE.rows=makeRows(STATE.data); return STATE.data;
+  STATE.data=d||{}; STATE.source=source; STATE.rows=makeRows(STATE.data); console.info('[SOV armory] clean master v4.74 quantity hardfix loaded', STATE.source, STATE.rows.length); return STATE.data;
 }
 function makeRows(d){const arr=[]; (d.items||[]).forEach((r,i)=>arr.push(row(r,'item',i))); (d.ropes||[]).forEach((r,i)=>arr.push(row(r,'rope',i))); (d.pieces||[]).forEach((r,i)=>arr.push(row(r,'piece',i))); return arr.filter(r=>r.name);}
 function row(r,type,i){
@@ -58,8 +64,8 @@ function subcategories(cat){const m=new Map(); filtered().filter(r=>r.category==
 function kpis(){const rows=STATE.rows; const cats=new Set(rows.map(r=>r.category)).size; const total=sumQty(rows,'qty'); const av=sumQty(rows,'av'); const loan=sumQty(rows,'loan'); return {cats,total,av,loan}}
 function renderKpis(){const k=kpis(); const el=document.getElementById('cmKpis'); if(!el)return; el.innerHTML=`<div class="cm-kpi"><small>Kategorije</small><b>${k.cats}</b></div><div class="cm-kpi"><small>Ukupno komada</small><b>${fmtQty(k.total)}</b></div><div class="cm-kpi"><small>Dostupno</small><b>${fmtQty(k.av)}</b></div><div class="cm-kpi"><small>Posuđeno</small><b>${fmtQty(k.loan)}</b></div>`}
 function bindSearch(cb){const q=document.getElementById('cmSearch'); if(q){q.value=STATE.query; q.oninput=()=>{STATE.query=q.value;STATE.cat=null;STATE.sub=null;cb();}}}
-function renderInventory(){const root=document.getElementById('inventoryRoot'); if(!root)return; renderKpis(); bindSearch(renderInventory); const cat=STATE.cat, sub=STATE.sub; let html=''; if(!cat){html=`<div class="cat-grid">${categories().map(([c,rs])=>`<button class="cat-tile" onclick="CleanArmory.pickCat('${esc(c)}')"><span class="ico">${iconFor(c)}</span><b>${esc(c)}</b><small>${rs.length} artikala · ${sumQty(rs,'av')} dostupno</small></button>`).join('')}</div>`}
-else if(!sub){html=`<div class="cm-breadcrumb"><button onclick="CleanArmory.pickCat('')">Sve kategorije</button><span>${esc(cat)}</span></div><div class="cat-grid">${subcategories(cat).map(([s,rs])=>`<button class="cat-tile" onclick="CleanArmory.pickSub('${esc(s)}')"><span class="ico">${iconFor(s)}</span><b>${esc(s)}</b><small>${rs.length} artikala · ${sumQty(rs,'av')} dostupno</small></button>`).join('')}</div>`}
+function renderInventory(){const root=document.getElementById('inventoryRoot'); if(!root)return; renderKpis(); bindSearch(renderInventory); const cat=STATE.cat, sub=STATE.sub; let html=''; if(!cat){html=`<div class="cat-grid">${categories().map(([c,rs])=>`<button class="cat-tile" onclick="CleanArmory.pickCat('${esc(c)}')"><span class="ico">${iconFor(c)}</span><b>${esc(c)}</b><small>${rs.length} artikala · ${fmtQty(sumQty(rs,'av'))} dostupno</small></button>`).join('')}</div>`}
+else if(!sub){html=`<div class="cm-breadcrumb"><button onclick="CleanArmory.pickCat('')">Sve kategorije</button><span>${esc(cat)}</span></div><div class="cat-grid">${subcategories(cat).map(([s,rs])=>`<button class="cat-tile" onclick="CleanArmory.pickSub('${esc(s)}')"><span class="ico">${iconFor(s)}</span><b>${esc(s)}</b><small>${rs.length} artikala · ${fmtQty(sumQty(rs,'av'))} dostupno</small></button>`).join('')}</div>`}
 else {const rows=filtered().filter(r=>r.category===cat&&r.subcategory===sub); html=`<div class="cm-breadcrumb"><button onclick="CleanArmory.pickCat('')">Sve kategorije</button><button onclick="CleanArmory.pickCat('${esc(cat)}')">${esc(cat)}</button><span>${esc(sub)}</span></div><div class="cm-tools"><button class="cm-btn primary" onclick="CleanArmory.newItem()">+ Dodaj artikl</button><button class="cm-btn" onclick="CleanArmory.pickSub('')">← Podkategorije</button></div><div class="item-grid">${rows.map(itemCard).join('')}</div>`}
  root.innerHTML=html||'<div class="empty">Nema artikala za prikaz.</div>';}
 function itemCard(r){return `<article class="item-card"><h3>${esc(r.name)}</h3><div class="muted">${esc(r.category)} · ${esc(r.subcategory)}</div><div class="stock"><span><b>${fmtQty(r.av)}</b><em>dostupno</em></span><span><b>${fmtQty(r.qty)}</b><em>ukupno</em></span><span><b>${fmtQty(r.loan)}</b><em>posuđeno</em></span></div><div class="badgetray"><span class="badge ${r.av>0?'ok':'bad'}">${esc(r.status)}</span><span class="badge">${esc(r.location||'bez lokacije')}</span>${r.type==='rope'?'<span class="badge warn">kodirano uže</span>':''}</div><div class="cm-tools"><button class="cm-btn" onclick="CleanArmory.editItem('${esc(r.id)}')">Uredi</button><button class="cm-btn bad" onclick="CleanArmory.removeItem('${esc(r.id)}')">Makni</button></div></article>`}

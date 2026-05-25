@@ -1,1 +1,1 @@
-v4.73 integer quantity cleanup
+v4.74-inventory-integer-display-hardfix
