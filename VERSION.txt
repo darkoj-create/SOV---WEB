@@ -1,1 +1,1 @@
-4.77-full-open-preview
+v4.79-mobile-armory-polish
