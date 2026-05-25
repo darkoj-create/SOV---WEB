@@ -548,5 +548,141 @@
     return out;
   }
 
-  window.SOVArmoryDB={configured,loadRequests,createRequest,updateRequestStatus,importStaticData,loadAllData,createEquipmentItem,createEquipmentPiece,createEquipmentPieces,createRope,updateEquipmentStatus};
+
+
+  async function adjustItemLocation(client, item, locationType, locationName, delta){
+    if(!delta) return false;
+    const legacy=String(item.id || item.equipment_legacy_id || '').trim() || null;
+    const name=String(item.name || item.item_name || 'Artikl').trim();
+    try{
+      let q=client.from('equipment_item_locations').select('*').eq('item_name',name).eq('location_type',locationType).eq('location_name',locationName).limit(1);
+      if(legacy) q=q.eq('equipment_legacy_id',legacy); else q=q.is('equipment_legacy_id',null);
+      const {data,error}=await q;
+      if(error) throw error;
+      const cur=(data&&data[0])||null;
+      const next=Math.max(0, (safeQuantity(cur&&cur.quantity)||0) + Number(delta));
+      const payload={equipment_legacy_id:legacy,item_name:name,location_type:locationType,location_name:locationName,quantity:next,updated_at:new Date().toISOString()};
+      if(cur&&cur.id){ const res=await client.from('equipment_item_locations').update(payload).eq('id',cur.id); if(res.error) throw res.error; }
+      else { const res=await client.from('equipment_item_locations').insert(payload); if(res.error) throw res.error; }
+      return true;
+    }catch(e){ console.warn('equipment_item_locations update skipped:', e.message||e); return false; }
+  }
+  async function patchItemCounters(client,item,availableDelta,loanedDelta){
+    const legacy=String(item.id || item.equipment_legacy_id || '').trim();
+    const name=String(item.name || item.item_name || '').trim();
+    try{
+      let q=client.from('equipment_items').select('id,legacy_id,name,available,loaned,quantity').limit(10);
+      if(legacy && legacy!=='manual') q=q.eq('legacy_id',legacy); else q=q.eq('name',name);
+      const {data,error}=await q;
+      if(error) throw error;
+      for(const row of data||[]){
+        const patch={available:Math.max(0,(safeQuantity(row.available)||0)+availableDelta),loaned:Math.max(0,(safeQuantity(row.loaned)||0)+loanedDelta),updated_at:new Date().toISOString()};
+        const res=await client.from('equipment_items').update(patch).eq('id',row.id);
+        if(res.error) console.warn('counter update skipped:',res.error.message);
+      }
+    }catch(e){ console.warn('equipment_items counters skipped:', e.message||e); }
+  }
+  async function issueRequest(id,req){
+    if(!configured()) return false;
+    const client=sb();
+    const borrower=(req&& (req.user||req.member_name||req.requester_name)) || 'Posuđivač';
+    for(const it of (req&&req.items)||[]){
+      const q=safeQuantity(it.quantity)||1;
+      await adjustItemLocation(client,it,'storage','Oružarstvo',-q);
+      await adjustItemLocation(client,it,'person','Kod '+borrower,q);
+      await patchItemCounters(client,it,-q,q);
+    }
+    await updateRequestStatus(id,'issued');
+    return true;
+  }
+  async function returnRequestItems(id,rows,note,req){
+    if(!configured()) return false;
+    const client=sb();
+    const borrower=(req&& (req.user||req.member_name||req.requester_name)) || 'Posuđivač';
+    const full=(rows||[]).every(r=>(safeQuantity(r.missing_quantity)||0)===0);
+    for(const r of rows||[]){
+      const ret=safeQuantity(r.returned_quantity)||0;
+      const miss=safeQuantity(r.missing_quantity)||0;
+      const item={id:r.id,name:r.name};
+      if(ret>0){
+        await adjustItemLocation(client,item,'person','Kod '+borrower,-ret);
+        const loc=String(r.return_location||'Oružarstvo');
+        const type=/jama|teren/i.test(loc)?'field':(/rashod/i.test(loc)?'retired':'storage');
+        await adjustItemLocation(client,item,type,loc,ret);
+        await patchItemCounters(client,item,ret,-ret);
+      }
+      if(miss>0){
+        const loc=String(r.remaining_location||'Kod posuđivača');
+        if(!/posuđiva|posudiva/i.test(loc)){
+          await adjustItemLocation(client,item,'person','Kod '+borrower,-miss);
+          const type=/jama|teren/i.test(loc)?'field':(/izgubl/i.test(loc)?'lost':(/rashod/i.test(loc)?'retired':'person'));
+          await adjustItemLocation(client,item,type,loc,miss);
+        }
+      }
+      try{
+        await client.from('equipment_request_item_returns').insert({request_id:id,equipment_legacy_id:r.id||null,item_name:r.name,issued_quantity:safeQuantity(r.issued_quantity)||0,returned_quantity:ret,missing_quantity:miss,return_location_name:r.return_location||'Oružarstvo',remaining_location_name:r.remaining_location||null,note:note||null});
+      }catch(e){ console.warn('return event insert skipped:', e.message||e); }
+    }
+    await updateRequestStatus(id, full?'returned':'partial_return');
+    return true;
+  }
+
+  async function upsertSimpleItem(item){
+    if(!configured()) return null;
+    const client=sb();
+    const payload=sanitizeForTable('equipment_items',{
+      legacy_id:item.legacy_id||item.catalog_id||('ART-'+Date.now()),
+      catalog_id:item.catalog_id||item.legacy_id||null,
+      name:item.name,
+      category_name:item.category_name||item.category||'Ostalo',
+      subcategory:item.subcategory||'Ostalo',
+      quantity:safeQuantity(item.quantity)||0,
+      available:safeQuantity(item.available)||0,
+      loaned:safeQuantity(item.loaned)||0,
+      minimum:safeQuantity(item.minimum)||0,
+      status:item.status||'aktivno',
+      availability:item.status||'aktivno',
+      member_visible:item.member_visible!==false,
+      internal_note:item.internal_note||null,
+      physical_code_note:item.physical_code_note||null,
+      item_kind:item.item_kind||'quantity_article',
+      code_required:false,
+      updated_at:new Date().toISOString()
+    });
+    const {data,error}=await client.from('equipment_items').upsert(payload,{onConflict:'legacy_id'}).select('*').single();
+    if(error) throw error;
+    try{ await adjustItemLocation(client,{legacy_id:payload.legacy_id,name:payload.name},'storage',item.location_name||'Oružarstvo',payload.available||0); }catch(e){}
+    return data;
+  }
+  async function retireSimpleItem(id,name){
+    if(!configured()) return false;
+    const client=sb();
+    const {error}=await client.from('equipment_items').update({status:'rashod',availability:'rashod',available:0,updated_at:new Date().toISOString()}).eq('legacy_id',id);
+    if(error) throw error;
+    return true;
+  }
+  async function loadArmoryNotes(){
+    if(!configured()) return null;
+    const client=sb();
+    const {data,error}=await client.from('equipment_armory_notes').select('*').order('created_at',{ascending:false});
+    if(error){ console.warn('armory notes fallback:',error.message); return null; }
+    return data||[];
+  }
+  async function saveArmoryNote(note){
+    if(!configured()) return null;
+    const client=sb();
+    const payload={id:note.id,title:note.title,body:note.body||null,due_date:toDate(note.due_date),note_type:note.note_type||note.type||'todo',priority:note.priority||'normal',status:note.status||'open',created_at:note.created_at||new Date().toISOString(),updated_at:new Date().toISOString()};
+    const {data,error}=await client.from('equipment_armory_notes').upsert(payload,{onConflict:'id'}).select('*').single();
+    if(error) throw error;
+    return data;
+  }
+  async function doneArmoryNote(id){
+    if(!configured()) return false;
+    const client=sb();
+    const {error}=await client.from('equipment_armory_notes').update({status:'done',updated_at:new Date().toISOString()}).eq('id',id);
+    if(error) throw error;
+    return true;
+  }
+
+  window.SOVArmoryDB={configured,upsertSimpleItem,retireSimpleItem,loadArmoryNotes,saveArmoryNote,doneArmoryNote,loadRequests,createRequest,updateRequestStatus,issueRequest,returnRequestItems,importStaticData,loadAllData,createEquipmentItem,createEquipmentPiece,createEquipmentPieces,createRope,updateEquipmentStatus};
 })();

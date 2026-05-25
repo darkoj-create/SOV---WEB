@@ -4,3 +4,10 @@
 /* v4.75: remove noisy quantity counters from visible category/admin views */
 .cm-kpis,.stock{display:none!important}
 .cat-tile small{color:var(--muted)}
+
+/* v4.80: partial return workflow */
+.cm-modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.66);z-index:99998;display:grid;place-items:center;padding:18px;backdrop-filter:blur(7px)}
+.cm-modal{width:min(980px,100%);max-height:92vh;overflow:auto;border:1px solid var(--line);border-radius:28px;background:linear-gradient(145deg,#10231f,#071311);box-shadow:0 30px 90px rgba(0,0,0,.55);padding:18px;color:var(--text)}
+.cm-modal-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;margin-bottom:12px}.cm-modal-head h2{margin:0;font-size:28px}.cm-icon-btn{border:1px solid var(--line);background:rgba(255,255,255,.07);color:var(--text);border-radius:14px;width:42px;height:42px;font-size:25px;cursor:pointer}.return-list{display:grid;gap:10px;margin:12px 0}.return-row{display:grid;grid-template-columns:1.3fr 130px 1fr 1fr;gap:10px;align-items:end;border:1px solid var(--line);border-radius:20px;background:rgba(0,0,0,.18);padding:12px}.return-row label{display:grid;gap:5px;color:var(--muted);font-size:12px;font-weight:950;text-transform:uppercase;letter-spacing:.04em}.return-row .cm-input{min-width:0;width:100%}@media(max-width:820px){.return-row{grid-template-columns:1fr}.cm-modal{border-radius:22px;padding:14px}}
+.item-card.low-stock{border-color:rgba(251,113,133,.55);box-shadow:0 0 0 1px rgba(251,113,133,.16),0 18px 44px rgba(251,113,133,.08)}
+textarea.cm-input{min-height:120px;resize:vertical;font-family:inherit}
