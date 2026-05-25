@@ -1565,4 +1565,89 @@ body.armory-master-real .armory-nav button.armory-master-btn{display:none!import
 })();
 </script>
 
+<script id="v470-request-and-render-hardfix">
+(function(){
+  const log=(...a)=>console.log('[SOV v4.70]',...a);
+  const warn=(...a)=>console.warn('[SOV v4.70]',...a);
+  const toast=(m)=>{try{window.toast?window.toast(m):console.log(m)}catch(e){console.log(m)}};
+  const esc=(s)=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+  const norm=(s)=>String(s||'').trim();
+  function data(){return window.DATA || (typeof DATA!=='undefined'?DATA:null) || {items:[],ropes:[],pieces:[]};}
+  function rows(){const d=data(); return [...(d.items||[]),...(d.ropes||[]),...(d.pieces||[])].map((r,i)=>{const q=Number(r.quantity||r.total||1)||0; const av=Number(r.available??r.available_qty??q)||0; return {...r,_cat:norm(r.category||r.category_name||'Ostalo'),_sub:norm(r.subcategory||r.subcategory_name||'Ostalo'),_name:norm(r.name||r.model||r.sku||'Artikl'),_qty:q,_av:av,_loan:Math.max(0,q-av),_id:norm(r.id||r.catalog_id||r.legacy_id||r.sku||('row-'+i))};}).filter(r=>r._name);}
+  function hasRows(){return rows().length>0;}
+  async function staticLoad(){try{const r=await fetch('data/oruzarstvo-data.json',{cache:'no-store'}); if(!r.ok)return null; return await r.json();}catch(e){return null}}
+  function setData(d){try{ if(typeof normalizeArmoryData==='function') d=normalizeArmoryData(d); }catch(e){} try{DATA=d;}catch(e){} window.DATA=d;}
+  async function ensureData(){ if(hasRows()) return true; const st=await staticLoad(); if(st){setData(st); return hasRows();} return false; }
+
+  // INVENTAR: zadnji renderer pobjeđuje stare skripte koje su znale prikazati pa prebrisati kategorije.
+  async function renderStableInventar(){
+    if(!location.pathname.includes('oruzar-master-inventar')) return;
+    await ensureData();
+    const main=document.querySelector('main'); if(!main) return;
+    document.body.classList.add('armory-master-real');
+    const all=rows();
+    const header=`<div class="v457-master-head"><div><div class="eyebrow">Oružar Master</div><h1>Inventar</h1><p>Kategorije → podkategorije → artikli. Ovo je inventar, ne inventura.</p></div><nav class="v457-master-nav"><a href="oruzar-master.html">🏠 Pregled</a><a class="active" href="oruzar-master-inventar.html">📦 Inventar</a><a href="oruzar-master-inventura.html">✅ Inventura</a><a href="oruzar-master-posudbe.html">↔️ Posudba</a></nav></div>`;
+    const icon=(c)=>{try{return window.v469CategoryIcon?window.v469CategoryIcon(c):'📦'}catch(e){return '📦'}};
+    const desc=(c)=>{try{return window.v469CategoryDesc?window.v469CategoryDesc(c):'Oprema i artikli'}catch(e){return 'Oprema i artikli'}};
+    if(!all.length){main.innerHTML=`<div class="v461-wrap">${header}<div class="v461-panel"><div class="v461-empty">Inventar nije učitan. Ako si tek radio import, napravi reload stranice. Ako i dalje nema ničega, problem je u Supabase read policy/importu.</div></div></div>`;return;}
+    const cat=window.v470InvCat||''; const sub=window.v470InvSub||'';
+    if(!cat){const cats=[...new Set(all.map(r=>r._cat).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'hr')); main.innerHTML=`<div class="v461-wrap">${header}<div class="v461-panel"><div class="v461-head"><div><h1>Inventar po kategorijama</h1><p>Odaberi veliku kategoriju. Ne prikazujemo sve artikle odjednom.</p></div><div class="v461-actions"><button class="btn" onclick="v470StableInventarRefresh()">Osvježi</button><a class="btn primary" href="oruzar-master-inventura.html">+ Inventura / dodaj</a></div></div><div class="v461-grid">${cats.map(c=>`<button class="v461-card" onclick="v470PickInvCat('${esc(c)}')"><span class="ico">${icon(c)}</span><b>${esc(c)}</b><small>${esc(desc(c))}</small><span class="meta">${all.filter(r=>r._cat===c).length} artikala</span></button>`).join('')}</div></div></div>`;return;}
+    const catRows=all.filter(r=>r._cat===cat);
+    if(!sub){const subs=[...new Set(catRows.map(r=>r._sub||'Ostalo'))].sort((a,b)=>a.localeCompare(b,'hr')); main.innerHTML=`<div class="v461-wrap">${header}<div class="v461-panel"><div class="v461-breadcrumb"><button onclick="v470InvCat=null;v470InvSub=null;v470RenderStableInventar()">Sve kategorije</button><span>${esc(cat)}</span></div><div class="v461-head"><div><h1>${esc(cat)}</h1><p>Odaberi podkategoriju.</p></div><button class="btn" onclick="v470InvCat=null;v470InvSub=null;v470RenderStableInventar()">← Kategorije</button></div><div class="v461-subgrid">${subs.map(s=>`<button class="v461-sub" onclick="v470PickInvSub('${esc(s)}')"><b>${esc(s)}</b><small>${catRows.filter(r=>(r._sub||'Ostalo')===s).length} artikala</small></button>`).join('')}</div></div></div>`;return;}
+    const list=catRows.filter(r=>(r._sub||'Ostalo')===sub);
+    main.innerHTML=`<div class="v461-wrap">${header}<div class="v461-panel"><div class="v461-breadcrumb"><button onclick="v470InvCat=null;v470InvSub=null;v470RenderStableInventar()">Sve kategorije</button><button onclick="v470InvSub=null;v470RenderStableInventar()">${esc(cat)}</button><span>${esc(sub)}</span></div><div class="v461-head"><div><h1>${esc(sub)}</h1><p>Ovdje oružar mijenja stanje kroz Inventar/Inventuru, ne user katalog.</p></div><div class="v461-actions"><button class="btn" onclick="v470InvSub=null;v470RenderStableInventar()">← Podkategorije</button><a class="btn primary" href="oruzar-master-inventura.html">Uredi stanje</a></div></div><div class="v461-items">${list.map(r=>`<article class="v461-item"><h3>${esc(r._name)}</h3><small>${esc(r._cat)} · ${esc(r._sub)}${r._id?' · '+esc(r._id):''}</small><div class="v461-stock"><span class="${r._av>0?'ok':'bad'}"><b>${esc(r._av)}</b><em>dostupno</em></span><span><b>${esc(r._qty)}</b><em>ukupno</em></span><span><b>${esc(r._loan)}</b><em>posuđeno</em></span></div><span class="badge ${r._av>0?'ok':'danger'}">${esc(r.status||r.availability||'aktivno')}</span><span class="v461-location">${esc(r.location||r.location_name||'lokacija nije upisana')}</span></article>`).join('')}</div></div></div>`;
+  }
+  window.v470RenderStableInventar=renderStableInventar;
+  window.v470StableInventarRefresh=async()=>{await ensureData(); await renderStableInventar();};
+  window.v470PickInvCat=(c)=>{window.v470InvCat=c;window.v470InvSub=null;renderStableInventar();};
+  window.v470PickInvSub=(s)=>{window.v470InvSub=s;renderStableInventar();};
+
+  // ZAHTJEVI: jedan zajednički izvor istine, Supabase ako postoji; local samo kao fallback za isti browser.
+  async function loadRequests(){
+    let remote=null;
+    try{ if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.loadRequests){ remote=await SOVArmoryDB.loadRequests(); }}catch(e){warn('load requests failed',e)}
+    if(Array.isArray(remote)){ window.DB_REQUESTS=remote; try{DB_REQUESTS=remote; DB_LIVE=true;}catch(e){} return remote; }
+    try{return JSON.parse(localStorage.getItem('sov_equipment_requests')||'[]')}catch(e){return []}
+  }
+  async function createRequestFromItem(rawId){
+    await ensureData();
+    const all=rows();
+    const item=all.find(r=>String(r._id)===String(rawId)||String(r.sku||'')===String(rawId)||String(r.legacy_id||'')===String(rawId)||String(r.name||'')===String(rawId));
+    if(!item){toast('Nisam našao artikl.');return;}
+    const req={id:'REQ-'+Date.now(),created_at:new Date().toISOString(),user:(window.CURRENT_USER&& (CURRENT_USER.full_name||CURRENT_USER.email))||'Član',email:(window.CURRENT_USER&&CURRENT_USER.email)||'',trip:'Zahtjev iz kataloga',from:new Date().toISOString().slice(0,10),to:'',note:'Zatraženo iz kataloga',status:'pending',items:[{id:item._id,name:item._name,quantity:1}]};
+    let savedRemote=false;
+    try{ if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.createRequest){ const saved=await SOVArmoryDB.createRequest(req); req.id=saved.id||req.id; req.created_at=saved.created_at||req.created_at; req.status=saved.status||req.status; savedRemote=true; }}catch(e){warn('create request remote failed',e);}
+    try{ const local=JSON.parse(localStorage.getItem('sov_equipment_requests')||'[]'); if(!local.some(r=>String(r.id)===String(req.id))) local.unshift(req); localStorage.setItem('sov_equipment_requests',JSON.stringify(local)); window.DB_REQUESTS=local; try{DB_REQUESTS=local;}catch(e){} }catch(e){}
+    toast(savedRemote?'Zahtjev poslan oružaru':'Zahtjev je spremljen lokalno — pokreni v4.70 SQL/RLS fix da ga oružar vidi na drugom računu.');
+  }
+  window.v470CreateRequestFromItem=createRequestFromItem;
+  window.addToCart=function(id){return createRequestFromItem(id)};
+  window.v459Add=function(id){return createRequestFromItem(id)};
+
+  async function renderStableLoans(){
+    if(!location.pathname.includes('oruzar-master-posudbe')) return;
+    await ensureData();
+    const main=document.querySelector('main'); const target=document.getElementById('loans')||main; if(!target)return;
+    const reqs=await loadRequests();
+    const pending=reqs.filter(r=>!/issued|izdano|prepared|priprem|returned|vrać|vrac|cancel|odbij/i.test(String(r.status||'pending')));
+    const issued=reqs.filter(r=>/issued|izdano|prepared|priprem/i.test(String(r.status||'')));
+    const itemPills=(r)=>(r.items||[]).map(i=>`<span class="loan-item-pill-v455">${esc(i.name||i.item_name||'Artikl')} × ${esc(i.quantity||1)}</span>`).join('')||'<span class="loan-item-pill-v455">bez stavki</span>';
+    const header=`<div class="v457-master-head"><div><div class="eyebrow">Oružar Master</div><h1>Posudba</h1><p>Zahtjevi i trenutno izdano, odvojeno.</p></div><nav class="v457-master-nav"><a href="oruzar-master.html">🏠 Pregled</a><a href="oruzar-master-inventar.html">📦 Inventar</a><a href="oruzar-master-inventura.html">✅ Inventura</a><a class="active" href="oruzar-master-posudbe.html">↔️ Posudba</a></nav></div>`;
+    const pendingHtml=pending.length?pending.map(r=>`<div class="loan-row-v455"><div class="top"><div><b>${esc(r.user||r.member_name||r.requester_name||'Član')}</b><small>${esc(r.trip||r.note||'Zahtjev')} · ${esc((r.created_at||'').slice(0,10))}</small></div><span class="badge warn">za izdati</span></div><div class="loan-items-v455">${itemPills(r)}</div><div class="loan-actions-v455"><button class="mini-btn ok" onclick="v470SetReqStatus('${esc(r.id)}','issued')">Označi izdano</button><button class="mini-btn" onclick="v470SetReqStatus('${esc(r.id)}','cancelled')">Zatvori</button></div></div>`).join(''):'<div class="loan-empty-v455">Nema novih zahtjeva. Ako si upravo kliknuo Zatraži s drugog računa, pokreni v4.70 SQL/RLS fix i klikni Osvježi.</div>';
+    const issuedHtml=issued.length?issued.map(r=>`<div class="loan-row-v455"><div class="top"><div><b>${esc(r.user||r.member_name||'Član')}</b><small>${esc(r.trip||r.note||'Posudba')} · ${esc(r.to||r.due_date||'bez roka')}</small></div><span class="badge ok">vani</span></div><div class="loan-items-v455">${itemPills(r)}</div><div class="loan-actions-v455"><button class="mini-btn ok" onclick="v470SetReqStatus('${esc(r.id)}','returned')">Označi vraćeno</button></div></div>`).join(''):'<div class="loan-empty-v455">Ništa trenutno nije vani.</div>';
+    const html=`<div class="v461-wrap">${header}<div class="loans-v455-grid"><section class="loan-card-v455 requests"><h3>📝 Zatražene posudbe</h3><p class="sub">Zahtjevi članova iz kataloga + ručni unos.</p><button class="btn" onclick="v470RenderStableLoans()">Osvježi</button><div class="loan-list-v455">${pendingHtml}</div><form class="manual-loan-v455" onsubmit="v470ManualLoan(event)"><h3>+ Ručni unos zahtjeva</h3><div class="grid"><input id="v470LoanMember" placeholder="Tko traži"><input id="v470LoanItem" placeholder="Artikl"><input id="v470LoanQty" type="number" min="1" value="1"></div><div class="grid" style="grid-template-columns:1fr 2fr auto;margin-top:8px"><input id="v470LoanDue" type="date"><input id="v470LoanNote" placeholder="Izlet / napomena"><button class="btn primary" type="submit">Dodaj zahtjev</button></div></form></section><section class="loan-card-v455 issued"><h3>📦 Izdano vani</h3><p class="sub">Vraćeno nestaje iz aktivnog pregleda.</p><div class="loan-list-v455">${issuedHtml}</div></section></div></div>`;
+    if(target===main) target.innerHTML=html; else target.innerHTML=html;
+  }
+  window.v470RenderStableLoans=renderStableLoans;
+  window.v470SetReqStatus=async function(id,status){try{if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.updateRequestStatus) await SOVArmoryDB.updateRequestStatus(id,status);}catch(e){warn('status remote failed',e); toast('Supabase update nije prošao; mijenjam lokalno.');}
+    try{const local=JSON.parse(localStorage.getItem('sov_equipment_requests')||'[]'); const r=local.find(x=>String(x.id)===String(id)); if(r)r.status=status; localStorage.setItem('sov_equipment_requests',JSON.stringify(local)); window.DB_REQUESTS=local; try{DB_REQUESTS=local;}catch(e){} }catch(e){}
+    await renderStableLoans(); toast(status==='returned'?'Označeno vraćeno':status==='issued'?'Označeno izdano':'Status promijenjen');};
+  window.v470ManualLoan=async function(ev){ev.preventDefault(); const req={id:'REQ-'+Date.now(),created_at:new Date().toISOString(),user:document.getElementById('v470LoanMember')?.value||'Član',trip:document.getElementById('v470LoanNote')?.value||'Ručni unos',to:document.getElementById('v470LoanDue')?.value||'',status:'pending',items:[{id:'manual-'+Date.now(),name:document.getElementById('v470LoanItem')?.value||'Artikl',quantity:Number(document.getElementById('v470LoanQty')?.value)||1}]};
+    let remote=false; try{if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.createRequest){const s=await SOVArmoryDB.createRequest(req);req.id=s.id||req.id; remote=true;}}catch(e){warn(e)}
+    const local=JSON.parse(localStorage.getItem('sov_equipment_requests')||'[]'); local.unshift(req); localStorage.setItem('sov_equipment_requests',JSON.stringify(local)); await renderStableLoans(); toast(remote?'Zahtjev dodan':'Zahtjev dodan lokalno');};
+
+  document.addEventListener('DOMContentLoaded',()=>{ setTimeout(renderStableInventar,300); setTimeout(renderStableInventar,1200); setTimeout(renderStableInventar,2600); setTimeout(renderStableLoans,400); setTimeout(renderStableLoans,1500); });
+})();
+</script>
+
 </body></html>

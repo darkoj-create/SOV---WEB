@@ -100,12 +100,15 @@
   async function createRequest(req){
     if(!configured()) return null;
     const client=sb();
-    const profile=await SOVAuth.getProfile();
-    if(!profile || !profile.id) throw new Error('Nisi prijavljen.');
+    let profile=null;
+    try{ profile=await SOVAuth.getProfile(); }catch(e){ profile=null; }
+    // v4.70: Zahtjev mora doći do oružara i kad user view nema kompletan profil.
+    // Ako je korisnik prijavljen, vežemo requester_id. Ako nije, SQL policy dopušta nullable requester_id
+    // i oružar ipak vidi zahtjev.
     const {data,error}=await client.from('equipment_requests').insert({
-      requester_id:profile.id,
-      requester_name:req.user || profile.full_name || profile.email,
-      requester_email:req.email || profile.email,
+      requester_id:(profile&&profile.id)||null,
+      requester_name:req.user || (profile&&profile.full_name) || (profile&&profile.email) || 'Član',
+      requester_email:req.email || (profile&&profile.email) || '',
       trip_name:req.trip || null,
       date_from:toDate(req.from),
       date_to:toDate(req.to),
