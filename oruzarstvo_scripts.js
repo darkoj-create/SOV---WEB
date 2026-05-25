@@ -15,15 +15,33 @@ function initFilters(){const cat=document.getElementById('cat');const names=[...
 function ropeAsCatalogItem(r){const available=(r.status||'').toLowerCase().includes('društvu')||((r.status||'').toLowerCase().includes('drustvu'));return {id:'ROPE-'+(r.id||r.sku),item_type:'rope',name:r.name||('Uže '+(r.sku||'')),category:'Užad',subcategory:[r.diameter_mm?`Promjer ${r.diameter_mm} mm`:'',r.length_label?`Duljina ${r.length_label} m`:''].filter(Boolean).join(' · '),unit:'kom',tracking_type:'po komadu',quantity:1,quantity_label:available?'1':'0',loaned:0,available:available?1:0,available_label:available?'1':'0',minimum:'',status:available?'aktivno':'nedostupno',availability:available?'dostupno':'nedostupno',member_visible:true,internal_note:`SKU: ${r.sku||''}; lokacija: ${r.location||''}; status: ${r.status||''}`}}
 function requestableItems(){return [...(DATA.items||[]),...(DATA.ropes||[]).map(ropeAsCatalogItem)]}
 
+function stripDiacritics(s){return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();}
+function canonicalArmoryCategory(raw, text){
+  const r=stripDiacritics(raw);
+  const t=stripDiacritics([raw,text].filter(Boolean).join(' '));
+  if(/descender|\bstop\b|simple descender|rig|maestro|id['’]?s|croll|krol|crol|bloker|zumar|žimar|zumar|pojas|sjedal|pedal|stremen|prsni|pupak|pupcano/.test(t)) return 'Osobna oprema';
+  if(/uzad|uzetna|\buze\b|\buze |uze |rope|prusik|gurt|traka|kolotur|transportna vreca/.test(t) && !/busil|busilic|busilica|bater|punjac|svrd/.test(t)) return 'Užad i užetna oprema';
+  if(/busil|busilic|busilica|aku bus|aku busil|boschhammer|gbh18|gbh180|baterija bosch|punjac za bus|svrd/.test(t)) return 'Bušilice i baterije';
+  if(/postavlj|spit|sidrist|ploc|plocic|ring|anker|bolt|karabiner|matica|hms|ok triact|amd/.test(t) && !/descender|croll|bloker|pojas/.test(t)) return 'Oprema za postavljanje';
+  if(/crtan|mjeren|disto|kompas|topodroid|dokumentac|nacrt|skic/.test(t)) return 'Oprema za crtanje';
+  if(/elektro|foto|kamera|video|rasvjet|svjetl|lampa|ceona|ceo/.test(t)) return 'Elektro i foto oprema';
+  if(/medicin|medicina|prva pomoc|prva pom/.test(t)) return 'Medicinska oprema';
+  if(/ronil|ronjenje|neopren|mask|peraj|boca/.test(t)) return 'Ronilačka oprema';
+  if(/alpinist|alpin|penjack|penjac/.test(t)) return 'Alpinistička oprema';
+  if(/cisto podzemlje|ciscenje|cistoc|otpad|vreca za smece/.test(t)) return 'Čisto podzemlje';
+  if(/prosir|prosirivanje|klin|cekic|macol|dlijet|štem|stem/.test(t)) return 'Oprema za proširivanje';
+  if(/logor|kamp|ekspedic|sator|kuhal|plin|podlog|vreca za spavanje/.test(t)) return 'Oprema za logor';
+  if(/alat|kljuc|odvijac|klijest|toolbox/.test(t)) return 'Ostali alat';
+  if(/ostalo|razno/.test(r)) return 'Ostalo';
+  return raw && String(raw).trim() ? String(raw).trim() : 'Ostalo';
+}
 function normalizeArmoryCategory(x){
   const raw=(x.category||x.category_name||'').trim();
-  const text=[x.name,x.model,x.subcategory,raw,x.internal_note].filter(Boolean).join(' ').toLowerCase();
-  if(/descender|stop|simple descender|rig|maestro|id['’]?s|croll|bloker|pojas|pedal|prsni|pupak/.test(text)) return 'Osobna oprema';
-  if(/buš|busil|bušil|baterija bosch|bosch.*bater|punjač za buš|punjac za bus|aku buš|aku bus|gbh18|gbh180|boschhammer/.test(text)) return 'Bušilice i baterije';
-  return raw||'Ostalo';
+  const text=[x.name,x.model,x.subcategory,raw,x.internal_note,x.note].filter(Boolean).join(' ');
+  return canonicalArmoryCategory(raw,text);
 }
 let USER_CAT=null, USER_SUB=null;
-const USER_CATEGORY_ORDER=['Osobna oprema','Užad i užetna oprema','Oprema za postavljanje','Oprema za crtanje','Bušilice i baterije','Elektro i foto oprema','Rasvjeta','Odjeća i obuća','Kacige','Alpinistička oprema','Ronilačka oprema','Ekspedicijska i kamp oprema','Oprema za logor','Oprema za proširivanje','Čisto podzemlje','Medicinska oprema','Medicina','Ostali alat','Ostalo'];
+const USER_CATEGORY_ORDER=['Osobna oprema','Užad i užetna oprema','Oprema za postavljanje','Oprema za crtanje','Bušilice i baterije','Elektro i foto oprema','Alpinistička oprema','Ronilačka oprema','Oprema za logor','Oprema za proširivanje','Čisto podzemlje','Medicinska oprema','Ostali alat','Ostalo'];
 const USER_CATEGORY_META={
   'Osobna oprema':['🧑‍🚒','Pojasevi, crollovi, descenderi, blokeri i osobna speleo oprema.'],
   'Užad i užetna oprema':['🪢','Užad, transportne vreće, prusici, trake, gurtne, koloture i užetni pribor.'],
@@ -36,16 +54,14 @@ const USER_CATEGORY_META={
   'Alpinistička oprema':['🧗','Alpinistička oprema i pribor.'],
   'Ronilačka oprema':['🤿','Ronilačka oprema i pribor.'],
   'Medicinska oprema':['⛑️','Medicinska oprema i pribor.'],
-  'Medicina':['⛑️','Medicinska oprema i pribor.'],
-  'Ekspedicijska i kamp oprema':['⛺','Šatori, podloge, kuhala i kamp oprema.'],
-  'Oprema za logor':['🏕️','Rasvjeta, kuhala, plin i pribor za logor.'],
+  'Oprema za logor':['🏕️','Šatori, podloge, kuhala, plin, logistika i kamp/logor oprema.'],
   'Oprema za proširivanje':['🔨','Proširivači, klinovi, čekići i pribor.'],
   'Čisto podzemlje':['🧤','Oprema za čišćenje podzemlja.'],
   'Ostali alat':['🛠️','Alat i sitni pribor za razne radove.'],
   'Ostalo':['📦','Vreće, kutije, logistika i ostala oprema.']
 };
 function sortUserCategories(arr){return [...arr].sort((a,b)=>(USER_CATEGORY_ORDER.indexOf(a)<0?99:USER_CATEGORY_ORDER.indexOf(a))-(USER_CATEGORY_ORDER.indexOf(b)<0?99:USER_CATEGORY_ORDER.indexOf(b))||String(a).localeCompare(String(b),'hr'))}
-function displayCategory(i){const raw=normalizeArmoryCategory(i); const text=[i.name,i.model,i.subcategory,raw,i.internal_note].filter(Boolean).join(' ').toLowerCase(); if(raw==='Užad')return 'Užad i užetna oprema'; if(/uže|uze|prusik|gurt|traka|kolotur|transportna vreća|transportna vreca/.test(text)&&!/buš|busil|bušil/.test(text)&&!/descender|\bstop\b|rig|maestro|id['’]?s/.test(text))return 'Užad i užetna oprema'; return raw;}
+function displayCategory(i){return normalizeArmoryCategory(i);}
 function displaySubcategory(i){const text=[i.name,i.model,i.subcategory,i.internal_note].filter(Boolean).join(' ').toLowerCase(); if(/descender|\bstop\b|rig|maestro|id['’]?s/.test(text))return 'Descenderi'; if(/croll|prsni/.test(text))return 'Croll / prsni blokeri'; if(/žimar|zumar|ascender|ručn|rucn|bloker/.test(text))return 'Ručni blokeri'; if(/pojas|sjeda|sjedal/.test(text))return 'Pojasevi i sjedalice'; if(/pedal|stremen/.test(text))return 'Pedale / stremeni'; if(/karabiner|matica|hms|ok triact|amd/.test(text))return 'Karabineri'; if(/uže|uze|rope/.test(text))return 'Užad'; if(/prusik/.test(text))return 'Prusici'; if(/gurt|traka/.test(text))return 'Gurtne i trake'; if(/spit|sidri|ploč|ploc|ring|anker|bolt/.test(text))return 'Spitovi i sidrišta'; if(/buš|busil|bušil/.test(text))return 'Bušilice'; if(/bater|aku/.test(text))return 'Baterije'; if(/punja/.test(text))return 'Punjači'; if(/svrd/.test(text))return 'Svrdla'; if(/kacig|helmet/.test(text))return 'Kacige'; if(/lamp|rasvjet|svjetl|čeo|ceo/.test(text))return 'Lampe i rasvjeta'; if(/kombinezon|odijel|rukavic|čizm|cizm|obuć|obuc/.test(text))return 'Odjeća i obuća'; return i.subcategory||'Ostalo';}
 function itemSearchText(i){return [i.name,displayCategory(i),displaySubcategory(i),i.subcategory,i.internal_note,i.model,i.manufacturer].join(' ').toLowerCase()}
 function filteredItems(){const q=document.getElementById('q').value.toLowerCase();const c=document.getElementById('cat').value;const a=document.getElementById('avail').value;return requestableItems().filter(i=>(canArmory()||i.member_visible!==false)&&(!q||itemSearchText(i).includes(q))&&(!c||displayCategory(i)===c)&&(!USER_CAT||displayCategory(i)===USER_CAT)&&(!USER_SUB||displaySubcategory(i)===USER_SUB)&&(!a||i.availability===a||i.status===a)).slice(0,1000)}

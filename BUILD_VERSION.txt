@@ -1,1 +1,1 @@
-v4.71-clean-oruzar-master-pages
+v4.72-category-dedup-canonical-fix

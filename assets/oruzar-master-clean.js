@@ -4,8 +4,27 @@ const norm=s=>String(s||'').trim();
 const lower=s=>norm(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
 const synonyms={krol:'croll',crol:'croll',croll:'croll',busilica:'bušilica',busilice:'bušilica',pupak:'pupčano uže',pupcano:'pupčano uže',spit:'spit',anker:'sidrište'};
 function qnorm(s){let x=lower(s); Object.entries(synonyms).forEach(([a,b])=>{x=x.replaceAll(a,lower(b));}); return x;}
+
+function canonicalCategory(raw,text){
+  const r=lower(raw), t=lower([raw,text].filter(Boolean).join(' '));
+  if(/descender|\bstop\b|rig|maestro|id['’]?s|croll|krol|crol|bloker|zumar|pojas|sjedal|pedal|stremen|prsni|pupak|pupcano/.test(t)) return 'Osobna oprema';
+  if(/uzad|uzetna|\buze\b|rope|prusik|gurt|traka|kolotur|transportna vreca/.test(t) && !/busil|bater|punjac|svrd/.test(t)) return 'Užad i užetna oprema';
+  if(/busil|baterija bosch|bosch.*bater|punjac|svrd|gbh18|gbh180|boschhammer/.test(t)) return 'Bušilice i baterije';
+  if(/postavlj|spit|sidrist|ploc|ring|anker|bolt|karabiner|matica|hms/.test(t) && !/descender|croll|bloker|pojas/.test(t)) return 'Oprema za postavljanje';
+  if(/crtan|mjeren|disto|kompas|topodroid|dokumentac|nacrt|skic/.test(t)) return 'Oprema za crtanje';
+  if(/elektro|foto|kamera|video|rasvjet|svjetl|lampa|ceona|ceo/.test(t)) return 'Elektro i foto oprema';
+  if(/medicin|medicina|prva pomoc|prva pom/.test(t)) return 'Medicinska oprema';
+  if(/ronil|ronjenje|neopren|maska|peraj|boca/.test(t)) return 'Ronilačka oprema';
+  if(/alpinist|alpin|penjack|penjac/.test(t)) return 'Alpinistička oprema';
+  if(/cisto podzemlje|ciscenje|cistoc|otpad/.test(t)) return 'Čisto podzemlje';
+  if(/prosir|prosirivanje|klin|cekic|macol|dlijet|stem/.test(t)) return 'Oprema za proširivanje';
+  if(/logor|kamp|ekspedic|sator|kuhal|plin|podlog|vreca za spavanje/.test(t)) return 'Oprema za logor';
+  if(/alat|kljuc|odvijac|klijest|toolbox/.test(t)) return 'Ostali alat';
+  if(/ostalo|razno/.test(r)) return 'Ostalo';
+  return norm(raw)||'Ostalo';
+}
 function toast(m){let t=document.getElementById('cmToast'); if(!t){t=document.createElement('div');t.id='cmToast';t.className='cm-toast';document.body.appendChild(t)} t.textContent=m;t.classList.add('show');clearTimeout(t._to);t._to=setTimeout(()=>t.classList.remove('show'),2300)}
-function iconFor(t){t=lower(t); if(t.includes('osobna'))return '🧗‍♂️'; if(t.includes('už')||t.includes('uz'))return '🪢'; if(t.includes('postav')||t.includes('spit')||t.includes('sidri'))return '⚓'; if(t.includes('crtan')||t.includes('mjer'))return '📐'; if(t.includes('bus')||t.includes('buš')||t.includes('bater'))return '🔋'; if(t.includes('elektro')||t.includes('foto'))return '📷'; if(t.includes('alpin'))return '⛰️'; if(t.includes('med'))return '🧰'; if(t.includes('ronil'))return '🤿'; if(t.includes('kamp')||t.includes('logor')||t.includes('eksp'))return '⛺'; if(t.includes('čisto')||t.includes('cisto'))return '🧹'; if(t.includes('proš')||t.includes('pros'))return '🔨'; if(t.includes('alat'))return '🧰'; return '📦'}
+function iconFor(t){t=lower(t); if(t.includes('osobna'))return '🧑‍🚒'; if(t.includes('už')||t.includes('uz'))return '🪢'; if(t.includes('postav')||t.includes('spit')||t.includes('sidri'))return '⚓'; if(t.includes('crtan')||t.includes('mjer'))return '📐'; if(t.includes('bus')||t.includes('buš')||t.includes('bater'))return '🔋'; if(t.includes('elektro')||t.includes('foto'))return '📷'; if(t.includes('alpin'))return '⛰️'; if(t.includes('med'))return '🧰'; if(t.includes('ronil'))return '🤿'; if(t.includes('kamp')||t.includes('logor')||t.includes('eksp'))return '⛺'; if(t.includes('čisto')||t.includes('cisto'))return '🧹'; if(t.includes('proš')||t.includes('pros'))return '🔨'; if(t.includes('alat'))return '🧰'; return '📦'}
 let STATE={data:null,rows:[],cat:null,sub:null,query:'',requests:[]};
 async function loadData(){
   if(STATE.data) return STATE.data;
@@ -16,7 +35,7 @@ async function loadData(){
 }
 function makeRows(d){const arr=[]; (d.items||[]).forEach((r,i)=>arr.push(row(r,'item',i))); (d.ropes||[]).forEach((r,i)=>arr.push(row(r,'rope',i))); (d.pieces||[]).forEach((r,i)=>arr.push(row(r,'piece',i))); return arr.filter(r=>r.name);}
 function row(r,type,i){let qty=Number(r.quantity||r.total||1)||0, av=Number(r.available??r.available_qty??qty)||0, loan=Number(r.loaned||r.loaned_qty||Math.max(0,qty-av))||0; if(type==='rope'||type==='piece'){qty=1; av=/posu|vani|rashod|otpis|izgubl/i.test(String(r.status||''))?0:1; loan=/posu|vani/i.test(String(r.status||''))?1:0}
-return {raw:r,type,id:String(r.legacy_id||r.catalog_id||r.sku||r.id||`${type}-${i}`),name:norm(r.name||r.item_name||r.model||r.sku||'Artikl'),category:norm(r.category||r.category_name||(type==='rope'?'Užad i užetna oprema':'Ostalo')),subcategory:norm(r.subcategory||r.group||'Ostalo'),qty,av,loan,location:norm(r.location||r.location_name||''),status:norm(r.status||r.availability||'aktivno'),search:qnorm([r.name,r.item_name,r.category,r.category_name,r.subcategory,r.sku,r.model,r.manufacturer].join(' '))};}
+return {raw:r,type,id:String(r.legacy_id||r.catalog_id||r.sku||r.id||`${type}-${i}`),name:norm(r.name||r.item_name||r.model||r.sku||'Artikl'),category:canonicalCategory(r.category||r.category_name||(type==='rope'?'Užad i užetna oprema':'Ostalo'), [r.name,r.item_name,r.model,r.subcategory,r.note,r.internal_note].join(' ')),subcategory:norm(r.subcategory||r.group||'Ostalo'),qty,av,loan,location:norm(r.location||r.location_name||''),status:norm(r.status||r.availability||'aktivno'),search:qnorm([r.name,r.item_name,r.category,r.category_name,r.subcategory,r.sku,r.model,r.manufacturer].join(' '))};}
 function filtered(){let rows=STATE.rows; if(STATE.query){const q=qnorm(STATE.query); rows=rows.filter(r=>r.search.includes(q)||q.split(/\s+/).every(p=>r.search.includes(p)));} return rows;}
 function categories(rows=filtered()){const m=new Map(); rows.forEach(r=>{const c=r.category||'Ostalo'; if(!m.has(c))m.set(c,[]); m.get(c).push(r)}); return [...m.entries()].sort((a,b)=>a[0].localeCompare(b[0],'hr'));}
 function subcategories(cat){const m=new Map(); filtered().filter(r=>r.category===cat).forEach(r=>{const s=r.subcategory||'Ostalo'; if(!m.has(s))m.set(s,[]); m.get(s).push(r)}); return [...m.entries()].sort((a,b)=>a[0].localeCompare(b[0],'hr'));}
