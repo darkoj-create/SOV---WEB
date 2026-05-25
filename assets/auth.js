@@ -1,4 +1,7 @@
 (function(){
+  // v4.77 TEMP OPEN MODE: full preview without login. Remove this build when done testing.
+  const SOV_OPEN_PREVIEW_MODE = true;
+  const OPEN_PREVIEW_PROFILE = {id:null,email:'preview@sov.local',full_name:'Preview korisnik',role:'admin',status:'approved',open_preview:true};
   const REGISTERED_PAGES = new Set([
     'dashboard.html','baza.html','pregled-baze.html','izleti.html','kalendar-izleta.html',
     'dokumentacija.html','pregled-zapisnika.html','zapisnici-skupstine.html','novi-zapisnik.html',
@@ -41,12 +44,14 @@
   function escapeHtml(str){ return String(str||'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
 
   async function getSession(){
+    if(SOV_OPEN_PREVIEW_MODE) return {session:null,user:OPEN_PREVIEW_PROFILE};
     const sb = getClient();
     if(!sb) return {session:null,user:null};
     const {data} = await sb.auth.getSession();
     return {session:data.session,user:data.session && data.session.user};
   }
   async function getProfile(force=false){
+    if(SOV_OPEN_PREVIEW_MODE){ profileCache = OPEN_PREVIEW_PROFILE; return profileCache; }
     if(profileCache && !force) return profileCache;
     const sb = getClient();
     if(!sb) return null;
@@ -62,13 +67,8 @@
       profileCache = data ? {...data,email:user.email,role:'admin',status:'approved',bootstrap_admin:true} : bootstrapAdminProfile(user);
       try{
         await sb.from('profiles').upsert({
-          id:user.id,
-          email:user.email,
-          full_name:profileCache.full_name || 'Darko Jeras',
-          role:'admin',
-          status:'approved',
-          approved_at:new Date().toISOString(),
-          approved_by:user.id
+          id:user.id, email:user.email, full_name:profileCache.full_name || 'Darko Jeras',
+          role:'admin', status:'approved', approved_at:new Date().toISOString(), approved_by:user.id
         },{onConflict:'id'});
       }catch(e){ console.warn('Bootstrap admin profile sync skipped.', e); }
       return profileCache;
@@ -118,9 +118,10 @@
     }
     return {ok:true,user:profile};
   }
-  async function logout(){ const sb=getClient(); if(sb) await sb.auth.signOut(); profileCache=null; location.href='login.html'; }
+  async function logout(){ const sb=getClient(); if(sb) await sb.auth.signOut(); profileCache=null; location.href='index.html'; }
 
   async function can(ability){
+    if(SOV_OPEN_PREVIEW_MODE) return true;
     const u = await getProfile();
     if(!u || u.status !== 'approved') return false;
     if(ability === 'admin') return ADMIN_ROLES.includes(u.role);
@@ -129,6 +130,7 @@
     return true;
   }
   async function requireApproved(){
+    if(SOV_OPEN_PREVIEW_MODE){ await renderUserBadge(); return true; }
     if(!isConfigured()){ showAuthWarning('Supabase nije konfiguriran. Upisi ključeve u assets/supabase-config.js.'); return false; }
     const {user} = await getSession();
     const profile = await getProfile();
@@ -139,21 +141,9 @@
     }
     return true;
   }
-  async function requireAdmin(){
-    const ok = await requireApproved(); if(!ok) return false;
-    if(!(await can('admin'))){ location.href='dashboard.html?denied=admin'; return false; }
-    return true;
-  }
-  async function requireEditor(){
-    const ok = await requireApproved(); if(!ok) return false;
-    if(!(await can('editor'))){ location.href='dashboard.html?denied=editor'; return false; }
-    return true;
-  }
-  async function requireArmory(){
-    const ok = await requireApproved(); if(!ok) return false;
-    if(!(await can('armory'))){ location.href='dashboard.html?denied=armory'; return false; }
-    return true;
-  }
+  async function requireAdmin(){ if(SOV_OPEN_PREVIEW_MODE){ await renderUserBadge(); return true; } const ok = await requireApproved(); if(!ok) return false; if(!(await can('admin'))){ location.href='dashboard.html?denied=admin'; return false; } return true; }
+  async function requireEditor(){ if(SOV_OPEN_PREVIEW_MODE){ await renderUserBadge(); return true; } const ok = await requireApproved(); if(!ok) return false; if(!(await can('editor'))){ location.href='dashboard.html?denied=editor'; return false; } return true; }
+  async function requireArmory(){ if(SOV_OPEN_PREVIEW_MODE){ await renderUserBadge(); return true; } const ok = await requireApproved(); if(!ok) return false; if(!(await can('armory'))){ location.href='dashboard.html?denied=armory'; return false; } return true; }
 
   async function updateProfile(id, patch){
     const sb = getClient();
@@ -175,11 +165,11 @@
     const u = await getProfile();
     document.querySelectorAll('[data-user-name]').forEach(el=>{el.textContent = u ? (u.full_name || u.email) : 'Gost';});
     document.querySelectorAll('[data-user-role]').forEach(el=>{el.textContent = u ? roleText(u.role) : 'Gost';});
-    document.querySelectorAll('[data-auth-status]').forEach(el=>{el.textContent = u ? statusText(u.status) : 'Nije prijavljen';});
+    document.querySelectorAll('[data-auth-status]').forEach(el=>{el.textContent = SOV_OPEN_PREVIEW_MODE ? 'Otvoreni preview' : (u ? statusText(u.status) : 'Nije prijavljen');});
     document.querySelectorAll('[data-logout]').forEach(el=>{el.addEventListener('click',e=>{e.preventDefault();logout();});});
-    document.querySelectorAll('[data-role-admin]').forEach(el=>{el.style.display = u && u.role === 'admin' ? '' : 'none';});
-    document.querySelectorAll('[data-role-editor]').forEach(el=>{el.style.display = u && EDITOR_ROLES.includes(u.role) ? '' : 'none';});
-    document.querySelectorAll('[data-role-armory]').forEach(el=>{el.style.display = u && ARMORY_ROLES.includes(u.role) ? '' : 'none';});
+    document.querySelectorAll('[data-role-admin]').forEach(el=>{el.style.display = (SOV_OPEN_PREVIEW_MODE || (u && u.role === 'admin')) ? '' : 'none';});
+    document.querySelectorAll('[data-role-editor]').forEach(el=>{el.style.display = (SOV_OPEN_PREVIEW_MODE || (u && EDITOR_ROLES.includes(u.role))) ? '' : 'none';});
+    document.querySelectorAll('[data-role-armory]').forEach(el=>{el.style.display = (SOV_OPEN_PREVIEW_MODE || (u && ARMORY_ROLES.includes(u.role))) ? '' : 'none';});
     document.body.classList.toggle('role-admin', !!(u && u.role==='admin'));
     document.body.classList.toggle('role-editor', !!(u && u.role==='editor'));
     document.body.classList.toggle('role-oruzar', !!(u && u.role==='oruzar'));

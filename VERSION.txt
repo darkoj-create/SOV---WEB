@@ -1,1 +1,1 @@
-v4.75-no-counter-armory-ui
+4.77-full-open-preview
