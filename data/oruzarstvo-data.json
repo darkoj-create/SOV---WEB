@@ -141,7 +141,8 @@
       "availability": "dostupno",
       "member_visible": true,
       "internal_note": "Audit iz stare tablice: Osobna op. red 4",
-      "source_sheet": "Katalog + audit stara tablica"
+      "source_sheet": "Katalog + audit stara tablica",
+      "category_name": "Osobna oprema"
     },
     {
       "id": "EQ-0002",
@@ -162,7 +163,8 @@
       "availability": "dostupno",
       "member_visible": true,
       "internal_note": "Audit iz stare tablice: Osobna op. red 5",
-      "source_sheet": "Katalog + audit stara tablica"
+      "source_sheet": "Katalog + audit stara tablica",
+      "category_name": "Osobna oprema"
     },
     {
       "id": "EQ-0003",
@@ -183,7 +185,8 @@
       "availability": "dostupno",
       "member_visible": true,
       "internal_note": "Audit iz stare tablice: Osobna op. red 6",
-      "source_sheet": "Katalog + audit stara tablica"
+      "source_sheet": "Katalog + audit stara tablica",
+      "category_name": "Osobna oprema"
     },
     {
       "id": "EQ-0004",
@@ -212,7 +215,7 @@
       "name": "Stop descender stari",
       "category_id": "1",
       "category": "Osobna oprema",
-      "subcategory": "",
+      "subcategory": "Descenderi",
       "unit": "kom",
       "tracking_type": "po komadu",
       "quantity": 16,
@@ -225,7 +228,8 @@
       "availability": "dostupno",
       "member_visible": true,
       "internal_note": "Audit iz stare tablice: Osobna op. red 8",
-      "source_sheet": "Katalog + audit stara tablica"
+      "source_sheet": "Katalog + audit stara tablica",
+      "category_name": "Osobna oprema"
     },
     {
       "id": "EQ-0006",
@@ -233,7 +237,7 @@
       "name": "Stop descender novi",
       "category_id": "1",
       "category": "Osobna oprema",
-      "subcategory": "",
+      "subcategory": "Descenderi",
       "unit": "kom",
       "tracking_type": "po komadu",
       "quantity": 24,
@@ -246,7 +250,8 @@
       "availability": "dostupno",
       "member_visible": true,
       "internal_note": "Audit iz stare tablice: Osobna op. red 9",
-      "source_sheet": "Katalog + audit stara tablica"
+      "source_sheet": "Katalog + audit stara tablica",
+      "category_name": "Osobna oprema"
     },
     {
       "id": "EQ-0007",
@@ -267,7 +272,8 @@
       "availability": "dostupno",
       "member_visible": true,
       "internal_note": "Audit iz stare tablice: Osobna op. red 10",
-      "source_sheet": "Katalog + audit stara tablica"
+      "source_sheet": "Katalog + audit stara tablica",
+      "category_name": "Osobna oprema"
     },
     {
       "id": "EQ-0008",
@@ -288,7 +294,8 @@
       "availability": "dostupno",
       "member_visible": true,
       "internal_note": "Audit iz stare tablice: Osobna op. red 11",
-      "source_sheet": "Katalog + audit stara tablica"
+      "source_sheet": "Katalog + audit stara tablica",
+      "category_name": "Osobna oprema"
     },
     {
       "id": "EQ-0009",
@@ -422,7 +429,7 @@
       "name": "Simple descender",
       "category_id": "1",
       "category": "Osobna oprema",
-      "subcategory": "",
+      "subcategory": "Descenderi",
       "unit": "kom",
       "tracking_type": "po komadu",
       "quantity": 1,
@@ -435,7 +442,8 @@
       "availability": "dostupno",
       "member_visible": true,
       "internal_note": "Audit iz stare tablice: Osobna op. red 18",
-      "source_sheet": "Katalog + audit stara tablica"
+      "source_sheet": "Katalog + audit stara tablica",
+      "category_name": "Osobna oprema"
     },
     {
       "id": "EQ-0016",
@@ -1198,7 +1206,7 @@
       "catalog_id": "52",
       "name": "Bušilica Bosch GBH18V-LI compact (mala)",
       "category_id": "2",
-      "category": "Oprema za postavljanje",
+      "category": "Bušilice i baterije",
       "subcategory": "Bušilice",
       "unit": "kom",
       "tracking_type": "po komadu",
@@ -1212,14 +1220,15 @@
       "availability": "dostupno",
       "member_visible": true,
       "internal_note": "Audit iz stare tablice: Op. za postavljanje red 51",
-      "source_sheet": "Katalog + audit stara tablica"
+      "source_sheet": "Katalog + audit stara tablica",
+      "category_name": "Bušilice i baterije"
     },
     {
       "id": "EQ-0053",
       "catalog_id": "53",
       "name": "Bušilica Bosch GBH18 V-EC (srednja)",
       "category_id": "2",
-      "category": "Oprema za postavljanje",
+      "category": "Bušilice i baterije",
       "subcategory": "Bušilice",
       "unit": "kom",
       "tracking_type": "po komadu",
@@ -1233,14 +1242,15 @@
       "availability": "dostupno",
       "member_visible": true,
       "internal_note": "Audit iz stare tablice: Op. za postavljanje red 52",
-      "source_sheet": "Katalog + audit stara tablica"
+      "source_sheet": "Katalog + audit stara tablica",
+      "category_name": "Bušilice i baterije"
     },
     {
       "id": "EQ-0054",
       "catalog_id": "54",
       "name": "Bušilica Bosch GBH180-LI (srednja)",
       "category_id": "2",
-      "category": "Oprema za postavljanje",
+      "category": "Bušilice i baterije",
       "subcategory": "Bušilice",
       "unit": "kom",
       "tracking_type": "po komadu",
@@ -1254,14 +1264,15 @@
       "availability": "dostupno",
       "member_visible": true,
       "internal_note": "Audit iz stare tablice: Op. za postavljanje red 53",
-      "source_sheet": "Katalog + audit stara tablica"
+      "source_sheet": "Katalog + audit stara tablica",
+      "category_name": "Bušilice i baterije"
     },
     {
       "id": "EQ-0055",
       "catalog_id": "55",
       "name": "Bušilica Bosch GBH18 V-26 boschhammer(velika)",
       "category_id": "2",
-      "category": "Oprema za postavljanje",
+      "category": "Bušilice i baterije",
       "subcategory": "Bušilice",
       "unit": "kom",
       "tracking_type": "po komadu",
@@ -1275,14 +1286,15 @@
       "availability": "nedostupno",
       "member_visible": true,
       "internal_note": "Audit iz stare tablice: Op. za postavljanje red 54",
-      "source_sheet": "Katalog + audit stara tablica"
+      "source_sheet": "Katalog + audit stara tablica",
+      "category_name": "Bušilice i baterije"
     },
     {
       "id": "EQ-0056",
       "catalog_id": "56",
       "name": "Gurtna za bušilicu",
       "category_id": "2",
-      "category": "Oprema za postavljanje",
+      "category": "Bušilice i baterije",
       "subcategory": "Bušilice",
       "unit": "kom",
       "tracking_type": "po vrsti",
@@ -1296,15 +1308,16 @@
       "availability": "dostupno",
       "member_visible": true,
       "internal_note": "Audit iz stare tablice: Op. za postavljanje red 55",
-      "source_sheet": "Katalog + audit stara tablica"
+      "source_sheet": "Katalog + audit stara tablica",
+      "category_name": "Bušilice i baterije"
     },
     {
       "id": "EQ-0057",
       "catalog_id": "57",
       "name": "Baterija Bosch 2ah",
       "category_id": "2",
-      "category": "Oprema za postavljanje",
-      "subcategory": "Bušilice",
+      "category": "Bušilice i baterije",
+      "subcategory": "Baterije za bušilice",
       "unit": "kom",
       "tracking_type": "po komadu",
       "quantity": 2,
@@ -1317,15 +1330,16 @@
       "availability": "dostupno",
       "member_visible": true,
       "internal_note": "Audit iz stare tablice: Op. za postavljanje red 56",
-      "source_sheet": "Katalog + audit stara tablica"
+      "source_sheet": "Katalog + audit stara tablica",
+      "category_name": "Bušilice i baterije"
     },
     {
       "id": "EQ-0058",
       "catalog_id": "58",
       "name": "Baterija Bosch 4Ah",
       "category_id": "2",
-      "category": "Oprema za postavljanje",
-      "subcategory": "Bušilice",
+      "category": "Bušilice i baterije",
+      "subcategory": "Baterije za bušilice",
       "unit": "kom",
       "tracking_type": "po komadu",
       "quantity": 6,
@@ -1338,15 +1352,16 @@
       "availability": "dostupno",
       "member_visible": true,
       "internal_note": "Audit iz stare tablice: Op. za postavljanje red 57",
-      "source_sheet": "Katalog + audit stara tablica"
+      "source_sheet": "Katalog + audit stara tablica",
+      "category_name": "Bušilice i baterije"
     },
     {
       "id": "EQ-0059",
       "catalog_id": "59",
       "name": "Baterija Bosch 5Ah",
       "category_id": "2",
-      "category": "Oprema za postavljanje",
-      "subcategory": "Bušilice",
+      "category": "Bušilice i baterije",
+      "subcategory": "Baterije za bušilice",
       "unit": "kom",
       "tracking_type": "po komadu",
       "quantity": 3,
@@ -1359,15 +1374,16 @@
       "availability": "dostupno",
       "member_visible": true,
       "internal_note": "Audit iz stare tablice: Op. za postavljanje red 58",
-      "source_sheet": "Katalog + audit stara tablica"
+      "source_sheet": "Katalog + audit stara tablica",
+      "category_name": "Bušilice i baterije"
     },
     {
       "id": "EQ-0060",
       "catalog_id": "60",
       "name": "Baterija Bosch 8Ah",
       "category_id": "2",
-      "category": "Oprema za postavljanje",
-      "subcategory": "Bušilice",
+      "category": "Bušilice i baterije",
+      "subcategory": "Baterije za bušilice",
       "unit": "kom",
       "tracking_type": "po komadu",
       "quantity": 2,
@@ -1380,15 +1396,16 @@
       "availability": "dostupno",
       "member_visible": true,
       "internal_note": "Audit iz stare tablice: Op. za postavljanje red 59",
-      "source_sheet": "Katalog + audit stara tablica"
+      "source_sheet": "Katalog + audit stara tablica",
+      "category_name": "Bušilice i baterije"
     },
     {
       "id": "EQ-0061",
       "catalog_id": "61",
       "name": "Punjač za bušilicu",
       "category_id": "2",
-      "category": "Oprema za postavljanje",
-      "subcategory": "Bušilice",
+      "category": "Bušilice i baterije",
+      "subcategory": "Punjači za bušilice",
       "unit": "kom",
       "tracking_type": "po komadu",
       "quantity": 7,
@@ -1401,7 +1418,8 @@
       "availability": "dostupno",
       "member_visible": true,
       "internal_note": "Audit iz stare tablice: Op. za postavljanje red 60",
-      "source_sheet": "Katalog + audit stara tablica"
+      "source_sheet": "Katalog + audit stara tablica",
+      "category_name": "Bušilice i baterije"
     },
     {
       "id": "EQ-0062",
@@ -2878,7 +2896,7 @@
       "catalog_id": "132",
       "name": "Penjački pojas",
       "category_id": "6",
-      "category": "Alpinistička i ronilačka",
+      "category": "Osobna oprema",
       "subcategory": "Alpinistička Oprema",
       "unit": "kom",
       "tracking_type": "po vrsti",
@@ -2892,14 +2910,15 @@
       "availability": "dostupno",
       "member_visible": true,
       "internal_note": "Audit iz stare tablice: Alpinist. i ronil. oprema red 6",
-      "source_sheet": "Katalog + audit stara tablica"
+      "source_sheet": "Katalog + audit stara tablica",
+      "category_name": "Osobna oprema"
     },
     {
       "id": "EQ-0133",
       "catalog_id": "133",
       "name": "Pupak paničar",
       "category_id": "6",
-      "category": "Alpinistička i ronilačka",
+      "category": "Osobna oprema",
       "subcategory": "Alpinistička Oprema",
       "unit": "kom",
       "tracking_type": "po vrsti",
@@ -2913,14 +2932,15 @@
       "availability": "dostupno",
       "member_visible": true,
       "internal_note": "Audit iz stare tablice: Alpinist. i ronil. oprema red 7",
-      "source_sheet": "Katalog + audit stara tablica"
+      "source_sheet": "Katalog + audit stara tablica",
+      "category_name": "Osobna oprema"
     },
     {
       "id": "EQ-0134",
       "catalog_id": "134",
       "name": "Pupak podesivi Petzl Dual Connect",
       "category_id": "6",
-      "category": "Alpinistička i ronilačka",
+      "category": "Osobna oprema",
       "subcategory": "Alpinistička Oprema",
       "unit": "kom",
       "tracking_type": "po vrsti",
@@ -2934,14 +2954,15 @@
       "availability": "dostupno",
       "member_visible": true,
       "internal_note": "Audit iz stare tablice: Alpinist. i ronil. oprema red 8",
-      "source_sheet": "Katalog + audit stara tablica"
+      "source_sheet": "Katalog + audit stara tablica",
+      "category_name": "Osobna oprema"
     },
     {
       "id": "EQ-0135",
       "catalog_id": "135",
       "name": "Podesivi pupak Petzl Evolv Adjust",
       "category_id": "6",
-      "category": "Alpinistička i ronilačka",
+      "category": "Osobna oprema",
       "subcategory": "Alpinistička Oprema",
       "unit": "kom",
       "tracking_type": "po vrsti",
@@ -2955,7 +2976,8 @@
       "availability": "dostupno",
       "member_visible": true,
       "internal_note": "Audit iz stare tablice: Alpinist. i ronil. oprema red 9",
-      "source_sheet": "Katalog + audit stara tablica"
+      "source_sheet": "Katalog + audit stara tablica",
+      "category_name": "Osobna oprema"
     },
     {
       "id": "EQ-0136",
@@ -8989,8 +9011,8 @@
       "catalog_id": "423",
       "name": "Zamjenska kolotura za stop descender",
       "category_id": "9",
-      "category": "Ostalo",
-      "subcategory": "Ostalo",
+      "category": "Osobna oprema",
+      "subcategory": "Descenderi",
       "unit": "kom",
       "tracking_type": "po komadu",
       "quantity": 3,
@@ -9003,7 +9025,8 @@
       "availability": "dostupno",
       "member_visible": true,
       "internal_note": "Lokacija: ormar u hodniku; Audit iz stare tablice: Ostalo (alat, ) red 50",
-      "source_sheet": "Katalog + audit stara tablica"
+      "source_sheet": "Katalog + audit stara tablica",
+      "category_name": "Osobna oprema"
     },
     {
       "id": "EQ-0424",
@@ -9052,8 +9075,8 @@
       "catalog_id": "426",
       "name": "Descender Rig",
       "category_id": "10",
-      "category": "Čisto podzemlje",
-      "subcategory": "",
+      "category": "Osobna oprema",
+      "subcategory": "Descenderi",
       "unit": "kom",
       "tracking_type": "po komadu",
       "quantity": 1,
@@ -9066,15 +9089,16 @@
       "availability": "dostupno",
       "member_visible": true,
       "internal_note": "Audit iz stare tablice: Čisto podzemlje red 4",
-      "source_sheet": "Katalog + audit stara tablica"
+      "source_sheet": "Katalog + audit stara tablica",
+      "category_name": "Osobna oprema"
     },
     {
       "id": "EQ-0427",
       "catalog_id": "427",
       "name": "Descender ID'S",
       "category_id": "10",
-      "category": "Čisto podzemlje",
-      "subcategory": "",
+      "category": "Osobna oprema",
+      "subcategory": "Descenderi",
       "unit": "kom",
       "tracking_type": "po komadu",
       "quantity": 1,
@@ -9087,15 +9111,16 @@
       "availability": "dostupno",
       "member_visible": true,
       "internal_note": "Audit iz stare tablice: Čisto podzemlje red 5",
-      "source_sheet": "Katalog + audit stara tablica"
+      "source_sheet": "Katalog + audit stara tablica",
+      "category_name": "Osobna oprema"
     },
     {
       "id": "EQ-0428",
       "catalog_id": "428",
       "name": "Descender Petzl Maestro",
       "category_id": "10",
-      "category": "Čisto podzemlje",
-      "subcategory": "",
+      "category": "Osobna oprema",
+      "subcategory": "Descenderi",
       "unit": "kom",
       "tracking_type": "po komadu",
       "quantity": 1,
@@ -9108,7 +9133,8 @@
       "availability": "dostupno",
       "member_visible": true,
       "internal_note": "Audit iz stare tablice: Čisto podzemlje red 6",
-      "source_sheet": "Katalog + audit stara tablica"
+      "source_sheet": "Katalog + audit stara tablica",
+      "category_name": "Osobna oprema"
     },
     {
       "id": "EQ-0429",
@@ -10258,7 +10284,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0002",
@@ -10272,7 +10301,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0003",
@@ -10286,7 +10318,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0004",
@@ -10300,7 +10335,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0005",
@@ -10314,7 +10352,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0006",
@@ -10328,7 +10369,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0007",
@@ -10342,7 +10386,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0008",
@@ -10356,7 +10403,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0009",
@@ -10370,7 +10420,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0010",
@@ -10384,7 +10437,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0011",
@@ -10398,7 +10454,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0012",
@@ -10412,7 +10471,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0013",
@@ -10426,7 +10488,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0014",
@@ -10440,7 +10505,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0015",
@@ -10454,7 +10522,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0016",
@@ -10468,7 +10539,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0017",
@@ -10482,7 +10556,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0018",
@@ -10496,7 +10573,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0019",
@@ -10510,7 +10590,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0020",
@@ -10524,7 +10607,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0021",
@@ -10538,7 +10624,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0022",
@@ -10552,7 +10641,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0023",
@@ -10566,7 +10658,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0024",
@@ -10580,7 +10675,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0025",
@@ -10594,7 +10692,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0026",
@@ -10608,7 +10709,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0027",
@@ -10622,7 +10726,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0028",
@@ -10636,7 +10743,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0029",
@@ -10650,7 +10760,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0030",
@@ -10664,7 +10777,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0031",
@@ -10678,7 +10794,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0032",
@@ -10692,7 +10811,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0033",
@@ -10706,7 +10828,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0034",
@@ -10720,7 +10845,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0035",
@@ -10734,7 +10862,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0036",
@@ -10748,7 +10879,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0037",
@@ -10762,7 +10896,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0038",
@@ -10776,7 +10913,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0039",
@@ -10790,7 +10930,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0040",
@@ -10804,7 +10947,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0041",
@@ -10818,7 +10964,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0042",
@@ -10832,7 +10981,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Bušilice i baterije",
+      "category_name": "Bušilice i baterije",
+      "subcategory": "Bušilice"
     },
     {
       "id": "KOM-0043",
@@ -10846,7 +10998,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Bušilice i baterije",
+      "category_name": "Bušilice i baterije",
+      "subcategory": "Bušilice"
     },
     {
       "id": "KOM-0044",
@@ -10860,7 +11015,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Bušilice i baterije",
+      "category_name": "Bušilice i baterije",
+      "subcategory": "Bušilice"
     },
     {
       "id": "KOM-0045",
@@ -10874,7 +11032,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Bušilice i baterije",
+      "category_name": "Bušilice i baterije",
+      "subcategory": "Bušilice"
     },
     {
       "id": "KOM-0046",
@@ -10888,7 +11049,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Bušilice i baterije",
+      "category_name": "Bušilice i baterije",
+      "subcategory": "Bušilice"
     },
     {
       "id": "KOM-0047",
@@ -10902,7 +11066,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Bušilice i baterije",
+      "category_name": "Bušilice i baterije",
+      "subcategory": "Bušilice"
     },
     {
       "id": "KOM-0048",
@@ -10916,7 +11083,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Bušilice i baterije",
+      "category_name": "Bušilice i baterije",
+      "subcategory": "Baterije za bušilice"
     },
     {
       "id": "KOM-0049",
@@ -10930,7 +11100,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Bušilice i baterije",
+      "category_name": "Bušilice i baterije",
+      "subcategory": "Baterije za bušilice"
     },
     {
       "id": "KOM-0050",
@@ -10944,7 +11117,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Bušilice i baterije",
+      "category_name": "Bušilice i baterije",
+      "subcategory": "Baterije za bušilice"
     },
     {
       "id": "KOM-0051",
@@ -10958,7 +11134,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Bušilice i baterije",
+      "category_name": "Bušilice i baterije",
+      "subcategory": "Baterije za bušilice"
     },
     {
       "id": "KOM-0052",
@@ -10972,7 +11151,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Bušilice i baterije",
+      "category_name": "Bušilice i baterije",
+      "subcategory": "Baterije za bušilice"
     },
     {
       "id": "KOM-0053",
@@ -10986,7 +11168,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Bušilice i baterije",
+      "category_name": "Bušilice i baterije",
+      "subcategory": "Baterije za bušilice"
     },
     {
       "id": "KOM-0054",
@@ -11000,7 +11185,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Bušilice i baterije",
+      "category_name": "Bušilice i baterije",
+      "subcategory": "Baterije za bušilice"
     },
     {
       "id": "KOM-0055",
@@ -11014,7 +11202,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Bušilice i baterije",
+      "category_name": "Bušilice i baterije",
+      "subcategory": "Baterije za bušilice"
     },
     {
       "id": "KOM-0056",
@@ -11028,7 +11219,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Bušilice i baterije",
+      "category_name": "Bušilice i baterije",
+      "subcategory": "Baterije za bušilice"
     },
     {
       "id": "KOM-0057",
@@ -11042,7 +11236,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Bušilice i baterije",
+      "category_name": "Bušilice i baterije",
+      "subcategory": "Baterije za bušilice"
     },
     {
       "id": "KOM-0058",
@@ -11056,7 +11253,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Bušilice i baterije",
+      "category_name": "Bušilice i baterije",
+      "subcategory": "Baterije za bušilice"
     },
     {
       "id": "KOM-0059",
@@ -11070,7 +11270,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Bušilice i baterije",
+      "category_name": "Bušilice i baterije",
+      "subcategory": "Baterije za bušilice"
     },
     {
       "id": "KOM-0060",
@@ -11084,7 +11287,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Bušilice i baterije",
+      "category_name": "Bušilice i baterije",
+      "subcategory": "Baterije za bušilice"
     },
     {
       "id": "KOM-0061",
@@ -11098,7 +11304,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Bušilice i baterije",
+      "category_name": "Bušilice i baterije",
+      "subcategory": "Punjači za bušilice"
     },
     {
       "id": "KOM-0062",
@@ -11112,7 +11321,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Bušilice i baterije",
+      "category_name": "Bušilice i baterije",
+      "subcategory": "Punjači za bušilice"
     },
     {
       "id": "KOM-0063",
@@ -11126,7 +11338,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Bušilice i baterije",
+      "category_name": "Bušilice i baterije",
+      "subcategory": "Punjači za bušilice"
     },
     {
       "id": "KOM-0064",
@@ -11140,7 +11355,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Bušilice i baterije",
+      "category_name": "Bušilice i baterije",
+      "subcategory": "Punjači za bušilice"
     },
     {
       "id": "KOM-0065",
@@ -11154,7 +11372,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Bušilice i baterije",
+      "category_name": "Bušilice i baterije",
+      "subcategory": "Punjači za bušilice"
     },
     {
       "id": "KOM-0066",
@@ -11168,7 +11389,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Bušilice i baterije",
+      "category_name": "Bušilice i baterije",
+      "subcategory": "Punjači za bušilice"
     },
     {
       "id": "KOM-0067",
@@ -11182,7 +11406,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Bušilice i baterije",
+      "category_name": "Bušilice i baterije",
+      "subcategory": "Punjači za bušilice"
     },
     {
       "id": "KOM-0068",
@@ -11196,7 +11423,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0069",
@@ -11210,7 +11440,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     },
     {
       "id": "KOM-0070",
@@ -11224,7 +11457,10 @@
       "location": "Klaićeva",
       "status": "U društvu",
       "next_service": "",
-      "note": ""
+      "note": "",
+      "category": "Osobna oprema",
+      "category_name": "Osobna oprema",
+      "subcategory": "Descenderi"
     }
   ],
   "ropes": [

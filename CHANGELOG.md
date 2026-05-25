@@ -242,3 +242,10 @@
 - Inventar, posudbe, narudžbe, inventura i nabave se filtriraju po odabiru da ekran nije overwhelming.
 - Posudbe prikazuju samo aktivno vani; vraćeno nestaje iz pregleda posudbi i ostaje kao povijest/status.
 - Gumb Označi vraćeno ažurira status i vraća količine u inventar.
+
+## v4.46 - User category catalog
+- User katalog prebačen na category-first workflow.
+- Član prvo bira kategoriju, zatim podkategoriju, tek onda artikle.
+- Descenderi su vidljivi pod Osobna oprema.
+- Bušilice, baterije, punjači i svrdla su grupirani u Bušilice i baterije.
+- Oružar master ostaje odvojen workspace.
