@@ -237,15 +237,13 @@
 - Oružarstvo import: popravljena normalizacija datuma (`09/2022` → `2022-09-01`) za Supabase.
 
 
-## v4.42 — Oružar drill-down + aktivne posudbe
-- Oružar master sada prvo traži kategoriju, zatim podkategoriju, pa tek onda module.
-- Inventar, posudbe, narudžbe, inventura i nabave se filtriraju po odabiru da ekran nije overwhelming.
-- Posudbe prikazuju samo aktivno vani; vraćeno nestaje iz pregleda posudbi i ostaje kao povijest/status.
-- Gumb Označi vraćeno ažurira status i vraća količine u inventar.
+## v4.32 — Oružarstvo visual premium polish
+- veliki vizualni polish modula Oružarstvo
+- bolji hero, KPI kartice, katalog kartice i drawer zahtjeva
+- jači pregled za oružara i čišći panel filtera
 
-## v4.46 - User category catalog
-- User katalog prebačen na category-first workflow.
-- Član prvo bira kategoriju, zatim podkategoriju, tek onda artikle.
-- Descenderi su vidljivi pod Osobna oprema.
-- Bušilice, baterije, punjači i svrdla su grupirani u Bušilice i baterije.
-- Oružar master ostaje odvojen workspace.
+
+## v4.33 — Oružarstvo quantity sync
+- Katalog i količine sinkronizirani iz SOV_oruzarstvo_jednostavna_popunjena_evidencija.xlsx.
+- Uvezeno 530 običnih stavki i 26 redova užadi iz jednostavne evidencije.
+- UI polish iz v4.32 zadržan.
