@@ -834,4 +834,22 @@ body.armory-master-active .filters .quick-packs,body.armory-master-active .filte
 })();
 </script>
 
+
+<style id="v457-main-oruzarstvo-clean-toolbar-css">
+/* v4.57: ordinary Oružarstvo shows only one Oružar Master entry for admin/oružar */
+.armory-nav .armory-master-btn{display:none!important}
+.command-strip.internal-only,.oruzar-shortcuts.internal-only,.tab.armory-master-tab{display:none!important}
+</style>
+<script id="v457-main-oruzarstvo-clean-toolbar-js">
+(function(){
+  function cleanup(){
+    document.querySelectorAll('.armory-nav .armory-master-btn, .armory-nav button.armory-master-btn').forEach(x=>x.remove());
+    document.querySelectorAll('.command-strip.internal-only,.oruzar-shortcuts.internal-only,.tab.armory-master-tab').forEach(x=>x.remove());
+    const links=[...document.querySelectorAll('.armory-nav a[href="oruzar-master.html"]')];
+    links.forEach((a,i)=>{a.textContent='🛡️ Oružar Master'; a.classList.add('strong','internal-only'); if(i>0)a.remove();});
+    window.openArmoryMaster=function(){location.href='oruzar-master.html'};
+  }
+  document.addEventListener('DOMContentLoaded',()=>setTimeout(cleanup,80));
+})();
+</script>
 </body></html>

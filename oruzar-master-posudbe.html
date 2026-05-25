@@ -904,4 +904,86 @@ body.armory-master-active .filters .quick-packs,body.armory-master-active .filte
 })();
 </script>
 
+
+<style id="v457-clean-oruzar-master-css">
+/* v4.57 clean Oružar Master: one toolbar entry, three real subpages only */
+body.armory-master-real .armory-hero,
+body.armory-master-real .kpis,
+body.armory-master-real .command-strip,
+body.armory-master-real .filters,
+body.armory-master-real .tabs,
+body.armory-master-real .drawer,
+body.armory-master-real .oruzar-shortcuts,
+body.armory-master-real .quick-packs{display:none!important}
+body.armory-master-real .armory-layout{display:block!important;grid-template-columns:1fr!important}
+body.armory-master-real .armory-layout>section.panel{background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important}
+body.armory-master-real .tabpane{display:none!important}
+body.armory-master-real .tabpane.v457-active-pane{display:block!important}
+body.armory-master-real .armory-nav .armory-master-btn,
+body.armory-master-real .armory-nav button.armory-master-btn{display:none!important}
+.v457-master-wrap{margin:12px 0 34px;display:grid;gap:18px}
+.v457-page-head{border:1px solid rgba(255,255,255,.16);background:linear-gradient(135deg,rgba(215,246,111,.12),rgba(141,216,255,.07));border-radius:30px;padding:22px;display:flex;align-items:flex-end;justify-content:space-between;gap:18px;box-shadow:0 20px 64px rgba(0,0,0,.28)}
+.v457-page-head h1{margin:0;font-size:clamp(30px,4.6vw,56px);letter-spacing:-.055em;line-height:.95;color:#f5fff6;text-shadow:0 1px 0 rgba(0,0,0,.25)}
+.v457-page-head p{margin:8px 0 0;color:#cfe0db;line-height:1.55;max-width:760px}
+.v457-master-nav{display:flex;gap:10px;flex-wrap:wrap}
+.v457-master-nav a{border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.075);color:#eef8f4;text-decoration:none;border-radius:18px;padding:12px 14px;font-weight:1000;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.v457-master-nav a.active{background:linear-gradient(135deg,rgba(215,246,111,.92),rgba(127,240,178,.82));color:#111;border-color:transparent}
+.v457-master-nav a.back{margin-left:auto;background:rgba(255,255,255,.035);color:#cfe0db}
+.v457-home-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.v457-home-card{border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);border-radius:28px;padding:22px;min-height:220px;display:flex;flex-direction:column;justify-content:space-between;color:#eef8f4;text-decoration:none;box-shadow:0 18px 52px rgba(0,0,0,.24)}
+.v457-home-card .icon{font-size:36px}.v457-home-card h2{font-size:28px;margin:12px 0 8px;color:#fff}.v457-home-card p{color:#c7d9d3;line-height:1.55;margin:0}.v457-home-card .go{margin-top:18px;color:#efffd3;font-weight:1000}
+.v457-note{border:1px solid rgba(215,246,111,.22);background:rgba(215,246,111,.065);border-radius:22px;padding:14px;color:#e6f5ef;line-height:1.55}
+@media(max-width:900px){.v457-page-head{display:grid}.v457-home-grid{grid-template-columns:1fr}.v457-master-nav a.back{margin-left:0}}
+</style>
+
+<script id="v457-clean-oruzar-master-js">
+(function(){
+  const TARGET='loans';
+  const TITLE='Posudba';
+  const EMOJI='↔️';
+  const DESC='Dvije kartice: zatražene posudbe i izdano vani. Zahtjev se može označiti izdanim, a posuđeno vraćenim.';
+  const HOME=false;
+  function canArmorySafe(){try{return !window.canArmory || window.canArmory();}catch(e){return true;}}
+  function toastSafe(msg){try{window.toast?toast(msg):console.log(msg)}catch(e){console.log(msg)}}
+  function nav(){return `<nav class="v457-master-nav" aria-label="Oružar Master podstranice">
+    <a data-page="fullinventory" href="oruzar-master-inventar.html">📦 Inventar</a>
+    <a data-page="stocktake" href="oruzar-master-inventura.html">✅ Inventura</a>
+    <a data-page="loans" href="oruzar-master-posudbe.html">↔️ Posudba</a>
+    <a class="back" href="oruzarstvo.html">← Članski katalog</a>
+  </nav>`}
+  function head(){return `<section class="v457-page-head"><div><h1>${EMOJI} ${TITLE}</h1><p>${DESC}</p></div>${nav()}</section>`}
+  function homeHtml(){return `${head()}<section class="v457-home-grid">
+    <a class="v457-home-card" href="oruzar-master-inventar.html"><div><div class="icon">📦</div><h2>Inventar</h2><p>Pregled opreme po kategorijama i podkategorijama. Oružar vidi dostupno, posuđeno i lokaciju.</p></div><div class="go">Otvori inventar →</div></a>
+    <a class="v457-home-card" href="oruzar-master-inventura.html"><div><div class="icon">✅</div><h2>Inventura</h2><p>Prebroji stanje, potvrdi broj, dodaj novi artikl ili označi rashod. Bez SQL-a i bez XLS-a.</p></div><div class="go">Otvori inventuru →</div></a>
+    <a class="v457-home-card" href="oruzar-master-posudbe.html"><div><div class="icon">↔️</div><h2>Posudba</h2><p>Dvije kartice: zatražene posudbe i izdano vani. Vraćeno nestaje iz aktivnog pregleda.</p></div><div class="go">Otvori posudbu →</div></a>
+  </section><div class="v457-note">Ovo je čisti Oružar Master workspace. Nema članskog kataloga, mojih narudžbi, nabava ni postavki na ovom ekranu.</div>`}
+  function cleanupTopNav(){
+    document.querySelectorAll('.armory-nav .armory-master-btn, .armory-nav button.armory-master-btn').forEach(x=>x.remove());
+    const seen=new Set();
+    document.querySelectorAll('.armory-nav a[href="oruzar-master.html"]').forEach(a=>{
+      const key='oruzar-master'; if(seen.has(key)) a.remove(); else {seen.add(key); a.textContent='🛡️ Oružar Master'; a.classList.add('strong','internal-only');}
+    });
+  }
+  function openTarget(){
+    document.body.classList.add('armory-master-real'); cleanupTopNav();
+    const main=document.querySelector('main'); if(!main)return;
+    if(!canArmorySafe()){main.innerHTML='<div class="v457-master-wrap"><section class="v457-page-head"><div><h1>🔒 Oružar Master</h1><p>Ovaj dio vide samo admin i oružar.</p></div></section></div>';return;}
+    main.innerHTML=`<div class="v457-master-wrap">${HOME?homeHtml():head()+`<section class="panel"><div id="master" class="tabpane"></div><div id="fullinventory" class="tabpane"></div><div id="stocktake" class="tabpane"></div><div id="loans" class="tabpane"></div></section>`}</div>`;
+    document.querySelectorAll('.v457-master-nav a').forEach(a=>a.classList.toggle('active',a.dataset.page===TARGET));
+    if(HOME)return;
+    ['master','fullinventory','stocktake','loans'].forEach(id=>{const el=document.getElementById(id); if(el)el.classList.toggle('v457-active-pane',id===TARGET);});
+    setTimeout(()=>{
+      try{ if(TARGET==='fullinventory'&&window.renderFullInventory) renderFullInventory(); }catch(e){console.warn(e)}
+      try{ if(TARGET==='stocktake'&&window.renderStocktake) renderStocktake(); }catch(e){console.warn(e)}
+      try{ if(TARGET==='loans'&&window.renderLoans) renderLoans(); }catch(e){console.warn(e)}
+      const pane=document.getElementById(TARGET);
+      if(pane && !pane.innerHTML.trim()) pane.innerHTML='<div class="empty">Nema podataka za prikaz.</div>';
+      document.querySelectorAll('.real-master-nav-v456,.master-nav-v454,.master-nav-v453').forEach(x=>x.remove());
+      document.querySelectorAll('.v457-master-nav a').forEach(a=>a.classList.toggle('active',a.dataset.page===TARGET));
+    },80);
+  }
+  window.openArmoryMaster=function(){location.href='oruzar-master.html'};
+  document.addEventListener('DOMContentLoaded',()=>setTimeout(openTarget,120));
+})();
+</script>
 </body></html>
