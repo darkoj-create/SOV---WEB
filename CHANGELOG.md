@@ -1,3 +1,11 @@
+# v4.55 — Posudbe two-card workflow
+
+- Oružar Master > Posudbe sada ima dvije jasne kartice: Zatražene posudbe i Izdano vani.
+- Zatražene posudbe prikazuju web zahtjeve i ručni unos zahtjeva za situacije izvan weba.
+- Klik "Označi izdano" prebacuje zahtjev u aktivne posudbe i koristi postojeći inventory update.
+- Klik "Označi vraćeno" miče stavku iz aktivnih posudbi i vraća inventory.
+- Vraćene stvari se ne gomilaju u aktivnom pregledu.
+
 # v4.6 - Brand header logo fit fix
 
 - Zaobljen i uklopljen crni SOV wordmark u gornjem headeru.
