@@ -856,9 +856,6 @@ body.armory-master-active .filters .quick-packs,body.armory-master-active .filte
   <a data-page="fullinventory" href="oruzar-master-inventar.html">📦 Inventar</a>
   <a data-page="stocktake" href="oruzar-master-inventura.html">✅ Inventura</a>
   <a data-page="loans" href="oruzar-master-posudbe.html">↔️ Posudbe</a>
-  <a data-page="orders" href="oruzar-master-narudzbe.html">📝 Narudžbe</a>
-  <a data-page="procurement" href="oruzar-master-nabave.html">🛒 Nabave</a>
-  <a data-page="armorySettings" href="oruzar-master-postavke.html">⚙️ Postavke</a>
   <a class="back" href="oruzarstvo.html">← Katalog za članove</a>
 </nav>`;
   function can(){ try { return !window.canArmory || window.canArmory(); } catch(e){ return true; } }
@@ -1103,6 +1100,43 @@ body.armory-master-real .armory-nav button.armory-master-btn{display:none!import
   function newItemPanel(s){const opts=allCats().map(c=>`<option value="${esc(c)}" ${c===s.cat?'selected':''}>${esc(c)}</option>`).join('');return `<div class="v460-session-card"><h2>+ Novi artikl</h2><form class="v460-new-item" onsubmit="v460SaveNewItem(event)"><label>Naziv artikla</label><input id="v460NewName" required placeholder="npr. Croll, OK karabiner, spit 8 mm"><label>Kategorija</label><select id="v460NewCat" required onchange="v460SyncSubcats()"><option value="">Odaberi...</option>${opts}</select><label>Podkategorija</label><select id="v460NewSub" onchange="v460ToggleCustomSub()"><option value="">Odaberi...</option></select><input id="v460NewSubCustom" style="display:none" placeholder="Nova podkategorija"><div class="split"><div><label>Broj komada</label><input id="v460NewQty" type="number" min="0" step="1" value="1"></div><div><label>Opcionalni kod</label><input id="v460NewCode" placeholder="prazno = auto"></div></div><label>Lokacija</label><input id="v460NewLoc" placeholder="Skladište / polica / kutija"><button class="btn primary" type="submit">Spremi i syncaj</button><p class="fineprint">Kod je opcionalan. Za većinu opreme dovoljno je: naziv, kategorija, podkategorija i broj komada.</p></form></div>`}
   window.renderStocktake=function(){const el=document.getElementById('stocktake');if(!el)return;if(!can()){el.innerHTML='<div class="empty">Inventuru vidi samo admin/oružar.</div>';return}const s=currentSession();if(!s||s.status==='finished')return renderStart(el);if(!s.cat)return renderCats(el,s);if(!s.sub)return renderSubs(el,s);renderCounts(el,s);setTimeout(()=>{v460SyncSubcats();const sub=document.getElementById('v460NewSub');if(sub&&s.sub)sub.value=s.sub},0)};
   document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>{try{if(document.getElementById('stocktake'))renderStocktake()}catch(e){console.warn('v4.60 stocktake',e)}},900));
+})();
+</script>
+
+
+
+<style id="v462-hard-data-recovery-css">
+.v462-data-warning{border:1px solid rgba(255,207,105,.35);background:rgba(255,207,105,.10);color:#fff3cc;border-radius:18px;padding:13px 15px;margin:12px 0;font-weight:900;line-height:1.4}
+</style>
+<script id="v462-hard-data-recovery-js">
+(function(){
+  const VERSION='v4.62 hard data recovery';
+  function hasRows(d){return !!(d && ((Array.isArray(d.items)&&d.items.length)||(Array.isArray(d.ropes)&&d.ropes.length)||(Array.isArray(d.pieces)&&d.pieces.length)));}
+  function expose(){try{ if(typeof DATA!=='undefined') window.DATA=DATA; }catch(e){} }
+  function normalize(d){try{return typeof normalizeArmoryData==='function'?normalizeArmoryData(d):d}catch(e){return d}}
+  async function loadStatic(){try{const r=await fetch('data/oruzarstvo-data.json',{cache:'no-store'}); if(!r.ok) return null; return await r.json();}catch(e){console.warn(VERSION,'static fallback failed',e);return null;}}
+  async function loadLive(){try{if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.loadAllData){const d=await SOVArmoryDB.loadAllData(); return hasRows(d)?d:null;}}catch(e){console.warn(VERSION,'live load failed',e)} return null;}
+  function rerender(){
+    expose();
+    try{ if(typeof initFilters==='function') initFilters(); }catch(e){}
+    try{ if(typeof renderKpis==='function') renderKpis(); }catch(e){}
+    try{ if(typeof renderCatalog==='function') renderCatalog(); }catch(e){}
+    try{ if(location.pathname.includes('oruzar-master-inventar') && typeof v461RenderInventar==='function') v461RenderInventar(); }catch(e){console.warn(VERSION,'inventar rerender',e)}
+    try{ if(location.pathname.includes('oruzar-master') && !location.pathname.includes('inventar') && typeof renderMaster==='function') renderMaster(); }catch(e){}
+    try{ if(location.pathname.includes('inventura') && typeof renderStocktake==='function') renderStocktake(); }catch(e){}
+    try{ if(location.pathname.includes('posudbe') && typeof renderLoans==='function') renderLoans(); }catch(e){}
+  }
+  async function hydrate(){
+    expose();
+    let current=null; try{current=typeof DATA!=='undefined'?DATA:window.DATA}catch(e){}
+    let live=await loadLive();
+    if(live && hasRows(live)){ try{ DATA=normalize(live); window.DATA=DATA; DB_LIVE=true; }catch(e){ window.DATA=live; } rerender(); return; }
+    current=null; try{current=typeof DATA!=='undefined'?DATA:window.DATA}catch(e){}
+    if(!hasRows(current)){ const st=await loadStatic(); if(st && hasRows(st)){ try{ DATA=normalize(st); window.DATA=DATA; }catch(e){ window.DATA=st; } rerender(); return; } }
+    rerender();
+  }
+  window.v462HydrateArmoryData=hydrate;
+  document.addEventListener('DOMContentLoaded',()=>{setTimeout(hydrate,450);setTimeout(hydrate,1200);setTimeout(hydrate,2500);});
 })();
 </script>
 

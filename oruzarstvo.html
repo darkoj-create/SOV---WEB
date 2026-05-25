@@ -951,4 +951,41 @@ body.armory-master-active .filters .quick-packs,body.armory-master-active .filte
 })();
 </script>
 
+
+
+<style id="v462-hard-data-recovery-css">
+.v462-data-warning{border:1px solid rgba(255,207,105,.35);background:rgba(255,207,105,.10);color:#fff3cc;border-radius:18px;padding:13px 15px;margin:12px 0;font-weight:900;line-height:1.4}
+</style>
+<script id="v462-hard-data-recovery-js">
+(function(){
+  const VERSION='v4.62 hard data recovery';
+  function hasRows(d){return !!(d && ((Array.isArray(d.items)&&d.items.length)||(Array.isArray(d.ropes)&&d.ropes.length)||(Array.isArray(d.pieces)&&d.pieces.length)));}
+  function expose(){try{ if(typeof DATA!=='undefined') window.DATA=DATA; }catch(e){} }
+  function normalize(d){try{return typeof normalizeArmoryData==='function'?normalizeArmoryData(d):d}catch(e){return d}}
+  async function loadStatic(){try{const r=await fetch('data/oruzarstvo-data.json',{cache:'no-store'}); if(!r.ok) return null; return await r.json();}catch(e){console.warn(VERSION,'static fallback failed',e);return null;}}
+  async function loadLive(){try{if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.loadAllData){const d=await SOVArmoryDB.loadAllData(); return hasRows(d)?d:null;}}catch(e){console.warn(VERSION,'live load failed',e)} return null;}
+  function rerender(){
+    expose();
+    try{ if(typeof initFilters==='function') initFilters(); }catch(e){}
+    try{ if(typeof renderKpis==='function') renderKpis(); }catch(e){}
+    try{ if(typeof renderCatalog==='function') renderCatalog(); }catch(e){}
+    try{ if(location.pathname.includes('oruzar-master-inventar') && typeof v461RenderInventar==='function') v461RenderInventar(); }catch(e){console.warn(VERSION,'inventar rerender',e)}
+    try{ if(location.pathname.includes('oruzar-master') && !location.pathname.includes('inventar') && typeof renderMaster==='function') renderMaster(); }catch(e){}
+    try{ if(location.pathname.includes('inventura') && typeof renderStocktake==='function') renderStocktake(); }catch(e){}
+    try{ if(location.pathname.includes('posudbe') && typeof renderLoans==='function') renderLoans(); }catch(e){}
+  }
+  async function hydrate(){
+    expose();
+    let current=null; try{current=typeof DATA!=='undefined'?DATA:window.DATA}catch(e){}
+    let live=await loadLive();
+    if(live && hasRows(live)){ try{ DATA=normalize(live); window.DATA=DATA; DB_LIVE=true; }catch(e){ window.DATA=live; } rerender(); return; }
+    current=null; try{current=typeof DATA!=='undefined'?DATA:window.DATA}catch(e){}
+    if(!hasRows(current)){ const st=await loadStatic(); if(st && hasRows(st)){ try{ DATA=normalize(st); window.DATA=DATA; }catch(e){ window.DATA=st; } rerender(); return; } }
+    rerender();
+  }
+  window.v462HydrateArmoryData=hydrate;
+  document.addEventListener('DOMContentLoaded',()=>{setTimeout(hydrate,450);setTimeout(hydrate,1200);setTimeout(hydrate,2500);});
+})();
+</script>
+
 </body></html>

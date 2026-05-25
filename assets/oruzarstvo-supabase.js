@@ -376,5 +376,49 @@
     return true;
   }
 
-  window.SOVArmoryDB={configured,loadRequests,createRequest,updateRequestStatus,importStaticData,createEquipmentItem,createEquipmentPiece,createEquipmentPieces,createRope,updateEquipmentStatus};
+
+  async function loadAllData(){
+    if(!configured()) return null;
+    const client=sb();
+    const out={summary:{source:'Supabase live'},categories:[],items:[],pieces:[],ropes:[],loans:[],inventories:[],inventory_items:[],procurement:[],services:[],disposed:[],lost:[],field:[],locations:[]};
+    async function safe(table, cols='*'){
+      try{const {data,error}=await client.from(table).select(cols); if(error){console.warn('SOVArmoryDB load '+table,error.message); return [];} return data||[];}catch(e){console.warn('SOVArmoryDB load '+table,e.message||e); return [];}
+    }
+    const cats=await safe('equipment_categories','*');
+    const items=await safe('equipment_items','*');
+    const ropes=await safe('equipment_ropes','*');
+    const pieces=await safe('equipment_pieces','*');
+    const locs=await safe('equipment_locations','*');
+    const loans=await safe('equipment_loans','*');
+    const inv=await safe('inventory_sessions','*');
+    const proc=await safe('procurement_plan','*');
+    out.categories=(cats||[]).map((c,idx)=>({id:c.legacy_id||c.id||String(idx+1),name:c.name,description:c.description||'',type:c.type||'',sort_order:c.sort_order||idx})).filter(c=>c.name);
+    out.items=(items||[]).map((i,idx)=>({
+      id:i.legacy_id||i.catalog_id||i.id||('DB-ITEM-'+idx), legacy_id:i.legacy_id||i.id, catalog_id:i.catalog_id||i.legacy_id||i.id,
+      name:i.name||i.item_name||'Artikl', category:i.category_name||i.category||'Ostalo', category_name:i.category_name||i.category||'Ostalo', subcategory:i.subcategory||'Ostalo',
+      unit:i.unit||'kom', tracking_type:i.tracking_type||'po vrsti', quantity:Number(i.quantity)||0, quantity_label:String(i.quantity??''),
+      available:Number(i.available ?? i.quantity ?? 0)||0, available_label:String(i.available ?? i.quantity ?? ''), loaned:Number(i.loaned)||0,
+      minimum:i.minimum ?? '', status:i.status||'aktivno', availability:i.availability||'dostupno', member_visible:i.member_visible!==false,
+      internal_note:i.internal_note||i.note||'', source_sheet:i.source_sheet||'Supabase', location:i.location_name||i.location||'', location_name:i.location_name||i.location||''
+    })).filter(i=>i.name);
+    out.ropes=(ropes||[]).map((r,idx)=>({
+      id:r.legacy_id||r.sku||r.id||('DB-ROPE-'+idx), legacy_id:r.legacy_id||r.id, sku:r.sku||r.legacy_id||'', name:r.name||r.sku||'Uže',
+      category:'Užad', category_name:'Užad', subcategory:r.subcategory||'Užad', quantity:1, available:/posu|vani|otpis|rashod|izgubl/i.test(String(r.status||''))?0:1, loaned:/posu|vani/i.test(String(r.status||''))?1:0,
+      diameter_mm:r.diameter_mm, length_m:r.length_m, manufacturer:r.manufacturer||'', model:r.model||'', production_year:r.production_year, in_use_since:r.in_use_since,
+      color:r.color||'', location:r.location_name||'', location_name:r.location_name||'', status:r.status||'U društvu', note:r.note||'', member_visible:true
+    })).filter(r=>r.name);
+    out.pieces=(pieces||[]).map((x,idx)=>({
+      id:x.legacy_id||x.sku||x.id||('DB-PIECE-'+idx), legacy_id:x.legacy_id||x.id, sku:x.sku||'', name:x.name||x.model||x.sku||'Komad opreme',
+      category:x.category_name||x.category||'Ostalo', category_name:x.category_name||x.category||'Ostalo', subcategory:x.subcategory||'Ostalo', quantity:1, available:/posu|vani|otpis|rashod|izgubl/i.test(String(x.status||''))?0:1, loaned:/posu|vani/i.test(String(x.status||''))?1:0,
+      manufacturer:x.manufacturer||'', model:x.model||'', location:x.location_name||'', location_name:x.location_name||'', status:x.status||'U društvu', note:x.note||'', member_visible:true
+    })).filter(x=>x.name);
+    out.locations=(locs||[]).map(l=>({id:l.legacy_id||l.id,name:l.name,description:l.description||'',type:l.type||''})).filter(l=>l.name);
+    out.loans=(loans||[]).map(l=>({id:l.id,member_name:l.member_name||l.user_name||l.borrower_name||'',item_name:l.item_name||l.name||'',quantity:Number(l.quantity)||1,due_date:l.due_date||l.to||'',status:l.status||'vani',note:l.note||''}));
+    out.inventories=(inv||[]).map(i=>({id:i.legacy_id||i.id,name:i.name||'Inventura',date:i.inventory_date||i.date,owner:i.owner_name||i.owner,status:i.status,note:i.note}));
+    out.procurement=(proc||[]).map(p=>({id:p.legacy_id||p.id,name:p.item_name||p.name,quantity:p.quantity,status:p.status,date:p.purchase_date,note:p.note}));
+    out.summary.count_items=out.items.length; out.summary.count_ropes=out.ropes.length; out.summary.count_categories=out.categories.length;
+    return out;
+  }
+
+  window.SOVArmoryDB={configured,loadRequests,createRequest,updateRequestStatus,importStaticData,loadAllData,createEquipmentItem,createEquipmentPiece,createEquipmentPieces,createRope,updateEquipmentStatus};
 })();

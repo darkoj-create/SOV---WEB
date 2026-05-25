@@ -856,9 +856,6 @@ body.armory-master-active .filters .quick-packs,body.armory-master-active .filte
   <a data-page="fullinventory" href="oruzar-master-inventar.html">📦 Inventar</a>
   <a data-page="stocktake" href="oruzar-master-inventura.html">✅ Inventura</a>
   <a data-page="loans" href="oruzar-master-posudbe.html">↔️ Posudbe</a>
-  <a data-page="orders" href="oruzar-master-narudzbe.html">📝 Narudžbe</a>
-  <a data-page="procurement" href="oruzar-master-nabave.html">🛒 Nabave</a>
-  <a data-page="armorySettings" href="oruzar-master-postavke.html">⚙️ Postavke</a>
   <a class="back" href="oruzarstvo.html">← Katalog za članove</a>
 </nav>`;
   function can(){ try { return !window.canArmory || window.canArmory(); } catch(e){ return true; } }
@@ -1075,7 +1072,7 @@ body.armory-master-real .armory-nav button.armory-master-btn{display:none!import
   function icon(c){c=String(c).toLowerCase(); if(c.includes('osob'))return '🧗'; if(c.includes('už')||c.includes('uz'))return '🪢'; if(c.includes('postav'))return '🔩'; if(c.includes('buš')||c.includes('bus'))return '🔋'; if(c.includes('crtan'))return '📐'; if(c.includes('medic'))return '⛑️'; if(c.includes('foto')||c.includes('elekt'))return '🔦'; if(c.includes('logor'))return '⛺'; return '📦'}
   function desc(c){c=String(c).toLowerCase(); if(c.includes('osob'))return 'Pojasevi, crollovi, descenderi, kacige i osobna speleo oprema.'; if(c.includes('už')||c.includes('uz'))return 'Užad i užetna oprema; užad se prati pojedinačno po kodu.'; if(c.includes('postav'))return 'Spitovi, sidrišta, karabineri i potrošna oprema za postavljanje.'; if(c.includes('buš')||c.includes('bus'))return 'Bušilice, baterije, punjači i svrdla.'; if(c.includes('crtan'))return 'Oprema za mjerenje, crtanje i dokumentaciju.'; return 'Otvori podkategorije i artikle.'}
   function rows(){
-    const d=window.DATA||{}; const items=Array.isArray(d.items)?d.items:[]; const ropes=Array.isArray(d.ropes)?d.ropes:[]; const pieces=Array.isArray(d.pieces)?d.pieces:[];
+    const d=(typeof DATA!=='undefined'?DATA:(window.DATA||{})); const items=Array.isArray(d.items)?d.items:[]; const ropes=Array.isArray(d.ropes)?d.ropes:[]; const pieces=Array.isArray(d.pieces)?d.pieces:[];
     return [...items.map(x=>({...x,_kind:'item'})),...ropes.map(x=>({...x,_kind:'rope',quantity:x.quantity||1,available:x.available??1,loaned:x.loaned||0,category:x.category||'Užad'})),...pieces.map(x=>({...x,_kind:'piece',quantity:x.quantity||1,available:x.available??1,loaned:x.loaned||0}))].map(r=>{const qty=n(r.quantity||r.quantity_label||1);const loan=n(r.loaned||0);let av=(r.available!==undefined&&r.available!==null)?n(r.available):Math.max(qty-loan,0);return {...r,_cat:catOf(r),_sub:subOf(r),_qty:qty,_loan:loan,_av:av}}).filter(r=>nameOf(r).trim());
   }
   function header(){return `<div class="v457-master-head"><div><div class="eyebrow">Oružar Master</div><h1>Inventar</h1><p>Prvo kategorije, zatim podkategorije, tek onda artikli i količine.</p></div><nav class="v457-master-nav"><a href="oruzar-master.html">🏠 Pregled</a><a class="active" href="oruzar-master-inventar.html">📦 Inventar</a><a href="oruzar-master-inventura.html">✅ Inventura</a><a href="oruzar-master-posudbe.html">↔️ Posudba</a></nav></div>`}
@@ -1097,4 +1094,41 @@ body.armory-master-real .armory-nav button.armory-master-btn{display:none!import
   document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>boot(),700));
 })();
 </script>
+
+
+<style id="v462-hard-data-recovery-css">
+.v462-data-warning{border:1px solid rgba(255,207,105,.35);background:rgba(255,207,105,.10);color:#fff3cc;border-radius:18px;padding:13px 15px;margin:12px 0;font-weight:900;line-height:1.4}
+</style>
+<script id="v462-hard-data-recovery-js">
+(function(){
+  const VERSION='v4.62 hard data recovery';
+  function hasRows(d){return !!(d && ((Array.isArray(d.items)&&d.items.length)||(Array.isArray(d.ropes)&&d.ropes.length)||(Array.isArray(d.pieces)&&d.pieces.length)));}
+  function expose(){try{ if(typeof DATA!=='undefined') window.DATA=DATA; }catch(e){} }
+  function normalize(d){try{return typeof normalizeArmoryData==='function'?normalizeArmoryData(d):d}catch(e){return d}}
+  async function loadStatic(){try{const r=await fetch('data/oruzarstvo-data.json',{cache:'no-store'}); if(!r.ok) return null; return await r.json();}catch(e){console.warn(VERSION,'static fallback failed',e);return null;}}
+  async function loadLive(){try{if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.loadAllData){const d=await SOVArmoryDB.loadAllData(); return hasRows(d)?d:null;}}catch(e){console.warn(VERSION,'live load failed',e)} return null;}
+  function rerender(){
+    expose();
+    try{ if(typeof initFilters==='function') initFilters(); }catch(e){}
+    try{ if(typeof renderKpis==='function') renderKpis(); }catch(e){}
+    try{ if(typeof renderCatalog==='function') renderCatalog(); }catch(e){}
+    try{ if(location.pathname.includes('oruzar-master-inventar') && typeof v461RenderInventar==='function') v461RenderInventar(); }catch(e){console.warn(VERSION,'inventar rerender',e)}
+    try{ if(location.pathname.includes('oruzar-master') && !location.pathname.includes('inventar') && typeof renderMaster==='function') renderMaster(); }catch(e){}
+    try{ if(location.pathname.includes('inventura') && typeof renderStocktake==='function') renderStocktake(); }catch(e){}
+    try{ if(location.pathname.includes('posudbe') && typeof renderLoans==='function') renderLoans(); }catch(e){}
+  }
+  async function hydrate(){
+    expose();
+    let current=null; try{current=typeof DATA!=='undefined'?DATA:window.DATA}catch(e){}
+    let live=await loadLive();
+    if(live && hasRows(live)){ try{ DATA=normalize(live); window.DATA=DATA; DB_LIVE=true; }catch(e){ window.DATA=live; } rerender(); return; }
+    current=null; try{current=typeof DATA!=='undefined'?DATA:window.DATA}catch(e){}
+    if(!hasRows(current)){ const st=await loadStatic(); if(st && hasRows(st)){ try{ DATA=normalize(st); window.DATA=DATA; }catch(e){ window.DATA=st; } rerender(); return; } }
+    rerender();
+  }
+  window.v462HydrateArmoryData=hydrate;
+  document.addEventListener('DOMContentLoaded',()=>{setTimeout(hydrate,450);setTimeout(hydrate,1200);setTimeout(hydrate,2500);});
+})();
+</script>
+
 </body></html>
