@@ -148,6 +148,65 @@
     return total;
   }
 
+
+  async function upsertCategoriesSafe(rows){
+    if(!rows || !rows.length) return 0;
+    const client=sb();
+    const normalized=dedupeByKey(rows
+      .filter(r => String(r.name||'').trim())
+      .map((r,idx)=>({
+        name:String(r.name||'').trim(),
+        description:r.description||null,
+        type:r.type||null,
+        sort_order:Number.isFinite(Number(r.sort_order)) ? Number(r.sort_order) : idx
+      })),
+      r => String(r.name||'').trim().toLowerCase()
+    );
+    let total=0;
+    for(const row of normalized){
+      const {data:existing,error:selectError}=await client
+        .from('equipment_categories')
+        .select('id,name')
+        .eq('name',row.name)
+        .maybeSingle();
+      if(selectError) throw selectError;
+      if(existing && existing.id){
+        const {error:updateError}=await client
+          .from('equipment_categories')
+          .update({description:row.description,type:row.type,sort_order:row.sort_order,updated_at:new Date().toISOString()})
+          .eq('id',existing.id);
+        if(updateError) throw updateError;
+      }else{
+        const {error:insertError}=await client
+          .from('equipment_categories')
+          .insert(row);
+        if(insertError){
+          if(String(insertError.message||'').includes('equipment_categories_name_key') || String(insertError.code||'') === '23505'){
+            const {data:again,error:againError}=await client
+              .from('equipment_categories')
+              .select('id')
+              .eq('name',row.name)
+              .maybeSingle();
+            if(againError) throw againError;
+            if(again && again.id){
+              const {error:updateAgainError}=await client
+                .from('equipment_categories')
+                .update({description:row.description,type:row.type,sort_order:row.sort_order,updated_at:new Date().toISOString()})
+                .eq('id',again.id);
+              if(updateAgainError) throw updateAgainError;
+            }else{
+              throw insertError;
+            }
+          }else{
+            throw insertError;
+          }
+        }
+      }
+      total += 1;
+    }
+    return total;
+  }
+
   async function importStaticData(data){
     if(!configured()) throw new Error('Supabase nije konfiguriran.');
     if(!(await SOVAuth.can('armory'))) throw new Error('Import može raditi samo admin ili oružar.');
@@ -165,7 +224,7 @@
     const field=(data.field||[]).map(f=>({legacy_id:f.id,recorded_at:toDate(f.date),equipment_legacy_id:String(f.catalog_id||''),item_name:f.name,quantity:Number(f.quantity)||null,field_location:f.location||f.reason||null,responsible_person:f.person||null,status:'na terenu',note:f.note||null}));
     const inventories=(data.inventories||[]).map(i=>({legacy_id:i.id,name:i.name,inventory_date:toDate(i.date)||new Date().toISOString().slice(0,10),owner_name:i.owner||null,status:i.status||'Završena',note:i.note||null}));
     const result={};
-    result.categories=await upsertRows('equipment_categories',cats,'name');
+    result.categories=await upsertCategoriesSafe(cats);
     result.locations=await upsertRows('equipment_locations',locs,'legacy_id');
     result.items=await upsertRows('equipment_items',items,'legacy_id');
     result.pieces=await upsertRows('equipment_pieces',pieces,'legacy_id');
