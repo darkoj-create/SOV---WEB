@@ -243,9 +243,20 @@
     return total;
   }
 
+  function normalizeStaticData(data){
+    const empty={summary:{},categories:[],items:[],pieces:[],ropes:[],loans:[],inventories:[],inventory_items:[],procurement:[],services:[],disposed:[],lost:[],field:[],locations:[],members:[],status_options:[],request_status_options:[],tasks:[],inventory_rules:[],audit_notes:[]};
+    if(!data || typeof data !== 'object') return empty;
+    for(const k of Object.keys(empty)){
+      if(Array.isArray(empty[k])) empty[k]=Array.isArray(data[k]) ? data[k] : [];
+      else empty[k]=(data[k] && typeof data[k]==='object') ? data[k] : {};
+    }
+    return empty;
+  }
+
   async function importStaticData(data){
     if(!configured()) throw new Error('Supabase nije konfiguriran.');
     if(!(await SOVAuth.can('armory'))) throw new Error('Import može raditi samo admin ili oružar.');
+    data=normalizeStaticData(data);
     const cats=dedupeByKey((data.categories||[])
       .filter(c => String(c.name||'').trim())
       .map((c,idx)=>({legacy_id:String(c.id||idx+1),name:String(c.name||'').trim(),description:c.description||null,type:c.type||null,sort_order:idx})),
