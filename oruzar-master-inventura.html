@@ -224,15 +224,27 @@ function normalizeArmoryCategory(x){
 let USER_CAT=null, USER_SUB=null;
 const USER_CATEGORY_ORDER=['Osobna oprema','Užad i užetna oprema','Oprema za postavljanje','Oprema za crtanje','Bušilice i baterije','Rasvjeta','Odjeća i obuća','Kacige','Ostalo'];
 const USER_CATEGORY_META={
-  'Osobna oprema':['🧗','Pojasevi, descenderi, crollovi, blokeri, pupčane, pedale i osobni kompleti.'],
-  'Užad i užetna oprema':['🪢','Užad, transportne vreće, prusici, trake, gurtne, koloture i užetni pribor.'],
-  'Oprema za postavljanje':['🔩','Spitovi, sidrišta, pločice, ringovi, ankeri i materijal za opremanje.'],
-  'Oprema za crtanje':['🗺️','Tableti, mjerne trake, kompasi, Disto/laser, pribor za nacrte i dokumentaciju.'],
-  'Bušilice i baterije':['🔋','Bušilice, baterije, punjači, svrdla i komplet za bušenje.'],
-  'Rasvjeta':['🔦','Čeone lampe, baterije za rasvjetu, rezervni izvori svjetla i pribor.'],
+  'Osobna oprema':['🕳️⛑️','Osobna speleo oprema: pojasevi, crollovi, descenderi, blokeri, pupčane i pedale.'],
+  'Užad i užetna oprema':['🪢','Užad i užetna oprema — jedina grupa gdje se užad vodi po individualnim kodovima.'],
+  'Oprema za postavljanje':['⚓','Sidrišta, spitovi, pločice, karabineri, ankeri i potrošni materijal za postavljanje.'],
+  'Oprema za crtanje':['📐','Crtanje, mjerenje i dokumentacija objekata.'],
+  'Bušilice i baterije':['🔋','Bušilice, baterije, punjači i svrdla u jednoj jasnoj grupi.'],
+  'Elektro i foto oprema':['📷','Foto, video, rasvjeta, elektronika i prateći pribor.'],
+  'Elektro i foto':['📷','Foto, video, rasvjeta, elektronika i prateći pribor.'],
+  'Čisto podzemlje':['🧹','Oprema za čišćenje podzemlja i ekološke akcije.'],
+  'Ekspedicijska i kamp':['⛺','Logor, kamp, transport, vreće, kutije i ekspedicijska logistika.'],
+  'Oprema za logor':['⛺','Logor, kamp, transport, vreće, kutije i ekspedicijska logistika.'],
+  'Oprema za proširivanje':['⛏️','Oprema i pribor za proširivanje.'],
+  'Ostali alat':['🧰','Alat, kutije, servisni pribor i pomoćna oprema.'],
+  'Medicinska oprema':['⚕️','Medicinska oprema i prva pomoć.'],
+  'Medicina':['⚕️','Medicinska oprema i prva pomoć.'],
+  'Ronilačka oprema':['🤿','Ronilačka oprema i pribor.'],
+  'Alpinistička oprema':['🧗','Alpinistička i visinska oprema koja nije osobni speleo komplet.'],
+  'Alpinistička i ronilačka':['🧗','Alpinistička i ronilačka oprema.'],
+  'Rasvjeta':['🔦','Čeone lampe, rasvjeta, baterije za rasvjetu i rezervni izvori svjetla.'],
   'Odjeća i obuća':['🥾','Kombinezoni, rukavice, čizme, pododijela i zaštitna odjeća.'],
   'Kacige':['⛑️','Kacige, nosači lampi i zaštita glave.'],
-  'Ostalo':['📦','Vreće, kutije, logistika i ostala oprema.']
+  'Ostalo':['📦','Ostala oprema i artikli koje treba dodatno razvrstati.']
 };
 function sortUserCategories(arr){return [...arr].sort((a,b)=>(USER_CATEGORY_ORDER.indexOf(a)<0?99:USER_CATEGORY_ORDER.indexOf(a))-(USER_CATEGORY_ORDER.indexOf(b)<0?99:USER_CATEGORY_ORDER.indexOf(b))||String(a).localeCompare(String(b),'hr'))}
 function displayCategory(i){const raw=normalizeArmoryCategory(i); const text=[i.name,i.model,i.subcategory,raw,i.internal_note].filter(Boolean).join(' ').toLowerCase(); if(raw==='Užad')return 'Užad i užetna oprema'; if(/uže|uze|prusik|gurt|traka|kolotur|transportna vreća|transportna vreca/.test(text)&&!/buš|busil|bušil/.test(text)&&!/descender|\bstop\b|rig|maestro|id['’]?s/.test(text))return 'Užad i užetna oprema'; return raw;}
@@ -1023,8 +1035,27 @@ body.armory-master-real .armory-nav button.armory-master-btn{display:none!import
   function idOf(r){return norm(r.id||r.catalog_id||r.sku||r.legacy_id||r.name||r.model)}
   const order=['Osobna oprema','Užad i užetna oprema','Oprema za postavljanje','Oprema za crtanje','Crtanje i mjerenje','Bušilice i baterije','Rasvjeta','Elektro i foto oprema','Odjeća i obuća','Kacige','Ostalo'];
   function sortCats(a){return [...a].sort((x,y)=>(order.indexOf(x)<0?99:order.indexOf(x))-(order.indexOf(y)<0?99:order.indexOf(y))||String(x).localeCompare(String(y),'hr'))}
-  function icon(c){const m={'Osobna oprema':'🧗','Užad i užetna oprema':'🪢','Oprema za postavljanje':'🔩','Oprema za crtanje':'📐','Crtanje i mjerenje':'📐','Bušilice i baterije':'🔋','Rasvjeta':'💡','Elektro i foto oprema':'📷','Odjeća i obuća':'🥾','Kacige':'⛑️','Ostalo':'📦'};return m[c]||'📦'}
-  function desc(c){const m={'Osobna oprema':'Pojasevi, crollovi, descenderi, blokeri i ostala osobna speleo oprema.','Užad i užetna oprema':'Užad i užetna oprema, s individualnim kodovima gdje je potrebno.','Oprema za postavljanje':'Karabineri, spitovi, sidrišta i potrošna oprema za postavljanje.','Oprema za crtanje':'Crtanje, mjerenje i dokumentacija objekata.','Crtanje i mjerenje':'Crtanje, mjerenje i dokumentacija objekata.','Bušilice i baterije':'Bušilice, baterije, punjači i svrdla u jednoj jasnoj grupi.','Elektro i foto oprema':'Foto, video, rasvjeta i elektronika.','Rasvjeta':'Lampe i prateća rasvjeta.','Odjeća i obuća':'Kombinezoni, čizme, rukavice i zaštitna roba.','Kacige':'Kacige i dodatci za kacige.'};return m[c]||'Ostala oprema i artikli.'}
+  function icon(c){
+    const key=String(c||'').toLowerCase();
+    if(key.includes('osob'))return '🕳️⛑️';
+    if(key.includes('už')||key.includes('uz'))return '🪢';
+    if(key.includes('postav'))return '⚓';
+    if(key.includes('crtan')||key.includes('mjeren'))return '📐';
+    if(key.includes('buš')||key.includes('bus')||key.includes('bater'))return '🔋';
+    if(key.includes('elekt')||key.includes('foto'))return '📷';
+    if(key.includes('čisto')||key.includes('cisto'))return '🧹';
+    if(key.includes('kamp')||key.includes('logor')||key.includes('ekspedic'))return '⛺';
+    if(key.includes('prošir')||key.includes('prosir'))return '⛏️';
+    if(key.includes('medic'))return '⚕️';
+    if(key.includes('ronil'))return '🤿';
+    if(key.includes('alpin'))return '🧗';
+    if(key.includes('alat'))return '🧰';
+    if(key.includes('rasvjet')||key.includes('lamp'))return '🔦';
+    if(key.includes('odje')||key.includes('obu'))return '🥾';
+    if(key.includes('kacig'))return '⛑️';
+    return '📦';
+  }
+  function desc(c){const m={'Osobna oprema':'Osobna speleo oprema: pojasevi, crollovi, descenderi, blokeri i pupčane.','Užad i užetna oprema':'Užad i užetna oprema, s individualnim kodovima gdje je potrebno.','Oprema za postavljanje':'Karabineri, spitovi, sidrišta i potrošna oprema za postavljanje.','Oprema za crtanje':'Crtanje, mjerenje i dokumentacija objekata.','Crtanje i mjerenje':'Crtanje, mjerenje i dokumentacija objekata.','Bušilice i baterije':'Bušilice, baterije, punjači i svrdla u jednoj jasnoj grupi.','Elektro i foto oprema':'Foto, video, rasvjeta i elektronika.','Rasvjeta':'Lampe i prateća rasvjeta.','Odjeća i obuća':'Kombinezoni, čizme, rukavice i zaštitna roba.','Kacige':'Kacige i dodatci za kacige.'};return m[c]||'Ostala oprema i artikli.'}
   window.v459UserCat=null; window.v459UserSub=null; window.v459InvCat=null; window.v459InvSub=null;
   window.v459Add=function(id){try{ if(window.addToCart) return addToCart(decodeURIComponent(id)); if(window.addItemToRequest) return addItemToRequest(decodeURIComponent(id)); }catch(e){console.warn(e)} if(window.toast)toast('Dodano u zahtjev');};
   function memberRows(){const q=norm(document.getElementById('q')?.value).toLowerCase();const forced=norm(document.getElementById('cat')?.value);return arr().filter(r=>r.member_visible!==false).filter(r=>!q||textOf(r).includes(q)).filter(r=>!forced||catOf(r)===forced)}
@@ -1140,4 +1171,37 @@ body.armory-master-real .armory-nav button.armory-master-btn{display:none!import
 })();
 </script>
 
+
+<style id="v465-real-category-icon-polish">
+/* v4.65 stvarni polish kartica — vidljivo drugačije od v4.62 */
+.v459-category-grid,.user-category-grid{grid-template-columns:repeat(auto-fit,minmax(245px,1fr))!important;gap:18px!important;align-items:stretch!important}
+.v459-category-card,.user-category-card{
+  min-height:190px!important;padding:22px 22px 18px!important;border-radius:30px!important;
+  border:1px solid rgba(205,244,219,.22)!important;
+  background:
+    radial-gradient(circle at 82% 12%,rgba(215,246,111,.18),transparent 34%),
+    radial-gradient(circle at 16% 90%,rgba(76,190,255,.10),transparent 36%),
+    linear-gradient(145deg,rgba(31,54,48,.95),rgba(10,25,22,.96))!important;
+  box-shadow:0 18px 48px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.09)!important;
+  display:flex!important;flex-direction:column!important;justify-content:space-between!important;
+}
+.v459-category-card:before,.user-category-card:before{content:""!important;position:absolute!important;inset:0!important;background:linear-gradient(120deg,rgba(255,255,255,.08),transparent 38%,rgba(215,246,111,.05))!important;opacity:.9!important;pointer-events:none!important}
+.v459-category-card:hover,.user-category-card:hover{transform:translateY(-4px)!important;border-color:rgba(215,246,111,.55)!important;box-shadow:0 24px 64px rgba(0,0,0,.42),0 0 0 1px rgba(215,246,111,.12) inset!important}
+.v459-category-card .ico,.user-category-card .ico{
+  width:58px!important;height:58px!important;border-radius:20px!important;display:grid!important;place-items:center!important;
+  font-size:32px!important;margin:0 0 14px!important;line-height:1!important;
+  background:linear-gradient(145deg,rgba(215,246,111,.22),rgba(98,202,255,.10))!important;
+  border:1px solid rgba(255,255,255,.16)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 12px 26px rgba(0,0,0,.26)!important;
+}
+.v459-category-card b,.user-category-card b{font-size:21px!important;line-height:1.08!important;letter-spacing:-.02em!important;text-shadow:0 2px 14px rgba(0,0,0,.55)!important;margin-bottom:8px!important}
+.v459-category-card small,.user-category-card small{font-size:13px!important;line-height:1.42!important;color:#d7e8e2!important;font-weight:850!important;max-width:96%!important}
+.v459-category-card .meta,.user-category-card .meta{
+  align-self:flex-start!important;margin-top:14px!important;padding:7px 11px!important;border-radius:999px!important;
+  background:rgba(215,246,111,.10)!important;border:1px solid rgba(215,246,111,.28)!important;color:#f4ffd9!important;
+}
+.v459-category-card:nth-child(3n+1),.user-category-card:nth-child(3n+1){background:radial-gradient(circle at 82% 12%,rgba(215,246,111,.18),transparent 34%),linear-gradient(145deg,rgba(30,58,48,.96),rgba(9,24,21,.97))!important}
+.v459-category-card:nth-child(3n+2),.user-category-card:nth-child(3n+2){background:radial-gradient(circle at 82% 12%,rgba(96,165,250,.18),transparent 34%),linear-gradient(145deg,rgba(25,48,62,.96),rgba(8,22,26,.97))!important}
+.v459-category-card:nth-child(3n+3),.user-category-card:nth-child(3n+3){background:radial-gradient(circle at 82% 12%,rgba(251,191,36,.16),transparent 34%),linear-gradient(145deg,rgba(57,45,28,.95),rgba(22,19,12,.97))!important}
+.v459-head h2,.user-catalog-head h2{letter-spacing:-.045em!important;text-shadow:0 2px 18px rgba(0,0,0,.45)!important}
+</style>
 </body></html>
