@@ -1214,4 +1214,355 @@ body.armory-master-real .armory-nav button.armory-master-btn{display:none!import
 .v459-category-card:nth-child(3n+3),.user-category-card:nth-child(3n+3){background:radial-gradient(circle at 82% 12%,rgba(251,191,36,.16),transparent 34%),linear-gradient(145deg,rgba(57,45,28,.95),rgba(22,19,12,.97))!important}
 .v459-head h2,.user-catalog-head h2{letter-spacing:-.045em!important;text-shadow:0 2px 18px rgba(0,0,0,.45)!important}
 </style>
+
+
+<!-- v4.66: Inventar editing override - do not put inventory editing into Inventura -->
+<style id="v466-inventar-edit-style">
+.v466-inv-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.v466-add-panel{margin:14px 0;border:1px solid rgba(255,255,255,.12);background:linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.035));border-radius:24px;padding:16px;box-shadow:0 18px 44px rgba(0,0,0,.22)}.v466-add-grid{display:grid;grid-template-columns:1.3fr 1fr 1fr .7fr 1fr .9fr;gap:10px;align-items:end}.v466-field label{display:block;color:#cfe6dc;font-size:12px;font-weight:900;margin-bottom:6px}.v466-field input,.v466-field select{width:100%;box-sizing:border-box;border:1px solid rgba(255,255,255,.14);border-radius:14px;background:rgba(4,16,20,.78);color:#f2fff9;padding:10px 12px;font-weight:850;outline:none}.v466-field input:focus,.v466-field select:focus{border-color:rgba(215,246,111,.62);box-shadow:0 0 0 3px rgba(215,246,111,.11)}.v466-edit-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0 10px}.v466-edit-grid label{font-size:11px;color:#bcd1ca;font-weight:900;text-transform:uppercase;letter-spacing:.04em}.v466-edit-grid input{margin-top:5px;width:100%;box-sizing:border-box;border:1px solid rgba(255,255,255,.14);border-radius:12px;background:rgba(0,0,0,.28);color:#fff;padding:9px 10px;font-weight:900}.v466-item-actions{display:flex;gap:8px;flex-wrap:wrap}.v466-danger{background:rgba(255,96,96,.13)!important;border-color:rgba(255,96,96,.34)!important;color:#ffd1d1!important}.v466-muted-note{color:#b8ccc4;font-size:12px;font-weight:750;line-height:1.4}.v466-inline-save{background:rgba(127,240,178,.13)!important;border-color:rgba(127,240,178,.34)!important;color:#dbffd0!important}@media(max-width:980px){.v466-add-grid{grid-template-columns:1fr 1fr}.v466-edit-grid{grid-template-columns:1fr}.v466-add-grid .wide{grid-column:1/-1}}@media(max-width:640px){.v466-add-grid{grid-template-columns:1fr}}
+</style>
+<script id="v466-inventar-edit-script">
+(function(){
+  const VERSION='v4.66-inventar-edit';
+  function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+  function enc(s){return encodeURIComponent(String(s??''));}
+  function dec(s){try{return decodeURIComponent(String(s??''));}catch(e){return String(s??'');}}
+  function toast2(msg){try{ if(typeof toast==='function') return toast(msg); }catch(e){} alert(msg);}
+  function norm(s){return String(s??'').trim();}
+  function safeNum(v, fallback=0){const n=Number(String(v??'').replace(',','.'));return Number.isFinite(n)?n:fallback;}
+  function allRows(){try{ if(typeof stockRows442==='function') return stockRows442().filter(r=>!isDeleted(r)); }catch(e){} try{ if(typeof inventoryCandidates==='function') return inventoryCandidates().filter(r=>!isDeleted(r)); }catch(e){} return [];}
+  function isDeleted(r){return /obris|brisano|delete/i.test(String(r.status||r.availability||'')) || r.member_visible===false && /obris/i.test(String(r.internal_note||r.note||''));}
+  function idOf(r){return norm(r.sku||r.legacy_id||r.catalog_id||r.id||r.name||r.model);}
+  function nameOf(r){return norm(r.name||r.model||r.catalog_id||r.sku||'Artikl');}
+  function catOf(r){try{return (typeof displayCategory==='function'?displayCategory(r):(r._cat||r.category||r.category_name))||'Ostalo';}catch(e){return r._cat||r.category||r.category_name||'Ostalo';}}
+  function subOf(r){try{return (typeof displaySubcategory==='function'?displaySubcategory(r):(r._sub||r.subcategory||r.subcategory_name))||'Ostalo';}catch(e){return r._sub||r.subcategory||r.subcategory_name||'Ostalo';}}
+  function qtyOf(r){return safeNum(r.quantity ?? r._qty,1);}
+  function avOf(r){return safeNum(r.available ?? r._av ?? qtyOf(r), qtyOf(r));}
+  function loanOf(r){return safeNum(r.loaned ?? r._loan, Math.max(0, qtyOf(r)-avOf(r)));}
+  function tableKind(r){ if((r._kind||'').includes('rope') || r.diameter_mm || r.length_m) return 'rope'; if((r._kind||'').includes('piece') || r.sku && !('quantity' in r) && !('available' in r)) return 'piece'; return 'item'; }
+  function findInData(id){
+    const lists=[DATA&&DATA.items, DATA&&DATA.ropes, DATA&&DATA.pieces].filter(Boolean);
+    for(const list of lists){const row=list.find(x=>[x.id,x.sku,x.legacy_id,x.catalog_id,x.name,x.model].map(norm).includes(norm(id))); if(row) return row;}
+    return null;
+  }
+  function patchLocal(id, patch){const row=findInData(id); if(row) Object.assign(row,patch);}
+  function removeLocal(id){
+    for(const key of ['items','ropes','pieces']){const list=DATA&&DATA[key]; if(!Array.isArray(list))continue; const idx=list.findIndex(x=>[x.id,x.sku,x.legacy_id,x.catalog_id,x.name,x.model].map(norm).includes(norm(id))); if(idx>=0){list.splice(idx,1);return true;}}
+    return false;
+  }
+  async function sb(){
+    if(!window.SOV_SUPABASE_URL||!window.SOV_SUPABASE_ANON_KEY||!window.supabase) return null;
+    if(!window.__v466sb) window.__v466sb=window.supabase.createClient(window.SOV_SUPABASE_URL,window.SOV_SUPABASE_ANON_KEY);
+    return window.__v466sb;
+  }
+  async function syncUpdate(row, patch){
+    const client=await sb(); if(!client) return false;
+    try{ if(window.SOVAuth && !(await SOVAuth.can('armory'))) return false; }catch(e){}
+    const kind=tableKind(row); let table='equipment_items'; let q;
+    const id=idOf(row);
+    if(kind==='rope'){table='equipment_ropes'; q=client.from(table).update({location_name:patch.location||patch.location_name||row.location||row.location_name||null,status:patch.status||row.status||'U društvu',note:patch.note||row.note||null,updated_at:new Date().toISOString()}).or(`sku.eq.${id},legacy_id.eq.${id},id.eq.${id}`);}
+    else if(kind==='piece'){table='equipment_pieces'; q=client.from(table).update({location_name:patch.location||patch.location_name||row.location||row.location_name||null,status:patch.status||row.status||'U društvu',note:patch.note||row.note||null,updated_at:new Date().toISOString()}).or(`legacy_id.eq.${id},sku.eq.${id},id.eq.${id}`);}
+    else {const quantity=safeNum(patch.quantity,qtyOf(row)); const available=Math.max(0,Math.min(quantity,safeNum(patch.available,avOf(row)))); q=client.from(table).update({quantity,available,loaned:Math.max(0,quantity-available),location_name:patch.location||patch.location_name||row.location||row.location_name||null,status:patch.status||row.status||'aktivno',availability:available>0?'dostupno':'nedostupno',updated_at:new Date().toISOString()}).or(`legacy_id.eq.${id},catalog_id.eq.${id},id.eq.${id}`);}
+    const {error}=await q; if(error) throw error; return true;
+  }
+  async function syncAdd(row){
+    if(window.SOVArmoryDB && SOVArmoryDB.configured && SOVArmoryDB.configured()){return await SOVArmoryDB.createEquipmentItem(row);} 
+    const client=await sb(); if(!client) return null;
+    const {data,error}=await client.from('equipment_items').upsert({legacy_id:row.legacy_id,catalog_id:row.catalog_id||row.legacy_id,name:row.name,category_name:row.category_name,subcategory:row.subcategory,unit:'kom',tracking_type:'po vrsti',quantity:row.quantity,available:row.available,loaned:0,minimum:null,status:'aktivno',availability:'dostupno',member_visible:true,location_name:row.location_name||null,source_sheet:'manual-inventar'}, {onConflict:'legacy_id'}).select('*').single();
+    if(error) throw error; return data;
+  }
+  async function syncDelete(row){
+    const client=await sb(); if(!client) return false;
+    try{ if(window.SOVAuth && !(await SOVAuth.can('armory'))) return false; }catch(e){}
+    const kind=tableKind(row), id=idOf(row);
+    if(kind==='item'){
+      const {error}=await client.from('equipment_items').update({status:'obrisano',availability:'nedostupno',member_visible:false,available:0,updated_at:new Date().toISOString()}).or(`legacy_id.eq.${id},catalog_id.eq.${id},id.eq.${id}`); if(error) throw error;
+    }else if(kind==='rope'){
+      const {error}=await client.from('equipment_ropes').update({status:'Obrisano',updated_at:new Date().toISOString()}).or(`sku.eq.${id},legacy_id.eq.${id},id.eq.${id}`); if(error) throw error;
+    }else{
+      const {error}=await client.from('equipment_pieces').update({status:'Obrisano',updated_at:new Date().toISOString()}).or(`legacy_id.eq.${id},sku.eq.${id},id.eq.${id}`); if(error) throw error;
+    }
+    return true;
+  }
+  window.v466InvCat=window.v466InvCat||null; window.v466InvSub=window.v466InvSub||null;
+  window.v466PickCat=function(c){window.v466InvCat=dec(c);window.v466InvSub=null;render();};
+  window.v466PickSub=function(s){window.v466InvSub=dec(s);render();};
+  window.v466BackCats=function(){window.v466InvCat=null;window.v466InvSub=null;render();};
+  window.v466BackSubs=function(){window.v466InvSub=null;render();};
+  window.v466ToggleAdd=function(){const el=document.getElementById('v466AddPanel'); if(el) el.hidden=!el.hidden;};
+  window.v466SaveRow=async function(id){
+    const row=allRows().find(r=>idOf(r)===dec(id)); if(!row) return toast2('Ne nalazim artikl');
+    const base='v466_'+btoa(unescape(encodeURIComponent(idOf(row)))).replace(/=/g,'');
+    const qty=safeNum(document.getElementById(base+'_qty')?.value, qtyOf(row));
+    const av=safeNum(document.getElementById(base+'_av')?.value, avOf(row));
+    const loc=norm(document.getElementById(base+'_loc')?.value);
+    const patch={quantity:qty,available:Math.max(0,Math.min(qty,av)),loaned:Math.max(0,qty-Math.max(0,Math.min(qty,av))),location:loc,location_name:loc};
+    try{await syncUpdate(row,patch);patchLocal(idOf(row),patch);toast2('Inventar ažuriran');render();}catch(e){console.error(e);toast2('Greška spremanja: '+(e.message||e));}
+  };
+  window.v466DeleteRow=async function(id){
+    const row=allRows().find(r=>idOf(r)===dec(id)); if(!row) return toast2('Ne nalazim artikl');
+    if(!confirm('Maknuti artikl iz aktivnog inventara?')) return;
+    try{await syncDelete(row);removeLocal(idOf(row));toast2('Artikl maknut iz aktivnog inventara');render();}catch(e){console.error(e);toast2('Greška brisanja: '+(e.message||e));}
+  };
+  window.v466AddItem=async function(ev){
+    ev.preventDefault();
+    const f=ev.target; const name=norm(f.name.value); if(!name) return toast2('Upiši naziv artikla');
+    const cat=norm(f.category.value)||window.v466InvCat||'Ostalo'; const sub=norm(f.subcategory.value)||window.v466InvSub||'Ostalo'; const qty=Math.max(0,safeNum(f.quantity.value,1)); const loc=norm(f.location.value); const code=norm(f.code.value)||('ART-'+Date.now());
+    const row={legacy_id:code,catalog_id:code,name,category_name:cat,category:cat,subcategory:sub,quantity:qty,available:qty,loaned:0,location_name:loc,location:loc,status:'aktivno',availability:'dostupno',tracking_type:'po vrsti',unit:'kom',member_visible:true};
+    try{await syncAdd(row); if(DATA&&Array.isArray(DATA.items)) DATA.items.unshift({...row,id:code}); toast2('Novi artikl spremljen'); f.reset(); window.v466InvCat=cat; window.v466InvSub=sub; render();}catch(e){console.error(e);toast2('Greška dodavanja: '+(e.message||e));}
+  };
+  function categoryIcon(c){try{if(typeof window.armoryCategoryIcon==='function')return armoryCategoryIcon(c); if(typeof icon==='function')return icon(c);}catch(e){} const s=String(c).toLowerCase(); if(s.includes('osob'))return '🧗‍♂️'; if(s.includes('už')||s.includes('uze'))return '🪢'; if(s.includes('buš')||s.includes('bus'))return '🔋'; if(s.includes('med'))return '⛑️'; if(s.includes('foto')||s.includes('elekt'))return '📷'; return '📦';}
+  function addPanel(cat,sub){return `<section id="v466AddPanel" class="v466-add-panel" hidden><h2>+ Novi artikl u inventaru</h2><p class="v466-muted-note">Ovo je količinski artikl. Individualni kodovi ostaju samo za užad; ovdje je kod opcionalna šifra artikla/modela.</p><form onsubmit="v466AddItem(event)" class="v466-add-grid"><div class="v466-field wide"><label>Naziv artikla</label><input name="name" placeholder="npr. Croll, OK karabiner, baterija 18V" required></div><div class="v466-field"><label>Kategorija</label><input name="category" value="${esc(cat||'')}"></div><div class="v466-field"><label>Podkategorija</label><input name="subcategory" value="${esc(sub||'')}"></div><div class="v466-field"><label>Broj</label><input name="quantity" type="number" min="0" step="1" value="1"></div><div class="v466-field"><label>Lokacija</label><input name="location" placeholder="ormar, kutija, prostorija..."></div><div class="v466-field"><label>Opcionalni kod</label><input name="code" placeholder="prazno = auto"></div><button class="btn primary" type="submit">Spremi u bazu</button></form></section>`;}
+  function headerHtml(){return (window.renderMasterHeader?renderMasterHeader('fullinventory'):`<div class="v457-master-head"><div><div class="eyebrow">Oružar Master</div><h1>Inventar</h1></div><a class="btn" href="oruzar-master.html">← Master</a></div>`);}
+  function itemCard(r){const id=idOf(r); const base='v466_'+btoa(unescape(encodeURIComponent(id))).replace(/=/g,''); const isRope=tableKind(r)==='rope'; const qty=qtyOf(r), av=avOf(r), loan=loanOf(r); return `<article class="v461-item v466-editable-item"><h3>${esc(nameOf(r))}</h3><small>${esc(catOf(r))} · ${esc(subOf(r))}${id?' · '+esc(id):''}</small><div class="v461-stock"><span class="${av>0?'ok':'bad'}"><b>${esc(av)}</b><em>dostupno</em></span><span><b>${esc(qty)}</b><em>ukupno</em></span><span><b>${esc(loan)}</b><em>posuđeno</em></span></div><div class="v466-edit-grid"><label>Ukupno<input id="${base}_qty" type="number" min="0" step="1" value="${esc(qty)}" ${isRope?'disabled title="Užad se vodi pojedinačno"':''}></label><label>Dostupno<input id="${base}_av" type="number" min="0" step="1" value="${esc(av)}" ${isRope?'disabled title="Užad se vodi pojedinačno"':''}></label><label>Lokacija<input id="${base}_loc" value="${esc(r.location||r.location_name||'')}"></label></div><div class="v466-item-actions"><button class="mini-btn v466-inline-save" onclick="v466SaveRow('${enc(id)}')">Spremi promjene</button><button class="mini-btn warn" onclick="markInventoryStatus&&markInventoryStatus('${esc(id)}','Za pregled')">Za pregled</button><button class="mini-btn v466-danger" onclick="v466DeleteRow('${enc(id)}')">Izbriši</button></div></article>`;}
+  function render(){
+    const main=document.getElementById('v461InventarApp')||document.getElementById('fullinventory')||document.querySelector('main')||document.body;
+    if(!main) return;
+    const rows=allRows();
+    if(!window.v466InvCat){const cats=[...new Set(rows.map(catOf).filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),'hr')); main.innerHTML=`<div class="v461-wrap">${headerHtml()}<div class="v461-panel"><div class="v461-head"><div><h1>Inventar po kategorijama</h1><p>Odaberi kategoriju. Uređivanje broja artikala, lokacije, brisanje i dodavanje radi se tek unutar podkategorije, da ekran ne bude kaos.</p></div><button class="btn primary" onclick="v466ToggleAdd()">+ Novi artikl</button></div>${addPanel('','')}<div class="v461-catgrid">${cats.map(c=>`<button class="v461-cat" onclick="v466PickCat('${enc(c)}')"><span>${categoryIcon(c)}</span><b>${esc(c)}</b><small>${rows.filter(r=>catOf(r)===c).length} artikala</small></button>`).join('')||'<div class="v461-empty">Nema artikala. Klikni + Novi artikl.</div>'}</div></div></div>`; return;}
+    const catRows=rows.filter(r=>catOf(r)===window.v466InvCat);
+    if(!window.v466InvSub){const subs=[...new Set(catRows.map(subOf).filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),'hr')); main.innerHTML=`<div class="v461-wrap">${headerHtml()}<div class="v461-panel"><div class="v461-breadcrumb"><button onclick="v466BackCats()">Sve kategorije</button><span>${esc(window.v466InvCat)}</span></div><div class="v461-head"><div><h1>${esc(window.v466InvCat)}</h1><p>Odaberi podkategoriju ili odmah dodaj novi artikl u ovu kategoriju.</p></div><div class="v466-inv-actions"><button class="btn" onclick="v466BackCats()">← Kategorije</button><button class="btn primary" onclick="v466ToggleAdd()">+ Novi artikl</button></div></div>${addPanel(window.v466InvCat,'')}<div class="v461-subgrid">${subs.map(s=>`<button class="v461-sub" onclick="v466PickSub('${enc(s)}')"><b>${esc(s)}</b><small>${catRows.filter(r=>subOf(r)===s).length} artikala · uredi stanje</small></button>`).join('')||'<div class="v461-empty">Nema podkategorija.</div>'}</div></div></div>`; return;}
+    const data=catRows.filter(r=>subOf(r)===window.v466InvSub);
+    main.innerHTML=`<div class="v461-wrap">${headerHtml()}<div class="v461-panel"><div class="v461-breadcrumb"><button onclick="v466BackCats()">Sve kategorije</button><button onclick="v466BackSubs()">${esc(window.v466InvCat)}</button><span>${esc(window.v466InvSub)}</span></div><div class="v461-head"><div><h1>${esc(window.v466InvSub)}</h1><p>Ovdje se uređuje inventar: broj artikala, dostupno stanje, lokacija, brisanje i dodavanje novog artikla.</p></div><div class="v466-inv-actions"><button class="btn" onclick="v466BackSubs()">← Podkategorije</button><button class="btn primary" onclick="v466ToggleAdd()">+ Novi artikl</button></div></div>${addPanel(window.v466InvCat,window.v466InvSub)}${data.length?`<div class="v461-items">${data.map(itemCard).join('')}</div>`:'<div class="v461-empty">Nema artikala u ovoj podkategoriji.</div>'}</div></div>`;
+  }
+  window.v466RenderInventar=render;
+  window.v461RenderInventar=render;
+  window.renderFullInventory=render;
+  document.addEventListener('DOMContentLoaded',()=>{ if(location.pathname.includes('oruzar-master-inventar')) setTimeout(render,80); });
+})();
+</script>
+
+<style id="v467-fuzzy-search-css">
+.v467-search-panel{border:1px solid rgba(215,246,111,.22);background:linear-gradient(135deg,rgba(215,246,111,.085),rgba(141,216,255,.045));border-radius:24px;padding:15px;margin:0 0 16px;display:grid;gap:10px}
+.v467-search-panel label{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#d7e8e2;font-weight:1000}.v467-search-row{display:flex;gap:10px;align-items:center}.v467-search-row input{flex:1;border:1px solid rgba(255,255,255,.16);background:rgba(0,0,0,.27);color:#f4fffb;border-radius:16px;padding:13px 14px;font:900 15px Inter,system-ui,sans-serif;outline:none}.v467-search-row input:focus{border-color:rgba(215,246,111,.55);box-shadow:0 0 0 3px rgba(215,246,111,.10)}.v467-search-hint{color:#c8dbd4;font-size:12px;line-height:1.45;font-weight:800}.v467-search-results{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}.v467-result-card{border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.055);border-radius:22px;padding:14px;display:grid;gap:9px}.v467-result-card h3{margin:0;color:#fff;font-size:17px;line-height:1.2}.v467-result-card small{color:#c8d9d3;line-height:1.35}.v467-result-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}.v467-match{display:inline-flex;align-items:center;border:1px solid rgba(215,246,111,.24);background:rgba(215,246,111,.09);border-radius:999px;padding:5px 8px;color:#f1ffd4;font-size:11px;font-weight:1000}.v467-empty-search{border:1px dashed rgba(255,255,255,.18);border-radius:22px;padding:22px;text-align:center;color:#cbdcd6;background:rgba(255,255,255,.035)}
+@media(max-width:700px){.v467-search-row{display:grid}.v467-search-results{grid-template-columns:1fr}}
+</style>
+<script id="v467-fuzzy-search-js">
+(function(){
+  if(window.__SOV_V467_FUZZY__) return; window.__SOV_V467_FUZZY__=true;
+  const esc = window.esc || (s=>String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m])));
+  const enc = window.enc || (s=>encodeURIComponent(String(s??'')));
+  const dec = window.dec || (s=>decodeURIComponent(String(s??'')));
+  function norm(s){return String(s??'').toLowerCase().trim().replace(/đ/g,'d').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').replace(/\s+/g,' ').trim();}
+  const synonymGroups=[
+    ['croll','crol','krol','prsni bloker','prsni','chest ascender'],
+    ['descender','descenderi','stop','rig','maestro','ids','id s','spustalica','spravica za spustanje'],
+    ['pupak','pupcano','pupcanio','pupcani','pupcano uze','pupcano uze','pupcani uze','cowstail','cow tail','cows tail','sigurnosni pupak'],
+    ['busilica','busilice','busilicu','busilica','busenje','bushilica','drill','aku busilica'],
+    ['baterija','baterije','aku','akumulator','battery'],
+    ['punjac','punjaci','charger'],
+    ['karabiner','karabineri','karabinjer','karabina','matica','hms','ok'],
+    ['uze','uzad','rope','konop','konopi','statik','dinamik'],
+    ['prusik','prusici','prusik uze'],
+    ['gurtna','gurtne','traka','trake','gurta','gurtnica'],
+    ['spit','spitovi','anker','sidriste','sidrista','bolt','plocica','plocice','ring'],
+    ['kaciga','kacige','helmet','slem'],
+    ['lampa','lampe','rasvjeta','svjetlo','ceona','celna','ceolampa'],
+    ['karta','crtanje','kompas','disto','topodroid','mjerac','mjerenje'],
+    ['medicina','medicinska','prva pomoc','first aid','zavoj'],
+    ['foto','kamera','camera','gopro','rasvjeta foto'],
+    ['ronjenje','ronilacka','maska','boca','regulator'],
+    ['alpinisticka','alpinizam','alpinist','penjanje']
+  ].map(g=>g.map(norm));
+  function expandTerms(q){const base=norm(q); const out=new Set([base]); base.split(' ').filter(Boolean).forEach(t=>out.add(t)); for(const g of synonymGroups){ if(g.some(x=>base.includes(x)||x.includes(base))){ g.forEach(x=>out.add(x)); } } return [...out].filter(Boolean); }
+  function expandHaystack(s){let h=norm(s); for(const g of synonymGroups){ if(g.some(x=>h.includes(x))){ h+=' '+g.join(' '); } } return h; }
+  function dist(a,b){a=norm(a);b=norm(b); if(!a||!b) return 99; if(Math.abs(a.length-b.length)>2) return 99; const dp=Array.from({length:a.length+1},(_,i)=>[i]); for(let j=1;j<=b.length;j++)dp[0][j]=j; for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)dp[i][j]=Math.min(dp[i-1][j]+1,dp[i][j-1]+1,dp[i-1][j-1]+(a[i-1]===b[j-1]?0:1)); return dp[a.length][b.length];}
+  function fuzzyContains(h,q){h=expandHaystack(h); const terms=expandTerms(q); if(!terms.length) return true; const words=h.split(' ').filter(Boolean); return terms.some(t=>h.includes(t)||words.some(w=>dist(w,t)<=1 || (t.length>=6&&dist(w,t)<=2)));}
+  function rowName(r){try{return (window.nameOf&&window.nameOf(r)) || r.name || r.model || r.title || 'Artikl';}catch(e){return r.name||r.model||'Artikl';}}
+  function rowId(r){try{return (window.idOf&&window.idOf(r)) || r.id || r.catalog_id || r.legacy_id || r.sku || rowName(r);}catch(e){return r.id||r.catalog_id||r.legacy_id||r.sku||rowName(r);}}
+  function rowCat(r){try{return (window.catOf&&window.catOf(r)) || (window.displayCategory&&window.displayCategory(r)) || r.category_name || r.category || r._cat || 'Ostalo';}catch(e){return r.category_name||r.category||r._cat||'Ostalo';}}
+  function rowSub(r){try{return (window.subOf&&window.subOf(r)) || (window.displaySubcategory&&window.displaySubcategory(r)) || r.subcategory || r.subcategory_name || r._sub || 'Ostalo';}catch(e){return r.subcategory||r.subcategory_name||r._sub||'Ostalo';}}
+  function rowText(r){return [rowName(r),rowCat(r),rowSub(r),r.model,r.manufacturer,r.internal_note,r.note,r.sku,r.legacy_id,r.catalog_id,r.location,r.location_name].filter(Boolean).join(' ');}
+  function allCatalogRows(){try{return (window.requestableItems?window.requestableItems():[]).filter(r=>{try{return window.canArmory&&canArmory()?true:r.member_visible!==false}catch(e){return r.member_visible!==false}})}catch(e){return []}}
+  function allInventoryRows(){try{return (window.v466AllRows?window.v466AllRows():null)|| (window.stockRows?window.stockRows():null) || (window.inventoryCandidates?window.inventoryCandidates():null) || [];}catch(e){return []}}
+  window.SOVArmoryFuzzy={norm,expandTerms,fuzzyContains,rowText,rowName,rowId,rowCat,rowSub,allCatalogRows,allInventoryRows};
+  function searchBox(id,placeholder){return `<div class="v467-search-panel"><label>Pametna pretraga</label><div class="v467-search-row"><input id="${id}" value="${esc(document.getElementById(id)?.value||document.getElementById('q')?.value||'')}" placeholder="${esc(placeholder)}"><button class="btn" onclick="document.getElementById('${id}').value=''; if(document.getElementById('q'))document.getElementById('q').value=''; ${id==='v467InvSearch'?'v466InvCat=null;v466InvSub=null;v466RenderInventar&&v466RenderInventar()':'renderCatalog&&renderCatalog()'}">Očisti</button></div><div class="v467-search-hint">Radi i kad upišeš približno: <b>krol/crol/croll</b>, <b>busilica/bušilica</b>, <b>pupak/pupčano uže</b>, <b>spit/anker</b>.</div></div>`}
+  const oldRenderCatalog=window.renderCatalog;
+  window.renderCatalog=function(){
+    const qEl=document.getElementById('q'); const q=(qEl&&qEl.value)||'';
+    if(!norm(q)){ return oldRenderCatalog?oldRenderCatalog():undefined; }
+    const el=document.getElementById('catalog'); if(!el) return oldRenderCatalog?oldRenderCatalog():undefined;
+    const rows=allCatalogRows().filter(r=>fuzzyContains(rowText(r),q)).slice(0,80);
+    el.innerHTML=`${searchBox('v467UserSearch','Traži artikl: krol, croll, busilica, pupak...')}<div class="v459-head"><div><h2>Rezultati za “${esc(q)}”</h2><p>Pretraga nije osjetljiva na tipfelere i hrvatska slova. Član vidi samo artikl i gumb za zahtjev.</p></div><button class="btn" onclick="document.getElementById('q').value='';renderCatalog()">← Kategorije</button></div>${rows.length?`<div class="v467-search-results">${rows.map(r=>`<article class="v467-result-card"><span class="v467-match">${esc(rowCat(r))} · ${esc(rowSub(r))}</span><h3>${esc(rowName(r))}</h3><small>${esc(rowCat(r))} / ${esc(rowSub(r))}</small><div class="v467-result-actions"><button class="btn primary" onclick="v459Add? v459Add('${enc(rowId(r))}') : addToCart('${esc(rowId(r))}')">Zatraži</button><button class="btn" onclick="window.v459UserCat='${esc(rowCat(r))}';window.v459UserSub='${esc(rowSub(r))}';document.getElementById('q').value='';renderCatalog()">Otvori kategoriju</button></div></article>`).join('')}</div>`:`<div class="v467-empty-search">Nema rezultata. Probaj kraće: “croll”, “uže”, “baterija”, “karabiner”.</div>`}`;
+    const si=document.getElementById('v467UserSearch'); if(si){si.oninput=()=>{if(qEl)qEl.value=si.value; renderCatalog();};}
+  };
+  const oldV466Render=window.v466RenderInventar || window.renderFullInventory;
+  function renderInventorySearch(){
+    const main=document.getElementById('v461InventarApp')||document.getElementById('fullinventory')||document.querySelector('main')||document.body; if(!main) return;
+    const q=(document.getElementById('v467InvSearch')?.value||'').trim();
+    if(!norm(q)){ if(oldV466Render) return oldV466Render(); return; }
+    const rows=allInventoryRows().filter(r=>fuzzyContains(rowText(r),q)).slice(0,120);
+    const head=(window.renderMasterHeader?renderMasterHeader('fullinventory'):`<div class="v457-master-head"><div><div class="eyebrow">Oružar Master</div><h1>Inventar</h1></div><a class="btn" href="oruzar-master.html">← Master</a></div>`);
+    main.innerHTML=`<div class="v461-wrap">${head}<div class="v461-panel">${searchBox('v467InvSearch','Traži: krol, croll, pupak, busilica, baterija...')}<div class="v461-head"><div><h1>Rezultati inventara za “${esc(q)}”</h1><p>Oružar vidi stanje i može skočiti direktno u kategoriju/podkategoriju artikla.</p></div><button class="btn" onclick="document.getElementById('v467InvSearch').value='';v466InvCat=null;v466InvSub=null;v466RenderInventar&&v466RenderInventar()">← Kategorije</button></div>${rows.length?`<div class="v467-search-results">${rows.map(r=>{const av=(window.avOf?avOf(r):(r.available||0));const qty=(window.qtyOf?qtyOf(r):(r.quantity||0));const loan=(window.loanOf?loanOf(r):(r.loaned||0));return `<article class="v467-result-card"><span class="v467-match">${esc(rowCat(r))} · ${esc(rowSub(r))}</span><h3>${esc(rowName(r))}</h3><small>Dostupno: ${esc(av)} · Ukupno: ${esc(qty)} · Posuđeno: ${esc(loan)}<br>Lokacija: ${esc(r.location||r.location_name||'—')}</small><div class="v467-result-actions"><button class="btn primary" onclick="v466InvCat='${esc(rowCat(r))}';v466InvSub='${esc(rowSub(r))}';document.getElementById('v467InvSearch').value='';v466RenderInventar&&v466RenderInventar()">Otvori u inventaru</button></div></article>`}).join('')}</div>`:`<div class="v467-empty-search">Nema rezultata u inventaru.</div>`}</div></div>`;
+    const si=document.getElementById('v467InvSearch'); if(si){si.oninput=()=>renderInventorySearch(); setTimeout(()=>si.focus(),20);}
+  }
+  window.v467RenderInventorySearch=renderInventorySearch;
+  const wrapV466=()=>{
+    const prev=window.v466RenderInventar||oldV466Render;
+    window.v466RenderInventar=function(){const q=document.getElementById('v467InvSearch')?.value; if(norm(q)) return renderInventorySearch(); const out=prev?prev():undefined; setTimeout(()=>{const panel=document.querySelector('.v461-panel'); if(panel && !document.getElementById('v467InvSearch')) panel.insertAdjacentHTML('afterbegin',searchBox('v467InvSearch','Traži: krol, croll, pupak, busilica...')); const si=document.getElementById('v467InvSearch'); if(si) si.oninput=()=>renderInventorySearch();},0); return out;};
+    window.renderFullInventory=window.v466RenderInventar;
+  };
+  document.addEventListener('DOMContentLoaded',()=>{
+    const qEl=document.getElementById('q'); if(qEl){qEl.placeholder='npr. krol/croll, busilica, pupak, spit, karabiner'; qEl.addEventListener('input',()=>setTimeout(()=>window.renderCatalog&&renderCatalog(),0));}
+    setTimeout(()=>{wrapV466(); if(location.pathname.includes('oruzar-master-inventar')) window.v466RenderInventar&&window.v466RenderInventar();},160);
+  });
+})();
+</script>
+
+
+
+<!-- v4.68: hard fix — one-click user request must appear in Oružar Master → Posudbe -->
+<script id="v468-request-to-posudbe-hardfix">
+(function(){
+  const esc=(v)=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const toastMsg=(m)=>{try{window.toast?toast(m):alert(m)}catch(e){console.log(m)}};
+  function allRequestable(){
+    try{
+      const rows=[];
+      if(window.requestableItems) rows.push(...requestableItems());
+      rows.push(...(window.DATA?.items||[]), ...(window.DATA?.pieces||[]));
+      rows.push(...(window.DATA?.ropes||[]).map(r=>({
+        ...r,
+        id:r.id||r.sku||r.legacy_id,
+        name:r.name||['Uže',r.length_label||r.length_m,r.diameter_mm?'mm '+r.diameter_mm:''].filter(Boolean).join(' '),
+        item_type:'rope', quantity:1, available:1
+      })));
+      const seen=new Set();
+      return rows.filter(r=>{const id=String(r.id||r.catalog_id||r.legacy_id||r.sku||r.name||''); if(!id||seen.has(id))return false; seen.add(id); return true;});
+    }catch(e){return []}
+  }
+  function findItem(id){
+    id=decodeURIComponent(String(id||''));
+    const n=id.toLowerCase();
+    return allRequestable().find(r=>[r.id,r.catalog_id,r.legacy_id,r.sku,r.name,r.model].some(v=>String(v||'').toLowerCase()===n)) ||
+           allRequestable().find(r=>String(r.name||r.model||'').toLowerCase().includes(n));
+  }
+  function localRequests(){try{return window.getRequests?getRequests():JSON.parse(localStorage.getItem('sov_equipment_requests')||'[]')}catch(e){return[]}}
+  function saveLocalRequests(rows){try{if(window.saveRequests)saveRequests(rows);else localStorage.setItem('sov_equipment_requests',JSON.stringify(rows||[]));}catch(e){console.warn(e)}}
+  async function createPendingRequestForItem(rawId){
+    const item=findItem(rawId);
+    if(!item){toastMsg('Nisam našao artikl za zahtjev.');return;}
+    const qty=1;
+    const req={
+      id:'REQ-'+Date.now(),
+      created_at:new Date().toISOString(),
+      user:window.CURRENT_USER?.full_name||window.CURRENT_USER?.email||'Član',
+      email:window.CURRENT_USER?.email||'',
+      trip:'Zahtjev iz kataloga',
+      from:new Date().toISOString().slice(0,10),
+      to:'',
+      note:'Automatski zahtjev klikom na Zatraži',
+      status:'pending',
+      source:'catalog_one_click',
+      items:[{id:item.id||item.catalog_id||item.legacy_id||item.sku||item.name, name:item.name||item.model||item.sku||'Artikl', quantity:qty, type:item.item_type||item.tracking_type||'item'}]
+    };
+    try{
+      if(window.SOVArmoryDB && SOVArmoryDB.configured && SOVArmoryDB.configured() && SOVArmoryDB.createRequest){
+        const saved=await SOVArmoryDB.createRequest(req);
+        req.id=saved.id||req.id; req.created_at=saved.created_at||req.created_at; req.status=saved.status||req.status;
+        window.DB_LIVE=true;
+      }
+    }catch(e){
+      console.warn('v4.68 request Supabase fallback',e);
+      toastMsg('Zahtjev je spremljen lokalno. Ako ga oružar ne vidi, korisnik mora biti prijavljen u Supabase.');
+      window.DB_LIVE=false;
+      window.DB_REQUESTS=null;
+    }
+    const rows=localRequests();
+    if(!rows.some(r=>String(r.id)===String(req.id))) rows.unshift(req);
+    saveLocalRequests(rows);
+    try{window.CART=[]; window.renderRequest&&renderRequest(); window.renderMyRequests&&renderMyRequests(); window.renderKpis&&renderKpis();}catch(e){}
+    toastMsg('Zahtjev poslan oružaru');
+    try{document.getElementById('drawer')?.classList.remove('open')}catch(e){}
+  }
+  window.v468CreatePendingRequestForItem=createPendingRequestForItem;
+  window.addToCart=function(id){ return createPendingRequestForItem(id); };
+  window.v459Add=function(id){ return createPendingRequestForItem(id); };
+  window.addCategoryPack=async function(category){
+    const rows=allRequestable().filter(i=>String(i.category||i.category_name||'')===String(category));
+    if(!rows.length){toastMsg('Nema artikala u toj kategoriji.');return;}
+    const req={id:'REQ-'+Date.now(),created_at:new Date().toISOString(),user:window.CURRENT_USER?.full_name||window.CURRENT_USER?.email||'Član',email:window.CURRENT_USER?.email||'',trip:'Paket: '+category,from:new Date().toISOString().slice(0,10),to:'',note:'Brzi paket iz kataloga',status:'pending',source:'catalog_pack',items:rows.slice(0,80).map(i=>({id:i.id||i.catalog_id||i.legacy_id||i.sku||i.name,name:i.name||i.model||'Artikl',quantity:1,type:i.item_type||i.tracking_type||'item'}))};
+    try{if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.createRequest){const saved=await SOVArmoryDB.createRequest(req);req.id=saved.id||req.id;req.created_at=saved.created_at||req.created_at;req.status=saved.status||req.status;window.DB_LIVE=true;}}catch(e){console.warn(e);window.DB_LIVE=false;window.DB_REQUESTS=null;}
+    const all=localRequests(); all.unshift(req); saveLocalRequests(all); try{window.renderMyRequests&&renderMyRequests()}catch(e){} toastMsg('Paket poslan oružaru');
+  };
+})();
+</script>
+
+<style id="v469-real-icon-system">
+/* v4.69 real category icon system: inline SVG icons, not generated images */
+.user-category-card .ico,.v459-category-card .ico,.v460-cat-card .ico,.category-card .ico{
+  width:64px!important;height:64px!important;border-radius:22px!important;display:grid!important;place-items:center!important;
+  padding:0!important;margin:0 0 14px!important;font-size:0!important;overflow:hidden!important;
+  background:radial-gradient(circle at 34% 24%,rgba(255,255,255,.22),transparent 24%),linear-gradient(145deg,rgba(215,246,111,.18),rgba(68,190,255,.10))!important;
+  border:1px solid rgba(255,255,255,.18)!important;box-shadow:0 15px 34px rgba(0,0,0,.30),inset 0 1px 0 rgba(255,255,255,.18)!important;
+}
+.user-category-card .ico svg,.v459-category-card .ico svg,.v460-cat-card .ico svg,.category-card .ico svg{width:48px;height:48px;display:block;filter:drop-shadow(0 8px 12px rgba(0,0,0,.35))}
+.user-category-card,.v459-category-card,.v460-cat-card,.category-card{position:relative!important;overflow:hidden!important}
+.user-category-card:after,.v459-category-card:after,.v460-cat-card:after,.category-card:after{content:"";position:absolute;right:-42px;bottom:-56px;width:150px;height:150px;border-radius:999px;background:radial-gradient(circle,rgba(215,246,111,.10),transparent 68%);pointer-events:none}
+.user-category-card b,.v459-category-card b,.v460-cat-card b,.category-card b{color:#fff!important;text-shadow:0 2px 18px rgba(0,0,0,.55)!important}
+.user-category-card small,.v459-category-card small,.v460-cat-card small,.category-card small{color:#d9e8e2!important;font-weight:850!important}
+</style>
+<script id="v469-real-icon-system">
+(function(){
+  const C={lime:'#d7f66f',cyan:'#7dd3fc',amber:'#fbbf24',orange:'#fb923c',red:'#f87171',green:'#86efac',white:'#f8fafc',muted:'#b6c7c0',blue:'#60a5fa',purple:'#c084fc'};
+  function svg(body){return `<svg viewBox="0 0 64 64" aria-hidden="true" fill="none" xmlns="http://www.w3.org/2000/svg">${body}</svg>`}
+  const icons={
+    speleo:svg(`<circle cx="32" cy="18" r="10" fill="${C.amber}"/><path d="M17 24c2-10 11-16 22-13 6 2 9 6 10 13" stroke="${C.white}" stroke-width="3" stroke-linecap="round"/><path d="M22 31h20c5 0 8 4 8 9v13H14V40c0-5 3-9 8-9Z" fill="${C.orange}"/><path d="M23 35l9 9 9-9M32 44v11" stroke="#1b2930" stroke-width="3" stroke-linecap="round"/><circle cx="43" cy="19" r="4" fill="${C.cyan}"/><path d="M48 22l7 6M48 14l7-5" stroke="${C.cyan}" stroke-width="3" stroke-linecap="round"/><path d="M14 53c8-9 26-9 36 0" stroke="${C.lime}" stroke-width="3" stroke-linecap="round"/>`),
+    rope:svg(`<path d="M16 42c8 8 21 8 29 0s8-21 0-29" stroke="${C.cyan}" stroke-width="6" stroke-linecap="round"/><path d="M49 22c-8-8-21-8-29 0s-8 21 0 29" stroke="${C.blue}" stroke-width="6" stroke-linecap="round"/><path d="M18 18l28 28M46 18L18 46" stroke="${C.lime}" stroke-width="4" stroke-linecap="round"/>`),
+    anchor:svg(`<path d="M32 9v38" stroke="${C.white}" stroke-width="5" stroke-linecap="round"/><path d="M18 29h28" stroke="${C.white}" stroke-width="5" stroke-linecap="round"/><path d="M21 21l22 22" stroke="${C.amber}" stroke-width="5" stroke-linecap="round"/><circle cx="32" cy="14" r="5" fill="${C.orange}"/><path d="M15 47c5 5 11 7 17 7s12-2 17-7" stroke="${C.lime}" stroke-width="4" stroke-linecap="round"/>`),
+    drawing:svg(`<path d="M12 46l34-34 8 8-34 34H12v-8Z" fill="${C.amber}"/><path d="M39 19l6 6" stroke="#1f2937" stroke-width="3"/><path d="M12 13h18v38H12V13Z" stroke="${C.white}" stroke-width="3"/><path d="M16 21h8M16 29h5M16 37h8" stroke="${C.cyan}" stroke-width="3" stroke-linecap="round"/>`),
+    drill:svg(`<path d="M12 22h27c6 0 10 4 10 9H28v7H15c-3 0-5-2-5-5v-7c0-2 1-4 2-4Z" fill="${C.amber}"/><path d="M29 38v14h-9V38" fill="${C.orange}"/><path d="M49 30h8" stroke="${C.white}" stroke-width="4" stroke-linecap="round"/><rect x="38" y="42" width="14" height="10" rx="3" fill="${C.green}"/><path d="M18 28h8" stroke="#1f2937" stroke-width="3" stroke-linecap="round"/>`),
+    camera:svg(`<rect x="11" y="21" width="42" height="28" rx="7" fill="${C.muted}"/><path d="M21 21l4-7h14l4 7" fill="${C.white}"/><circle cx="33" cy="35" r="10" fill="#17211f" stroke="${C.cyan}" stroke-width="4"/><circle cx="33" cy="35" r="4" fill="${C.purple}"/><path d="M47 27h1" stroke="#17211f" stroke-width="4" stroke-linecap="round"/>`),
+    alpinist:svg(`<path d="M14 51l13-28 10 17 7-12 8 23" stroke="${C.white}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="37" cy="17" r="6" fill="${C.red}"/><path d="M32 28l8 6 9-5M35 25l-9 11" stroke="${C.orange}" stroke-width="4" stroke-linecap="round"/><path d="M12 54h42" stroke="${C.lime}" stroke-width="3" stroke-linecap="round"/>`),
+    diving:svg(`<path d="M14 29c4-8 12-12 18-12s14 4 18 12v8c-5 6-31 6-36 0v-8Z" fill="${C.cyan}"/><path d="M20 31h9M35 31h9" stroke="#0b2023" stroke-width="5" stroke-linecap="round"/><path d="M32 39v10M23 52h18" stroke="${C.white}" stroke-width="4" stroke-linecap="round"/>`),
+    med:svg(`<rect x="13" y="20" width="38" height="30" rx="7" fill="${C.red}"/><path d="M25 20v-5h14v5" stroke="${C.white}" stroke-width="4"/><path d="M32 27v16M24 35h16" stroke="${C.white}" stroke-width="6" stroke-linecap="round"/>`),
+    clean:svg(`<path d="M16 24h28l-3 28H19l-3-28Z" fill="${C.blue}"/><path d="M22 24c1-7 7-11 14-7 3 2 5 4 6 7" stroke="${C.white}" stroke-width="4"/><path d="M43 17l8-8M49 22l7-4" stroke="${C.lime}" stroke-width="4" stroke-linecap="round"/>`),
+    tent:svg(`<path d="M8 51l24-36 24 36H8Z" fill="${C.orange}"/><path d="M32 15v36M23 51l9-18 9 18" stroke="#1b2930" stroke-width="3"/><path d="M10 51h44" stroke="${C.white}" stroke-width="3" stroke-linecap="round"/>`),
+    hammer:svg(`<path d="M21 18l8-8 12 12-8 8-12-12Z" fill="${C.muted}"/><path d="M31 28l20 20-7 7-20-20" fill="${C.amber}"/><path d="M16 14l10 10" stroke="${C.white}" stroke-width="4" stroke-linecap="round"/>`),
+    wrench:svg(`<path d="M45 12a13 13 0 0 0-16 16L13 44a6 6 0 0 0 8 8l16-16a13 13 0 0 0 16-16l-9 9-8-8 9-9Z" fill="${C.muted}"/><circle cx="18" cy="48" r="3" fill="#1b2930"/>`),
+    boot:svg(`<path d="M18 12h15l4 25 14 5c4 2 5 7 1 10H13c-4 0-5-5-2-8l8-8-1-24Z" fill="${C.orange}"/><path d="M18 36h19M18 23h14M20 29h14" stroke="#1b2930" stroke-width="3" stroke-linecap="round"/>`),
+    helmet:svg(`<path d="M14 36c0-13 8-23 18-23s18 10 18 23v9H14v-9Z" fill="${C.amber}"/><path d="M14 42h36" stroke="${C.white}" stroke-width="4"/><path d="M32 13v16" stroke="#1b2930" stroke-width="3" stroke-linecap="round"/>`),
+    light:svg(`<path d="M16 18h26l8 8-8 8H16V18Z" fill="${C.muted}"/><path d="M42 20l14-7M43 32l14 7" stroke="${C.lime}" stroke-width="4" stroke-linecap="round"/><circle cx="23" cy="26" r="5" fill="${C.cyan}"/>`),
+    box:svg(`<path d="M32 10l22 12-22 12-22-12 22-12Z" fill="${C.amber}"/><path d="M10 22v24l22 12 22-12V22" fill="${C.orange}"/><path d="M32 34v24M20 16l22 12" stroke="#1b2930" stroke-width="3"/>`),
+    bag:svg(`<path d="M18 21h28a7 7 0 0 1 7 7v22H11V28a7 7 0 0 1 7-7Z" fill="${C.green}"/><path d="M24 21v-6h16v6" stroke="${C.white}" stroke-width="4"/><path d="M24 34h16M24 42h10" stroke="#1b2930" stroke-width="3" stroke-linecap="round"/>`)
+  };
+  function kind(title){const t=String(title||'').toLowerCase();
+    if(t.includes('osobna'))return 'speleo';
+    if(t.includes('alpin'))return 'alpinist';
+    if(t.includes('užad')||t.includes('uzet')||t.includes('uže')||t.includes('uze'))return 'rope';
+    if(t.includes('postavlj')||t.includes('spit')||t.includes('sidri'))return 'anchor';
+    if(t.includes('crtan')||t.includes('mjeren'))return 'drawing';
+    if(t.includes('bušil')||t.includes('busil')||t.includes('bater')||t.includes('punjač')||t.includes('punjac'))return 'drill';
+    if(t.includes('elektro')||t.includes('foto'))return 'camera';
+    if(t.includes('ronil'))return 'diving';
+    if(t.includes('medicin'))return 'med';
+    if(t.includes('čisto')||t.includes('cisto'))return 'clean';
+    if(t.includes('kamp')||t.includes('ekspedic')||t.includes('logor'))return 'tent';
+    if(t.includes('prošir')||t.includes('prosir'))return 'hammer';
+    if(t.includes('alat'))return 'wrench';
+    if(t.includes('odje')||t.includes('obu'))return 'boot';
+    if(t.includes('kacig'))return 'helmet';
+    if(t.includes('rasvjet')||t.includes('svjet'))return 'light';
+    if(t.includes('torbe')||t.includes('transport'))return 'bag';
+    return 'box';
+  }
+  function enhance(root=document){
+    root.querySelectorAll('.user-category-card,.v459-category-card,.v460-cat-card,.category-card').forEach(card=>{
+      const b=card.querySelector('b,h3,h2'); if(!b)return; const title=b.textContent.trim();
+      let ico=card.querySelector('.ico'); if(!ico){ico=document.createElement('span'); ico.className='ico'; card.insertBefore(ico,card.firstChild)}
+      const k=kind(title); if(ico.dataset.iconKind===k)return; ico.dataset.iconKind=k; ico.innerHTML=icons[k]||icons.box;
+      card.dataset.iconKind=k;
+    });
+  }
+  const obs=new MutationObserver(()=>enhance());
+  document.addEventListener('DOMContentLoaded',()=>{enhance(); obs.observe(document.body,{childList:true,subtree:true}); setTimeout(enhance,300); setTimeout(enhance,1000); setTimeout(enhance,2500);});
+  window.SOVEnhanceCategoryIcons=enhance;
+  try{
+    if(window.USER_CATEGORY_META){
+      USER_CATEGORY_META['Osobna oprema']=['','Pojasevi, crollovi, descenderi, blokeri i osobna speleo oprema.'];
+      USER_CATEGORY_META['Alpinistička oprema']=['','Alpinistička oprema i pribor.'];
+    }
+  }catch(e){}
+})();
+</script>
+
 </body></html>

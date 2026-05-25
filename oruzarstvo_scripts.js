@@ -23,9 +23,9 @@ function normalizeArmoryCategory(x){
   return raw||'Ostalo';
 }
 let USER_CAT=null, USER_SUB=null;
-const USER_CATEGORY_ORDER=['Osobna oprema','Užad i užetna oprema','Oprema za postavljanje','Oprema za crtanje','Bušilice i baterije','Rasvjeta','Odjeća i obuća','Kacige','Ostalo'];
+const USER_CATEGORY_ORDER=['Osobna oprema','Užad i užetna oprema','Oprema za postavljanje','Oprema za crtanje','Bušilice i baterije','Elektro i foto oprema','Rasvjeta','Odjeća i obuća','Kacige','Alpinistička oprema','Ronilačka oprema','Ekspedicijska i kamp oprema','Oprema za logor','Oprema za proširivanje','Čisto podzemlje','Medicinska oprema','Medicina','Ostali alat','Ostalo'];
 const USER_CATEGORY_META={
-  'Osobna oprema':['🧗','Pojasevi, descenderi, crollovi, blokeri, pupčane, pedale i osobni kompleti.'],
+  'Osobna oprema':['🧑‍🚒','Pojasevi, crollovi, descenderi, blokeri i osobna speleo oprema.'],
   'Užad i užetna oprema':['🪢','Užad, transportne vreće, prusici, trake, gurtne, koloture i užetni pribor.'],
   'Oprema za postavljanje':['🔩','Spitovi, sidrišta, pločice, ringovi, ankeri i materijal za opremanje.'],
   'Oprema za crtanje':['🗺️','Tableti, mjerne trake, kompasi, Disto/laser, pribor za nacrte i dokumentaciju.'],
@@ -33,6 +33,15 @@ const USER_CATEGORY_META={
   'Rasvjeta':['🔦','Čeone lampe, baterije za rasvjetu, rezervni izvori svjetla i pribor.'],
   'Odjeća i obuća':['🥾','Kombinezoni, rukavice, čizme, pododijela i zaštitna odjeća.'],
   'Kacige':['⛑️','Kacige, nosači lampi i zaštita glave.'],
+  'Alpinistička oprema':['🧗','Alpinistička oprema i pribor.'],
+  'Ronilačka oprema':['🤿','Ronilačka oprema i pribor.'],
+  'Medicinska oprema':['⛑️','Medicinska oprema i pribor.'],
+  'Medicina':['⛑️','Medicinska oprema i pribor.'],
+  'Ekspedicijska i kamp oprema':['⛺','Šatori, podloge, kuhala i kamp oprema.'],
+  'Oprema za logor':['🏕️','Rasvjeta, kuhala, plin i pribor za logor.'],
+  'Oprema za proširivanje':['🔨','Proširivači, klinovi, čekići i pribor.'],
+  'Čisto podzemlje':['🧤','Oprema za čišćenje podzemlja.'],
+  'Ostali alat':['🛠️','Alat i sitni pribor za razne radove.'],
   'Ostalo':['📦','Vreće, kutije, logistika i ostala oprema.']
 };
 function sortUserCategories(arr){return [...arr].sort((a,b)=>(USER_CATEGORY_ORDER.indexOf(a)<0?99:USER_CATEGORY_ORDER.indexOf(a))-(USER_CATEGORY_ORDER.indexOf(b)<0?99:USER_CATEGORY_ORDER.indexOf(b))||String(a).localeCompare(String(b),'hr'))}
