@@ -51,6 +51,22 @@
     const n=safeNumber(v);
     return n===null ? null : Math.trunc(n);
   }
+  function safeQuantity(v){
+    // Armory quantities are whole pieces. Do not import dates, fractions, labels like 'hrpa', or Excel garbage as stock counts.
+    if(v===null || v===undefined) return null;
+    if(typeof v==='number'){
+      if(!Number.isFinite(v)) return null;
+      if(Math.abs(v - Math.round(v)) < 1e-9) return Math.max(0, Math.trunc(v));
+      return null;
+    }
+    let s=String(v).trim();
+    if(!s || s==='-' || s==='—' || s==='/' || /^n\/?a$/i.test(s)) return null;
+    if(/^\d{1,2}[.\/]\d{4}\.?$/.test(s)) return null;
+    s=s.replace(',', '.');
+    if(!/^-?\d+(\.0+)?$/.test(s)) return null;
+    const n=Number(s);
+    return Number.isFinite(n) ? Math.max(0, Math.trunc(n)) : null;
+  }
   function safeYear(v){
     if(v===null || v===undefined) return null;
     if(typeof v==='number' && Number.isFinite(v)){
@@ -287,7 +303,7 @@
       c => String(c.name||'').trim().toLowerCase()
     );
     const locs=(data.locations||[]).map((l,idx)=>({legacy_id:String(l.id||idx+1),name:l.name,description:l.description||null,type:l.type||null}));
-    const items=(data.items||[]).map(i=>({legacy_id:i.id,catalog_id:String(i.catalog_id||''),name:i.name,category_name:canonicalArmoryCategory(i.category||i.category_name||null,[i.name,i.model,i.subcategory,i.internal_note].join(' ')),subcategory:i.subcategory||null,unit:i.unit||'kom',tracking_type:i.tracking_type||'po vrsti',quantity:safeNumber(i.quantity)||0,loaned:safeNumber(i.loaned)||0,available:safeNumber(i.available)||0,minimum:i.minimum===''?null:safeNumber(i.minimum),status:i.status||'aktivno',availability:i.availability||'dostupno',member_visible:i.member_visible!==false,internal_note:i.internal_note||null,source_sheet:i.source_sheet||null,item_kind:i.item_kind||'quantity_article',code_required:false,physical_code_note:i.physical_code_note||'Nema pojedinačnih kodova; vodi se količina po artiklu.'}));
+    const items=(data.items||[]).map(i=>({legacy_id:i.id,catalog_id:String(i.catalog_id||''),name:i.name,category_name:canonicalArmoryCategory(i.category||i.category_name||null,[i.name,i.model,i.subcategory,i.internal_note].join(' ')),subcategory:i.subcategory||null,unit:i.unit||'kom',tracking_type:i.tracking_type||'po vrsti',quantity:safeQuantity(i.quantity)||0,loaned:safeQuantity(i.loaned)||0,available:safeQuantity(i.available)||0,minimum:i.minimum===''?null:safeQuantity(i.minimum),status:i.status||'aktivno',availability:i.availability||'dostupno',member_visible:i.member_visible!==false,internal_note:i.internal_note||null,source_sheet:i.source_sheet||null,item_kind:i.item_kind||'quantity_article',code_required:false,physical_code_note:i.physical_code_note||'Nema pojedinačnih kodova; vodi se količina po artiklu.'}));
     const pieces=(data.pieces||[]).map(p=>({legacy_id:p.id,catalog_legacy_id:String(p.catalog_id||''),name:p.name,sku:p.sku||null,manufacturer:p.manufacturer||null,model:p.model||null,purchase_date:toDate(p.purchase_date),location_name:p.location||null,status:p.status||'U društvu',next_service:toDate(p.next_service),note:p.note||null}));
     const ropes=(data.ropes||[]).map(r=>({legacy_id:r.id,sku:normalizedSku(r.sku||r.id),name:r.name,diameter_mm:safeNumber(r.diameter_mm),length_m:safeNumber(r.length_m),manufacturer:r.manufacturer||null,model:r.model||null,standard:r.standard||null,production_year:safeYear(r.year),in_use_since:toDate(r.in_use_since),color:r.color||null,supplier:r.supplier||null,location_name:r.location||null,status:r.status||'U društvu',note:r.note||null,item_kind:'individual_rope',code_required:true}));
     const procurement=(data.procurement||[]).map(p=>({legacy_id:p.id,equipment_legacy_id:String(p.catalog_id||''),item_name:p.name,quantity:safeNumber(p.quantity),unit_price:safeNumber(p.unit_price),total_price:safeNumber(p.total_price),supplier:p.supplier||null,status:p.status||'Zaprimljeno',purchase_date:toDate(p.date),requested_by:p.person||null,note:p.note||null}));
@@ -420,8 +436,8 @@
     out.items=(items||[]).map((i,idx)=>({
       id:i.legacy_id||i.catalog_id||i.id||('DB-ITEM-'+idx), legacy_id:i.legacy_id||i.id, catalog_id:i.catalog_id||i.legacy_id||i.id,
       name:i.name||i.item_name||'Artikl', category:canonicalArmoryCategory(i.category_name||i.category||'Ostalo',[i.name,i.subcategory,i.internal_note].join(' ')), category_name:canonicalArmoryCategory(i.category_name||i.category||'Ostalo',[i.name,i.subcategory,i.internal_note].join(' ')), subcategory:i.subcategory||'Ostalo',
-      unit:i.unit||'kom', tracking_type:i.tracking_type||'po vrsti', quantity:Number(i.quantity)||0, quantity_label:String(i.quantity??''),
-      available:Number(i.available ?? i.quantity ?? 0)||0, available_label:String(i.available ?? i.quantity ?? ''), loaned:Number(i.loaned)||0,
+      unit:i.unit||'kom', tracking_type:i.tracking_type||'po vrsti', quantity:safeQuantity(i.quantity)||0, quantity_label:String(i.quantity??''),
+      available:safeQuantity(i.available ?? i.quantity ?? 0)||0, available_label:String(i.available ?? i.quantity ?? ''), loaned:safeQuantity(i.loaned)||0,
       minimum:i.minimum ?? '', status:i.status||'aktivno', availability:i.availability||'dostupno', member_visible:i.member_visible!==false,
       internal_note:i.internal_note||i.note||'', source_sheet:i.source_sheet||'Supabase', location:i.location_name||i.location||'', location_name:i.location_name||i.location||''
     })).filter(i=>i.name);
@@ -437,7 +453,7 @@
       manufacturer:x.manufacturer||'', model:x.model||'', location:x.location_name||'', location_name:x.location_name||'', status:x.status||'U društvu', note:x.note||'', member_visible:true
     })).filter(x=>x.name);
     out.locations=(locs||[]).map(l=>({id:l.legacy_id||l.id,name:l.name,description:l.description||'',type:l.type||''})).filter(l=>l.name);
-    out.loans=(loans||[]).map(l=>({id:l.id,member_name:l.member_name||l.user_name||l.borrower_name||'',item_name:l.item_name||l.name||'',quantity:Number(l.quantity)||1,due_date:l.due_date||l.to||'',status:l.status||'vani',note:l.note||''}));
+    out.loans=(loans||[]).map(l=>({id:l.id,member_name:l.member_name||l.user_name||l.borrower_name||'',item_name:l.item_name||l.name||'',quantity:safeQuantity(l.quantity)||1,due_date:l.due_date||l.to||'',status:l.status||'vani',note:l.note||''}));
     out.inventories=(inv||[]).map(i=>({id:i.legacy_id||i.id,name:i.name||'Inventura',date:i.inventory_date||i.date,owner:i.owner_name||i.owner,status:i.status,note:i.note}));
     out.procurement=(proc||[]).map(p=>({id:p.legacy_id||p.id,name:p.item_name||p.name,quantity:p.quantity,status:p.status,date:p.purchase_date,note:p.note}));
     out.summary.count_items=out.items.length; out.summary.count_ropes=out.ropes.length; out.summary.count_categories=out.categories.length;
