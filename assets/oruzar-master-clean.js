@@ -39,6 +39,29 @@ function canonicalCategory(raw,text){
   if(/ostalo|razno/.test(r)) return 'Ostalo';
   return norm(raw)||'Ostalo';
 }
+
+function normalizeArticleName(name){
+  let x=lower(name).replace(/[()\[\]{}]/g,' ').replace(/[+_\/\\,;:]+/g,' ').replace(/\s+/g,' ').trim();
+  x=x.replace(/\b(krol|crol|croll)\b/g,'croll').replace(/\bpupak\b|\bpupcano\s+u?ze\b/g,'pupcano uze');
+  if(/\bcroll\b/.test(x)){ if(/\b(s|small|velicina s)\b/.test(x))return 'croll s'; if(/\b(l|large|velicina l)\b/.test(x))return 'croll l'; return 'croll'; }
+  if(/\bstremen\b|\bpedala\b/.test(x)) return 'stremen';
+  if(/\bpupcano uze\b/.test(x)) return 'pupcano uze';
+  if(/\bprusik\b/.test(x)) return 'prusik';
+  if(/\bbloker\b|\bascender\b|\bjumar\b|\bzumar\b/.test(x)) return 'bloker';
+  if(/\bstop\b/.test(x)) return 'stop descender';
+  return x;
+}
+function articleMergeKey(r){return lower(r.category)+'|'+lower(r.subcategory||'Ostalo')+'|'+normalizeArticleName(r.name)}
+function mergeDisplayRows(rows){
+  const out=[]; const map=new Map();
+  for(const r of rows){
+    if(r.type==='rope'){out.push(r); continue;}
+    const key=articleMergeKey(r);
+    if(!map.has(key)){map.set(key,{...r}); out.push(map.get(key));}
+    else{const cur=map.get(key); cur.qty=countInt(cur.qty)+countInt(r.qty); cur.av=countInt(cur.av)+countInt(r.av); cur.loan=countInt(cur.loan)+countInt(r.loan); if(!cur.location&&r.location)cur.location=r.location; cur.search=qnorm([cur.search,r.search].join(' '));}
+  }
+  return out;
+}
 function toast(m){let t=document.getElementById('cmToast'); if(!t){t=document.createElement('div');t.id='cmToast';t.className='cm-toast';document.body.appendChild(t)} t.textContent=m;t.classList.add('show');clearTimeout(t._to);t._to=setTimeout(()=>t.classList.remove('show'),2300)}
 function iconFor(t){t=lower(t); if(t.includes('osobna'))return '🧑‍🚒'; if(t.includes('už')||t.includes('uz'))return '🪢'; if(t.includes('postav')||t.includes('spit')||t.includes('sidri'))return '⚓'; if(t.includes('crtan')||t.includes('mjer'))return '📐'; if(t.includes('bus')||t.includes('buš')||t.includes('bater'))return '🔋'; if(t.includes('elektro')||t.includes('foto'))return '📷'; if(t.includes('alpin'))return '⛰️'; if(t.includes('med'))return '🧰'; if(t.includes('ronil'))return '🤿'; if(t.includes('kamp')||t.includes('logor')||t.includes('eksp'))return '⛺'; if(t.includes('čisto')||t.includes('cisto'))return '🧹'; if(t.includes('proš')||t.includes('pros'))return '🔨'; if(t.includes('alat'))return '🧰'; return '📦'}
 let STATE={data:null,rows:[],cat:null,sub:null,query:'',requests:[]};
@@ -47,9 +70,9 @@ async function loadData(){
   let d=null, source='fallback';
   try{ if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.loadAllData){ d=await SOVArmoryDB.loadAllData(); if(d) source='supabase'; }}catch(e){console.warn('[clean master] supabase load failed',e)}
   if(!d){ try{ d=await fetch('data/oruzarstvo-data.json',{cache:'no-store'}).then(r=>r.json()); }catch(e){console.warn('[clean master] json load failed',e); d={items:[],ropes:[],pieces:[],categories:[]};}}
-  STATE.data=d||{}; STATE.source=source; STATE.rows=makeRows(STATE.data); console.info('[SOV armory] clean master v4.75 no-counter UI loaded', STATE.source, STATE.rows.length); return STATE.data;
+  STATE.data=d||{}; STATE.source=source; STATE.rows=makeRows(STATE.data); console.info('[SOV armory] clean master v4.76 dedupe articles loaded', STATE.source, STATE.rows.length); return STATE.data;
 }
-function makeRows(d){const arr=[]; (d.items||[]).forEach((r,i)=>arr.push(row(r,'item',i))); (d.ropes||[]).forEach((r,i)=>arr.push(row(r,'rope',i))); (d.pieces||[]).forEach((r,i)=>arr.push(row(r,'piece',i))); return arr.filter(r=>r.name);}
+function makeRows(d){const arr=[]; (d.items||[]).forEach((r,i)=>arr.push(row(r,'item',i))); (d.ropes||[]).forEach((r,i)=>arr.push(row(r,'rope',i))); (d.pieces||[]).forEach((r,i)=>arr.push(row(r,'piece',i))); return mergeDisplayRows(arr.filter(r=>r.name));}
 function row(r,type,i){
   let qty=countInt(r.quantity ?? r.total ?? 1, 0);
   let av=countInt(r.available ?? r.available_qty ?? qty, qty);

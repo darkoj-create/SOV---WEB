@@ -107,6 +107,68 @@
     return raw && String(raw).trim() ? String(raw).trim() : 'Ostalo';
   }
 
+
+  function normalizeArticleName(name){
+    let x=stripDiacritics(name);
+    x=x.replace(/[()\[\]{}]/g,' ').replace(/[+_\/\\,;:]+/g,' ').replace(/\s+/g,' ').trim();
+    x=x.replace(/\b(krol|crol|croll)\b/g,'croll');
+    x=x.replace(/\bpupak\b|\bpupcano\s+u?ze\b/g,'pupcano uze');
+    // Osnovni speleo artikli bez stvarnog modela se vode kao jedan artikl.
+    if(/\bcroll\b/.test(x)){
+      if(/\b(s|small|velicina s)\b/.test(x)) return 'croll s';
+      if(/\b(l|large|velicina l)\b/.test(x)) return 'croll l';
+      return 'croll';
+    }
+    if(/\bstremen\b|\bpedala\b/.test(x)) return 'stremen';
+    if(/\bpupcano uze\b/.test(x)) return 'pupcano uze';
+    if(/\bprusik\b/.test(x)) return 'prusik';
+    if(/\bbloker\b|\bascender\b|\bjumar\b|\bzumar\b/.test(x)) return 'bloker';
+    if(/\bstop\b/.test(x)) return 'stop descender';
+    return x;
+  }
+  function articleMergeKey(row){
+    const cat=canonicalArmoryCategory(row.category_name || row.category || 'Ostalo',[row.name,row.model,row.subcategory,row.internal_note,row.note].join(' '));
+    const sub=String(row.subcategory||'Ostalo').trim() || 'Ostalo';
+    const nm=normalizeArticleName(row.name||row.item_name||row.model||'Artikl');
+    return stripDiacritics(cat)+'|'+stripDiacritics(sub)+'|'+nm;
+  }
+  function stableArticleId(row){
+    const key=articleMergeKey(row).replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,90);
+    return 'ART-'+(key||String(row.legacy_id||row.id||Date.now()));
+  }
+  function mergeQuantityArticles(rows){
+    const map=new Map();
+    for(const row of rows || []){
+      const key=articleMergeKey(row);
+      const qty=safeQuantity(row.quantity); const loan=safeQuantity(row.loaned); const av=safeQuantity(row.available);
+      if(!map.has(key)){
+        const first={...row};
+        first.legacy_id=stableArticleId(row);
+        first.catalog_id=first.legacy_id;
+        first.category_name=canonicalArmoryCategory(row.category_name || row.category || 'Ostalo',[row.name,row.model,row.subcategory,row.internal_note,row.note].join(' '));
+        first.category=first.category_name;
+        first.name=String(row.name||row.item_name||row.model||'Artikl').trim();
+        first.quantity=qty===null?0:qty;
+        first.loaned=loan===null?0:loan;
+        first.available=av===null?(qty===null?0:qty):av;
+        first.minimum=safeQuantity(row.minimum);
+        first.internal_note=[row.internal_note,row.note].filter(Boolean).join(' | ') || null;
+        first.source_sheet=row.source_sheet||null;
+        first.item_kind='quantity_article'; first.code_required=false;
+        map.set(key, first);
+      }else{
+        const cur=map.get(key);
+        cur.quantity=(safeQuantity(cur.quantity)||0)+(qty===null?0:qty);
+        cur.loaned=(safeQuantity(cur.loaned)||0)+(loan===null?0:loan);
+        cur.available=(safeQuantity(cur.available)||0)+(av===null?(qty===null?0:qty):av);
+        if(cur.minimum===null || cur.minimum===undefined || cur.minimum==='') cur.minimum=safeQuantity(row.minimum);
+        if(!cur.internal_note && (row.internal_note||row.note)) cur.internal_note=row.internal_note||row.note;
+        if(!cur.source_sheet && row.source_sheet) cur.source_sheet=row.source_sheet;
+      }
+    }
+    return Array.from(map.values());
+  }
+
   function requestToUi(r, items){
     return {
       id:r.id,
@@ -303,7 +365,8 @@
       c => String(c.name||'').trim().toLowerCase()
     );
     const locs=(data.locations||[]).map((l,idx)=>({legacy_id:String(l.id||idx+1),name:l.name,description:l.description||null,type:l.type||null}));
-    const items=(data.items||[]).map(i=>({legacy_id:i.id,catalog_id:String(i.catalog_id||''),name:i.name,category_name:canonicalArmoryCategory(i.category||i.category_name||null,[i.name,i.model,i.subcategory,i.internal_note].join(' ')),subcategory:i.subcategory||null,unit:i.unit||'kom',tracking_type:i.tracking_type||'po vrsti',quantity:safeQuantity(i.quantity)||0,loaned:safeQuantity(i.loaned)||0,available:safeQuantity(i.available)||0,minimum:i.minimum===''?null:safeQuantity(i.minimum),status:i.status||'aktivno',availability:i.availability||'dostupno',member_visible:i.member_visible!==false,internal_note:i.internal_note||null,source_sheet:i.source_sheet||null,item_kind:i.item_kind||'quantity_article',code_required:false,physical_code_note:i.physical_code_note||'Nema pojedinačnih kodova; vodi se količina po artiklu.'}));
+    const rawItems=(data.items||[]).map(i=>({legacy_id:i.id,catalog_id:String(i.catalog_id||''),name:i.name,category_name:canonicalArmoryCategory(i.category||i.category_name||null,[i.name,i.model,i.subcategory,i.internal_note].join(' ')),subcategory:i.subcategory||null,unit:i.unit||'kom',tracking_type:i.tracking_type||'po vrsti',quantity:safeQuantity(i.quantity)||0,loaned:safeQuantity(i.loaned)||0,available:safeQuantity(i.available)||0,minimum:i.minimum===''?null:safeQuantity(i.minimum),status:i.status||'aktivno',availability:i.availability||'dostupno',member_visible:i.member_visible!==false,internal_note:i.internal_note||null,source_sheet:i.source_sheet||null,item_kind:i.item_kind||'quantity_article',code_required:false,physical_code_note:i.physical_code_note||'Nema pojedinačnih kodova; vodi se količina po artiklu.'}));
+    const items=mergeQuantityArticles(rawItems);
     const pieces=(data.pieces||[]).map(p=>({legacy_id:p.id,catalog_legacy_id:String(p.catalog_id||''),name:p.name,sku:p.sku||null,manufacturer:p.manufacturer||null,model:p.model||null,purchase_date:toDate(p.purchase_date),location_name:p.location||null,status:p.status||'U društvu',next_service:toDate(p.next_service),note:p.note||null}));
     const ropes=(data.ropes||[]).map(r=>({legacy_id:r.id,sku:normalizedSku(r.sku||r.id),name:r.name,diameter_mm:safeNumber(r.diameter_mm),length_m:safeNumber(r.length_m),manufacturer:r.manufacturer||null,model:r.model||null,standard:r.standard||null,production_year:safeYear(r.year),in_use_since:toDate(r.in_use_since),color:r.color||null,supplier:r.supplier||null,location_name:r.location||null,status:r.status||'U društvu',note:r.note||null,item_kind:'individual_rope',code_required:true}));
     const procurement=(data.procurement||[]).map(p=>({legacy_id:p.id,equipment_legacy_id:String(p.catalog_id||''),item_name:p.name,quantity:safeNumber(p.quantity),unit_price:safeNumber(p.unit_price),total_price:safeNumber(p.total_price),supplier:p.supplier||null,status:p.status||'Zaprimljeno',purchase_date:toDate(p.date),requested_by:p.person||null,note:p.note||null}));
@@ -433,14 +496,14 @@
     const inv=await safe('inventory_sessions','*');
     const proc=await safe('procurement_plan','*');
     out.categories=(cats||[]).map((c,idx)=>({id:c.legacy_id||c.id||String(idx+1),name:canonicalArmoryCategory(c.name,c.description||''),description:c.description||'',type:c.type||'',sort_order:c.sort_order||idx})).filter(c=>c.name);
-    out.items=(items||[]).map((i,idx)=>({
+    out.items=mergeQuantityArticles((items||[]).map((i,idx)=>({
       id:i.legacy_id||i.catalog_id||i.id||('DB-ITEM-'+idx), legacy_id:i.legacy_id||i.id, catalog_id:i.catalog_id||i.legacy_id||i.id,
       name:i.name||i.item_name||'Artikl', category:canonicalArmoryCategory(i.category_name||i.category||'Ostalo',[i.name,i.subcategory,i.internal_note].join(' ')), category_name:canonicalArmoryCategory(i.category_name||i.category||'Ostalo',[i.name,i.subcategory,i.internal_note].join(' ')), subcategory:i.subcategory||'Ostalo',
       unit:i.unit||'kom', tracking_type:i.tracking_type||'po vrsti', quantity:safeQuantity(i.quantity)||0, quantity_label:String(i.quantity??''),
       available:safeQuantity(i.available ?? i.quantity ?? 0)||0, available_label:String(i.available ?? i.quantity ?? ''), loaned:safeQuantity(i.loaned)||0,
       minimum:i.minimum ?? '', status:i.status||'aktivno', availability:i.availability||'dostupno', member_visible:i.member_visible!==false,
       internal_note:i.internal_note||i.note||'', source_sheet:i.source_sheet||'Supabase', location:i.location_name||i.location||'', location_name:i.location_name||i.location||''
-    })).filter(i=>i.name);
+    })).filter(i=>i.name));
     out.ropes=(ropes||[]).map((r,idx)=>({
       id:r.legacy_id||r.sku||r.id||('DB-ROPE-'+idx), legacy_id:r.legacy_id||r.id, sku:r.sku||r.legacy_id||'', name:r.name||r.sku||'Uže',
       category:'Užad i užetna oprema', category_name:'Užad i užetna oprema', subcategory:r.subcategory||'Užad', quantity:1, available:/posu|vani|otpis|rashod|izgubl/i.test(String(r.status||''))?0:1, loaned:/posu|vani/i.test(String(r.status||''))?1:0,
