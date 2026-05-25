@@ -1,185 +1,12 @@
-<!doctype html><html lang="hr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Oružarstvo — SOV Cloud</title><link rel="stylesheet" href="assets/site.css"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="assets/supabase-config.js"></script><script src="assets/auth.js"></script><script src="assets/oruzarstvo-supabase.js"></script><style>
-:root{--arm-bg:#071013;--arm-card:rgba(255,255,255,.055);--arm-line:rgba(255,255,255,.11);--arm-text:#eef7f3;--arm-muted:#9fb4ae;--arm-lime:#d7f66f;--arm-amber:#ffd36b;--arm-red:#ff6d6d;--arm-blue:#8dd8ff;--arm-green:#7ff0b2}
-body.armory-body{background:radial-gradient(circle at 15% 0%,rgba(215,246,111,.13),transparent 34%),radial-gradient(circle at 78% 8%,rgba(141,216,255,.12),transparent 31%),linear-gradient(180deg,#061012,#0b1012 55%,#050707);color:var(--arm-text)}
-.armory-shell{width:min(1480px,calc(100% - 32px));margin:0 auto;padding:18px 0 54px}.armory-top{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:14px 0 22px}.armory-brand{display:flex;align-items:center;gap:12px;color:inherit;text-decoration:none}.armory-brand .mark{width:44px;height:44px;border-radius:16px;background:rgba(255,255,255,.08);border:1px solid var(--arm-line);display:grid;place-items:center;font-weight:1000;color:var(--arm-lime)}.armory-brand small{display:block;color:var(--arm-muted);font-weight:800}.armory-nav{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.armory-nav a,.armory-nav button{border:1px solid var(--arm-line);background:rgba(255,255,255,.05);color:var(--arm-text);border-radius:999px;padding:9px 13px;text-decoration:none;font-weight:900;font-size:13px}.armory-nav .strong{background:rgba(215,246,111,.14);border-color:rgba(215,246,111,.34);color:#f2ffd0}.armory-hero{border:1px solid var(--arm-line);background:linear-gradient(135deg,rgba(255,255,255,.08),rgba(255,255,255,.035));border-radius:34px;overflow:hidden;position:relative;box-shadow:0 24px 80px rgba(0,0,0,.38)}.armory-hero:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 20% 16%,rgba(215,246,111,.18),transparent 26%),radial-gradient(circle at 80% 20%,rgba(141,216,255,.13),transparent 28%);pointer-events:none}.armory-hero-inner{position:relative;padding:34px;display:grid;grid-template-columns:1.1fr .9fr;gap:26px;align-items:end}.eyebrow{color:var(--arm-lime);font-weight:1000;letter-spacing:.12em;text-transform:uppercase;font-size:12px}.armory-hero h1{font-size:clamp(42px,6vw,82px);line-height:.92;margin:10px 0 14px;letter-spacing:-.07em}.armory-hero p{color:#c2d4ce;line-height:1.65;max-width:760px;margin:0}.role-card{border:1px solid var(--arm-line);border-radius:26px;background:rgba(0,0,0,.22);padding:20px;display:grid;gap:12px}.role-card b{font-size:18px}.role-row{display:flex;gap:8px;flex-wrap:wrap}.role-pill{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);border-radius:999px;padding:7px 10px;font-weight:950;font-size:12px;color:#dce9e4}.role-pill.lime{color:#f2ffd0;border-color:rgba(215,246,111,.28);background:rgba(215,246,111,.1)}.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin:18px 0}.kpi{border:1px solid var(--arm-line);border-radius:22px;background:rgba(255,255,255,.052);padding:17px}.kpi small{display:block;color:var(--arm-muted);font-weight:900}.kpi b{display:block;font-size:28px;margin-top:6px;letter-spacing:-.04em}.armory-layout{display:grid;grid-template-columns:340px 1fr;gap:18px;align-items:start}.panel{border:1px solid var(--arm-line);background:rgba(255,255,255,.052);border-radius:28px;padding:18px;box-shadow:0 16px 48px rgba(0,0,0,.22)}.panel h2{margin:0 0 10px;font-size:22px}.panel p{color:var(--arm-muted);line-height:1.55}.filters{position:sticky;top:14px}.field{display:grid;gap:6px;margin:12px 0}.field label{font-weight:950;color:#d6e5df;font-size:12px;text-transform:uppercase;letter-spacing:.06em}.field input,.field select,.field textarea{width:100%;box-sizing:border-box;border:1px solid var(--arm-line);border-radius:16px;background:rgba(0,0,0,.25);color:var(--arm-text);padding:12px;font:800 14px Inter,system-ui,sans-serif}.field textarea{min-height:92px;resize:vertical}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.tab{border:1px solid var(--arm-line);background:rgba(255,255,255,.05);color:var(--arm-text);border-radius:999px;padding:10px 12px;font-weight:1000;cursor:pointer}.tab.active{border-color:rgba(215,246,111,.42);background:rgba(215,246,111,.14);color:#f3ffd8}.grid-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}.item-card{border:1px solid var(--arm-line);background:rgba(0,0,0,.18);border-radius:24px;padding:15px;display:grid;gap:10px;min-height:178px}.item-card h3{margin:0;font-size:17px;line-height:1.2}.meta{display:flex;gap:7px;flex-wrap:wrap}.badge{display:inline-flex;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);border-radius:999px;padding:6px 8px;color:#d9e8e3;font-size:11px;font-weight:950}.badge.ok{color:#dbffd0;border-color:rgba(127,240,178,.28);background:rgba(127,240,178,.1)}.badge.warn{color:#ffe9b0;border-color:rgba(255,211,107,.3);background:rgba(255,211,107,.1)}.badge.danger{color:#ffd2d2;border-color:rgba(255,109,109,.28);background:rgba(255,109,109,.1)}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto}.btn{border:1px solid var(--arm-line);border-radius:14px;background:rgba(255,255,255,.07);color:var(--arm-text);padding:10px 12px;font-weight:1000;text-decoration:none;cursor:pointer}.btn.primary{background:linear-gradient(135deg,rgba(215,246,111,.92),rgba(127,240,178,.82));border:0;color:#111}.btn.ghost{background:transparent}.split{display:grid;grid-template-columns:1fr 1fr;gap:14px}.table-wrap{overflow:auto;border:1px solid var(--arm-line);border-radius:20px}.arm-table{width:100%;border-collapse:collapse;min-width:760px}.arm-table th,.arm-table td{padding:11px 12px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left;vertical-align:top}.arm-table th{color:#d9e8e3;background:rgba(255,255,255,.055);font-size:12px;text-transform:uppercase;letter-spacing:.06em}.arm-table td{color:#dbe8e3}.empty{border:1px dashed rgba(255,255,255,.18);border-radius:20px;padding:28px;color:var(--arm-muted);text-align:center}.drawer{position:fixed;right:18px;bottom:18px;width:min(500px,calc(100% - 36px));max-height:82vh;overflow:auto;border:1px solid rgba(215,246,111,.28);background:rgba(6,12,13,.96);box-shadow:0 24px 80px rgba(0,0,0,.55);border-radius:28px;padding:18px;z-index:100000;display:none}.drawer.open{display:block}.drawer-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}.drawer h3{margin:0}.request-line{display:grid;grid-template-columns:1fr auto;gap:8px;border-bottom:1px solid rgba(255,255,255,.08);padding:10px 0}.request-line small{color:var(--arm-muted)}.hidden{display:none!important}.fineprint{font-size:12px;color:var(--arm-muted);line-height:1.55}.inventory-row{display:grid;grid-template-columns:minmax(180px,1fr) 110px 110px 1fr;gap:8px;align-items:center;border-bottom:1px solid rgba(255,255,255,.08);padding:10px 0}.inventory-row input{width:100%;box-sizing:border-box;border:1px solid var(--arm-line);border-radius:12px;background:rgba(0,0,0,.24);color:var(--arm-text);padding:9px}.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#101816;border:1px solid rgba(215,246,111,.3);border-radius:999px;padding:10px 14px;color:#efffd6;font-weight:1000;z-index:999999;box-shadow:0 14px 40px rgba(0,0,0,.4);display:none}.toast.show{display:block}.quick-mode{display:grid;grid-template-columns:1fr 1fr;gap:10px}.quick-mode .mode-card{border:1px solid var(--arm-line);border-radius:22px;background:rgba(255,255,255,.045);padding:14px}.quick-packs{margin-top:14px;border:1px solid var(--arm-line);border-radius:22px;background:rgba(215,246,111,.055);padding:14px;display:grid;gap:9px}.quick-packs h2{font-size:17px;margin:0}.quick-pack{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;border:1px solid rgba(215,246,111,.22);background:rgba(255,255,255,.055);border-radius:16px;padding:11px 12px;color:var(--arm-text);font-weight:1000;cursor:pointer}.quick-pack span{color:var(--arm-lime)}.cart-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.qty-btn{width:32px;height:32px;border-radius:12px;border:1px solid var(--arm-line);background:rgba(255,255,255,.07);color:var(--arm-text);font-weight:1000;cursor:pointer}.mode-card b{display:block}.mode-card small{display:block;color:var(--arm-muted);margin-top:6px;line-height:1.45}.internal-only{display:none!important}.role-oruzar .internal-only,.role-admin .internal-only{display:initial!important}.role-oruzar .command-strip.internal-only,.role-admin .command-strip.internal-only{display:grid!important}.role-oruzar .oruzar-shortcuts.internal-only,.role-admin .oruzar-shortcuts.internal-only{display:grid!important}.tab.internal-only{display:none!important}.role-oruzar .tab.internal-only,.role-admin .tab.internal-only{display:inline-flex!important}@media(max-width:1100px){.armory-hero-inner{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(3,1fr)}.armory-layout{grid-template-columns:1fr}.filters{position:static}.split{grid-template-columns:1fr}}@media(max-width:720px){.armory-shell{width:min(100% - 22px,680px);padding-top:10px}.armory-top{align-items:flex-start;flex-direction:column}.armory-nav{width:100%;overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px}.armory-nav a,.armory-nav button{white-space:nowrap}.armory-hero{border-radius:26px}.armory-hero-inner{padding:22px}.kpis{grid-template-columns:repeat(2,1fr)}.armory-layout{gap:14px}.panel{border-radius:22px;padding:14px}.grid-list{grid-template-columns:1fr}.quick-mode{grid-template-columns:1fr}.inventory-row{grid-template-columns:1fr 80px 90px}.inventory-row .inv-note{grid-column:1/-1}.arm-table{min-width:640px}.drawer{right:10px;bottom:10px;width:calc(100% - 20px);border-radius:22px}}
 
-/* v4.31 premium armory polish */
-:root{--arm-panel:rgba(8,18,18,.72);--arm-glass:rgba(255,255,255,.075);--arm-glow:0 22px 70px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.08)}
-body.armory-body{min-height:100vh;background:radial-gradient(circle at 12% -8%,rgba(215,246,111,.22),transparent 32%),radial-gradient(circle at 92% 2%,rgba(73,189,255,.18),transparent 35%),radial-gradient(circle at 54% 105%,rgba(127,240,178,.11),transparent 42%),linear-gradient(180deg,#041112 0%,#07100f 48%,#030606 100%);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-body.armory-body:before{content:"";position:fixed;inset:0;pointer-events:none;background:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);background-size:44px 44px;mask-image:linear-gradient(to bottom,rgba(0,0,0,.7),transparent 82%)}
-.armory-top{position:sticky;top:0;z-index:50;padding:12px 0;margin-bottom:8px;backdrop-filter:blur(18px)}
-.armory-brand .mark{background:linear-gradient(135deg,rgba(215,246,111,.22),rgba(141,216,255,.12));box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 12px 28px rgba(0,0,0,.28)}
-.armory-nav a,.armory-nav button{backdrop-filter:blur(12px);transition:.18s ease}.armory-nav a:hover,.armory-nav button:hover{transform:translateY(-1px);border-color:rgba(215,246,111,.35);background:rgba(215,246,111,.09)}
-.armory-hero{border-radius:38px;border-color:rgba(255,255,255,.15);background:linear-gradient(135deg,rgba(255,255,255,.105),rgba(255,255,255,.035) 56%,rgba(215,246,111,.055));box-shadow:0 30px 120px rgba(0,0,0,.48)}
-.armory-hero:after{content:"";position:absolute;right:-80px;bottom:-105px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(215,246,111,.22),rgba(141,216,255,.08) 38%,transparent 68%);filter:blur(2px)}
-.armory-hero h1{text-wrap:balance}.armory-hero p{font-size:16px;color:#d4e5df}.eyebrow{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(215,246,111,.26);background:rgba(215,246,111,.08);padding:7px 10px;border-radius:999px}.eyebrow:before{content:"●";font-size:10px;color:var(--arm-lime);filter:drop-shadow(0 0 8px rgba(215,246,111,.9))}
-.role-card,.panel,.kpi,.item-card,.quick-packs,.quick-mode .mode-card{backdrop-filter:blur(18px);box-shadow:var(--arm-glow)}
-.role-card{background:linear-gradient(160deg,rgba(0,0,0,.28),rgba(255,255,255,.055));border-color:rgba(215,246,111,.18)}
-.role-pill{background:rgba(255,255,255,.075)}.role-pill.lime{box-shadow:0 0 0 1px rgba(215,246,111,.08),0 10px 30px rgba(215,246,111,.07)}
-.kpis{grid-template-columns:repeat(6,minmax(0,1fr));margin:20px 0}.kpi{position:relative;overflow:hidden;background:linear-gradient(180deg,rgba(255,255,255,.085),rgba(255,255,255,.035));min-height:86px}.kpi:before{content:attr(data-icon);position:absolute;right:14px;top:10px;font-size:24px;opacity:.26}.kpi:after{content:"";position:absolute;left:16px;right:16px;bottom:0;height:3px;border-radius:999px;background:linear-gradient(90deg,rgba(215,246,111,.75),rgba(141,216,255,.55));opacity:.8}.kpi small{font-size:11px}.kpi b{font-size:clamp(24px,2.2vw,34px)}
-.filters{top:82px;background:linear-gradient(180deg,rgba(8,18,18,.82),rgba(8,18,18,.62))}.panel{background:var(--arm-panel);border-color:rgba(255,255,255,.13)}.panel h2{letter-spacing:-.03em}.field input,.field select,.field textarea{background:rgba(0,0,0,.34);border-color:rgba(255,255,255,.14);outline:none;transition:.16s ease}.field input:focus,.field select:focus,.field textarea:focus{border-color:rgba(215,246,111,.55);box-shadow:0 0 0 4px rgba(215,246,111,.08)}
-.tabs{position:sticky;top:74px;z-index:20;margin:-18px -18px 16px;padding:14px 18px;background:linear-gradient(180deg,rgba(5,12,12,.94),rgba(5,12,12,.72));backdrop-filter:blur(18px);border-bottom:1px solid rgba(255,255,255,.08);border-radius:28px 28px 0 0}.tab{transition:.18s ease}.tab:hover{transform:translateY(-1px);border-color:rgba(141,216,255,.28)}.tab.active{box-shadow:0 12px 34px rgba(215,246,111,.08)}
-.grid-list{grid-template-columns:repeat(auto-fill,minmax(295px,1fr));gap:14px}.item-card{position:relative;overflow:hidden;background:linear-gradient(180deg,rgba(255,255,255,.078),rgba(255,255,255,.033));border-color:rgba(255,255,255,.13);transition:transform .18s ease,border-color .18s ease,background .18s ease}.item-card:hover{transform:translateY(-3px);border-color:rgba(215,246,111,.26);background:linear-gradient(180deg,rgba(255,255,255,.105),rgba(255,255,255,.04))}.item-card:before{content:"";position:absolute;inset:0 0 auto 0;height:4px;background:linear-gradient(90deg,rgba(215,246,111,.85),rgba(141,216,255,.65));opacity:.8}.item-card h3{font-size:18px;letter-spacing:-.025em}.item-card .fineprint{min-height:42px}.badge{border-color:rgba(255,255,255,.14);background:rgba(255,255,255,.075)}
-.btn{transition:.16s ease}.btn:not(:disabled):hover{transform:translateY(-1px);border-color:rgba(215,246,111,.34)}.btn.primary{box-shadow:0 14px 32px rgba(215,246,111,.16);background:linear-gradient(135deg,#e6ff7a,#7ff0b2 58%,#8dd8ff)}.btn:disabled{opacity:.48;cursor:not-allowed}
-.quick-pack{transition:.16s ease}.quick-pack:hover{transform:translateX(2px);background:rgba(215,246,111,.09)}.table-wrap{background:rgba(0,0,0,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}.arm-table tr:hover td{background:rgba(215,246,111,.035)}
-.drawer{background:linear-gradient(180deg,rgba(8,18,18,.98),rgba(4,8,8,.98));backdrop-filter:blur(22px)}.toast{background:linear-gradient(135deg,#111b18,#17221f);border-color:rgba(215,246,111,.45)}
-@media(max-width:1100px){.tabs{top:0}.kpis{grid-template-columns:repeat(3,1fr)}.filters{top:0}}@media(max-width:720px){.armory-hero h1{font-size:42px}.kpis{grid-template-columns:repeat(2,1fr)}.tabs{margin:-14px -14px 14px;padding:12px 14px;border-radius:22px 22px 0 0}.tab{padding:9px 10px}.item-card:hover{transform:none}}
+;
 
+;
 
-/* v4.36 polished inventory */
-.armory-body{background:radial-gradient(circle at 20% 0%,rgba(215,246,111,.10),transparent 32%),radial-gradient(circle at 86% 8%,rgba(141,216,255,.10),transparent 30%),#07100f}.armory-hero{background:linear-gradient(135deg,rgba(18,34,30,.92),rgba(9,16,15,.88));}.panel{backdrop-filter:blur(14px)}.tab{transition:transform .16s ease,border-color .16s ease,background .16s ease}.tab:hover,.btn:hover,.quick-pack:hover{transform:translateY(-1px)}.btn,.quick-pack{transition:transform .16s ease,filter .16s ease,border-color .16s ease}.inventory-command{display:grid;gap:14px}.inventory-hero{position:relative;overflow:hidden;border:1px solid rgba(215,246,111,.25);background:linear-gradient(135deg,rgba(215,246,111,.13),rgba(141,216,255,.07)),rgba(255,255,255,.045);border-radius:30px;padding:22px}.inventory-hero:before{content:"";position:absolute;right:-70px;top:-80px;width:260px;height:260px;border-radius:50%;background:rgba(215,246,111,.09);filter:blur(2px)}.inventory-hero h2{font-size:clamp(26px,4vw,44px);letter-spacing:-.05em;margin:4px 0 8px}.inventory-hero p{max-width:760px}.inventory-topline{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;position:relative}.inventory-mode-pill{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(215,246,111,.30);background:rgba(215,246,111,.10);color:#efffd0;border-radius:999px;padding:8px 11px;font-weight:1000;font-size:12px;letter-spacing:.05em;text-transform:uppercase}.scan-card{position:relative;border:1px solid rgba(255,255,255,.13);background:rgba(0,0,0,.24);border-radius:24px;padding:14px;margin-top:16px;display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:end}.scan-card .field{margin:0}.scan-input{font-size:22px!important;letter-spacing:.02em;padding:15px 16px!important;border-radius:18px!important}.scan-result{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.055);border-radius:22px;padding:14px;min-height:54px}.scan-result.ok{border-color:rgba(127,240,178,.32);background:rgba(127,240,178,.08)}.scan-result.warn{border-color:rgba(255,211,107,.34);background:rgba(255,211,107,.08)}.scan-result.danger{border-color:rgba(255,109,109,.32);background:rgba(255,109,109,.08)}.inventory-dashboard{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.inventory-tile{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.048);border-radius:22px;padding:15px}.inventory-tile small{display:block;color:var(--arm-muted);font-weight:950;text-transform:uppercase;letter-spacing:.06em;font-size:11px}.inventory-tile b{display:block;font-size:28px;margin-top:6px;letter-spacing:-.04em}.inventory-tile.good{border-color:rgba(127,240,178,.22)}.inventory-tile.warn{border-color:rgba(255,211,107,.28)}.inventory-tile.danger{border-color:rgba(255,109,109,.25)}.inventory-sections{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}.inventory-batch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}.batch-card{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.045);border-radius:20px;padding:13px;text-align:left;color:var(--arm-text);cursor:pointer}.batch-card b{display:block}.batch-card small{display:block;color:var(--arm-muted);margin-top:5px}.batch-card:hover{border-color:rgba(215,246,111,.34);background:rgba(215,246,111,.07)}.checklist-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}.inventory-row.polished{grid-template-columns:minmax(220px,1fr) 90px 118px 1fr auto;border:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.16);border-radius:18px;margin:8px 0;padding:10px}.inventory-row.polished input{background:rgba(5,10,10,.55)}.inventory-row.found{border-color:rgba(127,240,178,.25);background:rgba(127,240,178,.055)}.inventory-row.problem{border-color:rgba(255,211,107,.28);background:rgba(255,211,107,.055)}.mini-btn{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.07);color:var(--arm-text);border-radius:12px;padding:8px 9px;font-weight:1000;cursor:pointer}.missing-list{display:grid;gap:8px}.missing-item{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.04);border-radius:16px;padding:10px}.missing-item div{min-width:0}.missing-item b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.missing-item small{color:var(--arm-muted)}@media(max-width:980px){.scan-card{grid-template-columns:1fr}.inventory-dashboard{grid-template-columns:repeat(2,1fr)}.inventory-sections{grid-template-columns:1fr}.inventory-row.polished{grid-template-columns:1fr 80px 100px auto}.inventory-row.polished .inv-note{grid-column:1/-1}}@media(max-width:560px){.inventory-dashboard{grid-template-columns:1fr}.inventory-hero{border-radius:22px;padding:16px}.scan-input{font-size:18px!important}.inventory-row.polished{grid-template-columns:1fr 1fr}.inventory-row.polished .inv-note,.inventory-row.polished .row-title{grid-column:1/-1}}
+;
 
-/* v4.36: make inventura impossible to miss */
-.inventory-jump{background:linear-gradient(135deg,rgba(215,246,111,.95),rgba(127,240,178,.82))!important;color:#111!important;border:0!important;box-shadow:0 14px 34px rgba(215,246,111,.12)}
-.oruzar-shortcuts{margin-top:14px;border:1px solid rgba(141,216,255,.20);border-radius:22px;background:rgba(141,216,255,.055);padding:14px;display:grid;gap:9px}
-.oruzar-shortcuts h2{font-size:17px;margin:0}.oruzar-shortcuts .quick-pack{border-color:rgba(141,216,255,.22)}
+;
 
-/* v4.37 visible oruzar landing */
-.command-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:18px 0}
-.command-card{border:1px solid rgba(255,255,255,.12);border-radius:26px;background:linear-gradient(135deg,rgba(255,255,255,.075),rgba(255,255,255,.035));padding:18px;text-decoration:none;color:var(--arm-text);display:grid;gap:8px;box-shadow:0 16px 44px rgba(0,0,0,.22)}
-.command-card b{font-size:20px;letter-spacing:-.02em}.command-card small{color:var(--arm-muted);line-height:1.45;font-weight:800}.command-card.primary{background:linear-gradient(135deg,rgba(215,246,111,.18),rgba(127,240,178,.08));border-color:rgba(215,246,111,.34)}
-.command-card.blue{background:linear-gradient(135deg,rgba(141,216,255,.16),rgba(141,216,255,.045));border-color:rgba(141,216,255,.28)}
-.command-card span{justify-self:start;border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:7px 10px;font-weight:1000;color:#f2ffd0}
-.nav-command{background:rgba(141,216,255,.12)!important;border-color:rgba(141,216,255,.30)!important;color:#ddf4ff!important}
-@media(max-width:820px){.command-strip{grid-template-columns:1fr}}
-
-.manual-armory{margin-bottom:18px}.manual-hero{display:flex;justify-content:space-between;gap:18px;align-items:center;padding:18px;border-radius:24px;background:linear-gradient(135deg,rgba(56,189,248,.18),rgba(34,197,94,.10));border:1px solid rgba(148,163,184,.22);box-shadow:0 22px 70px rgba(0,0,0,.24)}.manual-hero h2{margin:8px 0 6px;font-size:clamp(22px,3vw,34px)}.manual-hero p{max-width:760px;color:#b8c2d6}.manual-grid{display:grid;grid-template-columns:1.15fr .85fr .85fr;gap:14px;margin-top:14px}.manual-card{background:rgba(15,23,42,.78);border:1px solid rgba(148,163,184,.20);border-radius:22px;padding:16px;box-shadow:0 20px 60px rgba(0,0,0,.20)}.manual-card h3{margin:0 0 12px}.manual-card label{display:block;margin:10px 0 5px;color:#cbd5e1;font-size:13px}.manual-card input,.manual-card select,.manual-card textarea{width:100%;box-sizing:border-box}.inline-field{display:flex;gap:8px}.inline-field input{flex:1}.btn.danger{background:linear-gradient(135deg,#ef4444,#991b1b);color:white;border-color:rgba(248,113,113,.5)}@media(max-width:980px){.manual-grid{grid-template-columns:1fr}.manual-hero{display:block}.manual-hero .btn{margin-top:12px;width:100%}.inline-field{display:block}.inline-field .btn{width:100%;margin-top:8px}}
-
-
-/* v4.43 UI OVERHAUL — Oružarstvo / Oružar master visibility pass */
-:root{
-  --arm-bg:#07100f;
-  --arm-surface:#0f1c19;
-  --arm-surface-2:#14241f;
-  --arm-surface-3:#1b2c25;
-  --arm-line:rgba(196,229,216,.22);
-  --arm-line-strong:rgba(215,246,111,.42);
-  --arm-text:#f5fff9;
-  --arm-muted:#c0d3cb;
-  --arm-soft:#e4f2ec;
-  --arm-lime:#d7f66f;
-  --arm-amber:#ffd36b;
-  --arm-red:#ff7f7f;
-  --arm-blue:#8dd8ff;
-  --arm-green:#7ff0b2;
-}
-body.armory-body{
-  background:
-    radial-gradient(circle at 12% 0%,rgba(215,246,111,.16),transparent 28%),
-    radial-gradient(circle at 88% 6%,rgba(141,216,255,.16),transparent 30%),
-    linear-gradient(180deg,#06100f 0%,#0b1513 46%,#07100f 100%) !important;
-  color:var(--arm-text) !important;
-  font-size:16px;
-}
-.armory-shell{width:min(1500px,calc(100% - 28px));}
-.armory-top{
-  background:rgba(7,16,15,.72);
-  border:1px solid rgba(196,229,216,.16);
-  border-radius:24px;
-  padding:13px 16px !important;
-  margin:14px 0 18px;
-  backdrop-filter:blur(18px);
-  box-shadow:0 18px 60px rgba(0,0,0,.24);
-}
-.armory-brand .mark{
-  background:linear-gradient(135deg,rgba(215,246,111,.22),rgba(141,216,255,.12)) !important;
-  border-color:rgba(215,246,111,.46) !important;
-  color:#efffbd !important;
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);
-}
-.armory-brand b,.armory-brand small{letter-spacing:.01em}.armory-brand small{color:#c5d8d0!important}
-.armory-nav a,.armory-nav button,.tab,.btn,.mini-btn,.qty-btn{
-  min-height:42px;
-  color:#f7fff9 !important;
-  background:linear-gradient(180deg,rgba(255,255,255,.11),rgba(255,255,255,.055)) !important;
-  border:1px solid rgba(206,235,224,.24) !important;
-  box-shadow:0 8px 20px rgba(0,0,0,.18);
-}
-.armory-nav a:hover,.armory-nav button:hover,.tab:hover,.btn:hover,.mini-btn:hover{border-color:rgba(215,246,111,.56)!important;transform:translateY(-1px)}
-.armory-nav .strong,.btn.primary,.tab.active,.mini-btn.ok{
-  color:#102016 !important;
-  background:linear-gradient(135deg,#d7f66f,#7ff0b2) !important;
-  border-color:transparent!important;
-  text-shadow:none!important;
-}
-.armory-hero{
-  border:1px solid rgba(215,246,111,.28) !important;
-  background:linear-gradient(135deg,rgba(21,39,34,.96),rgba(11,22,20,.98)) !important;
-  box-shadow:0 28px 90px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.08) !important;
-}
-.armory-hero h1{color:#ffffff!important;text-shadow:0 4px 22px rgba(0,0,0,.38)}
-.armory-hero p,.panel p,.fineprint,.mode-card small,.request-line small,.empty{color:#c5d8d0!important}
-.eyebrow{color:#e9ff9a!important}
-.role-card,.panel,.kpi,.item-card,.mode-card,.quick-packs,.table-wrap,.drawer,.batch-card,.subcat-card,.category-card,.master-card,.scan-result,.inventory-tile,.stocktake-tools .panel{
-  background:linear-gradient(180deg,rgba(22,38,34,.96),rgba(12,23,21,.96)) !important;
-  border:1px solid rgba(196,229,216,.22) !important;
-  box-shadow:0 18px 54px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.055) !important;
-}
-.panel,.item-card,.kpi,.role-card{border-radius:24px!important}
-.panel h2,.master-section-title h2,.checklist-head h2,.inventory-hero h2{color:#ffffff!important;letter-spacing:-.02em}
-.kpis{gap:14px!important}.kpi{padding:18px!important}.kpi small,.inventory-tile small{color:#cde0d8!important}.kpi b,.inventory-tile b{color:#ffffff!important}
-.tabs{
-  background:rgba(7,16,15,.70);
-  border:1px solid rgba(196,229,216,.16);
-  border-radius:22px;
-  padding:10px;
-  position:sticky;
-  top:10px;
-  z-index:50;
-  backdrop-filter:blur(18px);
-}
-.tab{border-radius:16px!important;padding:11px 14px!important}.tab.active{box-shadow:0 12px 30px rgba(127,240,178,.18)!important}
-.field label{color:#e7f7ef!important;font-size:12px!important}.field input,.field select,.field textarea,.inventory-row input,.inventory-edit-row input,.inventory-edit-row select,.scan-input{
-  background:#07110f!important;
-  border:1px solid rgba(196,229,216,.30)!important;
-  color:#ffffff!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
-}
-.field input::placeholder,.field textarea::placeholder,.scan-input::placeholder{color:#8ea39b!important}
-.badge{
-  color:#effbf6!important;
-  background:rgba(255,255,255,.09)!important;
-  border-color:rgba(216,235,228,.22)!important;
-  font-size:12px!important;
-}
-.badge.ok{color:#103019!important;background:linear-gradient(135deg,#bdfad4,#7ff0b2)!important;border-color:transparent!important}
-.badge.warn{color:#2b2100!important;background:linear-gradient(135deg,#ffe8a3,#ffd36b)!important;border-color:transparent!important}
-.badge.danger{color:#330b0b!important;background:linear-gradient(135deg,#ffc4c4,#ff7f7f)!important;border-color:transparent!important}
-.arm-table{background:#0c1715!important}.arm-table th{
-  background:#1b2c25!important;
-  color:#f4fff8!important;
-  border-bottom:1px solid rgba(215,246,111,.22)!important;
-  position:sticky;top:0;z-index:1;
-}
-.arm-table td{color:#eef8f3!important;border-bottom:1px solid rgba(196,229,216,.12)!important}.arm-table tr:hover td{background:rgba(215,246,111,.045)!important}
-.master-card,.category-card,.subcat-card,.batch-card{
-  color:#f8fff9!important;
-  text-align:left;
-  border-radius:22px!important;
-  padding:18px!important;
-}
-.master-card b,.category-card b,.subcat-card b,.batch-card b{color:#fff!important;font-size:17px}.master-card small,.category-card small,.subcat-card small,.batch-card small{color:#c5d8d0!important;line-height:1.45}
-.master-card.active,.category-card.active,.subcat-card.active,.batch-card.active{
-  background:linear-gradient(135deg,rgba(215,246,111,.22),rgba(127,240,178,.10))!important;
-  border-color:rgba(215,246,111,.58)!important;
-}
-.master-chiprow,.role-row,.meta{gap:9px!important}.request-line,.inventory-edit-row,.inventory-row.polished,.missing-item{
-  background:rgba(255,255,255,.035);
-  border:1px solid rgba(196,229,216,.12)!important;
-  border-radius:16px;
-  padding:12px!important;
-  margin:8px 0;
-}
-.low-stock td{background:rgba(255,211,107,.08)!important}.stock-bad td{background:rgba(255,127,127,.08)!important}.stock-ok td{background:rgba(127,240,178,.045)!important}
-.toast{background:#101b17!important;color:#f4ffd7!important;border-color:rgba(215,246,111,.45)!important}
-@media(max-width:720px){
-  body.armory-body{font-size:15px}.armory-shell{width:calc(100% - 18px)!important}.tabs{position:static;overflow-x:auto;flex-wrap:nowrap}.tab{white-space:nowrap}.armory-hero-inner{padding:20px!important}.armory-hero h1{font-size:40px!important}.arm-table th,.arm-table td{padding:10px!important}.panel{padding:14px!important}
-}
-
-/* v4.46 user catalog category drilldown */
-.user-catalog-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:14px;padding:16px;border:1px solid rgba(255,255,255,.12);border-radius:24px;background:linear-gradient(135deg,rgba(215,246,111,.075),rgba(141,216,255,.045));}
-.user-catalog-head h2{margin:0 0 5px;font-size:24px;color:#fff}.user-catalog-head p{margin:0;color:#cfe0da}.user-path{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}.user-path button{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:#eef8f4;border-radius:999px;padding:8px 10px;font-weight:1000;cursor:pointer}.user-path button.active{background:rgba(215,246,111,.16);border-color:rgba(215,246,111,.36);color:#f4ffd9}.user-category-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}.user-category-card{border:1px solid rgba(255,255,255,.13);background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.035));border-radius:24px;padding:17px;text-align:left;color:#f7fbf9;min-height:166px;cursor:pointer;display:grid;gap:8px;box-shadow:0 14px 34px rgba(0,0,0,.22)}.user-category-card:hover{transform:translateY(-2px);border-color:rgba(215,246,111,.35);background:linear-gradient(180deg,rgba(215,246,111,.10),rgba(255,255,255,.04))}.user-category-card .ico{font-size:34px;line-height:1}.user-category-card b{font-size:18px;line-height:1.15;color:#fff}.user-category-card small{color:#c7d8d2;line-height:1.35}.user-subcat-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin-bottom:14px}.user-subcat-card{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.055);border-radius:18px;padding:13px;text-align:left;color:#fff;font-weight:1000;cursor:pointer}.user-subcat-card small{display:block;color:#c4d6d0;margin-top:5px;font-weight:800}.user-subcat-card.active{border-color:rgba(215,246,111,.4);background:rgba(215,246,111,.12)}
-</style><link rel="stylesheet" href="assets/mobile.css"></head><body class="armory-body"><div class="armory-shell"><header class="armory-top"><a class="armory-brand" href="dashboard.html"><div class="mark">SOV</div><div><strong>SOV Cloud</strong><small>Oružarstvo</small></div></a><nav class="armory-nav"><a href="dashboard.html">Dashboard</a><a href="baza.html">Baza</a><a href="kalendar-izleta.html">Kalendar</a><a class="strong" href="oruzarstvo.html">Oružarstvo</a><button class="nav-command internal-only armory-master-btn" type="button" onclick="openArmoryMaster()">🛡️ Oružar master</button><a href="#" data-logout>Odjava</a></nav></header><main><section class="armory-hero"><div class="armory-hero-inner"><div><div class="eyebrow">SOV Oružarstvo Cloud · v4.48 fixed</div><h1>Oprema bez kaosa.</h1><p>Premium pregled opreme za članove i oružara: katalog, brzi paketi, zahtjevi, užad, inventure, servis i nabava u jednom čistom ekranu.</p></div><div class="role-card"><b>Prijavljen si kao <span data-user-role>preview</span></b><div class="role-row"><span class="role-pill lime">Članski katalog</span><span class="role-pill">Brzi zahtjev</span><span class="role-pill">Užad u zahtjevu</span><span class="role-pill internal-only">Oružar panel</span></div><p class="fineprint">Član vidi ono što treba za izlet. Oružar i admin dobivaju puni operativni pogled: zahtjevi, stanje, inventure, servis, rashod i plan nabave.</p></div></div></section><section class="command-strip internal-only" aria-label="Oružar brzi ulaz"><button class="command-card primary" type="button" onclick="openArmoryMaster()"><b>🛡️ Oružar master</b><small>Jedini operativni ulaz za oružara. Unutra su inventar, posudbe, narudžbe, inventura, nabave i postavke.</small><span>Otvori master →</span></button></section><section class="kpis" id="kpis"></section><section class="armory-layout"><aside class="panel filters"><h2>Filter</h2><div class="field"><label>Pretraga</label><input id="q" placeholder="npr. croll, uže, baterija, karabiner"></div><div class="field"><label>Kategorija</label><select id="cat"><option value="">Sve kategorije</option></select></div><div class="field"><label>Dostupnost</label><select id="avail"><option value="">Sve</option><option value="dostupno">Dostupno</option><option value="nedostupno">Nedostupno</option><option value="nisko stanje">Nisko stanje</option></select></div><div class="quick-mode"><div class="mode-card"><b>Član</b><small>Katalog, zahtjev i status svojih zahtjeva.</small></div><div class="mode-card"><b>Oružar</b><small>Posudbe, inventure, užad, servis, rashod i nabava.</small></div></div><div class="oruzar-shortcuts internal-only"><h2>Oružar</h2><button class="quick-pack" type="button" onclick="openArmoryMaster()">🛡️ Oružar master <span>→</span></button><p class="fineprint">Samo jedan ulaz. Sve operativne podstranice otvaraju se tek unutar mastera.</p></div><div class="quick-packs"><h2>Brzi paketi</h2><button class="quick-pack" type="button" onclick="addCategoryPack('Osobna oprema')">Cijela osobna oprema <span>+</span></button><button class="quick-pack" type="button" onclick="addCategoryPack('Oprema za postavljanje')">Cijela oprema za postavljanje <span>+</span></button><button class="quick-pack" type="button" onclick="addCategoryPack('Oprema za crtanje')">Cijela oprema za crtanje <span>+</span></button><p class="fineprint">Paket dodaje sve trenutno dostupne stavke iz kategorije u zahtjev. Količine možeš doraditi prije slanja.</p></div><button class="btn primary" id="openRequest" style="margin-top:14px;width:100%">Otvori zahtjev</button></aside><section class="panel"><div class="tabs"><button class="tab active" data-tab="catalog">Katalog</button><button class="tab" data-tab="myrequests">Moji zahtjevi</button><button class="tab internal-only armory-master-tab" data-tab="master">🛡️ Oružar master</button></div><div id="catalog" class="tabpane"></div><div id="myrequests" class="tabpane hidden"></div><div id="master" class="tabpane hidden internal-pane"></div><div id="fullinventory" class="tabpane hidden internal-pane"></div><div id="loans" class="tabpane hidden internal-pane"></div><div id="orders" class="tabpane hidden internal-pane"></div><div id="stocktake" class="tabpane hidden internal-pane"></div><div id="procurement" class="tabpane hidden internal-pane"></div><div id="armorySettings" class="tabpane hidden internal-pane"></div><div id="oruzar" class="tabpane hidden internal-pane"></div><div id="ropes" class="tabpane hidden internal-pane"></div><div id="pieces" class="tabpane hidden internal-pane"></div><div id="inventory" class="tabpane hidden internal-pane"></div><div id="service" class="tabpane hidden internal-pane"></div><div id="planning" class="tabpane hidden internal-pane"></div></section></section></main></div><div class="drawer" id="drawer"><div class="drawer-head"><h3>Zahtjev za opremu</h3><button class="btn ghost" id="closeDrawer">Zatvori</button></div><div id="requestItems"></div><div class="field"><label>Izlet / razlog</label><input id="reqTrip" placeholder="npr. Ponorac, speleoškola, vježba"></div><div class="split"><div class="field"><label>Od</label><input id="reqFrom" type="date"></div><div class="field"><label>Do</label><input id="reqTo" type="date"></div></div><div class="field"><label>Napomena</label><textarea id="reqNote" placeholder="Kratko što trebaš i zašto"></textarea></div><button class="btn primary" id="sendRequest">Pošalji oružaru</button></div><div class="toast" id="toast">Spremljeno</div><script>
 let DATA={items:[],categories:[],ropes:[],pieces:[],loans:[],inventories:[],inventory_items:[],procurement:[],services:[],disposed:[],lost:[],field:[],summary:{}};let CART=[];let CURRENT_USER=null;let CURRENT_ROLE='user';let CURRENT_TAB='catalog';let DB_REQUESTS=null;let DB_LIVE=false;
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));function formatDateHR(v){if(!v)return '';const s=String(v).trim();let m=s.match(/^(\d{4})-(\d{2})-(\d{2})/);if(m)return `${m[3]}/${m[2]}/${m[1]}`;m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);if(m)return `${String(m[1]).padStart(2,'0')}/${String(m[2]).padStart(2,'0')}/${m[3]}`;m=s.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})\.?$/);if(m)return `${String(m[1]).padStart(2,'0')}/${String(m[2]).padStart(2,'0')}/${m[3]}`;m=s.match(/^(\d{1,2})\/(\d{4})$/);if(m)return `01/${String(m[1]).padStart(2,'0')}/${m[2]}`;m=s.match(/^(\d{1,2})\.(\d{4})\.?$/);if(m)return `01/${String(m[1]).padStart(2,'0')}/${m[2]}`;return s}const canArmory=()=>['admin','oruzar'].includes(CURRENT_ROLE);function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),1600)}function badgeClass(s){s=String(s||'').toLowerCase();if(s.includes('nisko')||s.includes('zatra')||s.includes('servis')||s.includes('naru'))return'warn';if(s.includes('nema')||s.includes('rash')||s.includes('izg')||s.includes('odbij')||s.includes('van'))return'danger';return'ok'}function qtyLabel(i){return (i.available_label||i.quantity_label||i.quantity||0)+' '+(i.unit||'')}
 function applyRole(){document.body.classList.toggle('role-admin',CURRENT_ROLE==='admin');document.body.classList.toggle('role-oruzar',CURRENT_ROLE==='oruzar');document.body.classList.toggle('role-user',!canArmory());document.querySelector('[data-user-role]').textContent=CURRENT_ROLE;if(!canArmory()&&document.querySelector('.tab.active')?.classList.contains('internal-only'))switchTab('catalog')}
@@ -269,13 +96,9 @@ const __oldRenderOruzar=renderOruzar; renderOruzar=function(){__oldRenderOruzar(
 
 async function init(){try{const res=await fetch('data/oruzarstvo-data.json');DATA=await res.json()}catch(e){console.error(e)}if(window.SOVAuth){try{CURRENT_USER=await SOVAuth.getProfile();await SOVAuth.renderUserBadge()}catch(e){}}CURRENT_ROLE=(CURRENT_USER&&CURRENT_USER.role)||'user';applyRole();await loadRequestsFromBackend();initFilters();renderKpis();renderCatalog();renderRequest();renderMyRequests();document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));document.getElementById('openRequest').onclick=()=>document.getElementById('drawer').classList.add('open');document.getElementById('closeDrawer').onclick=()=>document.getElementById('drawer').classList.remove('open');document.getElementById('sendRequest').onclick=sendRequest;if(location.hash==='#inventory'||new URLSearchParams(location.search).get('tab')==='inventory'){setTimeout(forceInventoryMode,80)}if(location.hash==='#oruzar'||new URLSearchParams(location.search).get('tab')==='oruzar'){setTimeout(forceOruzarMode,80)}}
 document.addEventListener('DOMContentLoaded',init);
-</script>
-<style>
-/* v4.40 Oružar master module */
-.armory-master-btn,.armory-master-tab{font-weight:1000!important;box-shadow:0 0 0 1px rgba(215,246,111,.08),0 12px 28px rgba(215,246,111,.12)}
-.master-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:8px 0 18px}.master-card{border:1px solid rgba(255,255,255,.13);border-radius:26px;background:linear-gradient(145deg,rgba(255,255,255,.085),rgba(255,255,255,.035));padding:18px;display:grid;gap:10px;min-height:150px;cursor:pointer;box-shadow:0 18px 48px rgba(0,0,0,.24)}.master-card:hover{border-color:rgba(215,246,111,.42);transform:translateY(-1px)}.master-card .ico{width:48px;height:48px;border-radius:18px;display:grid;place-items:center;background:rgba(215,246,111,.12);border:1px solid rgba(215,246,111,.24);font-size:24px}.master-card b{font-size:22px}.master-card small{color:var(--arm-muted);line-height:1.45;font-weight:800}.master-section-title{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:14px}.master-section-title h2{margin:0}.master-chiprow{display:flex;gap:8px;flex-wrap:wrap}.mini-btn{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:var(--arm-text);border-radius:12px;padding:8px 10px;font-weight:950;cursor:pointer}.mini-btn.ok{background:rgba(127,240,178,.12);border-color:rgba(127,240,178,.28);color:#dbffd0}.mini-btn.warn{background:rgba(255,211,107,.12);border-color:rgba(255,211,107,.28);color:#ffe9b0}.mini-btn.danger,.btn.danger{background:rgba(255,109,109,.12);border-color:rgba(255,109,109,.28);color:#ffd2d2}.low-stock{border-left:4px solid #ffd36b}.stock-ok{border-left:4px solid #7ff0b2}.stock-bad{border-left:4px solid #ff6d6d}.settings-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}.settings-card{border:1px solid var(--arm-line);border-radius:22px;background:rgba(0,0,0,.16);padding:14px}.settings-card input{width:100%;box-sizing:border-box;border:1px solid var(--arm-line);border-radius:14px;background:rgba(0,0,0,.24);color:var(--arm-text);padding:10px;font-weight:900}.order-actions{display:flex;gap:6px;flex-wrap:wrap}.stocktake-tools{display:grid;grid-template-columns:1fr 1fr;gap:14px}.inventory-edit-row{display:grid;grid-template-columns:1.2fr .7fr .7fr .9fr auto;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.08)}.inventory-edit-row input,.inventory-edit-row select{width:100%;box-sizing:border-box;border:1px solid var(--arm-line);border-radius:12px;background:rgba(0,0,0,.24);color:var(--arm-text);padding:8px;font-weight:850}@media(max-width:980px){.master-grid{grid-template-columns:1fr}.stocktake-tools{grid-template-columns:1fr}.inventory-edit-row{grid-template-columns:1fr 1fr}.inventory-edit-row .wide{grid-column:1/-1}}
-</style>
-<script>
+
+;
+
 (function(){
   const thresholdsKey='sov_armory_thresholds_v1';
   function getThresholds(){try{return JSON.parse(localStorage.getItem(thresholdsKey)||'{}')}catch(e){return {}}}
@@ -304,13 +127,9 @@ document.addEventListener('DOMContentLoaded',init);
   window.switchTab=function(t){if(document.querySelector(`[data-tab="${t}"]`)?.classList.contains('internal-only')&&!canArmory()){t='catalog';toast('Ovaj dio vidi samo oružar/admin')} CURRENT_TAB=t; document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===t)); document.querySelectorAll('.tabpane').forEach(p=>p.classList.add('hidden')); const pane=document.getElementById(t); if(pane)pane.classList.remove('hidden'); if(t==='catalog')renderCatalog(); if(t==='myrequests')renderMyRequests(); if(t==='master')renderMaster(); if(t==='fullinventory')renderFullInventory(); if(t==='orders')renderOrders(); if(t==='loans')renderLoans(); if(t==='stocktake')renderStocktake(); if(t==='procurement')renderProcurement(); if(t==='armorySettings')renderArmorySettings(); if(t==='oruzar'&&oldSwitch)return oldSwitch('oruzar'); if(t==='inventory'&&oldSwitch)return oldSwitch('inventory'); }
   document.addEventListener('DOMContentLoaded',()=>{setTimeout(()=>{if(canArmory()){renderMaster();} if(location.hash==='#master'||new URLSearchParams(location.search).get('tab')==='master')openArmoryMaster();},140)});
 })();
-</script>
-<style>
-/* v4.42 calmer drill-down for Oružar master */
-.armory-scopebar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0 16px;padding:12px;border:1px solid rgba(255,255,255,.10);border-radius:20px;background:rgba(2,6,23,.28)}
-.armory-scopebar b{color:#f8fafc}.armory-scopebar .crumb{padding:8px 10px;border-radius:999px;background:rgba(215,246,111,.10);border:1px solid rgba(215,246,111,.22);font-weight:950}.category-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin-top:14px}.category-card{border:1px solid rgba(255,255,255,.13);border-radius:26px;background:linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.035));padding:18px;text-align:left;color:var(--arm-text);cursor:pointer;min-height:145px;box-shadow:0 18px 48px rgba(0,0,0,.22)}.category-card:hover,.subcat-card:hover{border-color:rgba(215,246,111,.45);transform:translateY(-1px)}.category-card b{display:block;font-size:20px;margin:8px 0}.category-card small{color:var(--arm-muted);font-weight:800;line-height:1.4}.subcat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin:12px 0}.subcat-card{border:1px solid rgba(255,255,255,.12);border-radius:20px;background:rgba(15,23,42,.62);padding:13px;text-align:left;color:var(--arm-text);cursor:pointer}.subcat-card.active{border-color:rgba(215,246,111,.55);background:rgba(215,246,111,.11)}.subcat-card b{display:block}.subcat-card small{color:var(--arm-muted);font-weight:800}.module-strip{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:14px 0}.module-strip button{border:1px solid rgba(255,255,255,.12);border-radius:18px;background:rgba(255,255,255,.06);color:var(--arm-text);padding:13px 10px;font-weight:1000;cursor:pointer}.module-strip button:hover{border-color:rgba(215,246,111,.42)}.returned-note{padding:10px 12px;border:1px solid rgba(127,240,178,.18);background:rgba(127,240,178,.08);border-radius:16px;margin:0 0 12px;color:#dfffd7;font-weight:850}@media(max-width:980px){.module-strip{grid-template-columns:1fr 1fr}.category-grid{grid-template-columns:1fr}.subcat-grid{grid-template-columns:1fr}}
-</style>
-<script>
+
+;
+
 (function(){
   let selectedCategory='';
   let selectedSubcategory='';
@@ -341,23 +160,9 @@ document.addEventListener('DOMContentLoaded',init);
   const oldSwitch=window.switchTab;
   window.switchTab=function(t){oldSwitch(t); if(['master','fullinventory','loans','orders','stocktake','procurement','armorySettings'].includes(t)){setTimeout(()=>{if(t==='master')renderMaster(); if(t==='fullinventory')renderFullInventory(); if(t==='loans')renderLoans(); if(t==='orders')renderOrders(); if(t==='stocktake')renderStocktake(); if(t==='procurement')renderProcurement();},0);}}
 })();
-</script>
 
+;
 
-<style>
-/* v4.44 Oružar Master = separate workspace, not member catalog UI */
-body.armory-master-active .filters{display:none!important}
-body.armory-master-active .armory-layout{grid-template-columns:1fr!important}
-body.armory-master-active .tabs{display:none!important}
-body.armory-master-active .panel:has(.tabs){padding:22px!important}
-body.armory-master-active .armory-hero{display:none!important}
-body.armory-master-active .command-strip{display:none!important}
-body.armory-master-active .kpis{margin-top:6px!important}
-body.armory-master-active .armory-top{border-bottom:1px solid rgba(255,255,255,.10);margin-bottom:14px}
-.master-workspace-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:18px;padding:18px;border:1px solid rgba(255,255,255,.14);border-radius:26px;background:linear-gradient(135deg,rgba(215,246,111,.13),rgba(141,216,255,.07));box-shadow:0 18px 54px rgba(0,0,0,.28)}
-.master-workspace-head h1{margin:0;color:#fff;font-size:clamp(28px,4vw,46px);letter-spacing:-.05em;line-height:1}.master-workspace-head p{margin:7px 0 0;color:#c9d9d3;font-weight:750;line-height:1.45}.master-back{white-space:nowrap}.master-local-nav{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin:0 0 18px}.master-local-nav button{border:1px solid rgba(255,255,255,.14);border-radius:18px;background:rgba(255,255,255,.065);color:#f7fff9;padding:13px 10px;font-weight:1000;cursor:pointer;text-align:center;box-shadow:0 12px 32px rgba(0,0,0,.18)}.master-local-nav button:hover,.master-local-nav button.active{border-color:rgba(215,246,111,.55);background:rgba(215,246,111,.15);color:#f7ffd8}.master-local-nav small{display:block;margin-top:4px;color:#bdcec7;font-weight:800}.master-hint{border:1px solid rgba(141,216,255,.20);background:rgba(141,216,255,.07);border-radius:20px;padding:12px 14px;color:#dce9e4;margin-bottom:14px;font-weight:850}.member-only-ui{display:initial}.armory-master-active .member-only-ui{display:none!important}@media(max-width:1000px){.master-local-nav{grid-template-columns:repeat(2,1fr)}.master-workspace-head{flex-direction:column}.master-back{width:100%}}@media(max-width:560px){.master-local-nav{grid-template-columns:1fr}.master-workspace-head{border-radius:20px;padding:14px}}
-</style>
-<script>
 (function(){
   const masterTabs=['master','fullinventory','loans','orders','stocktake','procurement','armorySettings'];
   function masterNav(active){
@@ -388,21 +193,9 @@ body.armory-master-active .armory-top{border-bottom:1px solid rgba(255,255,255,.
     if(location.hash==='#master'||new URLSearchParams(location.search).get('tab')==='master') setTimeout(()=>openArmoryMaster(),120);
   });
 })();
-</script>
 
+;
 
-
-<style>
-/* v4.47 Simplified armory model: guest clean catalog, armorer detailed quantities */
-.guest-clean .guest-hide-stock{display:none!important}
-.guest-clean .item-card{min-height:150px}
-.simplified-note{border:1px solid rgba(141,216,255,.22);background:rgba(141,216,255,.075);border-radius:18px;padding:11px 13px;color:#dce9e4;font-weight:850;margin:10px 0}
-.manual-kind-note{border:1px solid rgba(215,246,111,.22);background:rgba(215,246,111,.07);border-radius:16px;padding:10px 12px;color:#eaffc7;font-size:12px;font-weight:850;line-height:1.45;margin:8px 0 12px}
-.item-code-help{font-size:12px;color:#b7c9c1;line-height:1.45;margin-top:4px}
-.role-member .only-armorer-detail{display:none!important}
-.role-guest .only-armorer-detail{display:none!important}
-</style>
-<script>
 (function(){
   document.body.classList.add('guest-clean');
   const oldInit = window.initFilters || initFilters;
@@ -443,97 +236,3 @@ body.armory-master-active .armory-top{border-bottom:1px solid rgba(255,255,255,.
   const oldRenderFull=window.renderFullInventory;
   if(oldRenderFull){window.renderFullInventory=function(){oldRenderFull(); const el=document.getElementById('fullinventory'); if(el){el.insertAdjacentHTML('afterbegin','<div class="simplified-note">Pojednostavljeno: kod/SKU je obavezan samo za užad. Ostalo je količinski artikl po vrsti/modelu.</div>');}}}
 })();
-</script>
-
-
-<style>
-/* v4.48 hard fix: readable catalog + real master workspace visibility */
-.armory-master-entry-v448{display:none!important}
-.role-admin .armory-master-entry-v448,.role-oruzar .armory-master-entry-v448{display:grid!important}
-.role-admin .armory-master-btn,.role-oruzar .armory-master-btn{display:inline-flex!important;align-items:center;gap:6px;background:linear-gradient(135deg,rgba(215,246,111,.22),rgba(141,216,255,.12))!important;border-color:rgba(215,246,111,.46)!important;color:#f7ffd8!important}
-.role-admin .armory-master-tab,.role-oruzar .armory-master-tab{display:inline-flex!important}
-.member-catalog-clean .item-card .guest-stock{display:none!important}
-.member-catalog-clean .item-card h3{font-size:18px;color:#fff}.member-catalog-clean .item-card p{color:#d5e4df}
-.master-alert-v448{border:1px solid rgba(215,246,111,.28);background:rgba(215,246,111,.08);border-radius:18px;padding:12px 14px;margin:0 0 14px;color:#f0ffd0;font-weight:900;line-height:1.45}
-.master-alert-v448 small{display:block;color:#cfddd8;font-weight:750;margin-top:4px}
-</style>
-<script>
-(function(){
-  function isArmoryRole(){return ['admin','oruzar'].includes(window.CURRENT_ROLE || CURRENT_ROLE || 'user')}
-  function roleRefresh448(){
-    document.body.classList.toggle('role-admin',(window.CURRENT_ROLE||CURRENT_ROLE)==='admin');
-    document.body.classList.toggle('role-oruzar',(window.CURRENT_ROLE||CURRENT_ROLE)==='oruzar');
-    document.body.classList.toggle('role-user',!isArmoryRole());
-    document.body.classList.toggle('member-catalog-clean',!isArmoryRole());
-  }
-  const oldApplyRole448 = window.applyRole || applyRole;
-  window.applyRole = applyRole = function(){ if(oldApplyRole448) oldApplyRole448(); roleRefresh448(); };
-
-  function cleanItems448(){
-    if(!window.DATA && typeof DATA==='undefined') return;
-    const d=window.DATA || DATA;
-    d.items = (d.items||[]).map(i=>({
-      ...i,
-      member_visible: i.member_visible !== false,
-      tracking_type: i.tracking_type || 'po vrsti',
-      item_kind: i.item_kind || 'quantity_article',
-      code_required: false,
-      quantity: Number(i.quantity)||0,
-      available: Number(i.available ?? i.quantity)||0,
-      loaned: Number(i.loaned)||0,
-      unit: i.unit || 'kom'
-    }));
-    d.ropes = (d.ropes||[]).map(r=>({...r,item_kind:'individual_rope',code_required:true,member_visible:true}));
-  }
-
-  function ensureMasterEntry448(){
-    const top=document.querySelector('.armory-top .armory-nav');
-    if(top && !top.querySelector('.armory-master-entry-v448')){
-      const b=document.createElement('button'); b.type='button'; b.className='nav-command armory-master-entry-v448'; b.textContent='🛡️ Oružar master'; b.onclick=()=>openArmoryMaster();
-      const logout=top.querySelector('[data-logout]'); top.insertBefore(b, logout||null);
-    }
-    const strip=document.querySelector('.command-strip');
-    if(strip) strip.classList.add('armory-master-entry-v448');
-  }
-
-  const oldRenderCatalog448 = window.renderCatalog || renderCatalog;
-  window.renderCatalog = renderCatalog = function(){
-    cleanItems448();
-    if(oldRenderCatalog448) oldRenderCatalog448();
-    const arm=isArmoryRole();
-    const catalog=document.getElementById('catalog');
-    if(catalog && !arm){
-      catalog.querySelectorAll('.item-card .meta').forEach((m,idx)=>{ if(idx>0){} });
-      catalog.querySelectorAll('.item-card').forEach(card=>{
-        card.querySelectorAll('.badge').forEach(b=>{
-          const t=(b.textContent||'').toLowerCase();
-          if(t.includes('dostupno:') || t.includes('ukupno:') || t.includes('posuđeno:') || t.includes('minimum:') || t.includes('sku:')) b.classList.add('guest-stock');
-        });
-      });
-    }
-  };
-
-  const oldOpen448 = window.openArmoryMaster;
-  window.openArmoryMaster = function(){
-    roleRefresh448();
-    if(!isArmoryRole()) return toast('Ovaj dio vidi samo oružar/admin');
-    document.body.classList.add('armory-master-active');
-    switchTab('master');
-    setTimeout(()=>{
-      const pane=document.getElementById('master');
-      if(pane && !pane.querySelector('.master-alert-v448')){
-        pane.insertAdjacentHTML('afterbegin','<div class="master-alert-v448">Oružar master je odvojeni radni prostor.<small>Tu su Inventar, Posudbe, Narudžbe, Inventura, Nabave i Postavke. Članski Katalog i Moje narudžbe ostaju izvan ovog moda.</small></div>');
-      }
-    },30);
-    window.scrollTo({top:0,behavior:'smooth'});
-    toast('Oružar master otvoren');
-  };
-
-  document.addEventListener('DOMContentLoaded',()=>{
-    cleanItems448(); roleRefresh448(); ensureMasterEntry448();
-    setTimeout(()=>{ roleRefresh448(); ensureMasterEntry448(); if(window.renderCatalog) renderCatalog(); },220);
-  });
-})();
-</script>
-
-</body></html>

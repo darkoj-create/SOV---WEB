@@ -1,1 +1,1 @@
-v4.33 Oružarstvo quantity sync from simple XLS
+v4.48 oruzarstvo restore catalog master import fix
