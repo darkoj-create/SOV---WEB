@@ -1,1 +1,1 @@
-v4.52 simplified user catalog + oruzar master catalog
+SOV web build v4.53 — simplified oruzar inventura + new article wizard

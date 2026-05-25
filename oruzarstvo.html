@@ -624,4 +624,87 @@ body.armory-master-active .armory-top{border-bottom:1px solid rgba(255,255,255,.
 })();
 </script>
 
+
+
+<style id="v453-simplified-stocktake-css">
+/* v4.53 — simplified armorer stocktake */
+.stocktake-simple-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;margin-bottom:14px}
+.stocktake-simple-head h2{margin:0 0 6px;font-size:28px;color:#fff;letter-spacing:-.035em}.stocktake-simple-head p{margin:0;color:#c9dad4;line-height:1.55;max-width:760px}
+.stocktake-simple-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:14px;align-items:start}.stocktake-count-list{display:grid;gap:9px}.stocktake-count-row{display:grid;grid-template-columns:minmax(160px,1fr) 136px auto;gap:9px;align-items:center;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.045);border-radius:18px;padding:11px}.stocktake-count-row b{color:#fff}.stocktake-count-row small{display:block;color:#bcd0c9;margin-top:3px}.stocktake-count-row input{width:100%;box-sizing:border-box;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.26);border-radius:14px;color:#fff;padding:10px 11px;font-weight:950}.stocktake-count-actions{display:flex;gap:6px;flex-wrap:wrap}.new-item-wizard{display:grid;gap:10px}.new-item-wizard .hint{border:1px solid rgba(141,216,255,.22);background:rgba(141,216,255,.075);border-radius:16px;padding:10px 12px;color:#dcefed;font-weight:850;font-size:12px;line-height:1.45}.new-item-wizard input,.new-item-wizard select,.new-item-wizard textarea{width:100%;box-sizing:border-box;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.25);border-radius:15px;color:#fff;padding:11px;font-weight:850}.new-item-wizard label{font-weight:1000;color:#e6f5ef;font-size:12px;text-transform:uppercase;letter-spacing:.06em}.simple-danger{border-color:rgba(255,109,109,.35)!important;background:rgba(255,109,109,.08)!important}.qty-stepper{display:flex;gap:5px;align-items:center}.qty-stepper button{width:34px;height:34px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.07);color:#fff;font-weight:1000;cursor:pointer}.stocktake-empty-action{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}@media(max-width:900px){.stocktake-simple-grid{grid-template-columns:1fr}.stocktake-count-row{grid-template-columns:1fr}.stocktake-count-actions{justify-content:flex-start}}
+</style>
+<script id="v453-simplified-stocktake-js">
+(function(){
+  const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const can=()=>{try{return typeof canArmory==='function'&&canArmory()}catch(e){return false}};
+  const toastMsg=(m)=>{try{toast(m)}catch(e){console.log(m)}};
+  const items=()=>{try{return (DATA.items||(window.DATA&&window.DATA.items)||[])}catch(e){return []}};
+  const ropes=()=>{try{return (DATA.ropes||(window.DATA&&window.DATA.ropes)||[])}catch(e){return []}};
+  const catOf=i=>i._cat||i.category_name||i.category||'Ostalo';
+  const subOf=i=>i._sub||i.subcategory||i.subcategory_name||'Ostalo';
+  const idOf=i=>String(i._rowId||i.legacy_id||i.catalog_id||i.id||i.sku||i.name||('item-'+Date.now()));
+  const allRows=()=>{
+    const normal=items().map(i=>({...i,_rowId:idOf(i),_cat:catOf(i),_sub:subOf(i),_qty:Number(i.quantity||0),_av:Number(i.available??i.quantity??0),_kind:'item'}));
+    const ropeRows=ropes().map(r=>({...r,_rowId:idOf(r),_cat:catOf(r)||'Užad',_sub:subOf(r)||'Užad',_qty:1,_av:(String(r.status||r.availability||'').toLowerCase().includes('posu')?0:1),_kind:'rope'}));
+    return normal.concat(ropeRows);
+  };
+  function selectedScope(){
+    const c=(typeof MASTER_CAT_452!=='undefined'?MASTER_CAT_452:null)||(typeof selectedCategory!=='undefined'?selectedCategory:null)||'';
+    const s=(typeof MASTER_SUB_452!=='undefined'?MASTER_SUB_452:null)||(typeof selectedSubcategory!=='undefined'?selectedSubcategory:null)||'';
+    return {c,s};
+  }
+  function scopedRows(){const {c,s}=selectedScope();return allRows().filter(r=>(!c||catOf(r)===c||r._cat===c)&&(!s||subOf(r)===s||r._sub===s));}
+  function findItem(id){return items().find(i=>idOf(i)===String(id)||String(i.name||'')===String(id))||ropes().find(i=>idOf(i)===String(id)||String(i.name||'')===String(id));}
+  async function persistItem(row){
+    if(!(window.DB_LIVE&&window.SOVArmoryDB)) return;
+    if(row._kind==='rope'||row.item_kind==='individual_rope'){
+      if(SOVArmoryDB.createRope) await SOVArmoryDB.createRope(row);
+    }else if(SOVArmoryDB.createEquipmentItem){
+      await SOVArmoryDB.createEquipmentItem(row);
+    }
+  }
+  window.v453SetCount=async function(id,val){
+    if(!can())return toastMsg('Samo admin/oružar');
+    const row=findItem(id); if(!row)return toastMsg('Artikl nije nađen');
+    const n=Math.max(0,Number(val)||0); row.quantity=n; row.available=n; row.loaned=0; row.availability=n>0?'dostupno':'nedostupno'; row.status=row.status||'aktivno'; row.updated_at=new Date().toISOString();
+    try{await persistItem(row)}catch(e){console.warn(e);toastMsg('Lokalno ažurirano, baza nije prihvatila: '+(e.message||e));}
+    if(window.renderStocktake)renderStocktake(); if(window.renderMaster)renderMaster(); if(window.renderCatalog)renderCatalog(); toastMsg('Stanje potvrđeno');
+  };
+  window.v453AdjustCount=function(id,delta){const row=findItem(id); if(!row)return; const cur=Number(row.available??row.quantity??0); const next=Math.max(0,cur+Number(delta||0)); const input=document.getElementById('count-'+CSS.escape(String(id))); if(input)input.value=next; v453SetCount(id,next);};
+  window.v453RemoveArticle=async function(id,status){
+    if(!can())return toastMsg('Samo admin/oružar');
+    const row=findItem(id); if(!row)return toastMsg('Artikl nije nađen');
+    row.available=0; row.quantity=0; row.loaned=0; row.status=status||'Otpisano'; row.availability='nedostupno'; row.member_visible=false; row.updated_at=new Date().toISOString();
+    try{await persistItem(row)}catch(e){console.warn(e);toastMsg('Lokalno maknuto, baza nije prihvatila: '+(e.message||e));}
+    if(window.renderStocktake)renderStocktake(); if(window.renderMaster)renderMaster(); if(window.renderCatalog)renderCatalog(); toastMsg('Artikl maknut iz aktivne evidencije');
+  };
+  function categories(){return [...new Set(allRows().map(catOf).filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),'hr'));}
+  function subcategories(cat){return [...new Set(allRows().filter(i=>!cat||catOf(i)===cat).map(subOf).filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),'hr'));}
+  window.v453SyncSubcats=function(){const c=document.getElementById('newItemCategory')?.value||'';const sel=document.getElementById('newItemSubcategory'); if(!sel)return; const subs=subcategories(c); sel.innerHTML='<option value="">Odaberi ili upiši novu...</option>'+subs.map(s=>`<option value="${esc(s)}">${esc(s)}</option>`).join('')+'<option value="__new">+ nova podkategorija</option>'; const custom=document.getElementById('newItemSubcategoryCustom'); if(custom)custom.style.display='none';};
+  window.v453ToggleCustomSub=function(){const sel=document.getElementById('newItemSubcategory'); const custom=document.getElementById('newItemSubcategoryCustom'); if(custom)custom.style.display=(sel&&sel.value==='__new')?'block':'none';};
+  window.v453NewCode=function(){return 'ART-'+String(Date.now()).slice(-7)};
+  window.v453SaveNewArticle=async function(ev){
+    ev.preventDefault(); if(!can())return toastMsg('Samo admin/oružar');
+    const name=document.getElementById('newItemName').value.trim(); if(!name)return toastMsg('Upiši naziv artikla');
+    const cat=document.getElementById('newItemCategory').value.trim();
+    let sub=document.getElementById('newItemSubcategory').value; if(sub==='__new')sub=document.getElementById('newItemSubcategoryCustom').value.trim();
+    const qty=Math.max(0,Number(document.getElementById('newItemQty').value)||0);
+    const code=(document.getElementById('newItemCode').value||'').trim()||v453NewCode();
+    const row={id:code,legacy_id:code,catalog_id:code,sku:code,name,category_name:cat,category:cat,subcategory:sub||'Ostalo',quantity:qty,available:qty,loaned:0,unit:'kom',tracking_type:'po vrsti',status:'aktivno',availability:qty>0?'dostupno':'nedostupno',member_visible:true,location_name:document.getElementById('newItemLocation').value.trim(),location:document.getElementById('newItemLocation').value.trim(),minimum:Number(document.getElementById('newItemMinimum').value)||null,note:document.getElementById('newItemNote').value.trim(),internal_note:document.getElementById('newItemNote').value.trim(),source_sheet:'manual-web-v453'};
+    try{if(window.DB_LIVE&&window.SOVArmoryDB&&SOVArmoryDB.createEquipmentItem)await SOVArmoryDB.createEquipmentItem(row); items().unshift(row); ev.target.reset(); v453SyncSubcats(); if(window.renderStocktake)renderStocktake(); if(window.renderMaster)renderMaster(); if(window.renderCatalog)renderCatalog(); toastMsg('Novi artikl spremljen i syncan s bazom');}
+    catch(e){console.error(e);toastMsg('Greška spremanja: '+(e.message||e));}
+  };
+  window.renderStocktake=function(){
+    const el=document.getElementById('stocktake'); if(!el)return;
+    if(!can()){el.innerHTML='<div class="empty">Inventuru vidi samo admin/oružar.</div>';return;}
+    const {c,s}=selectedScope(); const rows=scopedRows().filter(r=>r._kind!=='rope');
+    const catOpts=categories().map(x=>`<option value="${esc(x)}" ${x===c?'selected':''}>${esc(x)}</option>`).join('');
+    const countRows=rows.slice(0,220).map(r=>{const id=esc(idOf(r)); const av=Number(r._av??r.available??r.quantity??0)||0; return `<div class="stocktake-count-row"><div><b>${esc(r.name||'Artikl')}</b><small>${esc(catOf(r))} · ${esc(subOf(r))}${r.location||r.location_name?' · '+esc(r.location||r.location_name):''}</small></div><div class="qty-stepper"><button type="button" onclick="v453AdjustCount('${id}',-1)">−</button><input id="count-${id}" type="number" min="0" step="1" value="${esc(av)}"><button type="button" onclick="v453AdjustCount('${id}',1)">+</button></div><div class="stocktake-count-actions"><button class="mini-btn ok" onclick="v453SetCount('${id}',document.getElementById('count-${id}').value)">Potvrdi</button><button class="mini-btn danger" onclick="v453RemoveArticle('${id}','Otpisano')">Rashod</button><button class="mini-btn simple-danger" onclick="v453RemoveArticle('${id}','Obrisano iz aktivne evidencije')">Ukloni</button></div></div>`}).join('');
+    el.innerHTML=`<div class="stocktake-simple-head"><div><h2>✅ Jednostavna inventura</h2><p>Bez SKU-a, QR-a i komplikacija. Prebroji artikle, upiši broj i potvrdi. Uže ostaje posebna evidencija s kodovima, ali ostali artikli su samo količina.</p></div><button class="btn" onclick="switchTab('master')">← Oružar master</button></div>${c?`<div class="breadcrumb-row"><button onclick="clearMasterScope452&&clearMasterScope452();switchTab('master')">Sve kategorije</button><span>${esc(c)}</span>${s?`<span>${esc(s)}</span>`:''}</div>`:''}<div class="stocktake-simple-grid"><section class="panel"><h2>Prebroji / potvrdi stanje</h2><p class="fineprint">Prikazuje se odabrana kategorija/podkategorija iz Oružar mastera. Ako ništa nije odabrano, vidiš sve količinske artikle.</p><div class="stocktake-count-list">${countRows||'<div class="empty">Nema artikala u ovom izboru.<div class="stocktake-empty-action"><button class="btn primary" onclick="document.getElementById(\'newItemName\').focus()">Dodaj novi artikl</button></div></div>'}</div></section><section class="panel"><h2>+ Novi artikl</h2><form class="new-item-wizard" onsubmit="v453SaveNewArticle(event)"><div class="hint">Flow: naziv artikla → kategorija → podkategorija → broj komada → opcionalni interni kod. Spremi odmah synca s bazom.</div><label>Naziv artikla</label><input id="newItemName" required placeholder="npr. Croll, OK karabiner, spit 8 mm"><label>Kategorija</label><select id="newItemCategory" required onchange="v453SyncSubcats()"><option value="">Odaberi kategoriju...</option>${catOpts}<option value="Osobna oprema">Osobna oprema</option><option value="Oprema za postavljanje">Oprema za postavljanje</option><option value="Bušilice i baterije">Bušilice i baterije</option><option value="Crtanje i mjerenje">Crtanje i mjerenje</option><option value="Elektro i foto oprema">Elektro i foto oprema</option></select><label>Podkategorija</label><select id="newItemSubcategory" onchange="v453ToggleCustomSub()"><option value="">Prvo odaberi kategoriju...</option></select><input id="newItemSubcategoryCustom" style="display:none" placeholder="Nova podkategorija"><div class="split"><div><label>Broj komada</label><input id="newItemQty" type="number" min="0" step="1" value="1"></div><div><label>Opcionalni kod</label><input id="newItemCode" placeholder="prazno = auto"></div></div><div class="split"><div><label>Lokacija</label><input id="newItemLocation" placeholder="Klaićeva / skladište / polica"></div><div><label>Minimum za nabavu</label><input id="newItemMinimum" type="number" min="0" step="1" placeholder="npr. 5"></div></div><label>Napomena</label><textarea id="newItemNote" placeholder="Detalji, provjeriti s oružarom..."></textarea><button class="btn primary" type="submit">Spremi i syncaj s bazom</button></form></section></div>`;
+    setTimeout(()=>{const cat=document.getElementById('newItemCategory'); if(cat&&c)cat.value=c; v453SyncSubcats(); const sub=document.getElementById('newItemSubcategory'); if(sub&&s){sub.value=s;}},0);
+  };
+  const oldSwitch=window.switchTab;
+  window.switchTab=function(t){ if(oldSwitch)oldSwitch(t); if(t==='stocktake')setTimeout(renderStocktake,0); };
+})();
+</script>
+
 </body></html>
