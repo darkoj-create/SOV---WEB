@@ -241,12 +241,36 @@
     if(error) throw error;
     return true;
   }
+  const TABLE_COLUMNS={
+    equipment_categories:['legacy_id','name','description','type','sort_order','updated_at'],
+    equipment_locations:['legacy_id','name','description','type'],
+    equipment_items:['legacy_id','catalog_id','name','category_id','category_name','subcategory','unit','tracking_type','quantity','loaned','available','minimum','status','availability','member_visible','internal_note','source_sheet','item_kind','code_required','physical_code_note','updated_at'],
+    equipment_pieces:['legacy_id','catalog_legacy_id','equipment_item_id','name','sku','manufacturer','model','purchase_date','location_id','location_name','status','next_service','note','updated_at'],
+    equipment_ropes:['legacy_id','sku','name','diameter_mm','length_m','manufacturer','model','standard','production_year','in_use_since','color','supplier','location_name','status','note','item_kind','code_required','updated_at'],
+    procurement_plan:['legacy_id','equipment_legacy_id','item_name','quantity','unit_price','total_price','supplier','status','purchase_date','requested_by','note'],
+    equipment_disposals:['legacy_id','disposal_date','disposal_type','equipment_legacy_id','item_name','quantity','reason','location_name','person_name','note'],
+    equipment_field_items:['legacy_id','recorded_at','equipment_legacy_id','item_name','quantity','field_location','responsible_person','status','note'],
+    inventory_sessions:['legacy_id','name','inventory_date','owner_name','status','note']
+  };
+  function sanitizeForTable(table,row){
+    const allowed=TABLE_COLUMNS[table];
+    if(!allowed) return row;
+    const out={};
+    for(const k of allowed){
+      if(Object.prototype.hasOwnProperty.call(row,k) && row[k]!==undefined) out[k]=row[k];
+    }
+    // hard compatibility: older UI rows often carry display-only fields that do not exist in Supabase.
+    // Never send aliases like `category`, `location`, labels, local ids, or UI helper flags to PostgREST.
+    if(table==='equipment_items' && !out.category_name && row.category) out.category_name=row.category;
+    if(table==='equipment_items' && !out.legacy_id) out.legacy_id=row.id || row.catalog_id || ('item-'+Date.now());
+    return out;
+  }
   async function upsertRows(table, rows, conflict){
     if(!rows || !rows.length) return 0;
     const client=sb();
     let total=0;
     for(let i=0;i<rows.length;i+=500){
-      const chunk=rows.slice(i,i+500);
+      const chunk=rows.slice(i,i+500).map(r=>sanitizeForTable(table,r));
       const {error}=await client.from(table).upsert(chunk,{onConflict:conflict});
       if(error) throw error;
       total += chunk.length;
@@ -411,7 +435,8 @@
       internal_note:row.note || row.internal_note || null,
       source_sheet:'manual-web'
     };
-    const {data,error}=await client.from('equipment_items').upsert(payload,{onConflict:'legacy_id'}).select('*').single();
+    const clean=sanitizeForTable('equipment_items', payload);
+    const {data,error}=await client.from('equipment_items').upsert(clean,{onConflict:'legacy_id'}).select('*').single();
     if(error) throw error;
     return data;
   }

@@ -1,1 +1,1 @@
-4.77-full-open-preview
+v4.78 schema compat import fix
