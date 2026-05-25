@@ -235,3 +235,10 @@
 
 ## v4.29
 - Oružarstvo import: popravljena normalizacija datuma (`09/2022` → `2022-09-01`) za Supabase.
+
+
+## v4.42 — Oružar drill-down + aktivne posudbe
+- Oružar master sada prvo traži kategoriju, zatim podkategoriju, pa tek onda module.
+- Inventar, posudbe, narudžbe, inventura i nabave se filtriraju po odabiru da ekran nije overwhelming.
+- Posudbe prikazuju samo aktivno vani; vraćeno nestaje iz pregleda posudbi i ostaje kao povijest/status.
+- Gumb Označi vraćeno ažurira status i vraća količine u inventar.
