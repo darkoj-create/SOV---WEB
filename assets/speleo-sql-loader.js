@@ -1,5 +1,5 @@
 const SQL_DATA_URL='data/baza_velebit_2026_appready.json';
-const SPELEO_IMPORT_STATE_KEY='sov_speleo_sql_import_state_v505';
+const SPELEO_IMPORT_STATE_KEY='sov_speleo_sql_import_state_v507';
 const SPELEO_IMPORT_CHUNK_SIZE=150;
 function speleoImportEls(){
   return [document.getElementById('speleoSqlImportStatus'),document.getElementById('speleoSqlImportStatusCard')].filter(Boolean);
@@ -68,7 +68,7 @@ async function loadSpeleoObjectsSqlFirst(){
   const sb=window.SOVAuth&&SOVAuth.getClient&&SOVAuth.getClient();
   if(sb){
     try{
-      const {data,error}=await sb.from('speleo_objects').select('*').order('name',{ascending:true}).limit(20000);
+      const {data,error}=await sb.from('speleo_objects').select('*').order('id',{ascending:true}).limit(20000);
       if(error) throw error;
       if(data&&data.length){
         window.__SOV_SPELEO_SOURCE='Supabase SQL';

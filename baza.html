@@ -15,7 +15,7 @@
 @media(max-width:980px){body{overflow:auto}.app{height:auto;min-height:100vh}.top{height:auto;align-items:flex-start;padding:12px}.shell{grid-template-columns:1fr}.mapWrap{height:64vh}.side{border-left:0;border-top:1px solid var(--line)}.stats{grid-template-columns:repeat(2,1fr)}}
 </style>
 <style>.dev-open{position:fixed;right:14px;bottom:14px;z-index:99999;border:1px solid rgba(215,246,111,.35);background:rgba(7,13,15,.92);color:#d7f66f;border-radius:999px;padding:9px 12px;font:800 12px Inter,system-ui,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.35)}@media(max-width:700px){.dev-open{left:12px;right:auto;bottom:12px}}</style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="assets/supabase-config.js"></script><script src="assets/auth.js"></script>  <link rel="stylesheet" href="assets/mobile.css">
-<link rel="stylesheet" href="assets/sov-inbox.css?v=4.90"><script src="assets/speleo-sql-loader.js?v=5.06"></script>
+<link rel="stylesheet" href="assets/sov-inbox.css?v=4.90"><script src="assets/speleo-sql-loader.js?v=5.07"></script>
 </head>
 <body>
 <div class="app">
@@ -132,7 +132,7 @@ function statusLabel(o){return statusType(o)==='green'?'U katastru':statusType(o
 function setFilter(f){activeFilter=f;document.querySelectorAll('.chip[data-filter]').forEach(c=>c.classList.toggle('active',c.dataset.filter===f));render()}
 function matches(o,q){const hay=norm([o.name,o.nearest_place,o.locality,o.municipality,o.county,o.cadastral_number,o.record_status,o.object_type_final,o.note].join(' '));return !q || hay.includes(q)}
 function filterObj(o){const type=norm(o.object_type_final||o.name);if(activeFilter==='jama')return type.includes('jama');if(activeFilter==='spilja')return type.includes('spilja')||type.includes('pecina');if(activeFilter==='katastar')return statusType(o)==='green';if(activeFilter==='nije')return statusType(o)==='red';if(activeFilter==='sivo')return statusType(o)==='grey';if(activeFilter==='duboko')return Number(o.depth_m)>=50;if(activeFilter==='perspektiva')return !!o.research_perspective;return true}
-function render(){const q=norm(document.getElementById('q').value);visible=all.filter(o=>matches(o,q)&&filterObj(o));document.getElementById('shown').textContent=visible.length;document.getElementById('selectedStat').textContent=selectedObjects.size;drawMarkers();drawResults()}
+function render(){const q=norm(document.getElementById('q').value);visible=all.filter(o=>matches(o,q)&&filterObj(o));document.getElementById('shown').textContent=visible.length;document.getElementById('selectedStat').textContent=selectedObjects.size;drawResults();document.getElementById('marked').textContent='učitavam markere…';clearTimeout(window.__sovMarkerTimer);window.__sovMarkerTimer=setTimeout(()=>{try{drawMarkers()}catch(e){console.error('Marker render failed',e);document.getElementById('marked').textContent='marker greška'}},80)}
 function drawMarkers(){markerLayer.clearLayers();if(!markersVisible){document.getElementById('marked').textContent=0;return}visible.slice(0,2500).forEach(o=>{const m=L.circleMarker([o.lat,o.lon],{radius:selectedObjects.has(o.id)?10:7.5,color:'#071013',weight:2.5,fillColor:color(o),fillOpacity:.96,className:'markerPulse'}).bindPopup(popupHtml(o),{maxWidth:360}).on('click',()=>showDetails(o,true));m.addTo(markerLayer)});document.getElementById('marked').textContent=Math.min(visible.length,2500)}
 function popupHtml(o){return '<div class="objectPopup"><h3>'+esc(o.name)+'</h3><div class="pstatus" style="color:'+color(o)+'">● '+statusLabel(o)+'</div><div class="pmeta"><b>'+esc(o.object_type_final||'Objekt')+'</b><br>'+esc([o.nearest_place,o.municipality,o.county].filter(Boolean).join(' · ')||'—')+'<br>Koordinate: '+fmt(o.lat)+', '+fmt(o.lon)+'<br>Dubina: '+plain(o.depth_m,'m')+' · Duljina: '+plain(o.length_m,'m')+'<br>Katastar: '+esc(o.cadastral_number||'—')+'</div><div class="pdesc">'+esc(o.technical_description||o.access_description||o.note||'Nema dodatnog opisa u JSON bazi.')+'</div><a class="plink" onclick="window.sovOpenObject('+Number(o.id)+')">Otvori full podatke</a></div>'}
 function drawResults(){const box=document.getElementById('results');box.innerHTML='';visible.slice(0,120).forEach(o=>{const d=document.createElement('div');d.className='result';d.innerHTML='<small><span class="statusDot" style="background:'+color(o)+'"></span>'+statusLabel(o)+' · '+esc(o.object_type_final||o.record_status||'objekt')+'</small><b>'+esc(o.name)+'</b><div class="meta">'+esc([o.nearest_place,o.municipality,o.county].filter(Boolean).join(' · '))+'<br>Dubina: '+plain(o.depth_m,'m')+' · Duljina: '+plain(o.length_m,'m')+'</div>';d.onclick=()=>{openObject(o)};box.appendChild(d)});if(visible.length>120){const p=document.createElement('p');p.className='muted';p.textContent='Prikazano prvih 120 rezultata. Suzite pretragu za brži rad karte.';box.appendChild(p)}}
@@ -247,33 +247,49 @@ async function downloadMbtiles(){if(!selectedBounds){alert('Prvo označi Map dow
 function downloadBlob(data,name,type){const blob=new Blob([data],{type});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
 async function bootSpeleoBaza(opts={}){
   const results=document.getElementById('results');
-  if(results && !opts.silent) results.innerHTML='<p class="muted">Učitavam bazu...</p>';
+  const srcEl=document.getElementById('speleoSource');
+  if(srcEl) srcEl.textContent='Učitavam SQL bazu…';
+  if(results && !opts.silent){
+    results.innerHTML='<p class="muted">Učitavam bazu… ako SQL kasni, prebacujem se automatski na brzi prikaz.</p>';
+  }
   let d=[];
   try{
     d=await Promise.race([
       loadSpeleoObjectsSqlFirst(),
-      new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout učitavanja baze nakon 15s')),15000))
+      new Promise((_,rej)=>setTimeout(()=>rej(new Error('SQL timeout nakon 6s')),6000))
     ]);
   }catch(e){
-    console.error('Speleo main load failed:', e);
-    if(results) results.innerHTML='<p class="muted">Ne mogu učitati SQL bazu: '+esc(e.message||e)+'</p>';
-    return;
+    console.warn('SQL load timeout/greška, pokušavam JSON fallback:', e);
+    try{
+      if(srcEl) srcEl.textContent='SQL kasni — učitavam JSON fallback…';
+      const r=await fetch('data/baza_velebit_2026_appready.json',{cache:'no-store'});
+      if(!r.ok) throw new Error('JSON fallback HTTP '+r.status);
+      d=await r.json();
+      window.__SOV_SPELEO_SOURCE='JSON fallback nakon SQL timeouta';
+    }catch(e2){
+      console.error('Speleo main load failed:', e2);
+      if(results) results.innerHTML='<p class="muted">Ne mogu učitati bazu: '+esc(e2.message||e2)+'</p>';
+      return;
+    }
   }
   all=(Array.isArray(d)?d:[]).filter(o=>Number.isFinite(Number(o.lat))&&Number.isFinite(Number(o.lon))).map(o=>({...o,lat:Number(o.lat),lon:Number(o.lon)}));
 
-  // KRITIČNO: prvo prikaži bazu. Sve sporedno ide nakon rendera da ekran ne ostane na "Učitavam bazu...".
   document.getElementById('total').textContent=all.length;
-  const srcEl=document.getElementById('speleoSource');
-  if(srcEl) srcEl.textContent=(window.__SOV_SPELEO_SOURCE||'')+' · učitano '+all.length;
+  if(srcEl) srcEl.textContent=(window.__SOV_SPELEO_SOURCE||'')+' · učitano '+all.length+' objekata';
   const params=new URLSearchParams(location.search);
   const oid=params.get('object')||params.get('id');
   const q=params.get('q');
   if(q){document.getElementById('q').value=q}
-  try{ render(); }catch(e){ console.error('Render baze failed:', e); if(results) results.innerHTML='<p class="muted">Baza je učitana, ali render je pao: '+esc(e.message||e)+'</p>'; return; }
+  try{
+    render();
+  }catch(e){
+    console.error('Render baze failed:', e);
+    if(results) results.innerHTML='<p class="muted">Baza je učitana ('+all.length+'), ali render je pao: '+esc(e.message||e)+'</p>';
+    return;
+  }
   if(oid){const obj=all.find(o=>String(o.id)===String(oid));if(obj){openObject(obj);map.setView([obj.lat,obj.lon],15)}}
-  else if(!opts.afterImport){fitAll()}
+  else if(!opts.afterImport){setTimeout(()=>{try{fitAll()}catch(e){console.warn('fitAll skipped',e)}},120)}
 
-  // Sporedne stvari se učitavaju u pozadini i ne blokiraju listu objekata.
   setTimeout(async()=>{
     try{ await initArchiveRole(); }catch(e){ console.warn('Archive role after-render skipped', e); }
     try{ updateDrawingsAdminUi(); }catch(e){}
@@ -281,7 +297,7 @@ async function bootSpeleoBaza(opts={}){
     try{ setupDrawingUpload(); }catch(e){}
     try{ await hydrateDrawingsFromSupabase(); }catch(e){ console.warn('Drawings hydrate after-render skipped', e); }
     try{ if(location.hash==='#nacrti-sync')document.getElementById('nacrti-sync')?.scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){}
-  },50);
+  },400);
 }
 window.refreshSpeleoBaza=async function(opts={}){
   try{
@@ -297,5 +313,5 @@ window.refreshSpeleoBaza=async function(opts={}){
 }
 bootSpeleoBaza().catch((e)=>{console.error(e);document.getElementById('results').innerHTML='<p class="muted">Ne mogu učitati Speleo SQL/JSON bazu: '+esc(e.message||e)+'</p>'});
 </script>
-<script src="assets/sov-inbox.js?v=5.06"></script></body>
+<script src="assets/sov-inbox.js?v=5.07"></script></body>
 </html>
