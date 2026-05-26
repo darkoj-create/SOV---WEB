@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Arhivar — Zahvati i radnje</title>
+<link rel="stylesheet" href="assets/site.css">
+<link rel="stylesheet" href="assets/sov-inbox.css?v=4.90">
+<link rel="stylesheet" href="assets/arhivar-zahvati.css?v=4.99">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<script src="assets/supabase-config.js"></script>
+<script src="assets/auth.js"></script>
+</head>
+<body class="archive-form-page">
+<header class="az-top">
+  <a class="az-brand" href="dashboard.html"><span class="az-mark">SOV</span><span><b>Arhivar</b><small>Zahvati i radnje — izvještaj</small></span></a>
+  <nav class="az-nav">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="pregled-baze.html">Baza</a>
+    <a href="baza.html">Karta</a>
+    <a href="arhivar-zahvati.html" class="active">Zahvati</a>
+    <a href="login.html" data-logout>Odjava</a>
+  </nav>
+</header>
+
+<main class="az-shell">
+  <section class="az-hero">
+    <div>
+      <p class="az-eyebrow">Interni arhivarski unos</p>
+      <h1>Zahvati i radnje</h1>
+      <p>Web forma temeljena na Google Formu, ali prilagođena za SOV bazu. Nakon unosa vidiš odmah kako će izgledati red u sheetu/bazi.</p>
+    </div>
+    <div class="az-hero-card">
+      <b>Brzi workflow</b>
+      <span>1. Objekt → 2. Aktivnost → 3. Opažanja → 4. Spremi / export</span>
+    </div>
+  </section>
+
+  <section class="az-layout">
+    <form id="zahvatForm" class="az-form">
+      <div class="az-card">
+        <div class="az-card-head"><span>1</span><div><h2>Objekt</h2><p>Osnovni podaci objekta i koordinate.</p></div></div>
+        <div class="az-grid two">
+          <label>Ime speleološkog objekta *<input name="object_name" required placeholder="npr. Veternica"></label>
+          <label>Broj pločice na objektu *<input name="plate_number" required placeholder="npr. 1234 / nema / nepoznato"></label>
+          <label>Vrsta objekta<select name="object_type"><option value="">Odaberi...</option><option>špilja</option><option>jama</option><option>špilja s jamskim ulazom</option><option>jama sa špiljskim ulazom</option><option>kompleksni speleološki objekt</option><option>špiljski sustav</option><option>jamski sustav</option><option>sustav</option><option>kaverna</option></select></label>
+          <label>Najbliže mjesto<input name="nearest_place" placeholder="npr. Ponikve"></label>
+          <label>Koordinatni sustav<input name="coordinate_system" placeholder="npr. WGS84 / HTRS96/TM"></label>
+          <div class="az-grid two compact"><label>X koordinata<input name="x_coord" placeholder="x / lon"></label><label>Y koordinata<input name="y_coord" placeholder="y / lat"></label></div>
+        </div>
+      </div>
+
+      <div class="az-card">
+        <div class="az-card-head"><span>2</span><div><h2>Aktivnost</h2><p>Što se radilo i kada.</p></div></div>
+        <div class="az-grid two">
+          <label>Datum početka istraživanja<input name="date_start" type="date"></label>
+          <label>Datum završetka istraživanja<input name="date_end" type="date"></label>
+          <label>Svrha aktivnosti<select name="purpose"><option>Speleološka istraživanja</option><option>Praćenje stanja</option><option>Edukacija</option><option>Ostalo</option></select></label>
+          <label>Druga svrha / dopuna<input name="purpose_other" placeholder="Ako nije ponuđeno"></label>
+          <label class="wide">Opis aktivnosti<textarea name="activity_description" rows="4" placeholder="Opisati aktivnost, zahvat ili radnju. Više aktivnosti odvojiti s ;"></textarea></label>
+          <label class="wide">Način izvođenja aktivnosti<textarea name="execution_method" rows="4" placeholder="Oprema, alati, strojevi, način rada..."></textarea></label>
+        </div>
+      </div>
+
+      <div class="az-card">
+        <div class="az-card-head"><span>3</span><div><h2>Hidrologija i pojave</h2><p>Odaberi sve što je primijećeno.</p></div></div>
+        <div class="az-checks">
+          <fieldset><legend>Hidrološke karakteristike</legend><label><input type="checkbox" name="hydrology" value="suh"> suh</label><label><input type="checkbox" name="hydrology" value="nakapnica/prokapnica"> nakapnica/prokapnica</label><label><input type="checkbox" name="hydrology" value="povremena stajaća voda"> povremena stajaća voda</label><label><input type="checkbox" name="hydrology" value="stalna stajaća voda"> stalna stajaća voda</label><label><input type="checkbox" name="hydrology" value="povremeni tok"> povremeni tok</label><label><input type="checkbox" name="hydrology" value="stalni tok"> stalni tok</label><label><input type="checkbox" name="hydrology" value="povremeno potopljen"> povremeno potopljen</label><label><input type="checkbox" name="hydrology" value="stalno potopljen"> stalno potopljen</label></fieldset>
+          <fieldset><legend>Hidrogeološke pojave</legend><label><input type="checkbox" name="hydrogeology" value="nema"> nema</label><label><input type="checkbox" name="hydrogeology" value="povremeni izvor"> povremeni izvor</label><label><input type="checkbox" name="hydrogeology" value="stalni izvor"> stalni izvor</label><label><input type="checkbox" name="hydrogeology" value="povremeni ponor"> povremeni ponor</label><label><input type="checkbox" name="hydrogeology" value="stalni ponor"> stalni ponor</label><label><input type="checkbox" name="hydrogeology" value="estavela"> estavela</label><label><input type="checkbox" name="hydrogeology" value="vrulja"> vrulja</label><label><input type="checkbox" name="hydrogeology" value="anhijalini objekt"> anhijalini objekt</label><label><input type="checkbox" name="hydrogeology" value="protočan objekt"> protočan objekt</label><label><input type="checkbox" name="hydrogeology" value="nepoznato"> nepoznato</label></fieldset>
+        </div>
+      </div>
+
+      <div class="az-card">
+        <div class="az-card-head"><span>4</span><div><h2>Ugroze, fauna i nalazi</h2><p>Pregledno, bez dugog Google Forms osjećaja.</p></div></div>
+        <fieldset class="az-threats"><legend>Primijećene ugroze objekta</legend><label><input type="checkbox" name="observed_threats" value="nema"> nema</label><label><input type="checkbox" name="observed_threats" value="nepoznato"> nepoznato</label><label><input type="checkbox" name="observed_threats" value="eksploatacija mineralnih sirovina"> eksploatacija mineralnih sirovina</label><label><input type="checkbox" name="observed_threats" value="građevinski radovi u objektu"> građevinski radovi u objektu</label><label><input type="checkbox" name="observed_threats" value="građevinski radovi iznad objekta"> građevinski radovi iznad objekta</label><label><input type="checkbox" name="observed_threats" value="iskop sedimenta/sonda"> iskop sedimenta/sonda</label><label><input type="checkbox" name="observed_threats" value="crpljenje vode/bunar"> crpljenje vode/bunar</label><label><input type="checkbox" name="observed_threats" value="ekološki incident"> ekološki incident</label><label><input type="checkbox" name="observed_threats" value="kanalizacija/septička"> kanalizacija/septička</label><label><input type="checkbox" name="observed_threats" value="komunalni otpad"> komunalni otpad</label><label><input type="checkbox" name="observed_threats" value="kemijski otpad"> kemijski otpad</label><label><input type="checkbox" name="observed_threats" value="krupni/građevinski otpad"> krupni/građevinski otpad</label><label><input type="checkbox" name="observed_threats" value="strvine"> strvine</label><label><input type="checkbox" name="observed_threats" value="sakupljanje fosila i minerala"> sakupljanje fosila i minerala</label><label><input type="checkbox" name="observed_threats" value="nekontrolirano posjećivanje"> nekontrolirano posjećivanje</label></fieldset>
+        <div class="az-grid fauna"><label>Kolonija šišmiša<select name="bat_colony"><option>nepoznato</option><option>da</option><option>ne</option></select></label><label>Špiljski školjkaš<select name="bivalve"><option>nepoznato</option><option>da</option><option>ne</option></select></label><label>Špiljska spužva<select name="sponge"><option>nepoznato</option><option>da</option><option>ne</option></select></label><label>Čovječja ribica<select name="olm"><option>nepoznato</option><option>da</option><option>ne</option></select></label><label>Fosilni nalazi<select name="fossils"><option>nepoznato</option><option>da</option><option>ne</option></select></label></div>
+      </div>
+
+      <div class="az-card">
+        <div class="az-card-head"><span>5</span><div><h2>Ekipa i napomena</h2><p>Za arhivu i kasnije pretrage.</p></div></div>
+        <div class="az-grid two">
+          <label class="wide">Članovi istraživanja<textarea name="members" rows="3" placeholder="Imena odvojiti s ;, u zagradu udruga ako nije SOV"></textarea></label>
+          <label class="wide">Interna napomena<textarea name="note" rows="3" placeholder="Neobavezno"></textarea></label>
+        </div>
+      </div>
+
+      <div class="az-actions sticky">
+        <button type="submit" class="az-btn primary">Spremi izvještaj</button>
+        <button type="button" class="az-btn" id="saveLocalBtn">Spremi lokalno</button>
+        <button type="button" class="az-btn" id="exportXlsxBtn">Export XLS</button>
+        <button type="reset" class="az-btn ghost">Očisti formu</button>
+      </div>
+    </form>
+
+    <aside class="az-preview">
+      <div class="az-card fixed">
+        <h2>Simulirani sheet red</h2>
+        <p class="az-muted">Ovo je pregled kako će unos izgledati kao red u tablici.</p>
+        <div class="az-table-wrap"><table id="sheetPreview"><tbody></tbody></table></div>
+        <div class="az-status" id="saveStatus">Spremno za unos.</div>
+      </div>
+      <div class="az-card fixed small">
+        <h2>Zadnji lokalni unosi</h2>
+        <div id="localRows" class="az-local-list"></div>
+      </div>
+    </aside>
+  </section>
+</main>
+
+<script src="assets/sov-inbox.js?v=4.90"></script>
+<script src="assets/arhivar-zahvati.js?v=4.99"></script>
+</body>
+</html>
