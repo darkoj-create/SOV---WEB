@@ -1,1 +1,1 @@
-v4.94-inline-nacrti-visible-sync-hotfix
+v4.95-inline-nacrti-pregled-baze-hardfix
