@@ -17,17 +17,25 @@
     @media(max-width:1050px){.hero{grid-template-columns:1fr}.stats{grid-template-columns:repeat(4,1fr)}.layout{grid-template-columns:1fr}.list{max-height:560px}.detailPanel,.empty{min-height:520px}}@media(max-width:680px){.shell{width:min(100% - 20px,720px)}.top{height:auto;padding:15px 0;align-items:flex-start;flex-direction:column}.nav{overflow:auto;flex-wrap:nowrap;width:100%;padding-bottom:4px}.nav a{white-space:nowrap}.hero{padding:22px;border-radius:28px}.stats{grid-template-columns:repeat(2,1fr)}.infoGrid{grid-template-columns:1fr}.kv{grid-template-columns:1fr}.detailHero{min-height:210px;padding:22px}.listPanel,.detailPanel{border-radius:24px}}
   </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="assets/supabase-config.js"></script><script src="assets/auth.js"></script>  <link rel="stylesheet" href="assets/mobile.css">
-<link rel="stylesheet" href="assets/sov-inbox.css?v=4.90"></head>
+<link rel="stylesheet" href="assets/sov-inbox.css?v=4.90"><script src="assets/speleo-sql-loader.js"></script>
+</head>
 <body>
   <div class="shell">
     <header class="top">
       <a class="brand" href="dashboard.html"><div class="mark">SOV</div><div><strong>Speleološki odsjek Velebit</strong><small>SOV Cloud</small></div></a>
-      <nav class="nav"><a href="dashboard.html">Dashboard</a><a href="baza.html">SOV Karta</a><a class="primary" href="pregled-baze.html">Baza</a><button class="btn primary syncTiny" onclick="syncDriveDrawings()">🔄 Sync nacrte</button><a href="izleti.html">Izleti</a><a href="index.html">Novosti</a></nav>
-    </header>
+      <nav class="nav"><a href="dashboard.html">Dashboard</a><a href="baza.html">SOV Karta</a><a class="primary" href="pregled-baze.html">Baza</a><a href="arhivar-zahvati.html">Zahvati i radnje</a><button class="btn primary syncTiny" onclick="syncDriveDrawings()">🔄 Sync nacrte</button><a href="izleti.html">Izleti</a><a href="index.html">Novosti</a></nav>
+    <div style="margin-top:10px"><button class="btn primary" onclick="importSpeleoJsonToSql()">⬆️ JSON → SQL import</button><span id="speleoSqlImportStatus" class="muted"></span></div></header>
     <section class="hero">
       <div><span class="kicker">● Baza objekata</span><h1>Abecedni popis speleoloških objekata.</h1><p>Brzi pregled baze s pretragom, statusima, detaljima objekta, linkom na kartu i oznakom postoji li nacrt / digitalni zapis.</p></div>
       <div class="stats"><div class="stat"><b id="statTotal">—</b><span>objekata</span></div><div class="stat"><b id="statShown">—</b><span>prikazano</span></div><div class="stat"><b id="statCad">—</b><span>u katastru</span></div><div class="stat"><b id="statDraw">—</b><span>s nacrtom</span></div></div>
-    </section>
+    
+<div class="sqlImportHero" id="speleoSqlImportCard" style="margin:14px 0 0;padding:16px;border:2px solid rgba(215,246,111,.55);border-radius:22px;background:linear-gradient(135deg,rgba(215,246,111,.16),rgba(255,255,255,.04));box-shadow:0 18px 60px rgba(215,246,111,.10);">
+  <b style="display:block;font-size:18px;margin-bottom:6px">SQL import Speleo baze</b>
+  <span style="display:block;color:var(--muted);line-height:1.4;margin-bottom:12px">Klikni ovo da se <b>baza_velebit_2026_appready.json</b> prebaci u Supabase tablicu <b>speleo_objects</b>. Nakon toga nacrti, zahvati i arhivarske izmjene imaju pravi objekt na koji se vežu.</span>
+  <button class="btn primary" style="font-size:15px;padding:13px 16px" onclick="importSpeleoJsonToSql()">⬆️ JSON → SQL import</button>
+  <span id="speleoSqlImportStatusCard" class="muted" style="display:block;margin-top:10px"></span>
+</div>
+</section>
     <main class="layout">
       <section class="listPanel">
         <div class="listHead">
@@ -42,7 +50,7 @@
   </div>
 <div class="drawingPreviewOverlay" id="drawingPreviewOverlay" onclick="if(event.target===this)closeDrawingPreview()"><div class="drawingPreviewBox"><div class="drawingPreviewHead"><b id="drawingPreviewTitle">Nacrt</b><button class="btn" onclick="closeDrawingPreview()">Zatvori</button></div><div class="drawingPreviewBody" id="drawingPreviewBody"></div></div></div>
 <script>
-const DATA_URL='data/sov-baza.json';const DRAWINGS_DRIVE_FOLDER_ID='1vCPsPaznDOgwRMU_XVDiI4aUhu0o8yFB';const DRAWINGS_KEY='sov_drawings_index_v2';let all=[],shown=[],selected=null,filter='all';const $=id=>document.getElementById(id);
+const DATA_URL='data/sov-baza.json'; // legacy fallback, v5.01 uses SQL/JSON loaderconst DRAWINGS_DRIVE_FOLDER_ID='1vCPsPaznDOgwRMU_XVDiI4aUhu0o8yFB';const DRAWINGS_KEY='sov_drawings_index_v2';let all=[],shown=[],selected=null,filter='all';const $=id=>document.getElementById(id);
 function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function norm(s){return String(s??'').toLocaleLowerCase('hr').normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
 function val(v,s=''){return (v===null||v===undefined||v==='')?'—':esc(v)+s}
@@ -106,7 +114,7 @@ function scrollToNacrti(){document.getElementById('nacrti')?.scrollIntoView({beh
 function renderDetail(o){if(!o)return;const d=hasDrawing(o);$('detail').innerHTML=`<div class="detailHero"><div class="detailTitle"><div class="statusLine"><span class="badge" style="color:${color(o)}">● ${statusLabel(o)}</span><span class="badge">${esc(o.object_type_final||'objekt')}</span><span class="badge">ID ${esc(o.id)}</span></div><h2>${esc(o.name)}</h2></div></div><div class="detailBody"><div class="actions"><a class="btn primary" href="${mapLink(o)}">Otvori na SOV Karti →</a><button class="btn ${d?'primary':'disabled'}" onclick="scrollToNacrti()">${d?'Otvori nacrt':'Nacrt nije evidentiran'}</button><button class="btn" onclick="copyCoords(${Number(o.id)})">Kopiraj koordinate</button></div><div class="infoGrid"><div class="info"><small>Koordinate</small><b>${val(o.lat)}, ${val(o.lon)}</b></div><div class="info"><small>Dubina</small><b>${val(o.depth_m,' m')}</b></div><div class="info"><small>Duljina</small><b>${val(o.length_m,' m')}</b></div><div class="info"><small>Pločica</small><b>${val(o.plate_number)}</b></div><div class="info"><small>Katastarski broj</small><b>${val(o.cadastral_number)}</b></div><div class="info"><small>Nacrt</small><b>${d?'Evidentiran':'—'}</b></div></div><div class="section"><h3>Lokacija</h3><div class="kv"><div>Županija</div><div>${val(o.county)}</div><div>Općina / grad</div><div>${val(o.municipality)}</div><div>Najbliže mjesto</div><div>${val(o.nearest_place)}</div><div>Lokalitet</div><div>${val(o.locality)}</div><div>Nadmorska visina</div><div>${val(o.altitude_m,' m')}</div></div></div><div class="section"><h3>Opis i pristup</h3><div class="textBlock">${esc([o.access_description,o.technical_description].filter(Boolean).join('\n\n')||'Nema opisa u bazi.')}</div></div><div class="section"><h3>Istraživanje i dokumentacija</h3><div class="kv"><div>Perspektiva</div><div>${val(o.research_perspective_note||o.research_perspective)}</div><div>Zadnje istraživanje</div><div>${val(o.last_research_date||o.last_research_year)}</div><div>Klubovi</div><div>${val(o.clubs)}</div><div>Autori nacrta</div><div>${val(o.survey_authors)}</div><div>Članovi ekipe</div><div>${val(o.team_members)}</div><div>Digitalni nacrt</div><div>${val(o.digital_survey_status)}</div></div></div><div class="section"><h3>Napomene / rizici</h3><div class="kv"><div>Opasnosti</div><div>${val(o.hazards)}</div><div>Onečišćenje</div><div>${val(o.pollution)}</div><div>Hidrologija</div><div>${val(o.hydrology)}</div><div>Napomena</div><div>${val(o.note)}</div><div>Workflow</div><div>${val(o.workflow_raw)}</div></div></div>${renderDrawingsPanel(o)}</div>`}
 function copyCoords(id){const o=all.find(x=>Number(x.id)===Number(id));if(o)navigator.clipboard?.writeText(`${o.lat}, ${o.lon}`)}
 document.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{document.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));b.classList.add('active');filter=b.dataset.filter;apply()});$('q').addEventListener('input',apply);
-fetch(DATA_URL).then(r=>r.json()).then(async d=>{all=d.filter(o=>o&&o.name).sort((a,b)=>String(a.name).localeCompare(String(b.name),'hr',{sensitivity:'base'}));await hydrateDrawingsFromSupabase();$('statTotal').textContent=all.length;$('statCad').textContent=all.filter(o=>statusType(o)==='green').length;$('statDraw').textContent=all.filter(hasDrawing).length;apply();const params=new URLSearchParams(location.search);const id=params.get('object')||params.get('id');if(id){selectObj(Number(id));setTimeout(()=>document.querySelector('.item.active')?.scrollIntoView({block:'center'}),80)}}).catch(e=>{$('count').textContent='Ne mogu učitati data/sov-baza.json';console.error(e)});
+loadSpeleoObjectsSqlFirst().then(async d=>{all=d.filter(o=>o&&o.name).sort((a,b)=>String(a.name).localeCompare(String(b.name),'hr',{sensitivity:'base'}));await hydrateDrawingsFromSupabase();$('statTotal').textContent=all.length;$('statCad').textContent=all.filter(o=>statusType(o)==='green').length;$('statDraw').textContent=all.filter(hasDrawing).length;apply();const params=new URLSearchParams(location.search);const id=params.get('object')||params.get('id');if(id){selectObj(Number(id));setTimeout(()=>document.querySelector('.item.active')?.scrollIntoView({block:'center'}),80)}}).catch(e=>{$('count').textContent='Ne mogu učitati Speleo SQL/JSON bazu';console.error(e)});
 </script>
 
 <script src="assets/sov-inbox.js?v=4.90"></script></body>
