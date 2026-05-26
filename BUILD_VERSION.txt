@@ -1,1 +1,1 @@
-v4.93-inline-nacrti-viewer-sync-button
+v4.94-inline-nacrti-visible-sync-hotfix
