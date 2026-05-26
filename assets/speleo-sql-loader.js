@@ -1,5 +1,5 @@
 const SQL_DATA_URL='data/baza_velebit_2026_appready.json';
-const SPELEO_IMPORT_STATE_KEY='sov_speleo_sql_import_state_v504';
+const SPELEO_IMPORT_STATE_KEY='sov_speleo_sql_import_state_v505';
 const SPELEO_IMPORT_CHUNK_SIZE=150;
 function speleoImportEls(){
   return [document.getElementById('speleoSqlImportStatus'),document.getElementById('speleoSqlImportStatusCard')].filter(Boolean);
@@ -111,10 +111,15 @@ async function importSpeleoJsonToSql(){
       state.done=Math.min(i+chunk.length,total);
       localStorage.setItem(SPELEO_IMPORT_STATE_KEY,JSON.stringify(state));
     }
-    speleoSetImportStatus(`Import gotov: ${total} objekata upisano/azurirano u SQL. Preskočeno bez ID-a: ${prepared.skippedNoId}. Refresham prikaz...`,100);
+    speleoSetImportStatus(`Import gotov: ${total} objekata upisano/azurirano u SQL. Preskočeno bez ID-a: ${prepared.skippedNoId}. Osvježavam prikaz baze...`,100);
     localStorage.removeItem(SPELEO_IMPORT_STATE_KEY);
-    await new Promise(r=>setTimeout(r,650));
-    location.reload();
+    await new Promise(r=>setTimeout(r,250));
+    if(window.refreshSpeleoBaza){
+      await window.refreshSpeleoBaza({afterImport:true});
+      speleoSetImportStatus(`Gotovo. SQL baza je učitana i prikaz osvježen.`,100);
+    }else{
+      location.reload();
+    }
   }catch(e){
     console.error(e);
     speleoSetImportStatus('GREŠKA: '+(e.message||e));
