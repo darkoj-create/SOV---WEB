@@ -144,6 +144,54 @@ function editItem(id){const r=getRow(id); if(!r){toast('Ne mogu naći artikl.');
 async function removeItem(id){const r=getRow(id); if(!r){toast('Ne mogu naći artikl.');return;} if(!confirm('Maknuti/rashodovati artikl iz aktivnog inventara?'))return; try{ if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.retireSimpleItem) await SOVArmoryDB.retireSimpleItem((r.raw&&r.raw.legacy_id)||id,r.name); }catch(e){console.warn(e)} r.status='rashod'; r.av=0; renderInventory(); toast('Artikl maknut iz aktivnog inventara')}
 
 
+function safeSheetName(name){
+  let x=String(name||'Kategorija').replace(/[\\\/?*\[\]:]/g,' ').replace(/\s+/g,' ').trim();
+  if(!x) x='Kategorija';
+  return x.slice(0,31);
+}
+function xmlEsc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));}
+function xlsCell(v, cls=''){return `<td class="${cls}">${xmlEsc(v)}</td>`;}
+function xlsWorkbook(filename, sheets){
+  const worksheetNames=sheets.map(s=>safeSheetName(s.name));
+  const tabs=worksheetNames.map(n=>`<x:ExcelWorksheet><x:Name>${xmlEsc(n)}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet>`).join('');
+  const body=sheets.map((sheet,idx)=>`<div style="mso-element:worksheet" id="${xmlEsc(worksheetNames[idx])}"><table>${sheet.html}</table></div>`).join('\n');
+  const html=`<!doctype html><html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets>${tabs}</x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--><style>table{border-collapse:collapse;font-family:Arial,sans-serif;font-size:12px}td,th{border:1px solid #999;padding:6px;mso-number-format:"\\@"}th{background:#d9ead3;font-weight:bold}.num{mso-number-format:"0"}.warn{background:#fff2cc}.bad{background:#f4cccc}.head{background:#073b32;color:#fff;font-size:16px;font-weight:bold}</style></head><body>${body}</body></html>`;
+  const blob=new Blob([html],{type:'application/vnd.ms-excel;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=filename; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();},1500);
+}
+function rowsByCategory(){
+  const rows=(STATE.rows||[]).filter(r=>r.name && !/rashod|otpis|deleted/i.test(String(r.status||'')));
+  const m=new Map();
+  rows.forEach(r=>{const c=r.category||'Ostalo'; if(!m.has(c))m.set(c,[]); m.get(c).push(r);});
+  return [...m.entries()].sort((a,b)=>a[0].localeCompare(b[0],'hr'));
+}
+async function exportInventoryXls(){
+  await loadData();
+  const date=new Date().toISOString().slice(0,10);
+  const sheets=rowsByCategory().map(([cat,rows])=>{
+    const header=`<tr><th colspan="9" class="head">Inventar — ${xmlEsc(cat)} — ${xmlEsc(date)}</th></tr><tr><th>Podkategorija</th><th>Artikl</th><th>Ukupno</th><th>Dostupno</th><th>Posuđeno</th><th>Lokacija</th><th>Status</th><th>Prag</th><th>Napomena / kod</th></tr>`;
+    const body=rows.sort((a,b)=>(a.subcategory+a.name).localeCompare(b.subcategory+b.name,'hr')).map(r=>`<tr>${xlsCell(r.subcategory)}${xlsCell(r.name)}${xlsCell(r.qty,'num')}${xlsCell(r.av,'num')}${xlsCell(r.loan,'num')}${xlsCell(r.location||'Oružarstvo')}${xlsCell(r.status||'aktivno')}${xlsCell(r.minimum||'', 'num')}${xlsCell((r.raw&& (r.raw.physical_code_note||r.raw.note||r.raw.internal_note||r.raw.sku))||'')}</tr>`).join('');
+    return {name:cat,html:header+body};
+  });
+  if(!sheets.length){toast('Nema inventara za export.');return;}
+  xlsWorkbook(`SOV_inventar_${date}.xls`,sheets);
+  toast('Inventar exportiran u XLS');
+}
+async function exportInventuraXls(){
+  await loadData();
+  const date=(document.querySelector('input[type="date"]')?.value)||new Date().toISOString().slice(0,10);
+  const note=(document.querySelector('input[placeholder*="Napomena"]')?.value)||'';
+  const sheets=rowsByCategory().map(([cat,rows])=>{
+    const header=`<tr><th colspan="9" class="head">Inventura — ${xmlEsc(cat)} — ${xmlEsc(date)} ${note?(' — '+xmlEsc(note)):''}</th></tr><tr><th>Podkategorija</th><th>Artikl</th><th>Broj u bazi</th><th>Stvarno prebrojano</th><th>Razlika</th><th>Lokacija</th><th>Status</th><th>Za rashod?</th><th>Napomena</th></tr>`;
+    const body=rows.sort((a,b)=>(a.subcategory+a.name).localeCompare(b.subcategory+b.name,'hr')).map(r=>`<tr>${xlsCell(r.subcategory)}${xlsCell(r.name)}${xlsCell(r.qty,'num')}${xlsCell('')}${xlsCell('')}${xlsCell(r.location||'Oružarstvo')}${xlsCell(r.status||'aktivno')}${xlsCell('')}${xlsCell('')}</tr>`).join('');
+    return {name:cat,html:header+body};
+  });
+  if(!sheets.length){toast('Nema inventara za inventuru export.');return;}
+  xlsWorkbook(`SOV_inventura_${date}.xls`,sheets);
+  toast('Inventura exportirana u XLS');
+}
+
+
 async function loadNotes(){
   try{ if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.loadArmoryNotes){const n=await SOVArmoryDB.loadArmoryNotes(); if(Array.isArray(n))return n;} }catch(e){console.warn(e)}
   try{return JSON.parse(localStorage.getItem('sov_armory_notes')||'[]')}catch(e){return []}
@@ -153,6 +201,6 @@ async function saveNote(ev){ev.preventDefault(); const n={id:'NOTE-'+Date.now(),
 async function doneNote(id){try{ if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.doneArmoryNote) await SOVArmoryDB.doneArmoryNote(id);}catch(e){console.warn(e)} const l=JSON.parse(localStorage.getItem('sov_armory_notes')||'[]'); const n=l.find(x=>String(x.id)===String(id)); if(n)n.status='done'; localStorage.setItem('sov_armory_notes',JSON.stringify(l)); await renderNotes(); toast('Označeno obavljeno')}
 
 async function init(){await loadData(); renderKpis(); renderMaster(); renderInventory(); await renderLoans(); await renderNotes();}
-window.CleanArmory={init,pickCat(c){STATE.cat=c||null;STATE.sub=null;renderInventory()},pickSub(s){STATE.sub=s||null;renderInventory()},renderLoans,setStatus,manualLoan,newItem,editItem,removeItem,openReturn,closeReturn,confirmReturn,closeItemModal,saveItem,renderNotes,saveNote,doneNote};
+window.CleanArmory={init,pickCat(c){STATE.cat=c||null;STATE.sub=null;renderInventory()},pickSub(s){STATE.sub=s||null;renderInventory()},renderLoans,setStatus,manualLoan,newItem,editItem,removeItem,exportInventoryXls,exportInventuraXls,openReturn,closeReturn,confirmReturn,closeItemModal,saveItem,renderNotes,saveNote,doneNote};
 document.addEventListener('DOMContentLoaded',init);
 })();

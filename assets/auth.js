@@ -7,9 +7,10 @@
     'dokumentacija.html','pregled-zapisnika.html','zapisnici-skupstine.html','novi-zapisnik.html',
     'speleo-zapisnik.html','topodroid.html','napisi-clanak.html','oruzarstvo.html','oruzarstvo-import.html','admin-users.html'
   ]);
-  const ROLE_LABELS = {admin:'Admin',editor:'Urednik',oruzar:'Oružar',user:'Član'};
+  const ROLE_LABELS = {admin:'Admin',editor:'Urednik',oruzar:'Oružar',arhivar:'Arhivar',user:'Član'};
   const ADMIN_ROLES = ['admin'];
   const EDITOR_ROLES = ['admin','editor'];
+  const ARCHIVE_ROLES = ['admin','arhivar'];
   const ARMORY_ROLES = ['admin','oruzar'];
   const BOOTSTRAP_ADMIN_EMAILS = ['darko.jeras@gmail.com'];
   function isBootstrapAdminEmail(email){ return BOOTSTRAP_ADMIN_EMAILS.includes(String(email||'').trim().toLowerCase()); }
@@ -127,6 +128,7 @@
     if(ability === 'admin') return ADMIN_ROLES.includes(u.role);
     if(ability === 'editor') return EDITOR_ROLES.includes(u.role);
     if(ability === 'armory') return ARMORY_ROLES.includes(u.role);
+    if(ability === 'speleo_edit' || ability === 'archive') return ARCHIVE_ROLES.includes(u.role);
     return true;
   }
   async function requireApproved(){
@@ -144,6 +146,7 @@
   async function requireAdmin(){ if(SOV_OPEN_PREVIEW_MODE){ await renderUserBadge(); return true; } const ok = await requireApproved(); if(!ok) return false; if(!(await can('admin'))){ location.href='dashboard.html?denied=admin'; return false; } return true; }
   async function requireEditor(){ if(SOV_OPEN_PREVIEW_MODE){ await renderUserBadge(); return true; } const ok = await requireApproved(); if(!ok) return false; if(!(await can('editor'))){ location.href='dashboard.html?denied=editor'; return false; } return true; }
   async function requireArmory(){ if(SOV_OPEN_PREVIEW_MODE){ await renderUserBadge(); return true; } const ok = await requireApproved(); if(!ok) return false; if(!(await can('armory'))){ location.href='dashboard.html?denied=armory'; return false; } return true; }
+  async function requireArchive(){ if(SOV_OPEN_PREVIEW_MODE){ await renderUserBadge(); return true; } const ok = await requireApproved(); if(!ok) return false; if(!(await can('speleo_edit'))){ location.href='dashboard.html?denied=archive'; return false; } return true; }
 
   async function updateProfile(id, patch){
     const sb = getClient();
@@ -170,9 +173,11 @@
     document.querySelectorAll('[data-role-admin]').forEach(el=>{el.style.display = (SOV_OPEN_PREVIEW_MODE || (u && u.role === 'admin')) ? '' : 'none';});
     document.querySelectorAll('[data-role-editor]').forEach(el=>{el.style.display = (SOV_OPEN_PREVIEW_MODE || (u && EDITOR_ROLES.includes(u.role))) ? '' : 'none';});
     document.querySelectorAll('[data-role-armory]').forEach(el=>{el.style.display = (SOV_OPEN_PREVIEW_MODE || (u && ARMORY_ROLES.includes(u.role))) ? '' : 'none';});
+    document.querySelectorAll('[data-role-archive]').forEach(el=>{el.style.display = (SOV_OPEN_PREVIEW_MODE || (u && ARCHIVE_ROLES.includes(u.role))) ? '' : 'none';});
     document.body.classList.toggle('role-admin', !!(u && u.role==='admin'));
     document.body.classList.toggle('role-editor', !!(u && u.role==='editor'));
     document.body.classList.toggle('role-oruzar', !!(u && u.role==='oruzar'));
+    document.body.classList.toggle('role-arhivar', !!(u && u.role==='arhivar'));
     document.body.classList.toggle('role-user', !!(u && u.role==='user'));
   }
   function showAuthWarning(msg){
@@ -196,5 +201,5 @@
     document.addEventListener('DOMContentLoaded', async()=>{ await autoProtect(); resolve(true); });
   });
 
-  window.SOVAuth = {isConfigured,getClient,getSession,getProfile,currentUser,register,login,logout,can,requireApproved,requireAdmin,requireEditor,requireArmory,loadUsers,approve,reject,setRole,renderUserBadge,statusText,roleText,ready:()=>readyPromise};
+  window.SOVAuth = {isConfigured,getClient,getSession,getProfile,currentUser,register,login,logout,can,requireApproved,requireAdmin,requireEditor,requireArmory,requireArchive,loadUsers,approve,reject,setRole,renderUserBadge,statusText,roleText,ready:()=>readyPromise};
 })();

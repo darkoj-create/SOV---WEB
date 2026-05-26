@@ -18,7 +18,7 @@
     @media(max-width:1100px){.hero-grid,.layout{grid-template-columns:1fr}.side{position:static}.quick{grid-template-columns:repeat(3,1fr)}.trip-inner{grid-template-columns:100px 1fr}.trip-actions{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr)}}@media(max-width:720px){.shell{width:calc(100% - 22px)}.top{height:auto;align-items:flex-start;flex-direction:column;padding:14px 0}.nav{overflow-x:auto;flex-wrap:nowrap;width:100%;padding-bottom:3px}.nav a{white-space:nowrap}.hero{border-radius:26px;padding:22px}.toolbar{grid-template-columns:1fr}.quick,.weather-row,.trip-actions{grid-template-columns:1fr}.trip-inner{grid-template-columns:1fr}.datebox{min-height:92px}.trip-main h2{font-size:24px}}
   </style>
 <link href="assets/mobile.css" rel="stylesheet"/>
-<link rel="stylesheet" href="assets/sov-inbox.css?v=4.82"></head>
+<link rel="stylesheet" href="assets/sov-inbox.css?v=4.90"></head>
 <body>
 <div class="shell">
 <header class="top">
@@ -81,5 +81,5 @@ window.openMapForTrip=function(row){const t=byRow(row); if(!t)return; const c=tr
 $('refresh').onclick=fetchTrips; $('showPastTrips').onclick=()=>{ $('filter').value='past'; render(); loadVisibleWeather(); document.getElementById('tripList').scrollIntoView({behavior:'smooth',block:'start'}); toast('Prikazujem arhivu prošlih izleta.'); };  $('search').oninput=()=>{render();loadVisibleWeather()}; $('filter').onchange=()=>{render();loadVisibleWeather()}; $('saveName').onclick=()=>{localStorage.setItem('sov_member_name',clean($('quickName').value));toast('Ime spremljeno.')} ; $('quickName').value=localStorage.getItem('sov_member_name')||''; $('openSheetSource').onclick=()=>window.open(TRIPS_WEBAPP_URL+'?action=listTrips','_blank');
 fetchTrips();
 </script>
-<script src="assets/sov-inbox.js?v=4.82"></script></body>
+<script src="assets/sov-inbox.js?v=4.90"></script></body>
 </html>

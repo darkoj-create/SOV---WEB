@@ -18,6 +18,8 @@
     const t=String(n.target||n.target_role||'all').toLowerCase();
     if(t==='all'||t==='svi'||!t)return true;
     if(t==='armory'||t==='oruzar')return ['admin','oruzar'].includes(role());
+    if(t==='archive'||t==='arhivar')return ['admin','arhivar'].includes(role());
+    if(t==='staff'||t==='tim'||t==='uprava')return ['admin','oruzar','arhivar'].includes(role());
     if(t==='admin')return role()==='admin';
     if(t==='user'||t==='users'||t==='clan'||t==='član')return role()==='user';
     if(n.target_user_id && userId())return String(n.target_user_id)===String(userId());
@@ -46,13 +48,29 @@
     if(!configured()||!userId())return;
     try{await sb().from('sov_notification_reads').upsert({notification_id:id,user_id:userId(),read_at:nowIso()},{onConflict:'notification_id,user_id'});}catch(e){console.warn('[SOV inbox] mark read skipped',e.message||e)}
   }
+  async function markAllVisibleRead(){
+    const unread=state.items.filter(n=>!state.read.has(String(n.id)));
+    if(!unread.length)return;
+    unread.forEach(n=>state.read.add(String(n.id)));
+    saveRead();
+    if(configured()&&userId()){
+      try{
+        await sb().from('sov_notification_reads').upsert(unread.map(n=>({notification_id:n.id,user_id:userId(),read_at:nowIso()})),{onConflict:'notification_id,user_id'});
+      }catch(e){console.warn('[SOV inbox] bulk mark read skipped',e.message||e)}
+    }
+  }
   async function loadReadRemote(){
     if(!configured()||!userId())return;
     try{const {data,error}=await sb().from('sov_notification_reads').select('notification_id').eq('user_id',userId()); if(!error)(data||[]).forEach(r=>state.read.add(String(r.notification_id)));}catch(e){}
   }
   async function refresh(){
     try{state.profile=window.SOVAuth&&SOVAuth.getProfile?await SOVAuth.getProfile():null}catch(e){state.profile=null}
-    try{state.canWrite=!!(window.SOVAuth&&SOVAuth.can&&(await SOVAuth.can('armory')))}catch(e){state.canWrite=false}
+    try{
+      const r=String(role()).toLowerCase();
+      const armoryOk=!!(window.SOVAuth&&SOVAuth.can&&(await SOVAuth.can('armory')));
+      const archiveOk=!!(window.SOVAuth&&SOVAuth.can&&(await SOVAuth.can('archive')));
+      state.canWrite=armoryOk||archiveOk||['admin','oruzar','arhivar'].includes(r);
+    }catch(e){state.canWrite=false}
     state.read=loadRead(); await loadReadRemote();
     const remote=await loadRemote();
     state.items=(remote||localItems()).map(normalize).filter(targetOk).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)));
@@ -68,11 +86,20 @@
     document.getElementById('sovInboxBackdrop').addEventListener('click',close);
   }
   function toast(m){const t=document.getElementById('sovInboxToast'); if(!t)return; t.textContent=m;t.classList.add('show');clearTimeout(t._to);t._to=setTimeout(()=>t.classList.remove('show'),2200)}
-  function open(){state.open=true; const p=document.getElementById('sovInboxPanel'),b=document.getElementById('sovInboxBackdrop'); if(p)p.classList.add('open'); if(b)b.classList.add('open'); render();}
+  async function open(){
+    state.open=true;
+    const p=document.getElementById('sovInboxPanel'),b=document.getElementById('sovInboxBackdrop');
+    if(p)p.classList.add('open');
+    if(b)b.classList.add('open');
+    await markAllVisibleRead();
+    render();
+  }
   function close(){state.open=false; const p=document.getElementById('sovInboxPanel'),b=document.getElementById('sovInboxBackdrop'); if(p)p.classList.remove('open'); if(b)b.classList.remove('open');}
   function render(){
     shell();
-    const badge=document.getElementById('sovInboxBadge'); const u=unreadCount(); if(badge){badge.style.display=u?'grid':'none';badge.textContent=u>99?'99+':String(u)}
+    const badge=document.getElementById('sovInboxBadge'); const fab=document.getElementById('sovInboxFab'); const u=unreadCount();
+    if(badge){badge.style.display=u?'grid':'none';badge.textContent=u>99?'99+':String(u)}
+    if(fab)fab.classList.toggle('has-unread',u>0);
     const panel=document.getElementById('sovInboxPanel'); if(!panel)return;
     const can=state.canWrite;
     panel.innerHTML=`<div class="sov-inbox-head"><div><h2>✉️ Inbox</h2><p>Obavijesti za članove · ${esc(state.source)}</p></div><button class="sov-inbox-close" onclick="SOVInbox.close()">×</button></div><div class="sov-inbox-tabs"><button class="sov-inbox-tab ${state.tab==='inbox'?'active':''}" onclick="SOVInbox.tab('inbox')">Primljeno</button>${can?`<button class="sov-inbox-tab ${state.tab==='compose'?'active':''}" onclick="SOVInbox.tab('compose')">+ Nova obavijest</button>`:''}</div><div class="sov-inbox-body">${state.tab==='compose'&&can?composeHtml():inboxHtml()}</div>`;
@@ -81,10 +108,10 @@
     if(!state.items.length)return `<div class="sov-inbox-empty">Nema obavijesti.</div>`;
     return state.items.map(n=>`<article class="sov-msg ${state.read.has(String(n.id))?'':'unread'}"><div class="sov-msg-top"><div><h3>${esc(n.title)}</h3><small>${esc(n.author)} · ${esc(niceDate(n.created_at))}</small></div><span class="sov-pill ${priorityClass(n.priority)}">${esc(n.priority||'normal')}</span></div><p>${esc(n.body)}</p><div class="sov-msg-meta"><span class="sov-pill">Za: ${esc(n.target||'all')}</span>${state.read.has(String(n.id))?'<span class="sov-pill">pročitano</span>':`<button class="sov-inbox-btn" onclick="SOVInbox.markRead('${esc(n.id)}')">Označi pročitano</button>`}</div></article>`).join('')
   }
-  function composeHtml(){return `<form class="sov-inbox-form" onsubmit="SOVInbox.send(event)"><input id="sovMsgTitle" class="sov-inbox-input" placeholder="Naslov obavijesti" required><textarea id="sovMsgBody" class="sov-inbox-textarea" placeholder="Poruka članovima..." required></textarea><div class="sov-inbox-actions"><select id="sovMsgTarget" class="sov-inbox-select"><option value="all">Svi korisnici</option><option value="user">Samo članovi</option><option value="armory">Admin + oružar</option><option value="admin">Samo admin</option></select><select id="sovMsgPriority" class="sov-inbox-select"><option value="normal">Normalno</option><option value="važno">Važno</option><option value="hitno">Hitno</option></select></div><div class="sov-inbox-actions"><button class="sov-inbox-btn primary">Pošalji obavijest</button><button type="button" class="sov-inbox-btn" onclick="SOVInbox.tab('inbox')">Odustani</button></div></form>`}
+  function composeHtml(){return `<form class="sov-inbox-form" onsubmit="SOVInbox.send(event)"><input id="sovMsgTitle" class="sov-inbox-input" placeholder="Naslov obavijesti" required><textarea id="sovMsgBody" class="sov-inbox-textarea" placeholder="Poruka članovima..." required></textarea><div class="sov-inbox-actions"><select id="sovMsgTarget" class="sov-inbox-select"><option value="all">Svi korisnici</option><option value="user">Samo članovi</option><option value="armory">Admin + oružar</option><option value="archive">Admin + arhivar</option><option value="staff">Admin + oružar + arhivar</option><option value="admin">Samo admin</option></select><select id="sovMsgPriority" class="sov-inbox-select"><option value="normal">Normalno</option><option value="važno">Važno</option><option value="hitno">Hitno</option></select></div><div class="sov-inbox-actions"><button class="sov-inbox-btn primary">Pošalji obavijest</button><button type="button" class="sov-inbox-btn" onclick="SOVInbox.tab('inbox')">Odustani</button></div></form>`}
   async function send(ev){
     ev.preventDefault();
-    if(!state.canWrite){toast('Samo admin ili oružar mogu slati obavijesti.');return;}
+    if(!state.canWrite){toast('Samo admin, oružar ili arhivar mogu slati obavijesti.');return;}
     const n=normalize({id:'N-'+Date.now(),title:document.getElementById('sovMsgTitle').value.trim(),body:document.getElementById('sovMsgBody').value.trim(),target:document.getElementById('sovMsgTarget').value,priority:document.getElementById('sovMsgPriority').value,author:userLabel(),created_at:nowIso()});
     let saved=null; try{saved=await saveRemote(n)}catch(e){console.warn('[SOV inbox] remote save failed',e.message||e);}
     if(!saved){const l=localItems(); l.unshift(n); saveLocal(l); state.source='local';}
