@@ -15,7 +15,7 @@
 @media(max-width:980px){body{overflow:auto}.app{height:auto;min-height:100vh}.top{height:auto;align-items:flex-start;padding:12px}.shell{grid-template-columns:1fr}.mapWrap{height:64vh}.side{border-left:0;border-top:1px solid var(--line)}.stats{grid-template-columns:repeat(2,1fr)}}
 </style>
 <style>.dev-open{position:fixed;right:14px;bottom:14px;z-index:99999;border:1px solid rgba(215,246,111,.35);background:rgba(7,13,15,.92);color:#d7f66f;border-radius:999px;padding:9px 12px;font:800 12px Inter,system-ui,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.35)}@media(max-width:700px){.dev-open{left:12px;right:auto;bottom:12px}}</style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="assets/supabase-config.js"></script><script src="assets/auth.js"></script>  <link rel="stylesheet" href="assets/mobile.css">
-<link rel="stylesheet" href="assets/sov-inbox.css?v=4.90"><script src="assets/speleo-sql-loader.js?v=5.05"></script>
+<link rel="stylesheet" href="assets/sov-inbox.css?v=4.90"><script src="assets/speleo-sql-loader.js?v=5.06"></script>
 </head>
 <body>
 <div class="app">
@@ -248,12 +248,20 @@ function downloadBlob(data,name,type){const blob=new Blob([data],{type});const a
 async function bootSpeleoBaza(opts={}){
   const results=document.getElementById('results');
   if(results && !opts.silent) results.innerHTML='<p class="muted">Učitavam bazu...</p>';
-  const d=await loadSpeleoObjectsSqlFirst();
-  all=d.filter(o=>Number.isFinite(Number(o.lat))&&Number.isFinite(Number(o.lon))).map(o=>({...o,lat:Number(o.lat),lon:Number(o.lon)}));
-  await initArchiveRole();
-  updateDrawingsAdminUi();
-  applyObjectOverrides(await loadSpeleoOverrides());
-  await hydrateDrawingsFromSupabase();
+  let d=[];
+  try{
+    d=await Promise.race([
+      loadSpeleoObjectsSqlFirst(),
+      new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout učitavanja baze nakon 15s')),15000))
+    ]);
+  }catch(e){
+    console.error('Speleo main load failed:', e);
+    if(results) results.innerHTML='<p class="muted">Ne mogu učitati SQL bazu: '+esc(e.message||e)+'</p>';
+    return;
+  }
+  all=(Array.isArray(d)?d:[]).filter(o=>Number.isFinite(Number(o.lat))&&Number.isFinite(Number(o.lon))).map(o=>({...o,lat:Number(o.lat),lon:Number(o.lon)}));
+
+  // KRITIČNO: prvo prikaži bazu. Sve sporedno ide nakon rendera da ekran ne ostane na "Učitavam bazu...".
   document.getElementById('total').textContent=all.length;
   const srcEl=document.getElementById('speleoSource');
   if(srcEl) srcEl.textContent=(window.__SOV_SPELEO_SOURCE||'')+' · učitano '+all.length;
@@ -261,11 +269,19 @@ async function bootSpeleoBaza(opts={}){
   const oid=params.get('object')||params.get('id');
   const q=params.get('q');
   if(q){document.getElementById('q').value=q}
-  setupDrawingUpload();
-  render();
-  if(location.hash==='#nacrti-sync')setTimeout(()=>document.getElementById('nacrti-sync')?.scrollIntoView({behavior:'smooth',block:'center'}),250);
+  try{ render(); }catch(e){ console.error('Render baze failed:', e); if(results) results.innerHTML='<p class="muted">Baza je učitana, ali render je pao: '+esc(e.message||e)+'</p>'; return; }
   if(oid){const obj=all.find(o=>String(o.id)===String(oid));if(obj){openObject(obj);map.setView([obj.lat,obj.lon],15)}}
   else if(!opts.afterImport){fitAll()}
+
+  // Sporedne stvari se učitavaju u pozadini i ne blokiraju listu objekata.
+  setTimeout(async()=>{
+    try{ await initArchiveRole(); }catch(e){ console.warn('Archive role after-render skipped', e); }
+    try{ updateDrawingsAdminUi(); }catch(e){}
+    try{ applyObjectOverrides(await loadSpeleoOverrides()); render(); }catch(e){ console.warn('Overrides after-render skipped', e); }
+    try{ setupDrawingUpload(); }catch(e){}
+    try{ await hydrateDrawingsFromSupabase(); }catch(e){ console.warn('Drawings hydrate after-render skipped', e); }
+    try{ if(location.hash==='#nacrti-sync')document.getElementById('nacrti-sync')?.scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){}
+  },50);
 }
 window.refreshSpeleoBaza=async function(opts={}){
   try{
@@ -281,5 +297,5 @@ window.refreshSpeleoBaza=async function(opts={}){
 }
 bootSpeleoBaza().catch((e)=>{console.error(e);document.getElementById('results').innerHTML='<p class="muted">Ne mogu učitati Speleo SQL/JSON bazu: '+esc(e.message||e)+'</p>'});
 </script>
-<script src="assets/sov-inbox.js?v=4.93"></script></body>
+<script src="assets/sov-inbox.js?v=5.06"></script></body>
 </html>

@@ -1,1 +1,1 @@
-v5.04-speleo-sql-import-duplicate-id-hardfix
+SOV web build v5.06 — Speleo baza nonblocking loader hardfix
