@@ -1,1 +1,1 @@
-v4.95-inline-nacrti-pregled-baze-hardfix
+v4.97-nacrti-sync-endpoint-baked-in
