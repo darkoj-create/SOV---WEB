@@ -1,1 +1,1 @@
-v5.07 speleo baza render-first hardfix
+v4.85 equipment_locations RLS import fix

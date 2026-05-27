@@ -5,7 +5,7 @@
   const REGISTERED_PAGES = new Set([
     'dashboard.html','baza.html','pregled-baze.html','izleti.html','kalendar-izleta.html',
     'dokumentacija.html','pregled-zapisnika.html','zapisnici-skupstine.html','novi-zapisnik.html',
-    'speleo-zapisnik.html','topodroid.html','napisi-clanak.html','arhivar-zahvati.html','oruzarstvo.html','oruzarstvo-import.html','admin-users.html'
+    'speleo-zapisnik.html','topodroid.html','napisi-clanak.html','oruzarstvo.html','oruzarstvo-import.html','admin-users.html'
   ]);
   const ROLE_LABELS = {admin:'Admin',editor:'Urednik',oruzar:'Oružar',arhivar:'Arhivar',user:'Član'};
   const ADMIN_ROLES = ['admin'];
