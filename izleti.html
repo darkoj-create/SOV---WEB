@@ -29,8 +29,9 @@
 </aside>
 </main></div><div id="toast" class="toast"></div>
 <script>
-const DEFAULT_TRIPS_WEBAPP_URL='https://script.google.com/macros/s/AKfycbxVrStMsScP6UWVESnC6hcQV7MM2XRpzEQYZYblOgjHt1gzIhiinUfpQewjAY3ZnR2w/exec';
-function tripsEndpoint(){return localStorage.getItem('sov_trips_webapp_url')||window.SOV_TRIPS_WEBAPP_URL||DEFAULT_TRIPS_WEBAPP_URL;}
+const DEFAULT_TRIPS_WEBAPP_URL='https://script.google.com/macros/s/AKfycbybGi7p6_ImXAXEErJ6P9K0GYHy8lHW850K9cQe2py8yUV2oJO6UW1DJi00quorVTHOGQ/exec';
+const TRIPS_ENDPOINT_VERSION='v5.24-hard-restore'; if(localStorage.getItem('sov_trips_endpoint_version')!==TRIPS_ENDPOINT_VERSION){localStorage.setItem('sov_trips_webapp_url',DEFAULT_TRIPS_WEBAPP_URL);localStorage.setItem('sov_trips_endpoint_version',TRIPS_ENDPOINT_VERSION);}
+function tripsEndpoint(){const stored=localStorage.getItem('sov_trips_webapp_url')||''; const old='https://script.google.com/macros/s/AKfycbxVrStMsScP6UWVESnC6hcQV7MM2XRpzEQYZYblOgjHt1gzIhiinUfpQewjAY3ZnR2w/exec'; if(stored && stored!==old) return stored; return window.SOV_TRIPS_WEBAPP_URL||DEFAULT_TRIPS_WEBAPP_URL;}
 const TRIPS_WEBAPP_URL=tripsEndpoint();
 const RASPORED_WEBAPP_URL='https://script.google.com/macros/s/AKfycbxtn2jOfQjOVBlYJrl8sNKDkBfP2rpONy-lZSaySYHx0sAf72BEdPNybqc4yNvhJDsJ/exec';
 const TARGET_SHEET_ID='1g93ZqKOJD2gLcIxZPfHokNcktbDEPivEItp7VRpnfWc';

@@ -10,5 +10,5 @@ window.SOV_DRAWINGS_SYNC_ENDPOINT = window.SOV_DRAWINGS_SYNC_ENDPOINT || 'https:
 // Opcija B: ako koristiš Google Drive API key za public folder listing.
 window.SOV_GOOGLE_DRIVE_API_KEY = window.SOV_GOOGLE_DRIVE_API_KEY || '';
 
-// v5.23 restored trips calendar Apps Script endpoint
-window.SOV_TRIPS_WEBAPP_URL = window.SOV_TRIPS_WEBAPP_URL || 'https://script.google.com/macros/s/AKfycbxVrStMsScP6UWVESnC6hcQV7MM2XRpzEQYZYblOgjHt1gzIhiinUfpQewjAY3ZnR2w/exec';
+// v5.24 hard-restored trips calendar Apps Script endpoint
+window.SOV_TRIPS_WEBAPP_URL = window.SOV_TRIPS_WEBAPP_URL || 'https://script.google.com/macros/s/AKfycbybGi7p6_ImXAXEErJ6P9K0GYHy8lHW850K9cQe2py8yUV2oJO6UW1DJi00quorVTHOGQ/exec';

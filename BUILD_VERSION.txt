@@ -1,1 +1,1 @@
-v5.23-trips-appscript-endpoint-hard-restore
+v5.24-trip-calendar-appscript-hardfix
