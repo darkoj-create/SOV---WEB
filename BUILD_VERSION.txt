@@ -1,1 +1,1 @@
-5.18-trip-map-area-export-real-fix
+v5.22-vijesti-expedition-top-fix
