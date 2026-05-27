@@ -1,1 +1,1 @@
-v4.98-nacrti-performance-fix
+v5.08-safe-sql-preview
