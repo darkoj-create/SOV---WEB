@@ -16,7 +16,7 @@
   const REGISTERED_PAGES = new Set([
     'dashboard.html','baza.html','pregled-baze.html','izleti.html','kalendar-izleta.html',
     'dokumentacija.html','pregled-zapisnika.html','zapisnici-skupstine.html','novi-zapisnik.html',
-    'speleo-zapisnik.html','topodroid.html','napisi-clanak.html','arhivar-zahvati.html','speleo-sql-safe.html','oruzarstvo.html','oruzarstvo-import.html','admin-users.html'
+    'speleo-zapisnik.html','topodroid.html','napisi-clanak.html','arhivar-zahvati.html','speleo-sql-safe.html','speleo-sql-edit-sandbox.html','speleo-sql-compare.html','speleo-sql-object-hub.html','speleo-sql-promote.html','speleo-sql-go-live.html','oruzarstvo.html','oruzarstvo-import.html','admin-users.html','news-editor.html'
   ]);
   const ROLE_LABELS = {admin:'Admin',editor:'Urednik',oruzar:'Oružar',arhivar:'Arhivar',user:'Član'};
   const ADMIN_ROLES = ['admin'];
@@ -161,7 +161,7 @@
     }
     return true;
   }
-  async function requireAdmin(){ if(SOV_OPEN_PREVIEW_MODE){ await renderUserBadge(); return true; } const ok = await requireApproved(); if(!ok) return false; if(!(await can('admin'))){ location.href='dashboard.html?denied=admin'; return false; } return true; }
+  async function requireAdmin(){ if(SOV_OPEN_PREVIEW_MODE){ await renderUserBadge(); if(!(await can('admin'))){ location.href='dashboard.html?denied=admin'; return false; } return true; } const ok = await requireApproved(); if(!ok) return false; if(!(await can('admin'))){ location.href='dashboard.html?denied=admin'; return false; } return true; }
   async function requireEditor(){ if(SOV_OPEN_PREVIEW_MODE){ await renderUserBadge(); return true; } const ok = await requireApproved(); if(!ok) return false; if(!(await can('editor'))){ location.href='dashboard.html?denied=editor'; return false; } return true; }
   async function requireArmory(){ if(SOV_OPEN_PREVIEW_MODE){ await renderUserBadge(); return true; } const ok = await requireApproved(); if(!ok) return false; if(!(await can('armory'))){ location.href='dashboard.html?denied=armory'; return false; } return true; }
   async function requireArchive(){ if(SOV_OPEN_PREVIEW_MODE){ await renderUserBadge(); return true; } const ok = await requireApproved(); if(!ok) return false; if(!(await can('speleo_edit'))){ location.href='dashboard.html?denied=archive'; return false; } return true; }
@@ -248,8 +248,9 @@
 
   async function autoProtect(){
     const p = pageName();
-    if(!REGISTERED_PAGES.has(p)) return;
-    if(p === 'admin-users.html') await requireAdmin();
+    if(!REGISTERED_PAGES.has(p)){ await renderUserBadge(); return; }
+    if(p === 'admin-users.html' || p.startsWith('speleo-sql-')) await requireAdmin();
+    else if(p === 'news-editor.html') await requireEditor();
     else if(p === 'oruzarstvo-import.html') await requireArmory();
     else await requireApproved();
     await renderUserBadge();
