@@ -15,7 +15,7 @@
 <div class="wrap">
   <header class="top">
     <a class="brand" href="dashboard.html"><div class="mark">SOV</div><div><strong>SOV Cloud</strong><br><span class="muted">sigurni SQL preview</span></div></a>
-    <nav class="nav"><a class="btn" href="baza.html">Baza</a><a class="btn" href="pregled-baze.html">Pregled baze</a><a class="btn" href="dashboard.html">Dashboard</a></nav>
+    <nav class="nav"><a class="btn" href="baza.html">Baza</a><a class="btn" href="pregled-baze.html">Pregled baze</a><a class="btn primary" href="speleo-sql-edit-sandbox.html">Edit sandbox</a><a class="btn" href="dashboard.html">Dashboard</a></nav>
   </header>
   <main class="hero">
     <h1>SQL preview baze</h1>
@@ -32,6 +32,7 @@
       <button class="btn warn" onclick="checkSql()">2. Provjeri SQL staging</button>
       <button class="btn" id="importBtn" onclick="importStaging()" disabled>3. Import u staging</button>
       <button class="btn" onclick="compareSample()">Usporedi sample</button>
+      <a class="btn primary" href="speleo-sql-edit-sandbox.html">4. Otvori edit sandbox</a>
     </div>
     <div class="progress"><div class="bar" id="bar"></div></div>
     <p class="muted" id="status">Prvo pokreni SQL iz ZIP-a, zatim ovdje učitaj JSON.</p>

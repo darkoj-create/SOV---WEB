@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SQL edit sandbox — SOV Cloud</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/supabase-config.js"></script>
+<script src="assets/auth.js"></script>
+<style>
+:root{--bg:#040707;--panel:#0b1114;--panel2:#101a1f;--text:#f4f7f6;--muted:#94a4a7;--line:rgba(255,255,255,.12);--accent:#d7f66f;--warn:#ffb15f;--bad:#ff6b6b;--good:#66e28d;--blue:#8bd3ff}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 20% 0,rgba(215,246,111,.09),transparent 30%),linear-gradient(180deg,#040707,#071013);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.wrap{width:min(1260px,calc(100% - 28px));margin:0 auto;padding:24px 0 70px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:#fff}.mark{width:44px;height:44px;border-radius:15px;background:rgba(255,255,255,.07);border:1px solid var(--line);display:grid;place-items:center;font-weight:1000}.nav{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:rgba(255,255,255,.045);color:#eaf4f2;border-radius:999px;padding:10px 13px;font-weight:900;text-decoration:none;cursor:pointer}.btn.primary{background:var(--accent);color:#101400;border-color:transparent}.btn.warn{background:rgba(255,177,95,.13);border-color:rgba(255,177,95,.35);color:#ffd9b0}.btn.bad{background:rgba(255,107,107,.12);border-color:rgba(255,107,107,.35);color:#ffd1d1}.btn:disabled{opacity:.45;cursor:not-allowed}.hero{border:1px solid var(--line);border-radius:32px;background:rgba(255,255,255,.045);padding:24px;box-shadow:0 24px 80px rgba(0,0,0,.35)}h1{font-size:clamp(34px,5vw,58px);line-height:.92;margin:0 0 10px;letter-spacing:-.06em}.lead{color:var(--muted);line-height:1.5;max-width:900px}.safe{border:1px solid rgba(102,226,141,.34);background:rgba(102,226,141,.08);border-radius:20px;padding:14px;margin:16px 0;color:#dfffea;font-weight:850}.warnbox{border:1px solid rgba(255,177,95,.34);background:rgba(255,177,95,.08);border-radius:20px;padding:14px;margin:16px 0;color:#ffe4c7;font-weight:800}.layout{display:grid;grid-template-columns:400px 1fr;gap:14px;margin-top:14px}.panel{border:1px solid var(--line);background:rgba(255,255,255,.04);border-radius:24px;padding:16px;min-width:0}.panel h2{margin:0 0 10px;font-size:18px}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}.field label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:900}.input,.select,.textarea{width:100%;border:1px solid var(--line);border-radius:14px;background:#061014;color:#f7fbfa;padding:11px 12px;font:inherit}.textarea{min-height:96px;resize:vertical}.searchbar{display:flex;gap:8px;margin-bottom:10px}.list{display:flex;flex-direction:column;gap:8px;max-height:62vh;overflow:auto;padding-right:4px}.item{border:1px solid var(--line);background:rgba(255,255,255,.035);border-radius:18px;padding:12px;cursor:pointer}.item:hover{border-color:rgba(215,246,111,.45)}.item.active{outline:2px solid var(--accent);background:rgba(215,246,111,.08)}.item b{display:block}.meta{color:var(--muted);font-size:12px;margin-top:4px}.badge{display:inline-flex;align-items:center;border-radius:999px;border:1px solid var(--line);padding:3px 7px;font-size:11px;font-weight:900;color:#dce6e6;margin:4px 4px 0 0}.badge.changed{border-color:rgba(255,177,95,.45);color:#ffd9b0}.badge.new{border-color:rgba(102,226,141,.45);color:#caffd8}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}.log{white-space:pre-wrap;font-family:ui-monospace,Consolas,monospace;font-size:12px;line-height:1.45;color:#dce6e6;background:#060b0d;border:1px solid var(--line);border-radius:18px;padding:12px;max-height:160px;overflow:auto;margin-top:12px}.diff{display:grid;grid-template-columns:1fr 1fr;gap:10px}.small{font-size:12px;color:var(--muted)}.empty{padding:30px;text-align:center;color:var(--muted)}@media(max-width:940px){.layout{grid-template-columns:1fr}.list{max-height:340px}.top{align-items:flex-start;flex-direction:column}.hero{padding:18px}}@media(max-width:620px){.row,.diff{grid-template-columns:1fr}.searchbar{flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <a class="brand" href="dashboard.html"><div class="mark">SOV</div><div><strong>SOV Cloud</strong><br><span class="small">SQL edit sandbox</span></div></a>
+  <nav class="nav"><a class="btn" href="baza.html">Baza JSON</a><a class="btn" href="speleo-sql-safe.html">SQL preview/import</a><a class="btn" href="pregled-baze.html">Pregled baze</a></nav>
+</header>
+<main class="hero">
+  <h1>SQL edit sandbox</h1>
+  <p class="lead">Ovdje možeš testirati uređivanje i dodavanje Speleo objekata u <b>staging SQL kopiji</b>. Ovo ne mijenja live Baza prikaz i ne dira JSON. Koristimo ga da provjerimo SQL workflow prije stvarnog prebacivanja.</p>
+  <div class="safe">SAFE MODE: editira se samo <b>speleo_objects_staging</b>. Live Baza ostaje v4.99 JSON.</div>
+  <div class="warnbox">Nema brisanja. Novi objekt dobije source_id <b>new_...</b>. Kasnije ćemo dodati “Promoviraj u live” tek kad staging bude potpuno provjeren.</div>
+
+  <div class="layout">
+    <section class="panel">
+      <h2>Objekti u stagingu</h2>
+      <div class="searchbar">
+        <input class="input" id="q" placeholder="Traži naziv, mjesto, status..." onkeydown="if(event.key==='Enter')loadList()">
+        <button class="btn primary" onclick="loadList()">Traži</button>
+      </div>
+      <div class="actions" style="margin:0 0 10px">
+        <button class="btn" onclick="newObject()">+ Novi objekt</button>
+        <button class="btn warn" onclick="loadChanged()">Samo izmijenjeni</button>
+        <button class="btn" onclick="loadList()">Osvježi</button>
+      </div>
+      <div class="small" id="countLine">—</div>
+      <div class="list" id="list"><div class="empty">Učitavam staging...</div></div>
+    </section>
+
+    <section class="panel">
+      <h2 id="editorTitle">Odaberi objekt</h2>
+      <div id="editorEmpty" class="empty">Klikni objekt lijevo ili dodaj novi.</div>
+      <form id="editor" style="display:none" onsubmit="event.preventDefault();saveCurrent();">
+        <div class="row">
+          <div class="field"><label>Source ID</label><input class="input" id="source_id" disabled></div>
+          <div class="field"><label>Sandbox status</label><select class="select" id="sandbox_status"><option>staging</option><option>edited</option><option>new</option><option>needs_review</option><option>ready_for_live</option></select></div>
+        </div>
+        <div class="field"><label>Naziv objekta</label><input class="input" id="name" required></div>
+        <div class="row">
+          <div class="field"><label>Lat</label><input class="input" id="lat" type="number" step="any"></div>
+          <div class="field"><label>Lon</label><input class="input" id="lon" type="number" step="any"></div>
+        </div>
+        <div class="row">
+          <div class="field"><label>Tip objekta</label><input class="input" id="object_type_final" placeholder="jama / špilja..."></div>
+          <div class="field"><label>Status zapisa</label><input class="input" id="record_status" placeholder="u_katastru / nije_u_katastru..."></div>
+        </div>
+        <div class="row">
+          <div class="field"><label>Katastarski broj</label><input class="input" id="cadastral_number"></div>
+          <div class="field"><label>Katastarski status</label><input class="input" id="cadastre_status"></div>
+        </div>
+        <div class="row">
+          <div class="field"><label>Županija</label><input class="input" id="county"></div>
+          <div class="field"><label>Općina/grad</label><input class="input" id="municipality"></div>
+        </div>
+        <div class="row">
+          <div class="field"><label>Najbliže mjesto</label><input class="input" id="nearest_place"></div>
+          <div class="field"><label>Lokalitet</label><input class="input" id="locality"></div>
+        </div>
+        <div class="row">
+          <div class="field"><label>Dubina m</label><input class="input" id="depth_m" type="number" step="any"></div>
+          <div class="field"><label>Duljina m</label><input class="input" id="length_m" type="number" step="any"></div>
+        </div>
+        <div class="field"><label>Field tasks</label><input class="input" id="field_tasks" placeholder="fotka;koordinate;plocica..."></div>
+        <div class="field"><label>Workflow raw</label><input class="input" id="workflow_raw"></div>
+        <div class="field"><label>Napomena za sandbox edit</label><textarea class="textarea" id="edit_note" placeholder="Što si promijenio i zašto..."></textarea></div>
+        <div class="actions">
+          <button class="btn primary" type="submit">Spremi u staging</button>
+          <button class="btn" type="button" onclick="markReady()">Označi ready_for_live</button>
+          <button class="btn warn" type="button" onclick="loadEditHistory()">Povijest izmjena</button>
+        </div>
+      </form>
+      <div class="log" id="log">Log...</div>
+    </section>
+  </div>
+</main>
+</div>
+<script>
+let current=null;let currentBefore=null;let currentRows=[];
+const fields=['source_id','name','lat','lon','object_type_final','record_status','cadastral_number','cadastre_status','county','municipality','nearest_place','locality','depth_m','length_m','field_tasks','workflow_raw','edit_note','sandbox_status'];
+const $=id=>document.getElementById(id);
+function log(msg){$('log').textContent+='\n'+msg;$('log').scrollTop=$('log').scrollHeight}
+function client(){const sb=window.SOVAuth&&SOVAuth.getClient&&SOVAuth.getClient();if(!sb)throw new Error('Supabase nije konfiguriran ili auth.js nije spreman.');return sb}
+function esc(s){return String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+function val(id){const el=$(id);if(!el)return null;let v=el.value; if(v==='')return null; if(['lat','lon','depth_m','length_m'].includes(id)){const n=Number(v);return Number.isFinite(n)?n:null} return v}
+function fill(o){current=o;currentBefore=JSON.parse(JSON.stringify(o||{}));$('editorEmpty').style.display='none';$('editor').style.display='block';$('editorTitle').textContent=o.source_id&&String(o.source_id).startsWith('new_')?'Novi objekt':'Uredi staging objekt';fields.forEach(f=>{if($(f))$(f).value=o[f]??''});document.querySelectorAll('.item').forEach(x=>x.classList.toggle('active',x.dataset.id===o.source_id));$('log').textContent='Log...\nOdabran: '+(o.name||o.source_id)}
+async function loadList(){try{const sb=client();const q=$('q').value.trim();let query=sb.from('speleo_objects_staging').select('source_id,name,lat,lon,record_status,cadastre_status,object_type_final,county,municipality,nearest_place,locality,depth_m,length_m,field_tasks,workflow_raw,edit_note,sandbox_status,edited_at').order('name',{ascending:true}).limit(120);if(q){query=query.or('name.ilike.%'+q+'%,nearest_place.ilike.%'+q+'%,locality.ilike.%'+q+'%,record_status.ilike.%'+q+'%,cadastre_status.ilike.%'+q+'%')}const {data,error}=await query;if(error)throw error;currentRows=data||[];renderList(currentRows);$('countLine').textContent=(data||[]).length+' prikazano';}catch(e){$('list').innerHTML='<div class="empty">Greška: '+esc(e.message||e)+'</div>';}}
+async function loadChanged(){try{const sb=client();const {data,error}=await sb.from('speleo_objects_staging').select('source_id,name,lat,lon,record_status,cadastre_status,object_type_final,county,municipality,nearest_place,locality,depth_m,length_m,field_tasks,workflow_raw,edit_note,sandbox_status,edited_at').neq('sandbox_status','staging').order('updated_at',{ascending:false}).limit(150);if(error)throw error;currentRows=data||[];renderList(currentRows);$('countLine').textContent=(data||[]).length+' izmijenjenih/novih';}catch(e){$('list').innerHTML='<div class="empty">Greška: '+esc(e.message||e)+'</div>';}}
+function renderList(arr){if(!arr.length){$('list').innerHTML='<div class="empty">Nema rezultata. Ako je staging prazan, idi na SQL preview/import i importaj JSON u staging.</div>';return}$('list').innerHTML=arr.map(o=>'<div class="item" data-id="'+esc(o.source_id)+'" onclick="selectById(\''+esc(String(o.source_id)).replace(/'/g,'\\&#39;')+'\')"><b>'+esc(o.name)+'</b><div class="meta">'+esc(o.nearest_place||o.locality||o.county||'')+' · '+esc(o.record_status||o.cadastre_status||'')+'</div><span class="badge '+(o.sandbox_status==='new'?'new':(o.sandbox_status&&o.sandbox_status!=='staging'?'changed':''))+'">'+esc(o.sandbox_status||'staging')+'</span>'+(o.field_tasks?'<span class="badge changed">'+esc(o.field_tasks)+'</span>':'')+'</div>').join('')}
+async function selectById(id){const row=currentRows.find(x=>String(x.source_id)===String(id));if(row)return fill(row);try{const sb=client();const {data,error}=await sb.from('speleo_objects_staging').select('*').eq('source_id',id).single();if(error)throw error;fill(data)}catch(e){log('Greška čitanja objekta: '+(e.message||e))}}
+function newObject(){const id='new_'+Date.now();fill({source_id:id,source_system:'manual_sandbox',name:'',sandbox_status:'new',raw:{manual:true}})}
+function payload(){const p={};fields.forEach(f=>{if(f==='source_id')return;p[f]=val(f)});p.source_id=$('source_id').value;p.source_system=p.source_id.startsWith('new_')?'manual_sandbox':'baza_velebit_2026_appready';p.sandbox_status=p.sandbox_status||'edited';p.edited_by=(window.SOVAuth&&SOVAuth.currentUser&&SOVAuth.currentUser.email)||'web-open-preview';p.raw={...(currentBefore&&currentBefore.raw?currentBefore.raw:{}),sandbox_updated:true};return p}
+async function saveCurrent(){try{const sb=client();const p=payload();if(!p.name)throw new Error('Naziv je obavezan.');if(p.sandbox_status==='staging')p.sandbox_status=p.source_id.startsWith('new_')?'new':'edited';const before=currentBefore?JSON.parse(JSON.stringify(currentBefore)):null;const {data,error}=await sb.from('speleo_objects_staging').upsert(p,{onConflict:'source_id'}).select('*').single();if(error)throw error;await sb.from('speleo_objects_staging_edits').insert({source_id:p.source_id,action:before?'update':'insert',edited_by:p.edited_by,note:p.edit_note,before_data:before,after_data:data});fill(data);log('Spremljeno u staging. Live Baza nije dirana.');await loadList();}catch(e){log('GREŠKA spremanja: '+(e.message||e));}}
+async function markReady(){if(!$('source_id').value)return; $('sandbox_status').value='ready_for_live'; if(!$('edit_note').value)$('edit_note').value='Provjereno u sandboxu, spremno za kasniju live migraciju.'; await saveCurrent();}
+async function loadEditHistory(){try{const id=$('source_id').value;if(!id)throw new Error('Nema odabranog objekta.');const sb=client();const {data,error}=await sb.from('speleo_objects_staging_edits').select('action,edited_by,note,created_at').eq('source_id',id).order('created_at',{ascending:false}).limit(20);if(error)throw error;log('\nPovijest za '+id+':\n'+(data||[]).map(x=>'- '+x.created_at+' · '+x.action+' · '+(x.edited_by||'')+' · '+(x.note||'')).join('\n'));}catch(e){log('Ne mogu učitati povijest: '+(e.message||e));}}
+loadList();
+</script>
+</body>
+</html>

@@ -236,5 +236,7 @@ async function downloadMbtiles(){if(!selectedBounds){alert('Prvo označi Map dow
 function downloadBlob(data,name,type){const blob=new Blob([data],{type});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
 fetch(DATA_URL).then(r=>r.json()).then(async d=>{all=d.filter(o=>Number.isFinite(o.lat)&&Number.isFinite(o.lon));await initArchiveRole();updateDrawingsAdminUi();applyObjectOverrides(await loadSpeleoOverrides());await hydrateDrawingsFromSupabase();document.getElementById('total').textContent=all.length;const params=new URLSearchParams(location.search);const oid=params.get('object')||params.get('id');const q=params.get('q');if(q){document.getElementById('q').value=q}setupDrawingUpload();render();if(location.hash==='#nacrti-sync')setTimeout(()=>document.getElementById('nacrti-sync')?.scrollIntoView({behavior:'smooth',block:'center'}),250);if(oid){const obj=all.find(o=>String(o.id)===String(oid));if(obj){openObject(obj);map.setView([obj.lat,obj.lon],15)}}else{fitAll()}}).catch((e)=>{console.error(e);document.getElementById('results').innerHTML='<p class="muted">Ne mogu učitati data/sov-baza.json.</p>'});
 </script>
-<script src="assets/sov-inbox.js?v=4.93"></script></body>
+<script src="assets/sov-inbox.js?v=4.93"></script>
+<a href="speleo-sql-edit-sandbox.html" style="position:fixed;right:18px;bottom:18px;z-index:9999;background:#d7f66f;color:#101400;border-radius:999px;padding:12px 16px;font-weight:900;text-decoration:none;box-shadow:0 12px 30px rgba(0,0,0,.35)">SQL edit sandbox</a>
+</body>
 </html>
