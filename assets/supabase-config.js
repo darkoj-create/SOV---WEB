@@ -9,3 +9,6 @@ window.SOV_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ
 window.SOV_DRAWINGS_SYNC_ENDPOINT = window.SOV_DRAWINGS_SYNC_ENDPOINT || 'https://script.google.com/macros/s/AKfycby3UmJ1t4YcKlqLmxcVaznwIsN7SK_ozOHq-pZJLhS3C5mLqL6XuQy9fJ0E0K868VEpYw/exec';
 // Opcija B: ako koristiš Google Drive API key za public folder listing.
 window.SOV_GOOGLE_DRIVE_API_KEY = window.SOV_GOOGLE_DRIVE_API_KEY || '';
+
+// v5.23 restored trips calendar Apps Script endpoint
+window.SOV_TRIPS_WEBAPP_URL = window.SOV_TRIPS_WEBAPP_URL || 'https://script.google.com/macros/s/AKfycbxVrStMsScP6UWVESnC6hcQV7MM2XRpzEQYZYblOgjHt1gzIhiinUfpQewjAY3ZnR2w/exec';
