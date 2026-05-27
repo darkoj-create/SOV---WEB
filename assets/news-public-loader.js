@@ -1,11 +1,13 @@
-// Drop-in public news loader. Include on public/vijesti page where #newsList exists.
 (async function(){
-  const root=document.getElementById('newsList')||document.querySelector('[data-news-list]');
+  const root=document.getElementById('dynamicNewsFromDb')||document.getElementById('newsList')||document.querySelector('[data-news-list]');
   if(!root || !window.supabase) return;
   const cfg=window.SOV_SUPABASE_CONFIG||window.SUPABASE_CONFIG||{};
-  const sb=window.supabase.createClient(cfg.url||cfg.SUPABASE_URL,cfg.anonKey||cfg.SUPABASE_ANON_KEY);
-  const {data,error}=await sb.from('sov_news').select('*').eq('published',true).order('pinned',{ascending:false}).order('published_at',{ascending:false});
+  const url=window.SOV_SUPABASE_URL||cfg.url||cfg.SUPABASE_URL, key=window.SOV_SUPABASE_ANON_KEY||cfg.anonKey||cfg.SUPABASE_ANON_KEY;
+  if(!url||!key) return;
+  const sb=window.supabase.createClient(url,key);
+  const {data,error}=await sb.from('sov_news').select('*').eq('published',true).order('pinned',{ascending:false}).order('published_at',{ascending:false}).limit(12);
   if(error || !data?.length) return;
-  root.innerHTML=data.map(n=>`<article class="news-card ${n.pinned?'pinned':''}">${n.image_url?`<img class="news-hero" src="${n.image_url}" alt="">`:''}<div><h2>${esc(n.title)}</h2><p>${esc(n.summary||'')}</p>${n.body?`<p>${esc(n.body)}</p>`:''}<div class="news-actions">${n.cta_url?`<a class="btn" href="${n.cta_url}" target="_blank" rel="noopener">${esc(n.cta_label||'Otvori')}</a>`:''}${n.pdf_url?`<a class="btn ghost" href="${n.pdf_url}" target="_blank" rel="noopener">PDF</a>`:''}</div></div></article>`).join('');
-  function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+  root.innerHTML = '<div class="section-head"><h2>Vijesti iz urednika</h2></div><div class="news-grid">'+data.map(n=>`<a class="news-card" href="${esc(n.cta_url||n.pdf_url||'#')}"><span class="news-img" style="background-image:url('${esc(n.image_url||'assets/sov-logo.png')}')"></span><span class="news-copy"><span class="news-meta">${n.pinned?'📌 ':''}${date(n.published_at)}</span><strong>${esc(n.title)}</strong><em>${esc(n.summary||n.body||'')}</em></span></a>`).join('')+'</div>';
+  function esc(s){return String(s||'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+  function date(v){try{return new Date(v||Date.now()).toLocaleDateString('hr-HR')}catch(e){return ''}}
 })();
