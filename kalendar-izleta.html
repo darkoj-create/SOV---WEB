@@ -77,10 +77,83 @@ function tripBounds(t){
   }
   return null;
 }
+
+function pickFirst(obj, keys){for(const k of keys){if(obj&&obj[k]!==undefined&&obj[k]!==null&&String(obj[k]).trim()!=='')return obj[k]}return ''}
+function normalizeTripRow(row, idx){
+  const t=Array.isArray(row)?rowToTrip(row, idx):{...row};
+  const out={...t};
+  out.rowNumber=Number(pickFirst(t,['rowNumber','row','red','sheetRow','_row','index'])) || (idx+2);
+  out.date=pickFirst(t,['date','datum','Datum','DATUM','startDate','start','from','dateFrom']);
+  out.leader=pickFirst(t,['leader','voditelj','Voditelj','VODITELJ','organizer','owner']);
+  out.location=pickFirst(t,['location','lokacija','Lokacija','LOKACIJA','teren','name','title','naziv']);
+  out.description=pickFirst(t,['description','opis','Opis','OPIS','note','notes','napomena']);
+  out.goal=pickFirst(t,['goal','cilj','Cilj','CILJ','type','tip']);
+  out.weatherCity=pickFirst(t,['weatherCity','vrijemeMjesto','meteo','mjestoVrijeme','nearestPlace']) || out.location;
+  out.participants=pickFirst(t,['participants','prijavljeni','Prijavljeni','signups','signupNames','ekipa','members']);
+  out.drivers=pickFirst(t,['drivers','vozaci','vozači','Vozaci','Vozači']);
+  out.rasporedUrl=pickFirst(t,['rasporedUrl','carSheetUrl','carsUrl','rasporedAutijuUrl','Raspored autiju','raspored_autiju']);
+  out.centerLat=pickFirst(t,['centerLat','lat','latitude','Lat','LAT']);
+  out.centerLon=pickFirst(t,['centerLon','lon','lng','longitude','Lon','LON']);
+  out.minLat=pickFirst(t,['minLat','south','bboxSouth']); out.maxLat=pickFirst(t,['maxLat','north','bboxNorth']);
+  out.minLon=pickFirst(t,['minLon','west','bboxWest']); out.maxLon=pickFirst(t,['maxLon','east','bboxEast']);
+  return out;
+}
+function rowToTrip(row, idx){
+  // Fallback za Google Sheet rows bez headera: A datum, B voditelj, C lokacija, D opis, E cilj, kasnije bbox/raspored ako postoje
+  return {rowNumber:idx+2,date:row[0],leader:row[1],location:row[2],description:row[3],goal:row[4],objectCount:row[5],pointCount:row[6],trackCount:row[7],createdAt:row[8],centerLat:row[9],centerLon:row[10],minLat:row[11],maxLat:row[12],minLon:row[13],maxLon:row[14],rasporedUrl:row[15],weatherCity:row[16]};
+}
+function extractTripsPayload(json){
+  if(Array.isArray(json))return json;
+  if(!json||typeof json!=='object')return [];
+  if(Array.isArray(json.trips))return json.trips;
+  if(Array.isArray(json.data))return json.data;
+  if(Array.isArray(json.rows))return json.rows;
+  if(Array.isArray(json.items))return json.items;
+  if(json.result&&Array.isArray(json.result.trips))return json.result.trips;
+  if(json.result&&Array.isArray(json.result.rows))return json.result.rows;
+  return [];
+}
+async function fetchTripsFromUrl(url, opts={}){
+  const res=await fetch(url, opts);
+  if(!res.ok)throw new Error('HTTP '+res.status);
+  const txt=await res.text();
+  let json;
+  try{ json=JSON.parse(txt); }
+  catch(e){
+    const m=txt.match(/\{[\s\S]*\}|\[[\s\S]*\]/);
+    if(!m)throw new Error('Endpoint nije vratio JSON: '+txt.slice(0,120));
+    json=JSON.parse(m[0]);
+  }
+  if(json && json.ok===false)throw new Error(json.error||json.message||'Apps Script ok=false');
+  const rows=extractTripsPayload(json);
+  if(!rows.length)throw new Error('Nema rows/trips u odgovoru endpointa');
+  return rows.map((r,i)=>normalizeTripRow(r,i)).filter(t=>clean(t.date)||clean(t.location)||clean(t.leader));
+}
+
 function tripCoords(t){let lat=parseFloat(t.centerLat), lon=parseFloat(t.centerLon); if(Number.isFinite(lat)&&Number.isFinite(lon))return {lat,lon}; const b=tripBounds(t); if(b)return {lat:(b.minLat+b.maxLat)/2,lon:(b.minLon+b.maxLon)/2}; return null}
 function weatherLabel(code){if(code===0)return'☀️ Vedro'; if([1,2].includes(code))return'🌤 Vedro'; if(code===3)return'☁️ Oblačno'; if([45,48].includes(code))return'🌫 Magla'; if([51,53,55].includes(code))return'🌦 Rosulja'; if([61,63,65].includes(code))return'🌧 Kiša'; if([71,73,75,77,85,86].includes(code))return'🌨 Snijeg'; if([80,81,82,95,96,99].includes(code))return'⛈ Nestabilno'; return'🌡 Vrijeme'}
 function speleoWarning(code,precip){if(precip>=20)return'⚠️ Visoke oborine — rizik od poplave špilje.'; if(precip>=8)return'⚠️ Značajne oborine — pazi na vodotoke u špilji.'; if([95,96,99].includes(code))return'⚠️ Grmljavina — oprez s pristupom i metalnom opremom.'; if([71,73,75,77,85,86].includes(code))return'⚠️ Snijeg — provjeri pristupni put.'; return''}
-async function fetchTrips(){ $('status').textContent='Učitavam zajednički raspored iz Google Sheeta…'; const url=TRIPS_WEBAPP_URL+(TRIPS_WEBAPP_URL.includes('?')?'&':'?')+'action=listTrips'; try{ const res=await fetch(url,{method:'GET'}); if(!res.ok)throw new Error('HTTP '+res.status); const json=await res.json(); if(!json.ok)throw new Error(json.error||'Apps Script nije vratio ok=true'); trips=(json.trips||[]).map(t=>({...t,rowNumber:Number(t.rowNumber||0)})); $('status').textContent='Učitano '+trips.length+' izleta iz zajedničkog rasporeda.'; }catch(e){ console.warn(e); $('status').textContent='Nisam mogao direktno učitati Apps Script iz browsera — prikazujem testne web podatke.'; trips=demoTrips(); } render(); loadVisibleWeather(); }
+async function fetchTrips(){
+  $('status').textContent='Učitavam zajednički raspored iz Google Sheeta…';
+  const attempts=[];
+  const base=TRIPS_WEBAPP_URL;
+  const sep=base.includes('?')?'&':'?';
+  ['listTrips','getTrips','trips','readTrips','list'].forEach(a=>attempts.push(base+sep+'action='+encodeURIComponent(a)));
+  attempts.push(base);
+  let lastErr=null;
+  for(const url of attempts){
+    try{
+      const loaded=await fetchTripsFromUrl(url,{method:'GET',cache:'no-store'});
+      trips=loaded;
+      $('status').textContent='Učitano '+trips.length+' izleta iz zajedničkog rasporeda.';
+      render(); loadVisibleWeather();
+      return;
+    }catch(e){ lastErr=e; console.warn('trip sync failed',url,e); }
+  }
+  $('status').textContent='Greška čitanja Sheeta: '+(lastErr?.message||lastErr||'nepoznato')+'. Ne prikazujem testne izlete da se greška vidi.';
+  trips=[];
+  render(); updateStats();
+}
 function demoTrips(){return[{rowNumber:2,date:'14.06.2026.',leader:'Vedran Ferenčak',location:'Sjeverni Velebit',description:'Istraživanje i pregled objekata na terenu.',goal:'Istraživanje',participants:'',drivers:'',weatherCity:'Krasno',centerLat:44.82,centerLon:15.02,rasporedUrl:''},{rowNumber:3,date:'28.06.2026.',leader:'Ivona Lišanin',location:'Žumberak',description:'Vježba i obilazak terena.',goal:'Izletiranje',participants:'',drivers:'',weatherCity:'Samobor',centerLat:45.80,centerLon:15.59,rasporedUrl:''}]}
 async function getCoordsByCity(city){const q=clean(city); if(!q)return null; const url='https://geocoding-api.open-meteo.com/v1/search?name='+enc(q+', Croatia')+'&count=1&language=hr&format=json&countryCode=HR'; const r=await fetch(url); const j=await r.json(); const first=j.results&&j.results[0]; return first?{lat:first.latitude,lon:first.longitude}:null}
 async function fetchWeather(t){const key=tripKey(t); if(weatherCache[key])return weatherCache[key]; let c=tripCoords(t); if(!c)c=await getCoordsByCity(t.weatherCity||t.location); if(!c)return null; const d=parseDate(t.date)||new Date(); const start=d.toISOString().slice(0,10); const end=new Date(d.getTime()+3*86400000).toISOString().slice(0,10); const url=`https://api.open-meteo.com/v1/forecast?latitude=${c.lat}&longitude=${c.lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max,weathercode&timezone=auto&start_date=${start}&end_date=${end}`; const r=await fetch(url); const j=await r.json(); const daily=j.daily; if(!daily)return null; const days=daily.time.map((date,i)=>({date,tempMax:daily.temperature_2m_max[i],tempMin:daily.temperature_2m_min[i],precip:daily.precipitation_sum[i],wind:daily.windspeed_10m_max[i],code:daily.weathercode[i]})); weatherCache[key]=days; return days}
