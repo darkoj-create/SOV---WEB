@@ -1,7 +1,18 @@
 (function(){
   // v4.77 TEMP OPEN MODE: full preview without login. Remove this build when done testing.
   const SOV_OPEN_PREVIEW_MODE = true;
-  const OPEN_PREVIEW_PROFILE = {id:null,email:'preview@sov.local',full_name:'Preview korisnik',role:'admin',status:'approved',open_preview:true};
+  const OPEN_PREVIEW_PROFILE_BASE = {id:null,email:'preview@sov.local',full_name:'Preview korisnik',role:'admin',status:'approved',open_preview:true};
+  const PREVIEW_ROLES = ['user','oruzar','arhivar','editor','admin'];
+  function getPreviewRole(){
+    try{
+      const r = localStorage.getItem('SOV_PREVIEW_ROLE') || 'admin';
+      return PREVIEW_ROLES.includes(r) ? r : 'admin';
+    }catch(e){ return 'admin'; }
+  }
+  function getOpenPreviewProfile(){
+    const role = getPreviewRole();
+    return {...OPEN_PREVIEW_PROFILE_BASE, role, full_name:'Preview '+(ROLE_LABELS[role]||role)};
+  }
   const REGISTERED_PAGES = new Set([
     'dashboard.html','baza.html','pregled-baze.html','izleti.html','kalendar-izleta.html',
     'dokumentacija.html','pregled-zapisnika.html','zapisnici-skupstine.html','novi-zapisnik.html',
@@ -45,14 +56,14 @@
   function escapeHtml(str){ return String(str||'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
 
   async function getSession(){
-    if(SOV_OPEN_PREVIEW_MODE) return {session:null,user:OPEN_PREVIEW_PROFILE};
+    if(SOV_OPEN_PREVIEW_MODE) return {session:null,user:getOpenPreviewProfile()};
     const sb = getClient();
     if(!sb) return {session:null,user:null};
     const {data} = await sb.auth.getSession();
     return {session:data.session,user:data.session && data.session.user};
   }
   async function getProfile(force=false){
-    if(SOV_OPEN_PREVIEW_MODE){ profileCache = OPEN_PREVIEW_PROFILE; return profileCache; }
+    if(SOV_OPEN_PREVIEW_MODE){ profileCache = getOpenPreviewProfile(); return profileCache; }
     if(profileCache && !force) return profileCache;
     const sb = getClient();
     if(!sb) return null;
@@ -122,8 +133,15 @@
   async function logout(){ const sb=getClient(); if(sb) await sb.auth.signOut(); profileCache=null; location.href='index.html'; }
 
   async function can(ability){
-    if(SOV_OPEN_PREVIEW_MODE) return true;
     const u = await getProfile();
+    if(SOV_OPEN_PREVIEW_MODE){
+      if(!u) return false;
+      if(ability === 'admin') return ADMIN_ROLES.includes(u.role);
+      if(ability === 'editor') return EDITOR_ROLES.includes(u.role);
+      if(ability === 'armory') return ARMORY_ROLES.includes(u.role);
+      if(ability === 'speleo_edit' || ability === 'archive') return ARCHIVE_ROLES.includes(u.role);
+      return true;
+    }
     if(!u || u.status !== 'approved') return false;
     if(ability === 'admin') return ADMIN_ROLES.includes(u.role);
     if(ability === 'editor') return EDITOR_ROLES.includes(u.role);
@@ -164,16 +182,55 @@
   async function reject(id){ return updateProfile(id,{status:'rejected'}); }
   async function setRole(id, role){ return updateProfile(id,{role}); }
 
+  function renderPreviewRoleSwitcher(u){
+    if(!SOV_OPEN_PREVIEW_MODE) return;
+    let box = document.getElementById('sov-preview-role-switcher');
+    const roles = [
+      ['user','👤','User'],
+      ['oruzar','🛠️','Oružar'],
+      ['arhivar','🗂️','Arhivar'],
+      ['editor','✏️','Urednik'],
+      ['admin','🛡️','Admin']
+    ];
+    if(!document.getElementById('sov-preview-role-style')){
+      const st=document.createElement('style');
+      st.id='sov-preview-role-style';
+      st.textContent=`
+        #sov-preview-role-switcher{position:fixed;top:12px;right:12px;z-index:999999;display:flex;gap:6px;align-items:center;flex-wrap:wrap;padding:8px;border:1px solid rgba(255,255,255,.14);border-radius:999px;background:rgba(4,10,11,.86);backdrop-filter:blur(14px);box-shadow:0 16px 50px rgba(0,0,0,.38);font-family:Inter,system-ui,sans-serif}
+        #sov-preview-role-switcher .label{color:#b8c9c3;font-size:11px;font-weight:900;padding:0 5px;letter-spacing:.05em;text-transform:uppercase}
+        #sov-preview-role-switcher button{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:#eef8f2;border-radius:999px;padding:7px 10px;font-weight:950;font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:5px}
+        #sov-preview-role-switcher button.active{background:linear-gradient(135deg,#d7f66f,#83e6c2);color:#111;border-color:transparent;box-shadow:0 8px 24px rgba(215,246,111,.18)}
+        @media(max-width:720px){#sov-preview-role-switcher{left:8px;right:8px;top:auto;bottom:8px;justify-content:center;border-radius:20px}#sov-preview-role-switcher .label{display:none}#sov-preview-role-switcher button{padding:8px 9px;font-size:11px}}
+      `;
+      document.head.appendChild(st);
+    }
+    if(!box){
+      box=document.createElement('div');
+      box.id='sov-preview-role-switcher';
+      document.body.appendChild(box);
+    }
+    const current = (u && u.role) || getPreviewRole();
+    box.innerHTML='<span class="label">Preview view</span>'+roles.map(([r,ico,label])=>`<button type="button" data-preview-role="${r}" class="${r===current?'active':''}">${ico}<span>${label}</span></button>`).join('');
+    box.querySelectorAll('button[data-preview-role]').forEach(btn=>{
+      btn.onclick=()=>{
+        try{localStorage.setItem('SOV_PREVIEW_ROLE', btn.dataset.previewRole)}catch(e){}
+        location.reload();
+      };
+    });
+  }
+
   async function renderUserBadge(){
     const u = await getProfile();
+    renderPreviewRoleSwitcher(u);
     document.querySelectorAll('[data-user-name]').forEach(el=>{el.textContent = u ? (u.full_name || u.email) : 'Gost';});
     document.querySelectorAll('[data-user-role]').forEach(el=>{el.textContent = u ? roleText(u.role) : 'Gost';});
     document.querySelectorAll('[data-auth-status]').forEach(el=>{el.textContent = SOV_OPEN_PREVIEW_MODE ? 'Otvoreni preview' : (u ? statusText(u.status) : 'Nije prijavljen');});
     document.querySelectorAll('[data-logout]').forEach(el=>{el.addEventListener('click',e=>{e.preventDefault();logout();});});
-    document.querySelectorAll('[data-role-admin]').forEach(el=>{el.style.display = (SOV_OPEN_PREVIEW_MODE || (u && u.role === 'admin')) ? '' : 'none';});
-    document.querySelectorAll('[data-role-editor]').forEach(el=>{el.style.display = (SOV_OPEN_PREVIEW_MODE || (u && EDITOR_ROLES.includes(u.role))) ? '' : 'none';});
-    document.querySelectorAll('[data-role-armory]').forEach(el=>{el.style.display = (SOV_OPEN_PREVIEW_MODE || (u && ARMORY_ROLES.includes(u.role))) ? '' : 'none';});
-    document.querySelectorAll('[data-role-archive]').forEach(el=>{el.style.display = (SOV_OPEN_PREVIEW_MODE || (u && ARCHIVE_ROLES.includes(u.role))) ? '' : 'none';});
+    document.querySelectorAll('[data-role-admin]').forEach(el=>{el.style.display = (u && u.role === 'admin') ? '' : 'none';});
+    document.querySelectorAll('[data-role-editor]').forEach(el=>{el.style.display = (u && EDITOR_ROLES.includes(u.role)) ? '' : 'none';});
+    document.querySelectorAll('[data-role-armory]').forEach(el=>{el.style.display = (u && ARMORY_ROLES.includes(u.role)) ? '' : 'none';});
+    document.querySelectorAll('[data-role-archive]').forEach(el=>{el.style.display = (u && ARCHIVE_ROLES.includes(u.role)) ? '' : 'none';});
+    document.body.classList.remove('role-admin','role-editor','role-oruzar','role-arhivar','role-user');
     document.body.classList.toggle('role-admin', !!(u && u.role==='admin'));
     document.body.classList.toggle('role-editor', !!(u && u.role==='editor'));
     document.body.classList.toggle('role-oruzar', !!(u && u.role==='oruzar'));
