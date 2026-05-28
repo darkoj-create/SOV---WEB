@@ -1,1 +1,1 @@
-SOV Web v5.35 — Audit Log + User Devices
+SOV Web v5.36 — Oružarstvo canonical role audit

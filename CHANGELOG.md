@@ -1,3 +1,10 @@
+# v5.36 — Oružarstvo canonical role/audit integration
+
+- Added canonical safe SQL for armory tables, RLS and audit integration.
+- Oružarstvo UI now respects unified `can_manage_equipment` permission, not only raw role name.
+- Admin/Oružar operational controls stay hidden for regular users.
+- Keeps existing equipment data and object SQL logic intact.
+
 # v5.34 — Unified Identity + Sync Control
 
 - Dodan dashboard sync control card.
