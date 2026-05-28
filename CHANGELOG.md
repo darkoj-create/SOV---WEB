@@ -323,3 +323,16 @@ Dodani pravi HTML fajlovi:
 - Admin audit/device panel.
 - Safe SQL for `sov_audit_log`, device telemetry columns and recent views.
 - Partner build for APK 1.3.1.
+
+## v5.37 — Arhiva/Nacrti canonical role/audit
+- Added canonical drawings/archive SQL with role-gated RLS.
+- Added audit trigger for drawing metadata changes.
+- Upgraded TopoDroid/Nacrti page to read from `sov_drawings_public`.
+- Admin/Arhivar can save drawing metadata from web UI.
+- Normal users remain read-only for public drawings.
+
+## v5.38 — TopoDroid Import Pipeline
+- Dodan batch import/review pipeline za TopoDroid i nacrte.
+- Dodane safe SQL tablice za import queue.
+- Dodan RPC za publish import itema u canonical arhivu nacrta.
+- Admin/Arhivar write, User read-only.
