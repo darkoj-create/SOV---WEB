@@ -1,3 +1,10 @@
+# v5.31 — Ecosystem sync dashboard
+
+- Dodan `sync-status.html` za provjeru nacrti GS, izleti GS i Supabase cache/role statusa.
+- Dodana pripremna SQL shema `SUPABASE_SOV_ECOSYSTEM_ROLES_v5_31.sql` za unified APK role/permissions model.
+- Dodan dashboard link “SOV Sync”.
+- SQL baza objekata nije dirana; sve provjere su read-only.
+
 ## v5.30 — Drawings fast-search sync
 
 - Web sync nacrta usklađen s novim GS v2.0.2 fast-search endpointom.
