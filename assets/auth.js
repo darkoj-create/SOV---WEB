@@ -1,6 +1,13 @@
 (function(){
-  // v4.77 TEMP OPEN MODE: full preview without login. Remove this build when done testing.
-  const SOV_OPEN_PREVIEW_MODE = true;
+  // v5.33: live auth by default. Preview role switcher is opt-in with ?preview=1 or localStorage SOV_OPEN_PREVIEW_MODE=true.
+  const SOV_OPEN_PREVIEW_MODE = (()=>{
+    try{
+      const q = new URLSearchParams(location.search);
+      if(q.get('preview') === '1'){ localStorage.setItem('SOV_OPEN_PREVIEW_MODE','true'); return true; }
+      if(q.get('preview') === '0'){ localStorage.removeItem('SOV_OPEN_PREVIEW_MODE'); return false; }
+      return localStorage.getItem('SOV_OPEN_PREVIEW_MODE') === 'true';
+    }catch(e){ return false; }
+  })();
   const OPEN_PREVIEW_PROFILE_BASE = {id:null,email:'preview@sov.local',full_name:'Preview korisnik',role:'admin',status:'approved',open_preview:true};
   const PREVIEW_ROLES = ['user','oruzar','arhivar','editor','admin'];
   function getPreviewRole(){
@@ -23,6 +30,18 @@
   const EDITOR_ROLES = ['admin','editor'];
   const ARCHIVE_ROLES = ['admin','arhivar'];
   const ARMORY_ROLES = ['admin','oruzar'];
+  const PERMISSION_FALLBACK = {
+    user:{label:'Član',can_view_sov_base:true,can_view_katastar:false,can_edit_objects:false,can_upload_drawings:true,can_verify_drawings:false,can_manage_trips:false,can_manage_equipment:false,can_edit_news:false,can_use_sql_tools:false,can_manage_users:false},
+    editor:{label:'Urednik',can_view_sov_base:true,can_view_katastar:false,can_edit_objects:true,can_upload_drawings:true,can_verify_drawings:false,can_manage_trips:true,can_manage_equipment:false,can_edit_news:true,can_use_sql_tools:false,can_manage_users:false},
+    arhivar:{label:'Arhivar',can_view_sov_base:true,can_view_katastar:false,can_edit_objects:true,can_upload_drawings:true,can_verify_drawings:true,can_manage_trips:true,can_manage_equipment:false,can_edit_news:false,can_use_sql_tools:false,can_manage_users:false},
+    oruzar:{label:'Oružar',can_view_sov_base:true,can_view_katastar:false,can_edit_objects:false,can_upload_drawings:true,can_verify_drawings:false,can_manage_trips:false,can_manage_equipment:true,can_edit_news:false,can_use_sql_tools:false,can_manage_users:false},
+    admin:{label:'Admin',can_view_sov_base:true,can_view_katastar:true,can_edit_objects:true,can_upload_drawings:true,can_verify_drawings:true,can_manage_trips:true,can_manage_equipment:true,can_edit_news:true,can_use_sql_tools:true,can_manage_users:true}
+  };
+  const ABILITY_TO_PERMISSION = {
+    admin:'can_manage_users', editor:'can_edit_news', armory:'can_manage_equipment',
+    speleo_edit:'can_edit_objects', archive:'can_verify_drawings', sql:'can_use_sql_tools',
+    trips:'can_manage_trips', drawings:'can_upload_drawings', katastar:'can_view_katastar', sov_base:'can_view_sov_base'
+  };
   const BOOTSTRAP_ADMIN_EMAILS = ['darko.jeras@gmail.com'];
   function isBootstrapAdminEmail(email){ return BOOTSTRAP_ADMIN_EMAILS.includes(String(email||'').trim().toLowerCase()); }
   function bootstrapAdminProfile(user){
@@ -30,6 +49,7 @@
   }
   let client = null;
   let profileCache = null;
+  let permissionCache = null;
   let readyPromise = null;
 
   function pageName(){ return (location.pathname.split('/').pop() || 'index.html').toLowerCase(); }
@@ -62,6 +82,27 @@
     const {data} = await sb.auth.getSession();
     return {session:data.session,user:data.session && data.session.user};
   }
+  function fallbackPermissionsFor(role){ return {...(PERMISSION_FALLBACK[role] || PERMISSION_FALLBACK.user)}; }
+  async function loadCurrentPermissions(force=false){
+    if(permissionCache && !force) return permissionCache;
+    if(SOV_OPEN_PREVIEW_MODE){
+      const p = getOpenPreviewProfile();
+      permissionCache = {...fallbackPermissionsFor(p.role), role:p.role, status:'approved', label:ROLE_LABELS[p.role]||p.role};
+      return permissionCache;
+    }
+    const sb = getClient();
+    if(!sb) return null;
+    try{
+      const {data,error} = await sb.from('sov_current_user_permissions').select('*').maybeSingle();
+      if(error) throw error;
+      permissionCache = data || null;
+      return permissionCache;
+    }catch(e){
+      console.warn('SOV role permissions view nije dostupan, koristim fallback role map.', e);
+      return null;
+    }
+  }
+
   async function getProfile(force=false){
     if(SOV_OPEN_PREVIEW_MODE){ profileCache = getOpenPreviewProfile(); return profileCache; }
     if(profileCache && !force) return profileCache;
@@ -72,11 +113,12 @@
     const {data,error} = await sb.from('profiles').select('*').eq('id',user.id).maybeSingle();
     if(error){ console.error(error); }
     if(data && data.status === 'approved'){
-      profileCache = {...data,email:user.email};
+      const perms = await loadCurrentPermissions(force);
+      profileCache = {...data,email:user.email,permissions:perms || fallbackPermissionsFor(String(data.role||'user'))};
       return profileCache;
     }
     if(isBootstrapAdminEmail(user.email)){
-      profileCache = data ? {...data,email:user.email,role:'admin',status:'approved',bootstrap_admin:true} : bootstrapAdminProfile(user);
+      profileCache = data ? {...data,email:user.email,role:'admin',status:'approved',bootstrap_admin:true,permissions:fallbackPermissionsFor('admin')} : {...bootstrapAdminProfile(user),permissions:fallbackPermissionsFor('admin')};
       try{
         await sb.from('profiles').upsert({
           id:user.id, email:user.email, full_name:profileCache.full_name || 'Darko Jeras',
@@ -85,7 +127,7 @@
       }catch(e){ console.warn('Bootstrap admin profile sync skipped.', e); }
       return profileCache;
     }
-    profileCache = data ? {...data,email:user.email} : {id:user.id,email:user.email,full_name:user.email,role:'user',status:'pending'};
+    profileCache = data ? {...data,email:user.email,permissions:fallbackPermissionsFor(String(data.role||'user'))} : {id:user.id,email:user.email,full_name:user.email,role:'user',status:'pending',permissions:fallbackPermissionsFor('user')};
     return profileCache;
   }
   async function currentUser(){ return await getProfile(); }
@@ -121,7 +163,7 @@
     if(!sb) return {ok:false,msg:'Supabase nije konfiguriran. Upisi URL i anon key u assets/supabase-config.js.'};
     const {data,error} = await sb.auth.signInWithPassword({email:(email||'').trim().toLowerCase(),password});
     if(error) return {ok:false,msg:'Krivi email/lozinka ili račun nije potvrđen.'};
-    profileCache = null;
+    profileCache = null; permissionCache = null;
     const profile = await getProfile(true);
     if(!profile || profile.status !== 'approved'){
       await sb.auth.signOut();
@@ -130,24 +172,18 @@
     }
     return {ok:true,user:profile};
   }
-  async function logout(){ const sb=getClient(); if(sb) await sb.auth.signOut(); profileCache=null; location.href='index.html'; }
+  async function logout(){ const sb=getClient(); if(sb) await sb.auth.signOut(); profileCache=null; permissionCache=null; try{localStorage.removeItem('SOV_OPEN_PREVIEW_MODE');}catch(e){} location.href='index.html'; }
 
   async function can(ability){
     const u = await getProfile();
-    if(SOV_OPEN_PREVIEW_MODE){
-      if(!u) return false;
-      if(ability === 'admin') return ADMIN_ROLES.includes(u.role);
-      if(ability === 'editor') return EDITOR_ROLES.includes(u.role);
-      if(ability === 'armory') return ARMORY_ROLES.includes(u.role);
-      if(ability === 'speleo_edit' || ability === 'archive') return ARCHIVE_ROLES.includes(u.role);
-      return true;
-    }
     if(!u || u.status !== 'approved') return false;
-    if(ability === 'admin') return ADMIN_ROLES.includes(u.role);
-    if(ability === 'editor') return EDITOR_ROLES.includes(u.role);
-    if(ability === 'armory') return ARMORY_ROLES.includes(u.role);
-    if(ability === 'speleo_edit' || ability === 'archive') return ARCHIVE_ROLES.includes(u.role);
-    return true;
+    const permKey = ABILITY_TO_PERMISSION[ability];
+    if(!permKey){ return true; }
+    if(u.permissions && Object.prototype.hasOwnProperty.call(u.permissions, permKey)) return !!u.permissions[permKey];
+    const livePerms = await loadCurrentPermissions();
+    if(livePerms && Object.prototype.hasOwnProperty.call(livePerms, permKey)) return !!livePerms[permKey];
+    const fallback = fallbackPermissionsFor(String(u.role||'user'));
+    return !!fallback[permKey];
   }
   async function requireApproved(){
     if(SOV_OPEN_PREVIEW_MODE){ await renderUserBadge(); return true; }
@@ -161,10 +197,10 @@
     }
     return true;
   }
-  async function requireAdmin(){ if(SOV_OPEN_PREVIEW_MODE){ await renderUserBadge(); if(!(await can('admin'))){ location.href='dashboard.html?denied=admin'; return false; } return true; } const ok = await requireApproved(); if(!ok) return false; if(!(await can('admin'))){ location.href='dashboard.html?denied=admin'; return false; } return true; }
-  async function requireEditor(){ if(SOV_OPEN_PREVIEW_MODE){ await renderUserBadge(); return true; } const ok = await requireApproved(); if(!ok) return false; if(!(await can('editor'))){ location.href='dashboard.html?denied=editor'; return false; } return true; }
-  async function requireArmory(){ if(SOV_OPEN_PREVIEW_MODE){ await renderUserBadge(); return true; } const ok = await requireApproved(); if(!ok) return false; if(!(await can('armory'))){ location.href='dashboard.html?denied=armory'; return false; } return true; }
-  async function requireArchive(){ if(SOV_OPEN_PREVIEW_MODE){ await renderUserBadge(); return true; } const ok = await requireApproved(); if(!ok) return false; if(!(await can('speleo_edit'))){ location.href='dashboard.html?denied=archive'; return false; } return true; }
+  async function requireAdmin(){ const ok = await requireApproved(); if(!ok) return false; if(!(await can('admin'))){ location.href='dashboard.html?denied=admin'; return false; } return true; }
+  async function requireEditor(){ const ok = await requireApproved(); if(!ok) return false; if(!(await can('editor'))){ location.href='dashboard.html?denied=editor'; return false; } return true; }
+  async function requireArmory(){ const ok = await requireApproved(); if(!ok) return false; if(!(await can('armory'))){ location.href='dashboard.html?denied=armory'; return false; } return true; }
+  async function requireArchive(){ const ok = await requireApproved(); if(!ok) return false; if(!(await can('archive'))){ location.href='dashboard.html?denied=archive'; return false; } return true; }
 
   async function updateProfile(id, patch){
     const sb = getClient();
@@ -196,11 +232,11 @@
       const st=document.createElement('style');
       st.id='sov-preview-role-style';
       st.textContent=`
-        #sov-preview-role-switcher{position:fixed;top:12px;right:12px;z-index:999999;display:flex;gap:6px;align-items:center;flex-wrap:wrap;padding:8px;border:1px solid rgba(255,255,255,.14);border-radius:999px;background:rgba(4,10,11,.86);backdrop-filter:blur(14px);box-shadow:0 16px 50px rgba(0,0,0,.38);font-family:Inter,system-ui,sans-serif}
+        #sov-preview-role-switcher{position:fixed;left:14px;bottom:14px;z-index:999999;display:flex;gap:6px;align-items:center;flex-wrap:wrap;padding:8px;border:1px solid rgba(255,255,255,.14);border-radius:999px;background:rgba(4,10,11,.86);backdrop-filter:blur(14px);box-shadow:0 16px 50px rgba(0,0,0,.38);font-family:Inter,system-ui,sans-serif}
         #sov-preview-role-switcher .label{color:#b8c9c3;font-size:11px;font-weight:900;padding:0 5px;letter-spacing:.05em;text-transform:uppercase}
         #sov-preview-role-switcher button{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:#eef8f2;border-radius:999px;padding:7px 10px;font-weight:950;font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:5px}
         #sov-preview-role-switcher button.active{background:linear-gradient(135deg,#d7f66f,#83e6c2);color:#111;border-color:transparent;box-shadow:0 8px 24px rgba(215,246,111,.18)}
-        @media(max-width:720px){#sov-preview-role-switcher{left:8px;right:8px;top:auto;bottom:8px;justify-content:center;border-radius:20px}#sov-preview-role-switcher .label{display:none}#sov-preview-role-switcher button{padding:8px 9px;font-size:11px}}
+        @media(max-width:720px){#sov-preview-role-switcher{left:8px;right:8px;bottom:8px;justify-content:center;border-radius:20px}#sov-preview-role-switcher .label{display:none}#sov-preview-role-switcher button{padding:8px 9px;font-size:11px}}
       `;
       document.head.appendChild(st);
     }
@@ -210,7 +246,9 @@
       document.body.appendChild(box);
     }
     const current = (u && u.role) || getPreviewRole();
-    box.innerHTML='<span class="label">Preview view</span>'+roles.map(([r,ico,label])=>`<button type="button" data-preview-role="${r}" class="${r===current?'active':''}">${ico}<span>${label}</span></button>`).join('');
+    box.innerHTML='<span class="label">Preview</span>'+roles.map(([r,ico,label])=>`<button type="button" data-preview-role="${r}" class="${r===current?'active':''}">${ico}<span>${label}</span></button>`).join('')+'<button type="button" data-preview-close>×</button>';
+    const closeBtn = box.querySelector('[data-preview-close]');
+    if(closeBtn){ closeBtn.title='Isključi preview'; closeBtn.onclick=()=>{ try{localStorage.removeItem('SOV_OPEN_PREVIEW_MODE')}catch(e){} location.href=location.pathname; }; }
     box.querySelectorAll('button[data-preview-role]').forEach(btn=>{
       btn.onclick=()=>{
         try{localStorage.setItem('SOV_PREVIEW_ROLE', btn.dataset.previewRole)}catch(e){}
@@ -226,10 +264,16 @@
     document.querySelectorAll('[data-user-role]').forEach(el=>{el.textContent = u ? roleText(u.role) : 'Gost';});
     document.querySelectorAll('[data-auth-status]').forEach(el=>{el.textContent = SOV_OPEN_PREVIEW_MODE ? 'Otvoreni preview' : (u ? statusText(u.status) : 'Nije prijavljen');});
     document.querySelectorAll('[data-logout]').forEach(el=>{el.addEventListener('click',e=>{e.preventDefault();logout();});});
-    document.querySelectorAll('[data-role-admin]').forEach(el=>{el.style.display = (u && u.role === 'admin') ? '' : 'none';});
-    document.querySelectorAll('[data-role-editor]').forEach(el=>{el.style.display = (u && EDITOR_ROLES.includes(u.role)) ? '' : 'none';});
-    document.querySelectorAll('[data-role-armory]').forEach(el=>{el.style.display = (u && ARMORY_ROLES.includes(u.role)) ? '' : 'none';});
-    document.querySelectorAll('[data-role-archive]').forEach(el=>{el.style.display = (u && ARCHIVE_ROLES.includes(u.role)) ? '' : 'none';});
+    const canAdmin = await can('admin');
+    const canEditor = await can('editor');
+    const canArmory = await can('armory');
+    const canArchive = await can('archive');
+    const canSql = await can('sql');
+    document.querySelectorAll('[data-role-admin]').forEach(el=>{el.style.display = canAdmin ? '' : 'none';});
+    document.querySelectorAll('[data-role-editor]').forEach(el=>{el.style.display = canEditor ? '' : 'none';});
+    document.querySelectorAll('[data-role-armory]').forEach(el=>{el.style.display = canArmory ? '' : 'none';});
+    document.querySelectorAll('[data-role-archive]').forEach(el=>{el.style.display = canArchive ? '' : 'none';});
+    document.querySelectorAll('[data-role-sql]').forEach(el=>{el.style.display = canSql ? '' : 'none';});
     document.body.classList.remove('role-admin','role-editor','role-oruzar','role-arhivar','role-user');
     document.body.classList.toggle('role-admin', !!(u && u.role==='admin'));
     document.body.classList.toggle('role-editor', !!(u && u.role==='editor'));
@@ -249,9 +293,11 @@
   async function autoProtect(){
     const p = pageName();
     if(!REGISTERED_PAGES.has(p)){ await renderUserBadge(); return; }
-    if(p === 'admin-users.html' || p === 'role-manager.html' || p.startsWith('speleo-sql-')) await requireAdmin();
-    else if(p === 'news-editor.html') await requireEditor();
-    else if(p === 'oruzarstvo-import.html') await requireArmory();
+    if(p === 'admin-users.html' || p === 'role-manager.html') await requireAdmin();
+    else if(p.startsWith('speleo-sql-')) await requireAdmin();
+    else if(p === 'news-editor.html' || p === 'napisi-clanak.html') await requireEditor();
+    else if(p === 'oruzarstvo.html' || p === 'oruzarstvo-import.html' || p.startsWith('oruzar-master') || p === 'inventura.html') await requireArmory();
+    else if(p === 'arhivar-zahvati.html') await requireArchive();
     else await requireApproved();
     await renderUserBadge();
   }
@@ -259,5 +305,5 @@
     document.addEventListener('DOMContentLoaded', async()=>{ await autoProtect(); resolve(true); });
   });
 
-  window.SOVAuth = {isConfigured,getClient,getSession,getProfile,currentUser,register,login,logout,can,requireApproved,requireAdmin,requireEditor,requireArmory,requireArchive,loadUsers,approve,reject,setRole,renderUserBadge,statusText,roleText,ready:()=>readyPromise};
+  window.SOVAuth = {isConfigured,getClient,getSession,getProfile,currentUser,register,login,logout,can,requireApproved,requireAdmin,requireEditor,requireArmory,requireArchive,loadUsers,approve,reject,setRole,loadCurrentPermissions,renderUserBadge,statusText,roleText,ready:()=>readyPromise};
 })();

@@ -1,3 +1,17 @@
+# v5.34 — Unified Identity + Sync Control
+
+- Dodan dashboard sync control card.
+- Dodan `sov-sync-control.js` lightweight helper za lokalni sync badge/state.
+- Dodan SQL foundation `SUPABASE_SOV_UNIFIED_IDENTITY_SYNC_v5_34.sql`.
+- SQL je aditivan: dodaje sync queue i user devices, bez rušenja postojeće SQL baze objekata.
+
+
+## v5.33 — Role Control Center
+- Live auth by default; preview role switcher opt-in only.
+- Web permission checks read Supabase `sov_current_user_permissions`.
+- Dashboard modules gated by Admin / Urednik / Oružar / Arhivar / Član permissions.
+- SQL shortcuts restricted to admin SQL permission.
+
 
 ## v5.32 — Role manager
 

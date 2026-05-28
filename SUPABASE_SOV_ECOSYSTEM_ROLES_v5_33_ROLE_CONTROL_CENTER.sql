@@ -1,6 +1,6 @@
--- SOV ECOSYSTEM ROLES / ROLE MANAGER v5.32.1
+-- SOV ECOSYSTEM ROLES / ROLE CONTROL CENTER v5.33
 -- Purpose: web Role manager + future unified/admin-capable APK permissions.
--- v5.32.1 fix: drop/recreate permission views so enum->text column changes do not fail.
+-- v5.33: same safe schema as v5.32.1, used by web role control center + APK sync foundation.
 -- Safe/additive: does NOT touch speleo object live/staging data.
 -- Run in Supabase SQL editor.
 
