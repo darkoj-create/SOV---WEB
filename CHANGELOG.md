@@ -310,3 +310,9 @@ Dodani pravi HTML fajlovi:
 - Descenderi su vidljivi pod Osobna oprema.
 - Bušilice, baterije, punjači i svrdla su grupirani u Bušilice i baterije.
 - Oružar master ostaje odvojen workspace.
+
+
+## v5.35 — Audit Log + User Devices
+- Admin audit/device panel.
+- Safe SQL for `sov_audit_log`, device telemetry columns and recent views.
+- Partner build for APK 1.3.1.
