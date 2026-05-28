@@ -1,3 +1,10 @@
+## v5.30 — Drawings fast-search sync
+
+- Web sync nacrta usklađen s novim GS v2.0.2 fast-search endpointom.
+- Nacrti se syncaju iz cached Drive indexa (`listDrawings`), bez full Drive skeniranja iz weba.
+- Ograničeno na obične nacrte: PDF/JPG/PNG/WEBP/TIF/TIFF.
+- SQL baza objekata nije mijenjana; upsert ide samo u `speleo_object_drawings`.
+
 ## v4.56 - Oružar Master real HTML podstranice
 
 # v4.56 - Oružar Master real HTML podstranice

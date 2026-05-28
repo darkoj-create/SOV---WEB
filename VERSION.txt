@@ -1,1 +1,1 @@
-v5.28-news-editor-linked-admin-sql-only
+v5.30-drawings-fastsearch-sync
