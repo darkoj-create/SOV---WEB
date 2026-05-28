@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="hr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Role manager — SOV Cloud</title>
+  <link rel="stylesheet" href="assets/site.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/supabase-config.js"></script>
+  <script src="assets/auth.js"></script>
+  <style>
+    :root{--bg2:#071011;--card:rgba(255,255,255,.055);--line2:rgba(255,255,255,.13);--muted2:#aac0bb;--ok:#d7f66f;--cyan:#7ce3d2;--warn:#ffd37a;--bad:#ff9b9b}
+    body{background:radial-gradient(circle at 20% 0%,rgba(124,227,210,.14),transparent 34%),radial-gradient(circle at 80% 10%,rgba(215,246,111,.10),transparent 28%),#050a0b;color:#eef8f2}
+    .page{max-width:1240px;margin:34px auto 80px;padding:0 18px}.hero{border:1px solid var(--line2);border-radius:34px;background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.035));box-shadow:0 28px 90px rgba(0,0,0,.36);padding:28px;margin-bottom:18px}.heroTop{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap}.eyebrow{color:var(--ok);font-size:12px;text-transform:uppercase;letter-spacing:.12em;font-weight:950}.hero h1{margin:8px 0 8px;font-size:clamp(32px,5vw,56px);line-height:.98}.lead{color:var(--muted2);max-width:850px;line-height:1.55}.statusLine{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.pill{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line2);border-radius:999px;padding:8px 11px;background:rgba(255,255,255,.045);color:var(--muted2);font-size:12px;font-weight:900}.pill.ok{background:rgba(215,246,111,.13);color:#efffc1;border-color:rgba(215,246,111,.28)}.pill.warn{background:rgba(255,211,122,.12);color:#ffe2a2;border-color:rgba(255,211,122,.25)}
+    .grid{display:grid;grid-template-columns:1.2fr .8fr;gap:18px}.card{border:1px solid var(--line2);border-radius:28px;background:var(--card);padding:20px;box-shadow:0 18px 50px rgba(0,0,0,.22)}.card h2{margin:0 0 6px}.sub{color:var(--muted2);font-size:13px;line-height:1.5}.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}.btn{border:1px solid var(--line2);border-radius:999px;padding:10px 13px;background:rgba(255,255,255,.055);color:#fff;font-weight:950;cursor:pointer}.btn:hover{background:rgba(255,255,255,.09)}.btn.primary{background:linear-gradient(135deg,var(--ok),var(--cyan));color:#08110f;border:0}.btn.danger{color:#ffc2c2;border-color:rgba(255,155,155,.35)}.btn.small{font-size:12px;padding:7px 10px}.input,.select{border:1px solid var(--line2);border-radius:16px;background:#071013;color:#fff;padding:10px 12px;font-weight:850;outline:none}.input{min-width:230px}.select{min-width:135px}.tableWrap{overflow:auto;border:1px solid var(--line2);border-radius:20px}.matrix{width:100%;border-collapse:separate;border-spacing:0;min-width:960px}.matrix th,.matrix td{padding:11px 10px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left;font-size:13px}.matrix th{position:sticky;top:0;background:#091213;color:#d9eee8;z-index:1}.matrix tr:last-child td{border-bottom:0}.matrix td.center,.matrix th.center{text-align:center}.roleLabel{font-weight:950}.desc{font-size:12px;color:var(--muted2);margin-top:3px}.toggle{width:20px;height:20px;accent-color:#d7f66f}.users{display:flex;flex-direction:column;gap:10px}.user{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;border:1px solid var(--line2);border-radius:20px;background:rgba(255,255,255,.035);padding:14px}.user b{display:block}.mail{font-size:12px;color:var(--muted2);margin-top:4px}.actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.mini{font-size:12px;color:var(--muted2)}.log{white-space:pre-wrap;border:1px solid var(--line2);border-radius:18px;background:rgba(0,0,0,.22);padding:13px;color:#cbe0da;font-size:12px;max-height:260px;overflow:auto}.jsonBox{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;white-space:pre-wrap;background:#031012;border:1px solid rgba(124,227,210,.2);border-radius:18px;padding:14px;color:#ccfff4;max-height:420px;overflow:auto}.split{display:grid;grid-template-columns:1fr 1fr;gap:14px}.notice{border:1px solid rgba(255,211,122,.22);background:rgba(255,211,122,.08);border-radius:20px;padding:14px;color:#ffe6b3;line-height:1.45}.okText{color:#eaffb4}.badText{color:#ffc2c2}.hidden{display:none!important}@media(max-width:920px){.grid,.split{grid-template-columns:1fr}.user{grid-template-columns:1fr}.actions{justify-content:flex-start}.hero{padding:22px}}
+  </style>
+  <link rel="stylesheet" href="assets/mobile.css">
+</head>
+<body>
+  <header class="top wrap">
+    <a class="brand" href="dashboard.html"><div class="mark">SOV</div><div><strong>SOV Cloud</strong><small>Role manager</small></div></a>
+    <nav class="nav"><a href="dashboard.html">Dashboard</a><a href="admin-users.html">Korisnici</a><a href="sync-status.html">SOV Sync</a><a href="login.html" data-logout>Odjava</a></nav>
+  </header>
+
+  <main class="page">
+    <section class="hero">
+      <div class="heroTop">
+        <div>
+          <div class="eyebrow">SOV ecosystem v5.32</div>
+          <h1>Role manager</h1>
+          <p class="lead">Jedno mjesto za korisnike, role i permissione koje će kasnije čitati unified/admin APK. Ovdje ne diramo SQL bazu objekata — samo <b>profiles</b> i <b>sov_role_permissions</b>.</p>
+        </div>
+        <div class="statusLine">
+          <span class="pill" id="sessionPill">Provjera sesije...</span>
+          <span class="pill" id="schemaPill">Schema nije provjerena</span>
+          <span class="pill ok">APK role-ready</span>
+        </div>
+      </div>
+      <div class="toolbar">
+        <button class="btn primary" id="btnLoad">Učitaj sve</button>
+        <button class="btn" id="btnSaveMatrix">Spremi permissione</button>
+        <button class="btn" id="btnCopyJson">Kopiraj APK JSON</button>
+        <a class="btn" href="SUPABASE_SOV_ECOSYSTEM_ROLES_v5_32.sql" download>Preuzmi SQL v5.32</a>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <h2>Role permissions matrica</h2>
+        <p class="sub">Ovo je kanonska tablica za budući unified APK. App nakon logina treba čitati permissione i prema njima paliti/gasiti module.</p>
+        <div class="tableWrap" style="margin-top:16px">
+          <table class="matrix" id="matrixTable">
+            <thead><tr id="matrixHead"></tr></thead>
+            <tbody id="matrixBody"><tr><td>Učitavam...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>APK permission JSON</h2>
+        <p class="sub">Ovo je format koji kasnije koristimo u appu: <code>role → permissions</code>. Dobar je za testiranje i za Kotlin model.</p>
+        <div id="apkJson" class="jsonBox">Učitaj role...</div>
+      </div>
+    </section>
+
+    <section class="grid" style="margin-top:18px">
+      <div class="card">
+        <h2>Korisnici i role</h2>
+        <p class="sub">Brzo odobravanje i promjena rola. Ako update ne prođe, treba pokrenuti SQL v5.32 jer RLS možda još ne dopušta admin update.</p>
+        <div class="toolbar">
+          <input class="input" id="userSearch" placeholder="Traži ime ili email...">
+          <select class="select" id="statusFilter"><option value="all">Svi statusi</option><option value="pending">Čekaju</option><option value="approved">Odobreni</option><option value="rejected">Odbijeni</option></select>
+          <select class="select" id="roleFilter"><option value="all">Sve role</option></select>
+        </div>
+        <div class="users" id="usersBox"><p class="sub">Učitavam korisnike...</p></div>
+      </div>
+
+      <div class="card">
+        <h2>Status i log</h2>
+        <div class="notice" id="sqlNotice">Ako ovo prvi put koristiš, prvo u Supabase SQL editoru pokreni <b>SUPABASE_SOV_ECOSYSTEM_ROLES_v5_32.sql</b>. Nakon toga ova stranica može mijenjati role i permissione.</div>
+        <div class="split" style="margin-top:14px">
+          <div><div class="mini">Ukupno korisnika</div><h2 id="countUsers">—</h2></div>
+          <div><div class="mini">Aktivnih rola</div><h2 id="countRoles">—</h2></div>
+        </div>
+        <div class="log" id="logBox" style="margin-top:14px">Ready.</div>
+      </div>
+    </section>
+  </main>
+
+<script>
+const PERMISSION_COLUMNS = [
+  ['can_view_sov_base','SOV baza','Vidi osnovnu SOV bazu i objekte.'],
+  ['can_view_katastar','Katastar','Vidi katastar/širu bazu gdje je dopušteno.'],
+  ['can_edit_objects','Edit objekata','Može uređivati opise/status/metadata objekata.'],
+  ['can_upload_drawings','Upload nacrta','Može dodavati nacrte.'],
+  ['can_verify_drawings','Verifikacija nacrta','Može potvrđivati match nacrta s objektima.'],
+  ['can_manage_trips','Izleti','Može uređivati/organizirati izlete.'],
+  ['can_manage_equipment','Oružarstvo','Može upravljati opremom.'],
+  ['can_edit_news','Vijesti','Može uređivati članke/vijesti.'],
+  ['can_use_sql_tools','SQL alati','Vidi SQL sandbox/go-live alate.'],
+  ['can_manage_users','Korisnici','Može upravljati korisnicima i rolama.']
+];
+const DEFAULT_ROLES = [
+  {role:'user',label:'Član',can_view_sov_base:true,can_view_katastar:false,can_edit_objects:false,can_upload_drawings:true,can_verify_drawings:false,can_manage_trips:false,can_manage_equipment:false,can_edit_news:false,can_use_sql_tools:false,can_manage_users:false},
+  {role:'editor',label:'Urednik',can_view_sov_base:true,can_view_katastar:false,can_edit_objects:true,can_upload_drawings:true,can_verify_drawings:false,can_manage_trips:true,can_manage_equipment:false,can_edit_news:true,can_use_sql_tools:false,can_manage_users:false},
+  {role:'arhivar',label:'Arhivar',can_view_sov_base:true,can_view_katastar:false,can_edit_objects:true,can_upload_drawings:true,can_verify_drawings:true,can_manage_trips:true,can_manage_equipment:false,can_edit_news:false,can_use_sql_tools:false,can_manage_users:false},
+  {role:'oruzar',label:'Oružar',can_view_sov_base:true,can_view_katastar:false,can_edit_objects:false,can_upload_drawings:true,can_verify_drawings:false,can_manage_trips:false,can_manage_equipment:true,can_edit_news:false,can_use_sql_tools:false,can_manage_users:false},
+  {role:'admin',label:'Admin',can_view_sov_base:true,can_view_katastar:true,can_edit_objects:true,can_upload_drawings:true,can_verify_drawings:true,can_manage_trips:true,can_manage_equipment:true,can_edit_news:true,can_use_sql_tools:true,can_manage_users:true}
+];
+let roles = [];
+let users = [];
+function $(id){return document.getElementById(id)}
+function esc(s){return String(s||'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+function log(msg,obj){ const line='['+new Date().toLocaleTimeString('hr-HR')+'] '+msg+(obj?'\n'+JSON.stringify(obj,null,2):''); $('logBox').textContent=line+'\n\n'+$('logBox').textContent; }
+function sb(){ return SOVAuth.getClient(); }
+async function loadRoles(){
+  const client=sb();
+  if(!client){ roles=[...DEFAULT_ROLES]; log('Supabase client nije dostupan, koristim default role.'); return roles; }
+  const {data,error}=await client.from('sov_role_permissions').select('*').order('role');
+  if(error){ roles=[...DEFAULT_ROLES]; $('schemaPill').textContent='Treba SQL v5.32'; $('schemaPill').className='pill warn'; log('Ne mogu učitati sov_role_permissions. Pokreni SQL v5.32.', error); return roles; }
+  roles=(data&&data.length)?data:[...DEFAULT_ROLES];
+  $('schemaPill').textContent='Role schema OK'; $('schemaPill').className='pill ok';
+  return roles;
+}
+async function loadUsers(){
+  try{ users = await SOVAuth.loadUsers(); }
+  catch(e){ users=[]; log('Ne mogu učitati profile.', String(e)); }
+  return users;
+}
+function renderMatrix(){
+  const head=['<th>Rola</th>'].concat(PERMISSION_COLUMNS.map(([k,label])=>'<th class="center" title="'+esc(k)+'">'+esc(label)+'</th>')).join('');
+  $('matrixHead').innerHTML=head;
+  $('matrixBody').innerHTML=roles.map(r=>{
+    return '<tr data-role-row="'+esc(r.role)+'"><td><div class="roleLabel">'+esc(r.label||r.role)+'</div><div class="desc">'+esc(r.role)+'</div></td>'+PERMISSION_COLUMNS.map(([k])=>'<td class="center"><input class="toggle" type="checkbox" data-perm="'+esc(k)+'" '+(r[k]?'checked':'')+'></td>').join('')+'</tr>';
+  }).join('');
+}
+function renderRoleFilter(){
+  const current=$('roleFilter').value || 'all';
+  $('roleFilter').innerHTML='<option value="all">Sve role</option>'+roles.map(r=>'<option value="'+esc(r.role)+'">'+esc(r.label||r.role)+'</option>').join('');
+  $('roleFilter').value=[...roles.map(r=>r.role),'all'].includes(current)?current:'all';
+}
+function roleLabel(role){ const r=roles.find(x=>x.role===role)||DEFAULT_ROLES.find(x=>x.role===role); return r?(r.label||r.role):(role||'Član'); }
+function statusText(status){ return SOVAuth.statusText ? SOVAuth.statusText(status) : (status||''); }
+function renderUsers(){
+  const q=($('userSearch').value||'').trim().toLowerCase();
+  const sf=$('statusFilter').value;
+  const rf=$('roleFilter').value;
+  let shown=users.filter(u=>{
+    const hay=((u.full_name||'')+' '+(u.email||'')+' '+(u.note||'')).toLowerCase();
+    return (!q || hay.includes(q)) && (sf==='all'||u.status===sf) && (rf==='all'||u.role===rf);
+  });
+  $('countUsers').textContent=String(users.length);
+  $('countRoles').textContent=String(roles.length);
+  if(!shown.length){ $('usersBox').innerHTML='<p class="sub">Nema korisnika za odabrani filter.</p>'; return; }
+  $('usersBox').innerHTML=shown.map(u=>{
+    const roleOptions=roles.map(r=>'<option value="'+esc(r.role)+'" '+((u.role||'user')===r.role?'selected':'')+'>'+esc(r.label||r.role)+'</option>').join('');
+    return '<div class="user" data-user="'+esc(u.id)+'"><div><b>'+esc(u.full_name||u.email)+'</b><div class="mail">'+esc(u.email)+' · '+esc(statusText(u.status))+' · '+esc(roleLabel(u.role||'user'))+'</div>'+(u.note?'<div class="mail">'+esc(u.note)+'</div>':'')+'</div><div class="actions"><select class="select" data-user-role="'+esc(u.id)+'">'+roleOptions+'</select><button class="btn small primary" data-approve="'+esc(u.id)+'">Odobri</button><button class="btn small danger" data-reject="'+esc(u.id)+'">Odbij</button></div></div>';
+  }).join('');
+  document.querySelectorAll('[data-user-role]').forEach(sel=>{ sel.onchange=async()=>{ await saveUserRole(sel.dataset.userRole, sel.value); }; });
+  document.querySelectorAll('[data-approve]').forEach(btn=>{ btn.onclick=async()=>{ await saveUserStatus(btn.dataset.approve,'approved'); }; });
+  document.querySelectorAll('[data-reject]').forEach(btn=>{ btn.onclick=async()=>{ await saveUserStatus(btn.dataset.reject,'rejected'); }; });
+}
+function buildApkJson(){
+  const out={version:'5.32',generatedAt:new Date().toISOString(),roles:{}};
+  roles.forEach(r=>{ out.roles[r.role]={label:r.label||r.role,permissions:{}}; PERMISSION_COLUMNS.forEach(([k])=>{ out.roles[r.role].permissions[k]=!!r[k]; }); });
+  return out;
+}
+function renderJson(){ $('apkJson').textContent=JSON.stringify(buildApkJson(),null,2); }
+async function saveMatrix(){
+  const next=[];
+  document.querySelectorAll('[data-role-row]').forEach(row=>{
+    const role=row.dataset.roleRow;
+    const src=roles.find(r=>r.role===role)||{role,label:role};
+    const item={role:src.role,label:src.label||src.role};
+    PERMISSION_COLUMNS.forEach(([k])=>{ const cb=row.querySelector('[data-perm="'+k+'"]'); item[k]=!!(cb&&cb.checked); });
+    next.push(item);
+  });
+  const client=sb();
+  if(!client){ roles=next; renderJson(); log('Preview: permissioni spremljeni samo lokalno.'); return; }
+  const {error}=await client.from('sov_role_permissions').upsert(next,{onConflict:'role'});
+  if(error){ log('Greška kod spremanja permissiona. Pokreni SQL v5.32 ako RLS blokira update.', error); alert('Greška: '+error.message); return; }
+  roles=next; renderJson(); log('Permissioni spremljeni u Supabase.', next.map(x=>x.role));
+}
+async function saveUserRole(id, role){
+  try{ await SOVAuth.setRole(id, role); log('Rola promijenjena.', {id,role}); await refreshAll(false); }
+  catch(e){ log('Greška kod promjene role.', String(e.message||e)); alert('Greška: '+(e.message||e)); }
+}
+async function saveUserStatus(id, status){
+  try{ if(status==='approved') await SOVAuth.approve(id); else await SOVAuth.reject(id); log('Status promijenjen.', {id,status}); await refreshAll(false); }
+  catch(e){ log('Greška kod promjene statusa.', String(e.message||e)); alert('Greška: '+(e.message||e)); }
+}
+async function checkCurrent(){
+  const u=await SOVAuth.currentUser();
+  if(u){ $('sessionPill').textContent=(u.full_name||u.email)+' · '+roleLabel(u.role); $('sessionPill').className='pill ok'; }
+  else { $('sessionPill').textContent='Nema prijave'; $('sessionPill').className='pill warn'; }
+}
+async function refreshAll(writeLog=true){
+  await SOVAuth.ready();
+  await checkCurrent();
+  await loadRoles();
+  await loadUsers();
+  renderMatrix(); renderRoleFilter(); renderUsers(); renderJson();
+  if(writeLog) log('Role manager učitan.', {roles:roles.length,users:users.length});
+}
+$('btnLoad').onclick=()=>refreshAll();
+$('btnSaveMatrix').onclick=()=>saveMatrix();
+$('btnCopyJson').onclick=async()=>{ const text=JSON.stringify(buildApkJson(),null,2); try{await navigator.clipboard.writeText(text); log('APK JSON kopiran.');}catch(e){prompt('Kopiraj JSON:',text);} };
+['userSearch','statusFilter','roleFilter'].forEach(id=>$(id).addEventListener('input',renderUsers));
+document.addEventListener('DOMContentLoaded', refreshAll);
+</script>
+</body>
+</html>

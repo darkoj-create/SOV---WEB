@@ -1,3 +1,10 @@
+
+## v5.32 — Role manager
+
+- Added `role-manager.html` as admin UI for SOV ecosystem roles and permissions.
+- Added `SUPABASE_SOV_ECOSYSTEM_ROLES_v5_32.sql` with admin RLS policies, helper functions and role manifest views.
+- Dashboard now links to Role manager for Admin users.
+- This build does not touch the SQL object database, Drive drawings pipeline, Trips GS, news or armory data model.
 # v5.31 — Ecosystem sync dashboard
 
 - Dodan `sync-status.html` za provjeru nacrti GS, izleti GS i Supabase cache/role statusa.
