@@ -1,4 +1,13 @@
 
+## v5.58.8 — Dashboard user UI cleanup
+
+- Cleaned SOV Cloud dashboard for normal User view.
+- Removed visible statistics/counters/status cards from User view.
+- Kept only user-relevant entry points: Karta, Predaj novu jamu, Izleti, Baza.
+- Preserved Admin role preview and Admin technical card.
+- Updated sync-status.html to v5.58.8.
+
+
 ## v5.58.1 — Arhivar submissions SQL profile fix
 - Fixed SQL install error caused by hard-coded `public.sov_user_profiles`.
 - Added safe role/profile helpers compatible with existing `public.profiles` role model.

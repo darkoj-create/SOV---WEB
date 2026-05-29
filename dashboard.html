@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>SOV Cloud — Dashboard v5.58.7</title>
+  <title>SOV Cloud — Dashboard v5.58.8</title>
   <link rel="stylesheet" href="assets/site.css">
   <link rel="stylesheet" href="assets/mobile.css">
   <link rel="stylesheet" href="assets/sov-premium-ui.css">
@@ -13,7 +13,7 @@
   <style>
     .sov-top{position:relative}.sov-role-preview{display:none;align-items:center;gap:6px;padding:5px;border:1px solid rgba(255,255,255,.12);border-radius:999px;background:rgba(4,10,11,.76);backdrop-filter:blur(14px);box-shadow:0 14px 44px rgba(0,0,0,.25)}
     .sov-role-preview.is-on{display:inline-flex}.sov-role-preview .rp-label{font-size:10px;font-weight:950;text-transform:uppercase;letter-spacing:.08em;color:#b8c9c3;padding:0 4px}.sov-role-preview button{border:0;border-radius:999px;padding:7px 9px;background:transparent;color:#dbe8e2;font-size:12px;font-weight:950;cursor:pointer;white-space:nowrap}.sov-role-preview button.active{background:linear-gradient(135deg,#d7f66f,#83e6c2);color:#10180f;box-shadow:0 8px 24px rgba(215,246,111,.18)}
-    .sov-module.is-preview-hidden,.sov-panel.is-preview-hidden,.sov-section-head.is-preview-hidden{display:none!important}.sov-admin-tools{display:grid;gap:10px;margin-top:14px}.sov-admin-tools a{display:flex;align-items:center;justify-content:space-between;gap:10px;text-decoration:none;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:10px 12px;background:rgba(255,255,255,.045);color:inherit}.sov-admin-tools a:hover{border-color:rgba(215,246,111,.38);transform:translateY(-1px)}.sov-admin-tools small{color:rgba(230,240,235,.62);font-weight:800}.sov-admin-warning{margin-top:12px;color:#ffd7b0;font-size:12px;line-height:1.45}.sov-preview-note{margin-left:auto;color:#b8c9c3;font-size:12px;font-weight:900}.sov-dev-float{display:none!important}
+    [data-dash-visible].is-preview-hidden,.sov-module.is-preview-hidden,.sov-panel.is-preview-hidden,.sov-section-head.is-preview-hidden{display:none!important}.sov-admin-tools{display:grid;gap:10px;margin-top:14px}.sov-admin-tools a{display:flex;align-items:center;justify-content:space-between;gap:10px;text-decoration:none;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:10px 12px;background:rgba(255,255,255,.045);color:inherit}.sov-admin-tools a:hover{border-color:rgba(215,246,111,.38);transform:translateY(-1px)}.sov-admin-tools small{color:rgba(230,240,235,.62);font-weight:800}.sov-admin-warning{margin-top:12px;color:#ffd7b0;font-size:12px;line-height:1.45}.sov-preview-note{margin-left:auto;color:#b8c9c3;font-size:12px;font-weight:900}.sov-dev-float{display:none!important}
     @media(max-width:940px){.sov-role-preview{width:100%;justify-content:center;border-radius:18px;flex-wrap:wrap}.sov-role-preview .rp-label{display:none}.sov-role-preview button{font-size:11px;padding:7px 8px}.sov-preview-note{width:100%;margin:4px 0 0;text-align:center}}
   </style>
 </head>
@@ -22,16 +22,16 @@
     <header class="sov-top">
       <a class="sov-brand" href="dashboard.html">
         <div class="sov-mark">SOV</div>
-        <div><strong>Speleološki odsjek Velebit</strong><small>SOV Cloud · v5.58.7</small></div>
+        <div><strong>Speleološki odsjek Velebit</strong><small>SOV Cloud · v5.58.8</small></div>
       </a>
       <nav class="sov-nav" aria-label="Glavna navigacija">
         <a href="index.html">Novosti</a>
         <a href="baza.html">Karta</a>
-        <a href="izleti-cloud.html">Izleti Cloud</a>
-        <a href="oruzarstvo.html" data-role-armory>Oružarstvo</a>
-        <a href="arhivar-dashboard.html" data-role-archive>Arhivar</a>
+        <a href="izleti.html" data-dash-visible="user,editor,arhivar,admin">Izleti</a>
+        <a href="oruzarstvo.html" data-role-armory data-dash-visible="oruzar,admin">Oružarstvo</a>
+        <a href="arhivar-dashboard.html" data-role-archive data-dash-visible="arhivar,admin">Arhivar</a>
         <a href="dashboard.html" class="primary">SOV Cloud</a>
-        <span class="sov-chip"><span data-user-name data-dash-name>—</span> · <span data-user-role data-dash-role>—</span></span>
+        <span class="sov-chip" data-dash-visible="admin,oruzar,arhivar,editor"><span data-user-name data-dash-name>—</span> · <span data-user-role data-dash-role>—</span></span>
         <div class="sov-role-preview" id="dashboardRolePreview" aria-label="Role preview">
           <span class="rp-label">Preview</span>
           <button type="button" data-preview-dashboard-role="admin">Admin</button>
@@ -47,23 +47,24 @@
       <section class="sov-hero">
         <div class="sov-hero-grid">
           <div>
-            <span class="sov-eyebrow">Unified SOV ecosystem</span>
-            <h1>Jedna ploča za teren, opremu, arhivu i ljude.</h1>
-            <p>Dashboard sada prikazuje module prema roli. Admin gore desno može simulirati kako dashboard izgleda članu, uredniku, arhivaru ili oružaru — bez mijenjanja stvarnih prava.</p>
+            <span class="sov-eyebrow">SOV Cloud</span>
+            <h1>Što trebaš danas?</h1>
+            <p>Karta, izleti i predaja nove jame. Bez tehničkih kartica, countera i admin šuma.</p>
             <div class="sov-actions">
-              <a class="sov-btn main" href="baza.html" data-dash-visible="user,editor,oruzar,arhivar,admin">Otvori SOV kartu →</a>
-              <a class="sov-btn" href="izleti.html" data-dash-visible="user,editor,arhivar,admin">Planiraj izlet</a>
+              <a class="sov-btn main" href="baza.html" data-dash-visible="user,editor,oruzar,arhivar,admin">Otvori kartu →</a>
+              <a class="sov-btn" href="baza.html#predaj-jamu" data-dash-visible="user,editor,oruzar,arhivar,admin">Predaj novu jamu</a>
+              <a class="sov-btn" href="izleti.html" data-dash-visible="user,editor,arhivar,admin">Izleti</a>
               <a class="sov-btn" href="oruzarstvo.html" data-role-armory data-dash-visible="oruzar,admin">Oružarstvo</a>
-              <a class="sov-btn" href="arhivar-dashboard.html" data-role-archive data-dash-visible="arhivar,admin">Arhivar dashboard</a>
+              <a class="sov-btn" href="arhivar-dashboard.html" data-role-archive data-dash-visible="arhivar,admin">Arhivar</a>
             </div>
           </div>
-          <aside class="sov-status-card">
+          <aside class="sov-status-card" data-dash-visible="admin">
             <h3>Moja prava</h3>
             <div class="sov-mini-grid">
               <div class="sov-mini"><b data-dash-role>—</b><span>stvarna rola</span></div>
               <div class="sov-mini"><b data-preview-role-label>—</b><span>preview view</span></div>
               <div class="sov-mini"><b data-auth-status>—</b><span>status računa</span></div>
-              <div class="sov-mini"><b>5.58.7</b><span>web build</span></div>
+              <div class="sov-mini"><b>5.58.8</b><span>web build</span></div>
             </div>
             <p class="sov-soft" data-access-summary style="margin-top:14px">Učitavam prava...</p>
           </aside>
@@ -71,26 +72,25 @@
       </section>
 
       <div class="sov-section-head" data-section="operational">
-        <div><h2>Operativni moduli</h2><p>Stvari koje su korisne članu ili terenskom radu. Interni moduli se dodaju ovisno o roli.</p></div>
-        <span class="sov-tag">role-aware</span>
+        <div><h2>Tvoje stvari</h2><p>Samo osnovno za člana: karta, baza i izleti.</p></div>
       </div>
       <section class="sov-grid" aria-label="Operativni moduli">
         <a class="sov-module" href="baza.html" data-dash-visible="user,editor,oruzar,arhivar,admin" style="--accent:rgba(120,215,255,.18)">
-          <div class="sov-icon">🗺️</div><h3>SOV karta</h3><p>Objekti, TK25, katastar/SOV statusi, search i exporti za teren.</p><div class="sov-module-foot"><span class="sov-tag">GIS</span><span class="sov-soft">Otvori</span></div>
+          <div class="sov-icon">🗺️</div><h3>Karta</h3><p>Otvori SOV kartu i objekte na terenu.</p><div class="sov-module-foot"><span class="sov-soft">Otvori</span></div>
         </a>
         <a class="sov-module" href="pregled-baze.html" data-dash-visible="user,editor,oruzar,arhivar,admin" style="--accent:rgba(131,230,194,.16)">
-          <div class="sov-icon">🧭</div><h3>Baza objekata</h3><p>Pregled objekata, detalji, filtriranje i predaja nove jame u arhivarski workflow.</p><div class="sov-module-foot"><span class="sov-tag">Objekti</span><span class="sov-soft">Pregled</span></div>
+          <div class="sov-icon">🧭</div><h3>Baza / nova jama</h3><p>Pregled objekata ili predaja nove jame arhivaru.</p><div class="sov-module-foot"><span class="sov-soft">Otvori</span></div>
         </a>
         <a class="sov-module" href="izleti.html" data-dash-visible="user,editor,arhivar,admin" style="--accent:rgba(255,191,107,.18)">
-          <div class="sov-icon">⛺</div><h3>Izleti Cloud</h3><p>Planiranje izleta, ekipa, prijave, GPX/KML metadata i sync s APK-om.</p><div class="sov-module-foot"><span class="sov-tag">Teren</span><span class="sov-soft">Planiraj</span></div>
+          <div class="sov-icon">⛺</div><h3>Izleti</h3><p>Pregled i prijava na izlete.</p><div class="sov-module-foot"><span class="sov-soft">Otvori</span></div>
         </a>
-        <a class="sov-module" href="baza.html#import" data-dash-visible="user,editor,oruzar,arhivar,admin" style="--accent:rgba(176,127,255,.18)">
-          <div class="sov-icon">📍</div><h3>GPX / KML</h3><p>Import trackova i waypointa, pregled na karti i priprema za zajedničke podatke.</p><div class="sov-module-foot"><span class="sov-tag">Import</span><span class="sov-soft">Dodaj</span></div>
+        <a class="sov-module" href="baza.html#import" data-dash-visible="arhivar,admin" style="--accent:rgba(176,127,255,.18)">
+          <div class="sov-icon">📍</div><h3>GPX / KML</h3><p>Import trackova i waypointa za arhivarsku obradu.</p><div class="sov-module-foot"><span class="sov-soft">Dodaj</span></div>
         </a>
       </section>
 
       <div class="sov-section-head" data-section="internal">
-        <div><h2>Interni sustavi</h2><p>Ovdje ostaju radni moduli za stvarne role. Tehnički alati su grupirani u jednu Admin karticu.</p></div>
+        <div><h2>Interno</h2><p>Radni alati za tvoju rolu.</p></div>
         <span class="sov-tag">Oružar · Arhivar · Urednik · Admin</span>
       </div>
       <section class="sov-grid" aria-label="Interni moduli">
@@ -159,7 +159,7 @@
     </main>
   </div>
 
-  <script src="assets/sov-dashboard-premium.js?v=5.58.7"></script>
+  <script src="assets/sov-dashboard-premium.js?v=5.58.8"></script>
   <script src="assets/sov-inbox.js?v=4.90"></script>
   <script>
     (function(){
