@@ -1,0 +1,76 @@
+
+/* SOV Web v5.58.22 — foundation UX/a11y/mobile layer
+   One shared baseline for focus, touch targets, scrollable nav hints and mobile table cards. */
+:root{
+  --sov-focus:#d7f66f;
+  --sov-focus-soft:rgba(215,246,111,.22);
+  --sov-touch:44px;
+}
+html{scroll-padding-top:92px}
+:is(a,button,input,select,textarea,summary,[role="button"],[tabindex]):focus{outline:none}
+:is(a,button,input,select,textarea,summary,[role="button"],[tabindex]):focus-visible{
+  outline:3px solid var(--sov-focus)!important;
+  outline-offset:3px!important;
+  box-shadow:0 0 0 7px var(--sov-focus-soft)!important;
+}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{
+    animation-duration:.001ms!important;
+    animation-iteration-count:1!important;
+    scroll-behavior:auto!important;
+    transition-duration:.001ms!important;
+  }
+}
+/* Mobile/touch baseline across all old header systems. */
+:is(button,.btn,.aw-btn,.az-btn,.tab,.aw-tab,.nav a,.navlinks a,.dash-nav a,.topbar a,.aw-nav a,.az-nav a,.armory-nav a,.armory-nav button,.om-nav a,.om-tab,.chip,.pill,input,select,textarea){
+  min-height:var(--sov-touch);
+}
+:is(button,.btn,.aw-btn,.az-btn,.tab,.aw-tab,.nav a,.navlinks a,.dash-nav a,.topbar a,.aw-nav a,.az-nav a,.armory-nav a,.armory-nav button,.om-nav a,.om-tab){
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:.45rem;
+  touch-action:manipulation;
+}
+/* Clear hint when mobile navigation scrolls sideways. */
+.sov-scroll-row,
+:is(.nav,.navlinks,.dash-nav,.aw-nav,.az-nav,.armory-nav,.tabs,.aw-tabs,.om-tabs,.topbar nav){
+  scrollbar-width:thin;
+  scrollbar-color:rgba(215,246,111,.35) transparent;
+}
+@media(max-width:760px){
+  .sov-scroll-wrap{position:relative;max-width:100%}
+  .sov-scroll-wrap::after{
+    content:'→';
+    position:absolute;right:0;top:0;bottom:6px;width:42px;
+    display:grid;place-items:center;
+    pointer-events:none;
+    color:rgba(215,246,111,.95);
+    font-weight:1000;
+    background:linear-gradient(90deg,rgba(5,9,9,0),rgba(5,9,9,.86) 58%,rgba(5,9,9,.96));
+    border-radius:0 18px 18px 0;
+  }
+  .sov-scroll-wrap.at-end::after{opacity:0}
+  :is(.nav,.navlinks,.dash-nav,.aw-nav,.az-nav,.armory-nav,.tabs,.aw-tabs,.om-tabs,.topbar nav){
+    -webkit-overflow-scrolling:touch;
+    scroll-snap-type:x proximity;
+  }
+  :is(.nav,.navlinks,.dash-nav,.aw-nav,.az-nav,.armory-nav,.tabs,.aw-tabs,.om-tabs,.topbar nav)>*{scroll-snap-align:start}
+}
+/* Mobile table cards: used by Arhivar/zahvati/import previews and any legacy table. */
+@media(max-width:760px){
+  table.sov-mobile-card-table{min-width:0!important;width:100%!important;border-collapse:separate!important;border-spacing:0 10px!important;border:0!important}
+  table.sov-mobile-card-table thead{display:none!important}
+  table.sov-mobile-card-table tbody,table.sov-mobile-card-table tr,table.sov-mobile-card-table td,table.sov-mobile-card-table th{display:block!important;width:100%!important}
+  table.sov-mobile-card-table tr{border:1px solid rgba(255,255,255,.13)!important;border-radius:18px!important;background:rgba(255,255,255,.045)!important;overflow:hidden!important;margin:0 0 10px!important;box-shadow:0 10px 30px rgba(0,0,0,.18)}
+  table.sov-mobile-card-table td,table.sov-mobile-card-table th{border:0!important;border-bottom:1px solid rgba(255,255,255,.08)!important;padding:10px 12px!important;white-space:normal!important;word-break:break-word!important}
+  table.sov-mobile-card-table td:last-child,table.sov-mobile-card-table th:last-child{border-bottom:0!important}
+  table.sov-mobile-card-table td::before{content:attr(data-label);display:block;margin-bottom:4px;color:rgba(215,246,111,.88);font-size:11px;font-weight:1000;text-transform:uppercase;letter-spacing:.07em}
+  .az-table-wrap,.aw-table-wrap,.table-wrap{overflow:visible!important;border:0!important}
+}
+/* SQL/admin safety banner styles. */
+.sov-sql-production-banner{border:1px solid rgba(255,177,95,.48);background:linear-gradient(135deg,rgba(255,177,95,.16),rgba(255,107,107,.10));color:#ffe4bf;border-radius:22px;padding:14px 16px;margin:14px 0;font-weight:900;line-height:1.45;box-shadow:0 18px 50px rgba(0,0,0,.22)}
+.sov-sql-production-banner b{color:#fff}.sov-sql-production-banner small{display:block;color:#ffd8ad;margin-top:4px;font-weight:700}.sov-sql-danger-armed{box-shadow:0 0 0 3px rgba(255,177,95,.2)!important;border-color:rgba(255,177,95,.65)!important}
+/* Temporary monolith mitigation: visible loading skeleton for armory catalog. */
+.sov-armory-skeleton{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}.sov-skeleton-card{border:1px solid rgba(255,255,255,.1);border-radius:24px;min-height:160px;background:linear-gradient(110deg,rgba(255,255,255,.04),rgba(255,255,255,.09),rgba(255,255,255,.04));background-size:240% 100%;animation:sovSkeleton 1.25s linear infinite}.sov-skeleton-note{grid-column:1/-1;color:rgba(230,245,242,.72);font-weight:850}.sov-foundation-loaded .sov-armory-skeleton.is-gone{display:none!important}@keyframes sovSkeleton{0%{background-position:220% 0}100%{background-position:-120% 0}}
+@media(prefers-reduced-motion:reduce){.sov-skeleton-card{animation:none}}

@@ -263,3 +263,11 @@
   .stats,.toolGrid{grid-template-columns:1fr!important}.mapWrap,#map{height:48dvh!important;min-height:300px!important}.youtube-frame{min-height:210px!important}
   .actions .btn,.editor-actions .btn,.trip-actions .btn,.drawActions .btn,.toolbar .btn{min-width:100%!important}
 }
+
+
+
+/* v5.58.22 foundation touch/nav patch */
+@media(max-width:760px){
+  a,button,.btn,.tab,.pill,.chip,input,select,textarea{min-height:44px!important}
+  .nav,.navlinks,.dash-nav,.aw-nav,.az-nav,.armory-nav,.tabs,.aw-tabs{padding-right:34px!important}
+}

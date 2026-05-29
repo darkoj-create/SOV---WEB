@@ -1,1 +1,1 @@
-5.58.20
+SOV Web v5.58.22 — UX foundation / a11y / SQL safety
