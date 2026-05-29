@@ -1,0 +1,17 @@
+SOV Admin APK 1.3.5 - Oružarstvo mobile module
+
+What changed:
+- Trips/Izleti are restored as the normal bottom-navigation entry.
+- Cloud experiment is no longer the primary replacement for Izleti.
+- Oružarstvo is introduced as a proper mobile module, modeled after the web module but simplified for field use.
+- Mobile equipment screen includes search, category filters, availability summary, status cards and request-flow placeholder.
+- APK intentionally does not edit/delete equipment yet. Web remains the source of truth.
+- Request flow is UI-ready for Supabase/offline queue activation in a later patch.
+
+Version:
+- versionCode 900015
+- versionName 1.3.5-oruzarstvo-mobile-module
+
+Build:
+- Open in Android Studio.
+- Generate signed APK with the same admin keystore.
