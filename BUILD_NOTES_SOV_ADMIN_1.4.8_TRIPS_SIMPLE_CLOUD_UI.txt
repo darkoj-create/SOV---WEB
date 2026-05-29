@@ -1,7 +1,0 @@
-SOV Admin APK 1.4.8 — Trips simple Cloud UI
-
-- Izrada izleta je pojednostavljena na osnovne podatke: datum, voditelj, lokacija, cilj, opis i prognoza.
-- Wizard koraci za kartu/područje/trackove/točke više nisu dio kreiranja izleta.
-- Lokalni paket više ne prikazuje SOV/točke/trackove/offline kartu kao centralne podatke izleta.
-- Izleti idu u Supabase/SOV Cloud i sinkroniziraju se s webom.
-- Stari Google Sheet / Apps Script nije vraćen kao backend.
