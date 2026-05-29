@@ -1,5 +1,5 @@
 (function(){
-  // v5.33: live auth by default. Preview role switcher is opt-in with ?preview=1 or localStorage SOV_OPEN_PREVIEW_MODE=true.
+  // v5.58.12: Webmaster super-role + operational Admin split. Preview role switcher is opt-in with ?preview=1 or localStorage SOV_OPEN_PREVIEW_MODE=true.
   const SOV_OPEN_PREVIEW_MODE = (()=>{
     try{
       const q = new URLSearchParams(location.search);
@@ -8,12 +8,12 @@
       return localStorage.getItem('SOV_OPEN_PREVIEW_MODE') === 'true';
     }catch(e){ return false; }
   })();
-  const OPEN_PREVIEW_PROFILE_BASE = {id:null,email:'preview@sov.local',full_name:'Preview korisnik',role:'admin',status:'approved',open_preview:true};
-  const PREVIEW_ROLES = ['user','oruzar','arhivar','editor','admin'];
+  const OPEN_PREVIEW_PROFILE_BASE = {id:null,email:'preview@sov.local',full_name:'Preview korisnik',role:'webmaster',status:'approved',open_preview:true};
+  const PREVIEW_ROLES = ['user','oruzar','arhivar','editor','admin','webmaster'];
   function getPreviewRole(){
     try{
       const r = localStorage.getItem('SOV_PREVIEW_ROLE') || 'admin';
-      return PREVIEW_ROLES.includes(r) ? r : 'admin';
+      return PREVIEW_ROLES.includes(r) ? r : 'webmaster';
     }catch(e){ return 'admin'; }
   }
   function getOpenPreviewProfile(){
@@ -23,29 +23,31 @@
   const REGISTERED_PAGES = new Set([
     'dashboard.html','baza.html','pregled-baze.html','izleti.html','izleti-cloud.html','kalendar-izleta.html',
     'dokumentacija.html','pregled-zapisnika.html','zapisnici-skupstine.html','novi-zapisnik.html',
-    'speleo-zapisnik.html','topodroid.html','napisi-clanak.html','arhivar-dashboard.html','arhivar.html','arhivar-zahvati.html','arhivar-predane-jame.html','arhivar-izvoz.html','speleo-sql-safe.html','speleo-sql-edit-sandbox.html','speleo-sql-compare.html','speleo-sql-object-hub.html','speleo-sql-promote.html','speleo-sql-go-live.html','oruzarstvo.html','oruzarstvo-import.html','admin-users.html','role-manager.html','news-editor.html','sync-status.html'
+    'speleo-zapisnik.html','topodroid.html','napisi-clanak.html','arhivar-dashboard.html','arhivar.html','arhivar-zahvati.html','arhivar-predane-jame.html','arhivar-izvoz.html','speleo-sql-safe.html','speleo-sql-edit-sandbox.html','speleo-sql-compare.html','speleo-sql-object-hub.html','speleo-sql-promote.html','speleo-sql-go-live.html','oruzarstvo.html','oruzarstvo-import.html','admin-users.html','admin-notifications.html','role-manager.html','news-editor.html','sync-status.html'
   ]);
-  const ROLE_LABELS = {admin:'Admin',editor:'Urednik',oruzar:'Oružar',arhivar:'Arhivar',user:'Član'};
-  const ADMIN_ROLES = ['admin'];
-  const EDITOR_ROLES = ['admin','editor'];
-  const ARCHIVE_ROLES = ['admin','arhivar'];
-  const ARMORY_ROLES = ['admin','oruzar'];
+  const ROLE_LABELS = {webmaster:'Webmaster',admin:'Admin',editor:'Urednik',oruzar:'Oružar',arhivar:'Arhivar',user:'Član'};
+  const ADMIN_ROLES = ['webmaster','admin'];
+  const WEBMASTER_ROLES = ['webmaster'];
+  const EDITOR_ROLES = ['webmaster','admin','editor'];
+  const ARCHIVE_ROLES = ['webmaster','admin','arhivar'];
+  const ARMORY_ROLES = ['webmaster','admin','oruzar'];
   const PERMISSION_FALLBACK = {
-    user:{label:'Član',can_view_sov_base:true,can_view_katastar:false,can_edit_objects:false,can_upload_drawings:true,can_verify_drawings:false,can_manage_trips:false,can_manage_equipment:false,can_edit_news:false,can_use_sql_tools:false,can_manage_users:false},
-    editor:{label:'Urednik',can_view_sov_base:true,can_view_katastar:false,can_edit_objects:true,can_upload_drawings:true,can_verify_drawings:false,can_manage_trips:true,can_manage_equipment:false,can_edit_news:true,can_use_sql_tools:false,can_manage_users:false},
-    arhivar:{label:'Arhivar',can_view_sov_base:true,can_view_katastar:false,can_edit_objects:true,can_upload_drawings:true,can_verify_drawings:true,can_manage_trips:true,can_manage_equipment:false,can_edit_news:false,can_use_sql_tools:false,can_manage_users:false},
-    oruzar:{label:'Oružar',can_view_sov_base:true,can_view_katastar:false,can_edit_objects:false,can_upload_drawings:true,can_verify_drawings:false,can_manage_trips:false,can_manage_equipment:true,can_edit_news:false,can_use_sql_tools:false,can_manage_users:false},
-    admin:{label:'Admin',can_view_sov_base:true,can_view_katastar:true,can_edit_objects:true,can_upload_drawings:true,can_verify_drawings:true,can_manage_trips:true,can_manage_equipment:true,can_edit_news:true,can_use_sql_tools:true,can_manage_users:true}
+    user:{label:'Član',can_view_sov_base:true,can_view_katastar:false,can_edit_objects:false,can_upload_drawings:true,can_verify_drawings:false,can_manage_trips:false,can_manage_equipment:false,can_edit_news:false,can_use_sql_tools:false,can_manage_users:false,can_send_notifications:false},
+    editor:{label:'Urednik',can_view_sov_base:true,can_view_katastar:false,can_edit_objects:true,can_upload_drawings:true,can_verify_drawings:false,can_manage_trips:true,can_manage_equipment:false,can_edit_news:true,can_use_sql_tools:false,can_manage_users:false,can_send_notifications:false},
+    arhivar:{label:'Arhivar',can_view_sov_base:true,can_view_katastar:false,can_edit_objects:true,can_upload_drawings:true,can_verify_drawings:true,can_manage_trips:true,can_manage_equipment:false,can_edit_news:false,can_use_sql_tools:false,can_manage_users:false,can_send_notifications:false},
+    oruzar:{label:'Oružar',can_view_sov_base:true,can_view_katastar:false,can_edit_objects:false,can_upload_drawings:true,can_verify_drawings:false,can_manage_trips:false,can_manage_equipment:true,can_edit_news:false,can_use_sql_tools:false,can_manage_users:false,can_send_notifications:false},
+    admin:{label:'Admin',can_view_sov_base:true,can_view_katastar:true,can_edit_objects:true,can_upload_drawings:true,can_verify_drawings:true,can_manage_trips:true,can_manage_equipment:true,can_edit_news:true,can_use_sql_tools:false,can_manage_users:true,can_send_notifications:true},
+    webmaster:{label:'Webmaster',can_view_sov_base:true,can_view_katastar:true,can_edit_objects:true,can_upload_drawings:true,can_verify_drawings:true,can_manage_trips:true,can_manage_equipment:true,can_edit_news:true,can_use_sql_tools:true,can_manage_users:true,can_send_notifications:true}
   };
   const ABILITY_TO_PERMISSION = {
-    admin:'can_manage_users', editor:'can_edit_news', armory:'can_manage_equipment',
+    admin:'can_manage_users', webmaster:'can_use_sql_tools', editor:'can_edit_news', armory:'can_manage_equipment', notification:'can_send_notifications',
     speleo_edit:'can_edit_objects', archive:'can_verify_drawings', sql:'can_use_sql_tools',
     trips:'can_manage_trips', drawings:'can_upload_drawings', katastar:'can_view_katastar', sov_base:'can_view_sov_base'
   };
-  const BOOTSTRAP_ADMIN_EMAILS = ['darko.jeras@gmail.com'];
-  function isBootstrapAdminEmail(email){ return BOOTSTRAP_ADMIN_EMAILS.includes(String(email||'').trim().toLowerCase()); }
-  function bootstrapAdminProfile(user){
-    return {id:user.id,email:user.email,full_name:'Darko Jeras',role:'admin',status:'approved',bootstrap_admin:true};
+  const BOOTSTRAP_WEBMASTER_EMAILS = ['darko.jeras@gmail.com'];
+  function isBootstrapWebmasterEmail(email){ return BOOTSTRAP_WEBMASTER_EMAILS.includes(String(email||'').trim().toLowerCase()); }
+  function bootstrapWebmasterProfile(user){
+    return {id:user.id,email:user.email,full_name:'Darko Jeras',role:'webmaster',status:'approved',bootstrap_webmaster:true};
   }
   let client = null;
   let profileCache = null;
@@ -114,17 +116,18 @@
     if(error){ console.error(error); }
     if(data && data.status === 'approved'){
       const perms = await loadCurrentPermissions(force);
-      profileCache = {...data,email:user.email,permissions:perms || fallbackPermissionsFor(String(data.role||'user'))};
+      const effectiveRole = isBootstrapWebmasterEmail(user.email) ? 'webmaster' : String((perms && perms.role) || data.role || 'user');
+      profileCache = {...data,email:user.email,role:effectiveRole,permissions:perms || fallbackPermissionsFor(effectiveRole)};
       return profileCache;
     }
-    if(isBootstrapAdminEmail(user.email)){
-      profileCache = data ? {...data,email:user.email,role:'admin',status:'approved',bootstrap_admin:true,permissions:fallbackPermissionsFor('admin')} : {...bootstrapAdminProfile(user),permissions:fallbackPermissionsFor('admin')};
+    if(isBootstrapWebmasterEmail(user.email)){
+      profileCache = data ? {...data,email:user.email,role:'webmaster',status:'approved',bootstrap_webmaster:true,permissions:fallbackPermissionsFor('webmaster')} : {...bootstrapWebmasterProfile(user),permissions:fallbackPermissionsFor('webmaster')};
       try{
         await sb.from('profiles').upsert({
           id:user.id, email:user.email, full_name:profileCache.full_name || 'Darko Jeras',
-          role:'admin', status:'approved', approved_at:new Date().toISOString(), approved_by:user.id
+          role:'webmaster', status:'approved', approved_at:new Date().toISOString(), approved_by:user.id
         },{onConflict:'id'});
-      }catch(e){ console.warn('Bootstrap admin profile sync skipped.', e); }
+      }catch(e){ console.warn('Bootstrap webmaster profile sync skipped; client-side bootstrap remains active.', e); }
       return profileCache;
     }
     profileCache = data ? {...data,email:user.email,permissions:fallbackPermissionsFor(String(data.role||'user'))} : {id:user.id,email:user.email,full_name:user.email,role:'user',status:'pending',permissions:fallbackPermissionsFor('user')};
@@ -198,6 +201,7 @@
     return true;
   }
   async function requireAdmin(){ const ok = await requireApproved(); if(!ok) return false; if(!(await can('admin'))){ location.href='dashboard.html?denied=admin'; return false; } return true; }
+  async function requireWebmaster(){ const ok = await requireApproved(); if(!ok) return false; if(!(await can('webmaster'))){ location.href='dashboard.html?denied=webmaster'; return false; } return true; }
   async function requireEditor(){ const ok = await requireApproved(); if(!ok) return false; if(!(await can('editor'))){ location.href='dashboard.html?denied=editor'; return false; } return true; }
   async function requireArmory(){ const ok = await requireApproved(); if(!ok) return false; if(!(await can('armory'))){ location.href='dashboard.html?denied=armory'; return false; } return true; }
   async function requireArchive(){ const ok = await requireApproved(); if(!ok) return false; if(!(await can('archive'))){ location.href='dashboard.html?denied=archive'; return false; } return true; }
@@ -226,7 +230,8 @@
       ['oruzar','🛠️','Oružar'],
       ['arhivar','🗂️','Arhivar'],
       ['editor','✏️','Urednik'],
-      ['admin','🛡️','Admin']
+      ['admin','🛡️','Admin'],
+      ['webmaster','🧑‍💻','Webmaster']
     ];
     if(!document.getElementById('sov-preview-role-style')){
       const st=document.createElement('style');
@@ -269,12 +274,15 @@
     const canArmory = await can('armory');
     const canArchive = await can('archive');
     const canSql = await can('sql');
+    const canWebmaster = await can('webmaster');
     document.querySelectorAll('[data-role-admin]').forEach(el=>{el.style.display = canAdmin ? '' : 'none';});
     document.querySelectorAll('[data-role-editor]').forEach(el=>{el.style.display = canEditor ? '' : 'none';});
     document.querySelectorAll('[data-role-armory]').forEach(el=>{el.style.display = canArmory ? '' : 'none';});
     document.querySelectorAll('[data-role-archive]').forEach(el=>{el.style.display = canArchive ? '' : 'none';});
     document.querySelectorAll('[data-role-sql]').forEach(el=>{el.style.display = canSql ? '' : 'none';});
-    document.body.classList.remove('role-admin','role-editor','role-oruzar','role-arhivar','role-user');
+    document.querySelectorAll('[data-role-webmaster]').forEach(el=>{el.style.display = canWebmaster ? '' : 'none';});
+    document.body.classList.remove('role-webmaster','role-admin','role-editor','role-oruzar','role-arhivar','role-user');
+    document.body.classList.toggle('role-webmaster', !!(u && u.role==='webmaster'));
     document.body.classList.toggle('role-admin', !!(u && u.role==='admin'));
     document.body.classList.toggle('role-editor', !!(u && u.role==='editor'));
     document.body.classList.toggle('role-oruzar', !!(u && u.role==='oruzar'));
@@ -293,9 +301,10 @@
   async function autoProtect(){
     const p = pageName();
     if(!REGISTERED_PAGES.has(p)){ await renderUserBadge(); return; }
-    if(p === 'admin-users.html' || p === 'role-manager.html' || p === 'sync-status.html' || p === 'audit-status.html') await requireAdmin();
-    else if(p.startsWith('speleo-sql-')) await requireAdmin();
-    else if(p === 'news-editor.html' || p === 'napisi-clanak.html') await requireEditor();
+    if(p === 'admin-users.html' || p === 'admin-notifications.html') await requireAdmin();
+    else if(p === 'role-manager.html' || p === 'sync-status.html' || p === 'audit-status.html' || p.startsWith('speleo-sql-')) await requireWebmaster();
+    else if(p === 'news-editor.html') await requireEditor();
+    else if(p === 'napisi-clanak.html') await requireApproved();
     else if(p === 'oruzarstvo.html' || p === 'oruzarstvo-import.html' || p.startsWith('oruzar-master') || p === 'inventura.html') await requireArmory();
     else if(p === 'arhivar-dashboard.html' || p === 'arhivar.html' || p === 'arhivar-zahvati.html' || p === 'arhivar-predane-jame.html' || p === 'arhivar-izvoz.html') await requireArchive();
     else await requireApproved();
@@ -305,5 +314,5 @@
     document.addEventListener('DOMContentLoaded', async()=>{ await autoProtect(); resolve(true); });
   });
 
-  window.SOVAuth = {isConfigured,getClient,getSession,getProfile,currentUser,register,login,logout,can,requireApproved,requireAdmin,requireEditor,requireArmory,requireArchive,loadUsers,approve,reject,setRole,loadCurrentPermissions,renderUserBadge,statusText,roleText,ready:()=>readyPromise};
+  window.SOVAuth = {isConfigured,getClient,getSession,getProfile,currentUser,register,login,logout,can,requireApproved,requireAdmin,requireWebmaster,requireEditor,requireArmory,requireArchive,loadUsers,approve,reject,setRole,loadCurrentPermissions,renderUserBadge,statusText,roleText,ready:()=>readyPromise};
 })();

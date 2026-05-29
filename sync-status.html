@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SOV Sync · Ekosustav status v5.58.11</title>
+  <title>SOV Sync · Ekosustav status v5.58.13</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap" rel="stylesheet">
@@ -18,14 +18,14 @@
 <body>
   <div class="shell">
     <header class="top">
-      <a class="brand" href="dashboard.html"><div class="mark">SOV</div><div><strong>SOV Sync</strong><small>ekosustav status · v5.58.11</small></div></a>
+      <a class="brand" href="dashboard.html"><div class="mark">SOV</div><div><strong>SOV Sync</strong><small>ekosustav status · v5.58.13</small></div></a>
       <nav class="nav"><a href="dashboard.html">Dashboard</a><a href="baza.html">Karta</a><a href="arhivar-dashboard.html">Arhivar</a><a href="news-editor.html">Vijesti CMS</a><a href="role-manager.html">Role</a><a class="primary" href="sync-status.html">SOV Sync</a></nav>
     </header>
 
     <section class="hero">
       <span class="eyebrow">SOV ekosustav · admin kontrolna ploča</span>
       <h1>Jedno mjesto za provjeru synca.</h1>
-      <p>Ova stranica je usklađena s web buildom v5.58.11. Čita endpointove i Supabase tablice: nacrti, izleti, role, novosti CMS, user predaje članaka i arhivarske predaje. Ne mijenja podatke.</p>
+      <p>Ova stranica je usklađena s web buildom v5.58.13. Čita endpointove i Supabase tablice: nacrti, izleti, role, novosti CMS, user predaje članaka i arhivarske predaje. Ne mijenja podatke.</p>
       <div class="actions">
         <button class="btn" id="runAllBtn">Provjeri sve</button>
         <button class="btn secondary" id="runDrawingsBtn">Nacrti</button>
@@ -102,8 +102,8 @@
 
       <article class="card">
         <h2>Build verzije</h2>
-        <div class="kv"><b>Web</b><span>v5.58.11 editor role fix + user dashboard article submission + armory search cleanup</span></div>
-        <div class="kv"><b>News CMS SQL</b><span>v5.58.11 user article submit RPC + v5.58.9 save RPC + v5.58.7 storage + v5.58.5 hard profile RLS reset</span></div>
+        <div class="kv"><b>Web</b><span>v5.58.13 webmaster/admin split + SQL function drop fix</span></div>
+        <div class="kv"><b>News CMS SQL</b><span>v5.58.13 v5.58.13 role/helper compatibility + v5.58.9 save RPC + v5.58.7 storage</span></div>
         <div class="kv"><b>Arhivar SQL</b><span>v5.58.1 submissions + v5.57.8 workflow</span></div>
         <div class="kv"><b>Admin APK source</b><span>v1.4.13.7 arhivar submissions</span></div>
       </article>
@@ -112,7 +112,7 @@
         <h2>Pravilo za buduće buildove</h2>
         <div class="manual">
           <h3>sync-status.html je dio builda</h3>
-          <p>Od v5.58.6 ova stranica se mora ažurirati uz svaki relevantan web build: verzija, novi moduli, nove SQL tablice i novi endpointi. Tehnički status ostaje samo Adminu.</p>
+          <p>Od v5.58.6 ova stranica se mora ažurirati uz svaki relevantan web build: verzija, novi moduli, nove SQL tablice i novi endpointi. Tehnički status ostaje samo Webmasteru.</p>
           <p>Dashboard preview je samo vizualni filter na dashboardu. Ne mijenja stvarne role i ne daje pristup zaštićenim stranicama.</p>
         </div>
       </article>
@@ -123,7 +123,7 @@
       </article>
     </section>
 
-    <div class="footer">SOV web v5.58.11 · sync-status.html · admin read-only kontrolna ploča</div>
+    <div class="footer">SOV web v5.58.13 · sync-status.html · webmaster read-only kontrolna ploča</div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -180,6 +180,7 @@
       if(!objects.ok) objects=await countTable(sb,'speleo_objects_staging');
       const profiles=await countTable(sb,'profiles');
       const admins=await countTable(sb,'profiles',q=>q.eq('role','admin'));
+      const webmasters=await countTable(sb,'profiles',q=>q.eq('role','webmaster'));
       const editors=await countTable(sb,'profiles',q=>q.in('role',['editor','arhivar','oruzar']));
       $('sbDrawingsCount').textContent=drawings.ok?drawings.count:'n/a · '+drawings.error;
       $('sbDrawingsAuto').textContent=auto.ok?auto.count:'n/a';
@@ -190,7 +191,7 @@
       $('sbRoleStaff').textContent=editors.ok?editors.count:'n/a';
       const ok=drawings.ok || objects.ok || profiles.ok;
       setStatus('supabaseStatus',ok?'ok':'bad',ok?'Supabase OK':'Supabase greška'); state.supabase=ok;
-      const result={drawings,auto,partial,objects,profiles,admins,editors}; log('Supabase counts',result); return result;
+      const result={drawings,auto,partial,objects,profiles,admins,webmasters,editors}; log('Supabase counts',result); return result;
     }
     async function checkNews(){
       setStatus('newsStatus','warn','Provjeravam vijesti...');

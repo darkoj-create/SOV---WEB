@@ -1,3 +1,19 @@
+## v5.58.13 — SQL function drop fix
+- SQL hotfix for PostgreSQL 42P13 on `sov_has_permission(text)`: drops/recreates helper safely before applying Webmaster/Admin split.
+- Supersedes v5.58.11/v5.58.12 SQL if either failed halfway.
+- No frontend behavior change beyond version label.
+
+
+
+## v5.58.13 — Webmaster/Admin role split + SQL function drop fix
+
+- Added Webmaster role for Darko (`darko.jeras@gmail.com`) as the only tech/superadmin role.
+- Admin no longer receives SQL/sync/tech tools.
+- Admin keeps user approvals, notifications, normal operational module visibility and news editing.
+- Dashboard role preview now includes Webmaster and separates Admin operative card from Webmaster tech card.
+- Added clean `admin-notifications.html` instead of the old floating inbox artifact.
+- `sync-status.html`, role manager and SQL tools are Webmaster-only.
+- Added SQL patch `SUPABASE_SOV_ROLES_WEBMASTER_ADMIN_SPLIT_v5_58_12.sql`.
 # Changelog
 
 ## v5.58.11 — Urednik role fix
