@@ -11,3 +11,9 @@
 .cm-modal-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;margin-bottom:12px}.cm-modal-head h2{margin:0;font-size:28px}.cm-icon-btn{border:1px solid var(--line);background:rgba(255,255,255,.07);color:var(--text);border-radius:14px;width:42px;height:42px;font-size:25px;cursor:pointer}.return-list{display:grid;gap:10px;margin:12px 0}.return-row{display:grid;grid-template-columns:1.3fr 130px 1fr 1fr;gap:10px;align-items:end;border:1px solid var(--line);border-radius:20px;background:rgba(0,0,0,.18);padding:12px}.return-row label{display:grid;gap:5px;color:var(--muted);font-size:12px;font-weight:950;text-transform:uppercase;letter-spacing:.04em}.return-row .cm-input{min-width:0;width:100%}@media(max-width:820px){.return-row{grid-template-columns:1fr}.cm-modal{border-radius:22px;padding:14px}}
 .item-card.low-stock{border-color:rgba(251,113,133,.55);box-shadow:0 0 0 1px rgba(251,113,133,.16),0 18px 44px rgba(251,113,133,.08)}
 textarea.cm-input{min-height:120px;resize:vertical;font-family:inherit}
+
+/* v5.46 — Oružar Master cleanup */
+.loan-grid-v546{align-items:start}.loan-grid-v546 .cm-panel{min-height:420px}.loan-row.compact{padding:10px 12px}.closed-requests{margin-top:14px}.closed-list{grid-template-columns:repeat(auto-fill,minmax(320px,1fr));display:grid}.loan-status-requested{border-color:rgba(251,191,36,.34)}.loan-status-issued{border-color:rgba(104,227,154,.28)}.loan-status-partial_return{border-color:rgba(251,191,36,.44);background:linear-gradient(145deg,rgba(251,191,36,.08),rgba(0,0,0,.16))}.loan-status-returned{opacity:.82}.loan-status-cancelled{opacity:.72}.cm-card p b{color:#f5ffd4}.debug{border:1px solid var(--line);border-radius:16px;padding:10px 12px;background:rgba(255,255,255,.04)}
+/* Undo old global stock hiding for Master inventory cards; user catalog still masks stock elsewhere. */
+body.clean-armory .stock{display:grid!important}
+@media(max-width:1000px){.closed-list{grid-template-columns:1fr}}
