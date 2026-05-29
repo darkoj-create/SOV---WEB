@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SOV Arhivar — radna ploča</title>
+<title>SOV Arhivar — uređivanje arhive</title>
 <link rel="stylesheet" href="assets/site.css">
 <link rel="stylesheet" href="assets/arhivar-workbench.css?v=5.57.8">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -16,7 +16,10 @@
   <nav class="aw-nav">
     <a href="dashboard.html">Dashboard</a>
     <a href="pregled-baze.html">Speleo baza</a>
-    <a href="arhivar.html" class="active">Arhivar</a>
+    <a href="arhivar-dashboard.html">Arhivar dashboard</a>
+    <a href="arhivar.html" class="active">Uređivanje arhive</a>
+    <a href="arhivar-predane-jame.html">Predane jame</a>
+    <a href="arhivar-izvoz.html">Izvoz</a>
     <a href="arhivar-zahvati.html">Zapisnik/zahvat</a>
     <a href="topodroid.html">Nacrti</a>
     <a href="login.html" data-logout>Odjava</a>
@@ -26,8 +29,8 @@
   <section class="aw-hero">
     <div>
       <p class="aw-eyebrow">Radni centar arhivara <span id="awVersionBadge" class="aw-build">v5.57.8</span></p>
-      <h1>Arhiva za katastar</h1>
-      <p>Jednostavan workflow: nađi objekt iz speleo baze, klikni ga i vidi normalan opis objekta iz SQL baze: pločicu, opis, pristup, istraživanja, status, nacrte i zapisnike.</p>
+      <h1>Uređivanje arhive</h1>
+      <p>Ovo je prvi arhivarski ulaz: uređivanje postojećih objekata i provjera falinki za katastar. Nove jame koje korisnici predaju iz Baze nalaze se u posebnoj sekciji “Predane jame”.</p>
     </div>
     <div class="aw-actions">
       <button class="aw-btn primary" id="newObjectBtn">+ Novi objekt</button>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>SOV Cloud — Dashboard v5.39</title>
+  <title>SOV Cloud — Dashboard v5.58</title>
   <link rel="stylesheet" href="assets/site.css">
   <link rel="stylesheet" href="assets/mobile.css">
   <link rel="stylesheet" href="assets/sov-premium-ui.css">
@@ -16,14 +16,14 @@
     <header class="sov-top">
       <a class="sov-brand" href="dashboard.html">
         <div class="sov-mark">SOV</div>
-        <div><strong>Speleološki odsjek Velebit</strong><small>SOV Cloud · v5.39</small></div>
+        <div><strong>Speleološki odsjek Velebit</strong><small>SOV Cloud · v5.58</small></div>
       </a>
       <nav class="sov-nav" aria-label="Glavna navigacija">
         <a href="index.html">Novosti</a>
         <a href="baza.html">Karta</a>
         <a href="izleti-cloud.html">Izleti Cloud</a>
         <a href="oruzarstvo.html" data-role-armory>Oružarstvo</a>
-        <a href="arhivar.html" data-role-archive>Arhivar</a>
+        <a href="arhivar-dashboard.html" data-role-archive>Arhivar</a>
         <a href="dashboard.html" class="primary">SOV Cloud</a>
         <span class="sov-chip"><span data-user-name data-dash-name>—</span> · <span data-user-role data-dash-role>—</span></span>
       </nav>
@@ -40,7 +40,7 @@
               <a class="sov-btn main" href="baza.html">Otvori SOV kartu →</a>
               <a class="sov-btn" href="izleti.html">Planiraj izlet</a>
               <a class="sov-btn" href="oruzarstvo.html" data-role-armory>Oružarstvo</a>
-              <a class="sov-btn" href="arhivar.html" data-role-archive>Arhivar workflow</a>
+              <a class="sov-btn" href="arhivar-dashboard.html" data-role-archive>Arhivar dashboard</a>
             </div>
           </div>
           <aside class="sov-status-card">
@@ -83,8 +83,11 @@
         <a class="sov-module" href="oruzarstvo.html" data-role-armory style="--accent:rgba(255,191,107,.2)">
           <div class="sov-icon">🛠️</div><h3>Oružarstvo</h3><p>Katalog opreme, zahtjevi, zaduženja, servis, inventura i audit foundation.</p><div class="sov-module-foot"><span class="sov-tag">Oprema</span><span class="sov-soft">Otvori</span></div>
         </a>
-        <a class="sov-module" href="topodroid.html" data-role-archive style="--accent:rgba(215,246,111,.16)">
-          <div class="sov-icon">🗂️</div><h3>Arhivar</h3><p>Objekti, nacrti, zapisnici, koordinate i što još fali za katastar.</p><div class="sov-module-foot"><span class="sov-tag">Arhiva</span><span class="sov-soft">Otvori</span></div>
+        <a class="sov-module" href="arhivar-dashboard.html" data-role-archive style="--accent:rgba(215,246,111,.16)">
+          <div class="sov-icon">🗂️</div><h3>Arhivar</h3><p>Tri ulaza: uređivanje postojeće arhive, predane jame i izvoz paketa.</p><div class="sov-module-foot"><span class="sov-tag">Arhiva</span><span class="sov-soft">Otvori</span></div>
+        </a>
+        <a class="sov-module" href="arhivar-predane-jame.html" data-role-archive style="--accent:rgba(121,217,255,.18)">
+          <div class="sov-icon">📥</div><h3>Predane jame</h3><p>Inbox za nove jame koje članovi predaju iz Baze; approve ili označi što fali.</p><div class="sov-module-foot"><span class="sov-tag">Review</span><span class="sov-soft">Pregled</span></div>
         </a>
         <a class="sov-module" href="topodroid-import.html" data-role-archive style="--accent:rgba(131,230,194,.18)">
           <div class="sov-icon">⬆️</div><h3>TopoDroid import</h3><p>Batch upload/export pipeline za buduće nacrte i survey pakete.</p><div class="sov-module-foot"><span class="sov-tag">Pipeline</span><span class="sov-soft">Import</span></div>

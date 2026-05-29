@@ -15,13 +15,14 @@
 @media(max-width:980px){body{overflow:auto}.app{height:auto;min-height:100vh}.top{height:auto;align-items:flex-start;padding:12px}.shell{grid-template-columns:1fr}.mapWrap{height:64vh}.side{border-left:0;border-top:1px solid var(--line)}.stats{grid-template-columns:repeat(2,1fr)}}
 </style>
 <style>.dev-open{position:fixed;right:14px;bottom:14px;z-index:99999;border:1px solid rgba(215,246,111,.35);background:rgba(7,13,15,.92);color:#d7f66f;border-radius:999px;padding:9px 12px;font:800 12px Inter,system-ui,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.35)}@media(max-width:700px){.dev-open{left:12px;right:auto;bottom:12px}}</style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="assets/supabase-config.js"></script><script src="assets/auth.js"></script><script src="assets/speleo-sql-live.js?v=5.15"></script>  <link rel="stylesheet" href="assets/mobile.css">
-<link rel="stylesheet" href="assets/sov-inbox.css?v=4.90"></head>
+<link rel="stylesheet" href="assets/sov-inbox.css?v=4.90"><link rel="stylesheet" href="assets/arhivar-submissions.css?v=5.58.0"></head>
 <body>
 <div class="app">
 <header class="top">
   <div class="brand"><div class="mark">SOV</div><div>SOV Karta<br><small>karte · objekti · export · offline</small></div></div>
   <div class="topActions">
     <a class="btn" href="dashboard.html">Dashboard</a>
+    <button class="btn primary" onclick="window.SOVSpeleoSubmissions&&SOVSpeleoSubmissions.open()">+ Predaj novu jamu</button>
     <button class="btn primary" onclick="exportVisibleKml()">Export KML</button>
     <button class="btn" onclick="exportVisibleGeoJson()">GeoJSON</button>
     <button class="btn" onclick="exportVisibleCsv()">CSV</button>
@@ -309,8 +310,10 @@ async function downloadMbtiles(){if(!selectedBounds){alert('Prvo označi Map dow
 function downloadBlob(data,name,type){const blob=new Blob([data],{type});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
 window.SOVSpeleoSQL.loadAppObjects(DATA_URL).then(async d=>{all=d.filter(o=>Number.isFinite(o.lat)&&Number.isFinite(o.lon));await initArchiveRole();updateDrawingsAdminUi();applyObjectOverrides(await loadSpeleoOverrides());await hydrateDrawingsFromSupabase();document.getElementById('total').textContent=all.length;const params=new URLSearchParams(location.search);const oid=params.get('object')||params.get('id');const q=params.get('q');if(q){document.getElementById('q').value=q}const areaOpened=applyTripAreaFromParams(params);setupDrawingUpload();render();if(location.hash==='#nacrti-sync')setTimeout(()=>document.getElementById('nacrti-sync')?.scrollIntoView({behavior:'smooth',block:'center'}),250);if(areaOpened&&selectedBounds){map.fitBounds(selectedBounds,{padding:[70,70]});document.getElementById('tileCount').textContent='Područje izleta učitano · objekata u području: '+visible.length+' · KML export koristi ovaj teren.';}else if(oid){const obj=all.find(o=>String(o.id)===String(oid));if(obj){openObject(obj);map.setView([obj.lat,obj.lon],15)}}else{if(!applyPointFromParams(params)){fitAll()}}}).catch((e)=>{console.error(e);document.getElementById('results').innerHTML='<p class="muted">Ne mogu učitati SQL bazu ni JSON fallback.</p>'});
 </script>
+<script src="assets/speleo-submissions.js?v=5.58.0"></script>
 <script src="assets/sov-inbox.js?v=4.93"></script>
 <a data-role-admin href="speleo-sql-edit-sandbox.html" style="position:fixed;right:18px;bottom:18px;z-index:9999;background:#d7f66f;color:#101400;border-radius:999px;padding:12px 16px;font-weight:900;text-decoration:none;box-shadow:0 12px 30px rgba(0,0,0,.35)">SQL edit sandbox</a>
 <a data-role-admin href="speleo-sql-go-live.html" style="position:fixed;left:18px;bottom:18px;z-index:9999;background:#78d7ff;color:#031014;border-radius:999px;padding:12px 16px;font-weight:900;text-decoration:none;box-shadow:0 12px 30px rgba(0,0,0,.35)">SQL Go Live</a>
+<script>if(location.hash==="#predaj-jamu"){setTimeout(()=>window.SOVSpeleoSubmissions&&SOVSpeleoSubmissions.open(),500);}</script>
 </body>
 </html>
