@@ -509,7 +509,7 @@
     const client=sb();
     const out={summary:{source:'Supabase live'},categories:[],items:[],pieces:[],ropes:[],loans:[],inventories:[],inventory_items:[],procurement:[],services:[],disposed:[],lost:[],field:[],locations:[]};
     async function safe(table, cols='*'){
-      try{const {data,error}=await client.from(table).select(cols); if(error){console.warn('SOVArmoryDB load '+table,error.message); return [];} return data||[];}catch(e){console.warn('SOVArmoryDB load '+table,e.message||e); return [];}
+      try{const {data,error}=await client.from(table).select(cols).limit(7000); if(error){console.warn('SOVArmoryDB load '+table,error.message); return [];} return data||[];}catch(e){console.warn('SOVArmoryDB load '+table,e.message||e); return [];}
     }
     const cats=await safe('equipment_categories','*');
     const groupedCatalog=await safe('sov_equipment_app_catalog_grouped','*');

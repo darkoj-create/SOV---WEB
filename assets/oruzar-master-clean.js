@@ -35,18 +35,50 @@
   }
 
   let STATE={data:null,rows:[],cat:null,sub:null,query:'',requests:[],reqSource:'none'};
+  async function loadStaticCatalog(){
+    try{
+      const res=await fetch('data/oruzarstvo-data.json',{cache:'no-store'});
+      if(!res.ok) throw new Error('static json HTTP '+res.status);
+      return await res.json();
+    }catch(e){
+      console.warn('[armory master v5.47.4] static catalog failed',e);
+      return {items:[],ropes:[],pieces:[],categories:[]};
+    }
+  }
+  function rowCountFromData(d){
+    if(!d) return 0;
+    return (Array.isArray(d.items)?d.items.length:0)+(Array.isArray(d.ropes)?d.ropes.length:0)+(Array.isArray(d.pieces)?d.pieces.length:0)+(Array.isArray(d.raw_app_catalog)?d.raw_app_catalog.length:0);
+  }
+  function preferRawCatalogForMaster(d){
+    if(d && Array.isArray(d.raw_app_catalog) && d.raw_app_catalog.length){
+      // Oružar Master must inspect the real/raw rows. The grouped catalog is good for members,
+      // but master inventory and inventura need item-level rows.
+      return {...d, items:d.raw_app_catalog, ropes:[], pieces:[]};
+    }
+    return d;
+  }
   async function loadData(){
     if(STATE.data) return STATE.data;
-    let d=null, source='fallback';
+    let live=null, liveRows=0, staticData=null, staticRows=0, source='empty';
     try{
       if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.loadAllData){
-        d=await SOVArmoryDB.loadAllData();
-        if(d && ((d.items&&d.items.length)||(d.ropes&&d.ropes.length)||(d.pieces&&d.pieces.length))) source='supabase';
-        else d=null;
+        live=preferRawCatalogForMaster(await SOVArmoryDB.loadAllData());
+        liveRows=rowCountFromData(live);
       }
-    }catch(e){console.warn('[armory master v5.47.3.3] Supabase catalog failed',e)}
-    if(!d){ try{ d=await fetch('data/oruzarstvo-data.json',{cache:'no-store'}).then(r=>r.json()); source='static-fallback'; }catch(e){console.warn('[armory master v5.47.3.3] static catalog failed',e); d={items:[],ropes:[],pieces:[],categories:[]}; }}
-    STATE.data=d||{}; STATE.source=source; STATE.rows=makeRows(STATE.data); return STATE.data;
+    }catch(e){console.warn('[armory master v5.47.4] Supabase catalog failed',e)}
+    // Always keep static JSON as a safety net for Oružar Master. If live/RLS/view returns 0,
+    // master must still show the known imported catalog instead of a blank screen.
+    staticData=await loadStaticCatalog();
+    staticRows=rowCountFromData(staticData);
+    let chosen=null;
+    if(live && liveRows>=20){ chosen=live; source='supabase-live'; }
+    else if(staticRows>0){ chosen=staticData; source=liveRows>0?'static-fallback-live-too-small':'static-fallback'; }
+    else { chosen=live||staticData||{items:[],ropes:[],pieces:[],categories:[]}; source='empty'; }
+    STATE.data=chosen||{}; STATE.source=source; STATE.liveRows=liveRows; STATE.staticRows=staticRows; STATE.rows=makeRows(STATE.data);
+    if(!STATE.rows.length && source!=='static-fallback'){
+      STATE.data=staticData; STATE.source='static-fallback-after-empty-render'; STATE.rows=makeRows(STATE.data);
+    }
+    return STATE.data;
   }
   function makeRows(d){
     const out=[];
@@ -82,7 +114,7 @@
     const requested=reqs.filter(r=>statusKey(r.status)==='requested').length;
     const issued=reqs.filter(r=>['issued','partial_return'].includes(statusKey(r.status))).length;
     const low=STATE.rows.filter(r=>r.minimum&&r.av<=r.minimum).length;
-    root.innerHTML=`<div class="cm-grid"><a class="cm-card" href="oruzar-master-posudbe.html"><span class="ico">↔️</span><h2>Posudba</h2><p><b>${requested}</b> za izdati · <b>${issued}</b> vani. Statusi su isti kao u APK-u: za izdati → izdano → vraćeno / djelomično.</p><span>Otvori →</span></a><a class="cm-card" href="oruzar-master-inventar.html"><span class="ico">📦</span><h2>Inventar</h2><p>Pregled po canonical kategorijama iz SQL viewa. Web više ne izmišlja svoje regex kategorije.</p><span>Otvori →</span></a><a class="cm-card" href="oruzar-master-inventura.html"><span class="ico">✅</span><h2>Inventura</h2><p>Brojanje ostaje raw i operativno, odvojeno od grupiranog kataloga za članove.</p><span>Otvori →</span></a><a class="cm-card" href="oruzar-master-notes.html"><span class="ico">📝</span><h2>Notes & reminders</h2><p><b>${low}</b> stavki je ispod praga ili treba pažnju.</p><span>Otvori →</span></a></div>`;
+    root.innerHTML=`<div class="cm-grid"><a class="cm-card" href="oruzar-master-posudbe.html"><span class="ico">↔️</span><h2>Posudba</h2><p><b>${requested}</b> za izdati · <b>${issued}</b> vani. Statusi su isti kao u APK-u: za izdati → izdano → vraćeno / djelomično.</p><span>Otvori →</span></a><a class="cm-card" href="oruzar-master-inventar.html"><span class="ico">📦</span><h2>Inventar</h2><p>Pregled inventara. Izvor: ${esc(STATE.source||'nepoznato')} · ${esc(STATE.rows.length)} redova. Ako live katalog pukne, Master ne ostaje prazan nego koristi static fallback.</p><span>Otvori →</span></a><a class="cm-card" href="oruzar-master-inventura.html"><span class="ico">✅</span><h2>Inventura</h2><p>Brojanje ostaje raw i operativno, odvojeno od grupiranog kataloga za članove.</p><span>Otvori →</span></a><a class="cm-card" href="oruzar-master-notes.html"><span class="ico">📝</span><h2>Notes & reminders</h2><p><b>${low}</b> stavki je ispod praga ili treba pažnju.</p><span>Otvori →</span></a></div>`;
   }
 
   function renderInventory(){
@@ -91,7 +123,7 @@
     if(!cat){html=`<div class="cat-grid">${categories().map(([c,rs])=>`<button class="cat-tile" onclick="CleanArmory.pickCat('${esc(c)}')"><span class="ico">${iconFor(c)}</span><b>${esc(c)}</b><small>${esc(rs.length)} grupa/artikala · ${esc(rs.reduce((s,r)=>s+r.av,0))} dostupno</small></button>`).join('')}</div>`;}
     else if(!sub){html=`<div class="cm-breadcrumb"><button onclick="CleanArmory.pickCat('')">Sve kategorije</button><span>${esc(cat)}</span></div><div class="cat-grid">${subcategories(cat).map(([s,rs])=>`<button class="cat-tile" onclick="CleanArmory.pickSub('${esc(s)}')"><span class="ico">${iconFor(s)}</span><b>${esc(s)}</b><small>${esc(rs.length)} stavki</small></button>`).join('')}</div>`;}
     else {const rows=filtered().filter(r=>r.category===cat&&r.subcategory===sub); html=`<div class="cm-breadcrumb"><button onclick="CleanArmory.pickCat('')">Sve kategorije</button><button onclick="CleanArmory.pickCat('${esc(cat)}')">${esc(cat)}</button><span>${esc(sub)}</span></div><div class="cm-tools"><button class="cm-btn primary" onclick="CleanArmory.newItem()">+ Dodaj artikl</button><button class="cm-btn" onclick="CleanArmory.pickSub('')">← Podkategorije</button></div><div class="item-grid">${rows.map(itemCard).join('')}</div>`;}
-    root.innerHTML=html||'<div class="empty">Nema artikala za prikaz.</div>';
+    root.innerHTML=html||`<div class="empty">Nema artikala za prikaz.<br><small>Izvor: ${esc(STATE.source||'nepoznato')} · live ${esc(STATE.liveRows||0)} · static ${esc(STATE.staticRows||0)}</small></div>`;
   }
   function itemCard(r){const low=r.minimum&&r.av<=r.minimum;return `<article class="item-card ${low?'low-stock':''}"><h3>${esc(r.name)}</h3><div class="muted">${esc(r.category)} · ${esc(r.subcategory)}</div><div class="badgetray"><span class="badge ${low?'bad':(r.av>0?'ok':'bad')}">${low?'ispod praga':esc(r.status)}</span><span class="badge">${esc(r.location||'bez lokacije')}</span>${r.variants&&r.variants>1?`<span class="badge">${esc(r.variants)} varijanti</span>`:''}${r.minimum?`<span class="badge warn">prag ${esc(r.minimum)}</span>`:''}${r.type==='rope'?'<span class="badge warn">kodirano uže</span>':''}</div><div class="stock"><span><b>${esc(r.qty)}</b><em>ukupno</em></span><span><b>${esc(r.av)}</b><em>dostupno</em></span><span><b>${esc(r.loan)}</b><em>vani</em></span></div><div class="cm-tools"><button class="cm-btn" onclick="CleanArmory.editItem('${esc(r.id)}')">Uredi artikl</button><button class="cm-btn bad" onclick="CleanArmory.removeItem('${esc(r.id)}')">Makni</button></div></article>`;}
 
