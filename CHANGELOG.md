@@ -1,3 +1,12 @@
+
+## v5.58.23 — Shared shell / header convergence
+
+- Dodan zajednički SOV shell sloj za app/admin/module stranice.
+- Normalizirani različiti header sustavi u isti vizualni stil.
+- Dodan mobile drawer umjesto oslanjanja samo na horizontalni scroll.
+- Dodan skip-link i role-aware UX skrivanje tech linkova.
+- Sync status usklađen na v5.58.23.
+
 # Changelog
 
 ## v5.58.20 — Karta full object detail

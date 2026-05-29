@@ -17,7 +17,7 @@
     @media(max-width:1050px){.rec-hero{grid-template-columns:1fr}.hero-actions{justify-content:flex-start}.rec-grid{grid-template-columns:1fr}.preview-wrap{max-height:none}.paper{padding:42px 28px}.row{grid-template-columns:1fr}}
   </style>
   <link rel="stylesheet" href="assets/mobile.css">
-<link rel="stylesheet" href="assets/sov-inbox.css?v=4.90"><link rel="stylesheet" href="assets/sov-foundation-v55822.css"></head>
+<link rel="stylesheet" href="assets/sov-inbox.css?v=4.90"><link rel="stylesheet" href="assets/sov-foundation-v55822.css"><link rel="stylesheet" href="assets/sov-shell-v55823.css"></head>
 <body>
 <header class="top wrap"><a class="brand" href="index.html"><div class="mark">SOV</div><div><strong>Speleološki odsjek Velebit</strong><small>Zagreb</small></div></a><nav class="nav"><a href="dashboard.html">SOV Cloud</a><a href="dokumentacija.html">Dokumenti</a><a href="pregled-zapisnika.html">Pregled zapisnika</a></nav></header>
 <main class="rec-shell">
@@ -80,5 +80,5 @@ function load(){ $('date').value=todayHr(); try{const d=JSON.parse(localStorage.
 ['title','lead','recorder','speleIzleti','iniIzleti','najave','razno'].forEach(id=>$(id).addEventListener('input',render));
 $('previewBtn').onclick=render; $('saveBtn').onclick=saveDraft; $('sendBtn').onclick=send; load();
 </script>
-<script src="assets/sov-inbox.js?v=4.90"></script><script src="assets/sov-foundation-v55822.js" defer></script></body>
+<script src="assets/sov-inbox.js?v=4.90"></script><script src="assets/sov-foundation-v55822.js" defer></script><script src="assets/sov-shell-v55823.js" defer></script></body>
 </html>
