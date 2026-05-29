@@ -1,5 +1,5 @@
 (function(){
-const state={items:[],filtered:[],selected:null,tab:'status',profile:null};
+const state={items:[],filtered:[],selected:null,tab:'status',profile:null,loadingDetailId:null};
 const $=s=>document.querySelector(s);
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function toast(msg){let el=document.querySelector('.aw-toast'); if(!el){el=document.createElement('div');el.className='aw-toast';document.body.appendChild(el);} el.textContent=msg; clearTimeout(el._t); el._t=setTimeout(()=>el.remove(),4200);}
@@ -37,12 +37,13 @@ async function init(){
 }
 async function load(){
   const client=sb(); if(!client){toast('Supabase nije konfiguriran.');return;}
-  $('#objectList').innerHTML='<div class="aw-empty">Učitavam arhivarski worklist...</div>';
+  $('#objectList').innerHTML='<div class="aw-empty">Učitavam brzi arhivarski popis...</div>';
   try{
     const dash=await client.from('sov_arhivar_dashboard').select('*').maybeSingle();
     renderStats(dash.data||{});
   }catch(e){renderStats({});}
-  const {data,error}=await client.from('sov_arhivar_worklist').select('*').order('priority_score',{ascending:false}).order('object_name',{ascending:true}).limit(1500);
+  const fields='object_id,object_name,plate_number,object_type,nearest_place,lat,lon,cadastre_status,record_status,field_tasks,workflow_raw,digital_survey_status,bibliography_status,county,municipality,archive_status,priority,last_note,has_coordinates,has_drawing,has_record,archive_drawing_count,archive_report_count,drawing_count,report_count,base_in_cadastre,base_ready_for_katastar,explicit_missing_coordinates,explicit_missing_drawing,explicit_missing_record,explicit_missing_plate,source_missing_text,missing_coordinates,missing_drawing,missing_record,missing_plate,missing_categories,missing_categories_text,katastar_readiness,priority_score,completeness_source,search_text,updated_at';
+  const {data,error}=await client.from('sov_arhivar_worklist').select(fields).order('priority_score',{ascending:false}).order('object_name',{ascending:true}).limit(1500);
   if(error){$('#objectList').innerHTML=`<div class="aw-empty">Greška učitavanja: ${esc(error.message)}</div>`;return;}
   state.items=data||[]; applyFilters();
   if(!state.selected && state.filtered[0]) selectObject(state.filtered[0].object_id);
@@ -73,9 +74,36 @@ function renderList(){
   box.innerHTML=state.filtered.map(it=>`<div class="aw-object ${state.selected&&state.selected.object_id===it.object_id?'active':''}" data-id="${esc(it.object_id)}"><b>${esc(it.object_name||'Bez naziva')}</b><small>${esc([it.object_type,it.plate_number?'pločica '+it.plate_number:'',it.nearest_place].filter(Boolean).join(' · ')||'—')}</small><div class="aw-badges">${baseMissingBadges(it)}</div>${missingText(it)?`<small><b>Baza kaže da fali:</b> ${esc(missingText(it))}</small>`:''}<small>${esc(readinessLabel(it))}</small></div>`).join('');
   box.querySelectorAll('.aw-object').forEach(el=>el.onclick=()=>selectObject(el.dataset.id));
 }
-function selectObject(id){state.selected=state.items.find(x=>String(x.object_id)===String(id))||null;renderList();renderDetail();}
-function renderDetail(){
+async function selectObject(id){
+  const base=state.items.find(x=>String(x.object_id)===String(id))||null;
+  state.selected=base;
+  renderList();
+  renderDetail(true);
+  if(!base)return;
+  await loadObjectDetail(id);
+}
+async function loadObjectDetail(id){
+  const client=sb(); if(!client)return;
+  state.loadingDetailId=String(id);
+  try{
+    const {data,error}=await client.rpc('sov_arhivar_get_object_detail',{p_object_id:String(id)});
+    if(error){toast('Detalji nisu učitani: '+error.message);return;}
+    const detail=(data&&typeof data==='object')?data:{};
+    const idx=state.items.findIndex(x=>String(x.object_id)===String(id));
+    if(idx>=0){state.items[idx]={...state.items[idx],...detail,details_loaded:true};state.selected=state.items[idx];}
+    else state.selected={...(state.selected||{}),...detail,details_loaded:true};
+    renderList();
+    renderDetail(false);
+  }catch(e){toast('Detalji nisu učitani: '+(e.message||e));}
+  finally{state.loadingDetailId=null;}
+}
+function renderDetail(isLoading=false){
   const it=state.selected; if(!it){$('#detailPanel').innerHTML='<div class="aw-empty">Odaberi objekt.</div>';$('#actionPanel').innerHTML='';return;}
+  if(isLoading && !it.details_loaded){
+    $('#detailPanel').innerHTML=`<h2>${esc(it.object_name||'Objekt')}</h2><div class="aw-empty">Učitavam puni tekst za odabrani objekt...</div>`;
+    $('#actionPanel').innerHTML='';
+    return;
+  }
   const fullDetails = [
     infoSection('Sve što piše u bazi o objektu', it.base_details_text || it.full_details_text || '', true),
     infoSection('Izvor falinki iz baze / field_tasks / workflow', it.source_missing_text || '', true),
@@ -83,7 +111,7 @@ function renderDetail(){
     infoSection('Predani nacrti i prilozi', it.drawing_details_text || ''),
     rawSection(it.raw_text || '')
   ].join('') || '<div class="aw-empty small">Za ovaj objekt nema dodatnog teksta u worklist viewu.</div>';
-  $('#detailPanel').innerHTML=`<h2>${esc(it.object_name)}</h2><div class="aw-kv"><span>ID</span><b>${esc(it.object_id)}</b><span>Pločica</span><b>${esc(it.plate_number||'—')}</b><span>Tip</span><b>${esc(it.object_type||'—')}</b><span>Mjesto</span><b>${esc(it.nearest_place||'—')}</b><span>Koordinate</span><b>${it.lat&&it.lon?esc(`${it.lat}, ${it.lon}`):'—'}</b><span>Nacrti u SOV arhivi</span><b>${esc(it.archive_drawing_count??it.drawing_count??0)}</b><span>Zapisnici u SOV arhivi</span><b>${esc(it.archive_report_count??it.report_count??0)}</b><span>Status iz baze</span><b>${esc(readinessLabel(it))}</b><span>Baza kaže da fali</span><b>${esc(missingText(it)||'—')}</b></div><div class="aw-badges" style="margin-top:14px">${baseMissingBadges(it)}</div><p class="aw-muted">Falinke se sada čitaju iz postojeće speleo baze: field_tasks, workflow_raw, record_status, cadastre_status i raw metadata. Uploadani nacrti/zapisnici u SOV arhivi su samo privitci, ne glavni dokaz.</p><div class="aw-full-details"><h3>Tekst i podaci iz baze</h3>${fullDetails}</div>`;
+  $('#detailPanel').innerHTML=`<h2>${esc(it.object_name)}</h2><div class="aw-kv"><span>ID</span><b>${esc(it.object_id)}</b><span>Pločica</span><b>${esc(it.plate_number||'—')}</b><span>Tip</span><b>${esc(it.object_type||'—')}</b><span>Mjesto</span><b>${esc(it.nearest_place||'—')}</b><span>Koordinate</span><b>${it.lat&&it.lon?esc(`${it.lat}, ${it.lon}`):'—'}</b><span>Nacrti u SOV arhivi</span><b>${esc(it.archive_drawing_count??it.drawing_count??0)}</b><span>Zapisnici u SOV arhivi</span><b>${esc(it.archive_report_count??it.report_count??0)}</b><span>Status iz baze</span><b>${esc(readinessLabel(it))}</b><span>Baza kaže da fali</span><b>${esc(missingText(it)||'—')}</b></div><div class="aw-badges" style="margin-top:14px">${baseMissingBadges(it)}</div><p class="aw-muted">Popis se učitava brzo, a puni tekst/nacrti/zapisnici se dohvaćaju tek kad klikneš objekt. Falinke se čitaju iz postojeće speleo baze: field_tasks, workflow_raw, record_status i cadastre_status.</p><div class="aw-full-details"><h3>Tekst i podaci iz baze</h3>${fullDetails}</div>`;
   renderActionPanel();
 }
 function renderActionPanel(){
@@ -96,7 +124,7 @@ function renderActionPanel(){
 function statusForm(it){$('#tabBody').innerHTML=`<div class="aw-forms"><h2>Što baza kaže da imamo za katastar?</h2><p class="aw-muted">Ovo se više ne zaključuje iz uploadanih nacrta u našoj arhivi, nego iz postojeće speleo baze. Ručno mijenjaj samo kad arhivar stvarno potvrdi stanje.</p><div class="aw-muted"><b>Baza kaže da fali:</b> ${esc(missingText(it)||'ništa eksplicitno')}</div><div class="aw-badges">${baseMissingBadges(it)}</div><label class="aw-check ${it.has_coordinates?'ok':''}"><input id="hasCoords" type="checkbox" ${it.has_coordinates?'checked':''}> Koordinate</label><label class="aw-check ${it.has_drawing?'ok':''}"><input id="hasDrawing" type="checkbox" ${it.has_drawing?'checked':''}> Nacrt</label><label class="aw-check ${it.has_record?'ok':''}"><input id="hasRecord" type="checkbox" ${it.has_record?'checked':''}> Zapisnik</label><select id="priority" class="aw-select"><option value="normal">Normalno</option><option value="high">Prioritetno</option><option value="low">Niski prioritet</option></select><textarea id="statusNote" class="aw-textarea" rows="3" placeholder="Napomena: što fali, tko ima nacrt, gdje je zapisnik...">${esc(it.last_note||'')}</textarea><button class="aw-btn primary" id="saveStatus">Spremi status</button></div>`;$('#priority').value=it.priority||'normal';$('#saveStatus').onclick=saveStatus;}
 async function saveStatus(){const it=state.selected; const client=sb(); const payload={p_object_id:it.object_id,p_object_name:it.object_name,p_plate_number:it.plate_number||null,p_has_coordinates:$('#hasCoords').checked,p_has_drawing:$('#hasDrawing').checked,p_has_record:$('#hasRecord').checked,p_archive_status:($('#hasCoords').checked&&$('#hasDrawing').checked&&$('#hasRecord').checked)?'ready':'needs_review',p_priority:$('#priority').value,p_note:$('#statusNote').value.trim()};const {error}=await client.rpc('sov_archive_update_object_status',payload);if(error)return toast('Greška: '+error.message);toast('Status arhive spremljen.');await load();selectObject(it.object_id);}
 function drawingForm(it){$('#tabBody').innerHTML=`<div class="aw-forms"><h2>Dodaj predani nacrt</h2><input id="drTitle" class="aw-input" placeholder="Naziv nacrta" value="${esc(it.object_name||'Nacrt')}"><input id="drUrl" class="aw-input" placeholder="Drive/Supabase/file URL"><div class="aw-form-grid"><input id="drAuthor" class="aw-input" placeholder="Autor"><input id="drYear" class="aw-input" placeholder="Godina"></div><textarea id="drNote" class="aw-textarea" rows="3" placeholder="Napomena"></textarea><button class="aw-btn primary" id="saveDrawing">Spremi nacrt</button></div>`;$('#saveDrawing').onclick=saveDrawing;}
-async function saveDrawing(){const it=state.selected,client=sb();const row={object_id:it.object_id,object_name:it.object_name,plate_number:it.plate_number||null,drawing_title:$('#drTitle').value.trim()||it.object_name,drawing_type:'nacrt',archive_status:'verified',drive_url:$('#drUrl').value.trim()||null,preview_url:$('#drUrl').value.trim()||null,source:'arhivar_web',author_name:$('#drAuthor').value.trim()||null,survey_year:parseInt($('#drYear').value,10)||null,match_status:'verified',public_visible:true,note:$('#drNote').value.trim()||null,metadata:{module:'arhivar',added_from:'web_5.57.1',note:'Upload u SOV arhivu; ne mijenja automatski bazni katastarski status osim kroz ručni RPC.'}};const {error}=await client.from('speleo_object_drawings').insert(row);if(error)return toast('Greška nacrta: '+error.message);await client.rpc('sov_archive_update_object_status',{p_object_id:it.object_id,p_object_name:it.object_name,p_plate_number:it.plate_number||null,p_has_coordinates:!!it.has_coordinates,p_has_drawing:true,p_has_record:!!it.has_record,p_archive_status:'needs_review',p_priority:it.priority||'normal',p_note:'Dodan nacrt: '+row.drawing_title});toast('Nacrt dodan.');await load();selectObject(it.object_id);}
+async function saveDrawing(){const it=state.selected,client=sb();const row={object_id:it.object_id,object_name:it.object_name,plate_number:it.plate_number||null,drawing_title:$('#drTitle').value.trim()||it.object_name,drawing_type:'nacrt',archive_status:'verified',drive_url:$('#drUrl').value.trim()||null,preview_url:$('#drUrl').value.trim()||null,source:'arhivar_web',author_name:$('#drAuthor').value.trim()||null,survey_year:parseInt($('#drYear').value,10)||null,match_status:'verified',public_visible:true,note:$('#drNote').value.trim()||null,metadata:{module:'arhivar',added_from:'web_5.57.4',note:'Upload u SOV arhivu; ne mijenja automatski bazni katastarski status osim kroz ručni RPC.'}};const {error}=await client.from('speleo_object_drawings').insert(row);if(error)return toast('Greška nacrta: '+error.message);await client.rpc('sov_archive_update_object_status',{p_object_id:it.object_id,p_object_name:it.object_name,p_plate_number:it.plate_number||null,p_has_coordinates:!!it.has_coordinates,p_has_drawing:true,p_has_record:!!it.has_record,p_archive_status:'needs_review',p_priority:it.priority||'normal',p_note:'Dodan nacrt: '+row.drawing_title});toast('Nacrt dodan.');await load();selectObject(it.object_id);}
 function reportForm(it){$('#tabBody').innerHTML=`<div class="aw-forms"><h2>Dodaj zapisnik / izvještaj</h2><div class="aw-form-grid"><input id="rpStart" class="aw-input" type="date"><input id="rpEnd" class="aw-input" type="date"></div><textarea id="rpDesc" class="aw-textarea" rows="4" placeholder="Opis zapisnika / zahvata"></textarea><input id="rpMembers" class="aw-input" placeholder="Članovi"><textarea id="rpNote" class="aw-textarea" rows="3" placeholder="Interna napomena"></textarea><button class="aw-btn primary" id="saveReport">Spremi zapisnik</button></div>`;$('#saveReport').onclick=saveReport;}
 async function saveReport(){const it=state.selected,client=sb();const row={object_name:it.object_name,plate_number:it.plate_number||null,object_type:it.object_type||null,nearest_place:it.nearest_place||null,coordinate_system:(it.lat&&it.lon)?'WGS84':null,x_coord:it.lon?String(it.lon):null,y_coord:it.lat?String(it.lat):null,date_start:$('#rpStart').value||null,date_end:$('#rpEnd').value||null,purpose:'Speleološka istraživanja',activity_description:$('#rpDesc').value.trim()||null,members:$('#rpMembers').value.trim()||null,note:$('#rpNote').value.trim()||null,raw:{module:'arhivar',object_id:it.object_id}};const {error}=await client.from('speleo_activity_reports').insert(row);if(error)return toast('Greška zapisnika: '+error.message);await client.rpc('sov_archive_update_object_status',{p_object_id:it.object_id,p_object_name:it.object_name,p_plate_number:it.plate_number||null,p_has_coordinates:!!it.has_coordinates,p_has_drawing:!!it.has_drawing,p_has_record:true,p_archive_status:'needs_review',p_priority:it.priority||'normal',p_note:'Dodan zapisnik.'});toast('Zapisnik dodan.');await load();selectObject(it.object_id);}
 function editForm(it){$('#tabBody').innerHTML=`<div class="aw-forms"><h2>Edit objekta</h2><p class="aw-muted">Sigurni override preko arhivarskog sloja. Ne briše raw import.</p><div class="aw-form-grid"><input id="edName" class="aw-input" placeholder="Naziv" value="${esc(it.object_name||'')}"><input id="edPlate" class="aw-input" placeholder="Pločica" value="${esc(it.plate_number||'')}"><input id="edType" class="aw-input" placeholder="Tip" value="${esc(it.object_type||'')}"><input id="edPlace" class="aw-input" placeholder="Najbliže mjesto" value="${esc(it.nearest_place||'')}"><input id="edLat" class="aw-input" placeholder="Lat" value="${esc(it.lat||'')}"><input id="edLon" class="aw-input" placeholder="Lon" value="${esc(it.lon||'')}"><textarea id="edNote" class="aw-textarea wide" rows="3" placeholder="Napomena promjene"></textarea></div><button class="aw-btn primary" id="saveEdit">Spremi edit</button></div>`;$('#saveEdit').onclick=saveEdit;}
