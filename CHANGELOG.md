@@ -1,3 +1,11 @@
+# Changelog
+
+## v5.58.11 — Urednik role fix
+- Popravljen `sov_current_role()`: više ne uzima Supabase JWT system role `authenticated` kao SOV rolu.
+- `sov_can_edit_news()` sada ispravno prihvaća `admin`, `editor`, `urednik` i role permission `can_edit_news`.
+- Dodan `sov_news_auth_debug()` za provjeru role/can_edit_news u Supabaseu.
+- `sync-status.html` usklađen na v5.58.11.
+
 
 ## v5.58.10 — Cloud User UI: oprema + predaja članka
 
