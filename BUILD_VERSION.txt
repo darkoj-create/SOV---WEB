@@ -1,1 +1,1 @@
-5.55-izleti-premium-no-floating-tabs
+5.55.1-izleti-weather-widget-polish
