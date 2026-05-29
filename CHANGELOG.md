@@ -1,3 +1,11 @@
+## v5.58.16 — Oružarstvo access fix + mobile UX
+
+- Popravljen ulaz u Oružarski dio: stari legacy patch je skrivao i brisao Oružar Master gumb.
+- Dodan robustan čist ulaz za Webmaster/Admin/Oružar u navigaciji i ispod hero sekcije.
+- Oružarstvo dodatno optimizirano za mobile browser: sticky header, horizontalni tabovi, bolji drawer i touch razmaci.
+- Oružar Master stranice očišćene od inbox artefakta i starih version/dev tekstova.
+- `sync-status.html` usklađen na v5.58.16.
+
 ## v5.58.14 — Oružarstvo clean UI + mobile browser polish
 
 - Cleaned `oruzarstvo.html` for ordinary users: removed visible version/dev text, role explanation cards, noisy counters and storage-table wording.
