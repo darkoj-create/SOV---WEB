@@ -22,7 +22,7 @@
   function statusBadge(s){const k=statusKey(s); if(k==='issued'||k==='returned') return 'ok'; if(k==='requested'||k==='partial_return') return 'warn'; return 'bad'}
   function toast(m){let t=document.getElementById('cmToast'); if(!t){t=document.createElement('div');t.id='cmToast';t.className='cm-toast';document.body.appendChild(t)} t.textContent=m;t.classList.add('show');clearTimeout(t._to);t._to=setTimeout(()=>t.classList.remove('show'),2300)}
   function categoryName(row,type){
-    // v5.47: SQL view is the only canonical brain. Client only reads fields/falls back.
+    // v5.47.3: SQL view is the only canonical brain. Client only reads fields/falls back.
     return norm(row.main_category||row.category_name||row.category||(type==='rope'?'Užad i užetna oprema':'Ostalo'))||'Ostalo';
   }
   function subcategoryName(row){return norm(row.subcategory||row.raw_subcategory||row.group||row.display_subcategory||'Ostalo')||'Ostalo'}
@@ -38,8 +38,14 @@
   async function loadData(){
     if(STATE.data) return STATE.data;
     let d=null, source='fallback';
-    try{ if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.loadAllData){ d=await SOVArmoryDB.loadAllData(); if(d) source='supabase'; }}catch(e){console.warn('[armory master v5.47] Supabase catalog failed',e)}
-    if(!d){ try{ d=await fetch('data/oruzarstvo-data.json',{cache:'no-store'}).then(r=>r.json()); }catch(e){console.warn('[armory master v5.47] static catalog failed',e); d={items:[],ropes:[],pieces:[],categories:[]}; }}
+    try{
+      if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.loadAllData){
+        d=await SOVArmoryDB.loadAllData();
+        if(d && ((d.items&&d.items.length)||(d.ropes&&d.ropes.length)||(d.pieces&&d.pieces.length))) source='supabase';
+        else d=null;
+      }
+    }catch(e){console.warn('[armory master v5.47.3.3] Supabase catalog failed',e)}
+    if(!d){ try{ d=await fetch('data/oruzarstvo-data.json',{cache:'no-store'}).then(r=>r.json()); source='static-fallback'; }catch(e){console.warn('[armory master v5.47.3.3] static catalog failed',e); d={items:[],ropes:[],pieces:[],categories:[]}; }}
     STATE.data=d||{}; STATE.source=source; STATE.rows=makeRows(STATE.data); return STATE.data;
   }
   function makeRows(d){
@@ -90,7 +96,7 @@
   function itemCard(r){const low=r.minimum&&r.av<=r.minimum;return `<article class="item-card ${low?'low-stock':''}"><h3>${esc(r.name)}</h3><div class="muted">${esc(r.category)} · ${esc(r.subcategory)}</div><div class="badgetray"><span class="badge ${low?'bad':(r.av>0?'ok':'bad')}">${low?'ispod praga':esc(r.status)}</span><span class="badge">${esc(r.location||'bez lokacije')}</span>${r.variants&&r.variants>1?`<span class="badge">${esc(r.variants)} varijanti</span>`:''}${r.minimum?`<span class="badge warn">prag ${esc(r.minimum)}</span>`:''}${r.type==='rope'?'<span class="badge warn">kodirano uže</span>':''}</div><div class="stock"><span><b>${esc(r.qty)}</b><em>ukupno</em></span><span><b>${esc(r.av)}</b><em>dostupno</em></span><span><b>${esc(r.loan)}</b><em>vani</em></span></div><div class="cm-tools"><button class="cm-btn" onclick="CleanArmory.editItem('${esc(r.id)}')">Uredi artikl</button><button class="cm-btn bad" onclick="CleanArmory.removeItem('${esc(r.id)}')">Makni</button></div></article>`;}
 
   async function loadRequests(){
-    let req=null; try{ if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.loadRequests) req=await SOVArmoryDB.loadRequests(); }catch(e){console.warn('[armory master v5.47] load requests failed',e)}
+    let req=null; try{ if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.loadRequests) req=await SOVArmoryDB.loadRequests(); }catch(e){console.warn('[armory master v5.47.3] load requests failed',e)}
     if(Array.isArray(req)){STATE.requests=req;STATE.reqSource='supabase';return req}
     try{STATE.requests=JSON.parse(localStorage.getItem('sov_equipment_requests')||'[]');STATE.reqSource='local';return STATE.requests}catch(e){STATE.requests=[];STATE.reqSource='empty';return []}
   }
@@ -104,14 +110,14 @@
     root.innerHTML=`<div class="loan-grid loan-grid-v546"><section class="cm-panel"><h2>📝 Za izdati</h2><p class="muted">Nema virtualnog “odobreno”. Oružar klikne <b>Izdano</b> tek kad fizički izda opremu.</p><div class="cm-tools"><button class="cm-btn" onclick="CleanArmory.renderLoans()">Osvježi</button></div><div class="loan-list">${requested.length?requested.map(r=>requestCard(r,'requested')).join(''):'<div class="empty">Nema novih zahtjeva.</div>'}</div><hr style="border-color:rgba(255,255,255,.08);margin:16px 0"><form class="cm-form" onsubmit="CleanArmory.manualLoan(event)"><h3>+ Ručni unos zahtjeva</h3><div class="cm-form-grid"><input class="cm-input" id="mUser" placeholder="Tko traži"><input class="cm-input" id="mItem" placeholder="Artikl"><input class="cm-input" id="mQty" type="number" min="1" value="1"></div><div class="cm-tools"><input class="cm-input" id="mNote" placeholder="Izlet / napomena"><button class="cm-btn primary">Dodaj zahtjev</button></div></form></section><section class="cm-panel"><h2>📦 Izdano vani</h2><p class="muted">Aktivne posudbe. Za povrat koristi povrat po artiklu: sve vraćeno ili djelomično vraćeno.</p><div class="loan-list">${active.length?active.map(r=>requestCard(r,'active')).join(''):'<div class="empty">Ništa trenutno nije vani.</div>'}</div></section></div><section class="cm-panel closed-requests"><h2>Arhiva zadnjih povrata / zatvorenih zahtjeva</h2><div class="loan-list closed-list">${done.length?done.map(r=>`<div class="loan-row compact"><div class="loan-row-top"><div><b>${esc(r.user||'Član')}</b><div class="muted">${esc(r.trip||r.note||'Zahtjev')} · ${itemPills(r)}</div></div><span class="badge ${statusBadge(r.status)}">${esc(statusLabel(r.status))}</span></div></div>`).join(''):'<div class="empty">Još nema zatvorenih zahtjeva.</div>'}</div></section><div class="debug">Izvor zahtjeva: ${esc(STATE.reqSource||'nepoznato')} · model statusa: requested → issued → returned / partial_return (+ cancelled).</div>`;
   }
   async function setStatus(id,status){
-    try{ if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.updateRequestStatus) await SOVArmoryDB.updateRequestStatus(id,status); }catch(e){console.warn('[armory master v5.47] remote status failed',e); toast('Supabase update nije prošao; spremam lokalno.');}
+    try{ if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.updateRequestStatus) await SOVArmoryDB.updateRequestStatus(id,status); }catch(e){console.warn('[armory master v5.47.3] remote status failed',e); toast('Supabase update nije prošao; spremam lokalno.');}
     try{const l=JSON.parse(localStorage.getItem('sov_equipment_requests')||'[]'); const r=l.find(x=>String(x.id)===String(id)); if(r)r.status=status; localStorage.setItem('sov_equipment_requests',JSON.stringify(l));}catch(e){}
     await loadRequests(); await renderLoans(); renderMaster(); toast(statusLabel(status));
   }
   async function issueLoan(id){
     const r=(STATE.requests||[]).find(x=>String(x.id)===String(id));
     try{ if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.issueRequest) await SOVArmoryDB.issueRequest(id,r); else await setStatus(id,'issued'); }
-    catch(e){console.warn('[armory master v5.47] issue failed',e); await setStatus(id,'issued'); return;}
+    catch(e){console.warn('[armory master v5.47.3] issue failed',e); await setStatus(id,'issued'); return;}
     try{const l=JSON.parse(localStorage.getItem('sov_equipment_requests')||'[]'); const x=l.find(y=>String(y.id)===String(id)); if(x)x.status='issued'; localStorage.setItem('sov_equipment_requests',JSON.stringify(l));}catch(e){}
     await loadRequests(); await renderLoans(); renderMaster(); toast('Označeno izdano');
   }
@@ -127,7 +133,7 @@
     const rows=[...document.querySelectorAll('#returnModal .return-row')].map(row=>{const issued=countInt(row.dataset.qty,0); const returned=countInt(row.querySelector('.return-qty').value,0); const ok=Math.min(Math.max(returned,0),issued); return {id:row.dataset.id||null,name:row.dataset.name,issued_quantity:issued,returned_quantity:ok,missing_quantity:Math.max(issued-ok,0),return_location:row.querySelector('.return-dest').value,remaining_location:row.querySelector('.remain-dest').value};});
     const full=rows.every(x=>x.missing_quantity===0); const status=full?'returned':'partial_return'; const note=document.getElementById('returnNote')?.value||'';
     try{ if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.returnRequestItems) await SOVArmoryDB.returnRequestItems(id,rows,note,r); else await setStatus(id,status); }
-    catch(e){console.warn('[armory master v5.47] return failed',e); toast('Supabase povrat nije prošao; spremam lokalno.');}
+    catch(e){console.warn('[armory master v5.47.3] return failed',e); toast('Supabase povrat nije prošao; spremam lokalno.');}
     try{const l=JSON.parse(localStorage.getItem('sov_equipment_requests')||'[]'); const x=l.find(y=>String(y.id)===String(id)); if(x){x.status=status;x.return_items=rows;x.return_note=note;} localStorage.setItem('sov_equipment_requests',JSON.stringify(l));}catch(e){}
     closeReturn(); await loadRequests(); await renderLoans(); renderMaster(); toast(full?'Sve vraćeno':'Djelomični povrat spremljen');
   }
@@ -148,7 +154,7 @@
     ev.preventDefault(); const row=getRow(id)||{}; const legacy=isNew?('ART-'+Date.now()):(row.raw&&row.raw.legacy_id)||id;
     const payload={legacy_id:legacy,catalog_id:legacy,name:document.getElementById('itemName').value.trim()||'Artikl',category_name:document.getElementById('itemCat').value.trim()||'Ostalo',subcategory:document.getElementById('itemSub').value.trim()||'Ostalo',quantity:countInt(document.getElementById('itemQty').value,0),available:countInt(document.getElementById('itemAv').value,0),loaned:Math.max(0,countInt(document.getElementById('itemQty').value,0)-countInt(document.getElementById('itemAv').value,0)),minimum:countInt(document.getElementById('itemMin').value,0),location_name:document.getElementById('itemLoc').value.trim()||'Oružarstvo',status:document.getElementById('itemStatus').value.trim()||'aktivno',physical_code_note:document.getElementById('itemCode').value.trim()||null,item_kind:'quantity_article',code_required:false,member_visible:true};
     try{ if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.upsertSimpleItem) await SOVArmoryDB.upsertSimpleItem(payload); else throw new Error('no supabase helper'); }
-    catch(e){ console.warn('[armory master v5.47] save item local fallback',e); const local=JSON.parse(localStorage.getItem('sov_armory_items_override')||'[]'); const i=local.findIndex(x=>String(x.legacy_id)===String(payload.legacy_id)); if(i>=0)local[i]=payload; else local.unshift(payload); localStorage.setItem('sov_armory_items_override',JSON.stringify(local)); }
+    catch(e){ console.warn('[armory master v5.47.3] save item local fallback',e); const local=JSON.parse(localStorage.getItem('sov_armory_items_override')||'[]'); const i=local.findIndex(x=>String(x.legacy_id)===String(payload.legacy_id)); if(i>=0)local[i]=payload; else local.unshift(payload); localStorage.setItem('sov_armory_items_override',JSON.stringify(local)); }
     closeItemModal(); STATE.data=null; await loadData(); renderInventory(); toast('Artikl spremljen');
   }
   function newItem(){openItemModal(null)}

@@ -588,6 +588,11 @@
     out.inventories=(inv||[]).map(i=>({id:i.legacy_id||i.id,name:i.name||'Inventura',date:i.inventory_date||i.date,owner:i.owner_name||i.owner,status:i.status,note:i.note}));
     out.procurement=(proc||[]).map(p=>({id:p.legacy_id||p.id,name:p.item_name||p.name,quantity:p.quantity,status:p.status,date:p.purchase_date,note:p.note}));
     out.summary.count_items=out.items.length; out.summary.count_ropes=out.ropes.length; out.summary.count_categories=out.categories.length;
+    const totalRows = (out.items?.length||0) + (out.ropes?.length||0) + (out.pieces?.length||0);
+    if (!totalRows) {
+      console.warn('SOVArmoryDB loadAllData: Supabase returned zero catalog rows, falling back to static JSON.');
+      return null;
+    }
     return out;
   }
 
