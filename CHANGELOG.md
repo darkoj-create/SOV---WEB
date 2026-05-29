@@ -415,3 +415,11 @@ Dodani pravi HTML fajlovi:
 - Formati: CSV, Excel-compatible XLS i PDF/print izvještaj.
 - Pojedinačni PDF uključuje i puni opisni detail kad je dostupan kroz `sov_arhivar_get_object_detail`.
 - Nema novog SQL-a: koristi postojeći `sov_arhivar_worklist` i postojeći detail RPC.
+
+
+## v5.58.15 — karta.html clean UI + real DB sync
+- `baza.html` je zamijenjen s `karta.html`; stari `baza.html` ostaje samo redirect radi starih linkova.
+- Nova Karta ima čišći desktop i mobile browser UX bez SQL/dev gumba, statističkih kartica i inbox artefakata.
+- Karta primarno čita `sov_map_objects()` / `speleo_objects_staging`, odnosno aktualnu Supabase bazu objekata koju koristi Arhivar.
+- Dashboard, navigacija i sync-status prebačeni su na `karta.html`.
+- Dodan SQL `SUPABASE_SOV_MAP_v5_58_15_KARTA_REAL_DB.sql`.

@@ -79,7 +79,7 @@ function detailErrorBlock(it){
 }
 function firstNonEmpty(){for(const v of arguments){const t=String(v||'').trim(); if(t && t!=='{}')return t;} return '';}
 function hasCoords(it){return Number.isFinite(Number(it&&it.lat)) && Number.isFinite(Number(it&&it.lon));}
-function tk25Url(it){const lat=Number(it.lat),lon=Number(it.lon);const params=new URLSearchParams({lat:String(lat),lon:String(lon),zoom:'15',base:'tk25',name:it.object_name||'Objekt'}); if(it.plate_number)params.set('plate',it.plate_number); return 'baza.html?'+params.toString();}
+function tk25Url(it){const lat=Number(it.lat),lon=Number(it.lon);const params=new URLSearchParams({lat:String(lat),lon:String(lon),zoom:'15',base:'tk25',name:it.object_name||'Objekt'}); if(it.plate_number)params.set('plate',it.plate_number); return 'karta.html?'+params.toString();}
 function tk25Button(it){return hasCoords(it)?`<a class="aw-btn primary" href="${esc(tk25Url(it))}" target="_blank" rel="noopener">Otvori na TK25 karti</a>`:'<button class="aw-btn" disabled title="Nema koordinata">Nema koordinata za TK25</button>';}
 
 function safeFilePart(s){return norm(s||'arhiva').replace(/[^a-z0-9_-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,80)||'arhiva';}

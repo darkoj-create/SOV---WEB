@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>SOV Cloud — Dashboard v5.58.13</title>
+  <title>SOV Cloud — Dashboard v5.58.15</title>
   <link rel="stylesheet" href="assets/site.css">
   <link rel="stylesheet" href="assets/mobile.css">
   <link rel="stylesheet" href="assets/sov-premium-ui.css">
@@ -22,11 +22,11 @@
     <header class="sov-top">
       <a class="sov-brand" href="dashboard.html">
         <div class="sov-mark">SOV</div>
-        <div><strong>Speleološki odsjek Velebit</strong><small>SOV Cloud · v5.58.13</small></div>
+        <div><strong>Speleološki odsjek Velebit</strong><small>SOV Cloud · v5.58.15</small></div>
       </a>
       <nav class="sov-nav" aria-label="Glavna navigacija">
         <a href="index.html">Novosti</a>
-        <a href="baza.html">Karta</a>
+        <a href="karta.html">Karta</a>
         <a href="izleti.html" data-dash-visible="user,editor,arhivar,admin,webmaster">Izleti</a>
         <a href="oruzarstvo.html" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster">Oprema</a>
         <a href="arhivar-dashboard.html" data-role-archive data-dash-visible="arhivar,admin,webmaster">Arhivar</a>
@@ -52,8 +52,8 @@
             <h1>Što trebaš danas?</h1>
             <p>Karta, izleti, oprema, predaja nove jame i predaja članka uredniku. Bez tehničkog šuma.</p>
             <div class="sov-actions">
-              <a class="sov-btn main" href="baza.html" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster">Otvori kartu →</a>
-              <a class="sov-btn" href="baza.html#predaj-jamu" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster">Predaj novu jamu</a>
+              <a class="sov-btn main" href="karta.html" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster">Otvori kartu →</a>
+              <a class="sov-btn" href="karta.html#predaj-jamu" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster">Predaj novu jamu</a>
               <a class="sov-btn" href="izleti.html" data-dash-visible="user,editor,arhivar,admin,webmaster">Izleti</a>
               <a class="sov-btn" href="oruzarstvo.html" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster">Oprema</a>
               <a class="sov-btn" href="napisi-clanak.html" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster">Napiši članak</a>
@@ -74,14 +74,14 @@
       </section>
 
       <div class="sov-section-head" data-section="operational">
-        <div><h2>Tvoje stvari</h2><p>Osnovno za člana: karta, baza, izleti, oprema i predaja članka.</p></div>
+        <div><h2>Tvoje stvari</h2><p>Osnovno za člana: karta, predaja nove jame, izleti, oprema i predaja članka.</p></div>
       </div>
       <section class="sov-grid" aria-label="Operativni moduli">
-        <a class="sov-module" href="baza.html" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster" style="--accent:rgba(120,215,255,.18)">
+        <a class="sov-module" href="karta.html" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster" style="--accent:rgba(120,215,255,.18)">
           <div class="sov-icon">🗺️</div><h3>Karta</h3><p>Otvori SOV kartu i objekte na terenu.</p><div class="sov-module-foot"><span class="sov-soft">Otvori</span></div>
         </a>
-        <a class="sov-module" href="pregled-baze.html" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster" style="--accent:rgba(131,230,194,.16)">
-          <div class="sov-icon">🧭</div><h3>Baza / nova jama</h3><p>Pregled objekata ili predaja nove jame arhivaru.</p><div class="sov-module-foot"><span class="sov-soft">Otvori</span></div>
+        <a class="sov-module" href="karta.html#predaj-jamu" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster" style="--accent:rgba(131,230,194,.16)">
+          <div class="sov-icon">🧭</div><h3>Predaj novu jamu</h3><p>Ispuni speleo zapisnik i pošalji objekt arhivaru na pregled.</p><div class="sov-module-foot"><span class="sov-soft">Predaj</span></div>
         </a>
         <a class="sov-module" href="izleti.html" data-dash-visible="user,editor,arhivar,admin,webmaster" style="--accent:rgba(255,191,107,.18)">
           <div class="sov-icon">⛺</div><h3>Izleti</h3><p>Pregled i prijava na izlete.</p><div class="sov-module-foot"><span class="sov-soft">Otvori</span></div>
@@ -91,9 +91,6 @@
         </a>
         <a class="sov-module" href="napisi-clanak.html" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster" style="--accent:rgba(102,226,141,.16)">
           <div class="sov-icon">✍️</div><h3>Napiši članak</h3><p>Predaj tekst i fotografije uredniku kao draft. Urednik ga kasnije objavljuje.</p><div class="sov-module-foot"><span class="sov-soft">Predaj</span></div>
-        </a>
-        <a class="sov-module" href="baza.html#import" data-dash-visible="arhivar,admin,webmaster" style="--accent:rgba(176,127,255,.18)">
-          <div class="sov-icon">📍</div><h3>GPX / KML</h3><p>Import trackova i waypointa za arhivarsku obradu.</p><div class="sov-module-foot"><span class="sov-soft">Dodaj</span></div>
         </a>
       </section>
 
@@ -189,7 +186,7 @@
     </main>
   </div>
 
-  <script src="assets/sov-dashboard-premium.js?v=5.58.13"></script>
+  <script src="assets/sov-dashboard-premium.js?v=5.58.15"></script>
   <script>
     (function(){
       const LABELS={webmaster:'Webmaster',admin:'Admin',oruzar:'Oružar',arhivar:'Arhivar',editor:'Urednik',user:'User'};

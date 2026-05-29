@@ -22,7 +22,7 @@
   <div class="shell">
     <header class="top">
       <a class="brand" href="dashboard.html"><div class="mark">SOV</div><div><strong>Speleološki odsjek Velebit</strong><small>SOV Cloud</small></div></a>
-      <nav class="nav"><a href="dashboard.html">Dashboard</a><a href="baza.html">SOV Karta</a><a class="primary" href="pregled-baze.html">Baza</a><button class="btn primary syncTiny" onclick="syncDriveDrawings()">🔄 Sync nacrte</button><a href="izleti.html">Izleti</a><a href="index.html">Novosti</a></nav>
+      <nav class="nav"><a href="dashboard.html">Dashboard</a><a href="karta.html">SOV Karta</a><a class="primary" href="pregled-baze.html">Baza</a><button class="btn primary syncTiny" onclick="syncDriveDrawings()">🔄 Sync nacrte</button><a href="izleti.html">Izleti</a><a href="index.html">Novosti</a></nav>
     </header>
     <section class="hero">
       <div><span class="kicker">● Baza objekata</span><h1>Abecedni popis speleoloških objekata.</h1><p>Brzi pregled baze s pretragom, statusima, detaljima objekta, linkom na kartu i oznakom postoji li nacrt / digitalni zapis.</p></div>
@@ -54,7 +54,7 @@ function searchable(o){return norm([o.name,o.cadastral_number,o.plate_number,o.c
 function apply(){const q=norm($('q').value.trim());shown=all.filter(o=>{if(q&&!searchable(o).includes(q))return false;if(filter==='cad'&&statusType(o)!=='green')return false;if(filter==='notcad'&&statusType(o)!=='red')return false;if(filter==='grey'&&statusType(o)!=='grey')return false;if(filter==='draw'&&!hasDrawing(o))return false;return true});shown.sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''),'hr',{sensitivity:'base'}));renderList();$('statShown').textContent=shown.length;$('count').textContent=shown.length+' objekata u prikazu';}
 function renderList(){let html='',last='';shown.forEach(o=>{const first=(o.name||'?').trim().charAt(0).toLocaleUpperCase('hr')||'?';if(first!==last){last=first;html+='<div class="group">'+esc(first)+'</div>'}html+=`<button class="item ${selected&&selected.id===o.id?'active':''}" onclick="selectObj(${Number(o.id)})"><span class="dot" style="color:${color(o)};background:${color(o)}"></span><span><span class="name">${esc(o.name)}</span><span class="meta">${esc([o.object_type_final,o.nearest_place,o.municipality].filter(Boolean).join(' · ')||'bez lokacije')} · ${statusLabel(o)}</span></span><span class="tag">${hasDrawing(o)?'Nacrt':'Info'}</span></button>`});$('list').innerHTML=html||'<div class="empty" style="min-height:260px"><div><h2>Nema rezultata</h2><p>Probaj širi pojam ili ugasi filter.</p></div></div>'}
 function selectObj(id){selected=all.find(o=>Number(o.id)===Number(id));renderList();renderDetail(selected)}
-function mapLink(o){return 'baza.html?object='+encodeURIComponent(o.id)+'&q='+encodeURIComponent(o.name||'')}
+function mapLink(o){return 'karta.html?object='+encodeURIComponent(o.id)+'&q='+encodeURIComponent(o.name||'')}
 function escAttr(s){return esc(s).replace(/`/g,'&#96;')}
 function cleanNameForMatch(v){return norm(String(v||'')).replace(/\.[a-z0-9]{2,5}$/,'').replace(/[_\-\.]+/g,' ').replace(/(nacrt|nacrti|scan|sken|topodroid|survey|plan|profile|profil|tlocrt|presjek|jamski|spiljski|jama|spilja|pecina|objekt|final|copy|kopija)/g,' ').replace(/\d{1,4}/g,' ').replace(/\s+/g,' ').trim()}
 let DRAWINGS_CACHE=null;let DRAWINGS_BY_OBJECT=null;
