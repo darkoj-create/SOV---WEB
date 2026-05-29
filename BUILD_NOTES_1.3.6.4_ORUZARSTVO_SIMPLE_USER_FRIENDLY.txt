@@ -1,0 +1,19 @@
+SOV Admin APK 1.3.6.4 — Oružarstvo simple/user-friendly
+
+Cilj:
+- Oružarstvo u appu više nije mini-web admin, nego jednostavan terenski katalog.
+- Kategorije su sortirane po realnoj važnosti za speleo korištenje.
+
+Promjene:
+- Prioritet kategorija: Užad, Oprema za postavljanje, Oprema za crtanje, Osobna oprema.
+- Nakon toga idu elektro/foto, bušilice, logor, medicina i ostalo.
+- Search je typo/synonym friendly:
+  croll/krol/crol/prsni, karabiner/karabin/HMS/matica, pojas/sjedalica,
+  uže/užad/uze/uzad/rope, stop/descender/rig, TopoDroid/Disto/nacrt itd.
+- Dinamičke kategorije i dalje dolaze iz Supabase kataloga.
+- Sync logika iz 1.3.6.3.2 ostaje.
+- Izleti nisu dirani.
+
+Build:
+- versionCode 900022
+- versionName 1.3.6.4-oruzarstvo-simple-user-friendly

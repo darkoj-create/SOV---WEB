@@ -1,0 +1,3 @@
+SOV Admin APK 1.3.6.2.1 - build fix
+Fix: categorySummaries unresolved reference in HomeAndToolsScreens.kt.
+No SQL/web changes.

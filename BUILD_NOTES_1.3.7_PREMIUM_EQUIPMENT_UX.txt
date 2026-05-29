@@ -1,0 +1,14 @@
+SOV Admin APK 1.3.7 — Premium Equipment UX
+
+Focus:
+- Oružarstvo redesigned as a simple, premium mobile module.
+- Priority category order: Užad, Oprema za postavljanje, Oprema za crtanje, Osobna oprema, Bušilice i baterije.
+- Category normalization: karabineri/sidrišta/spitovi -> Oprema za postavljanje; kacige/pojasevi/croll/stop -> Osobna oprema; Disto/TopoDroid/pribor -> Oprema za crtanje; bušilice/baterije/punjači -> Bušilice i baterije.
+- Premium category tiles with large visual glyphs, subtitles, availability counts and progress bars.
+- Equipment cards now show category-specific visual identity instead of generic storage icons.
+- Typo-friendly search expanded: croll/krol/crol/prsni, karabiner/karabin/HMS/matica, kaciga/helmet, bušilica/Hilti/Bosch/Makita, crtaći pribor/Disto/TopoDroid.
+- Izleti not changed.
+
+Build:
+- versionCode 900023
+- versionName 1.3.7-premium-equipment-ux

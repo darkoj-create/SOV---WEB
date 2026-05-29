@@ -1,0 +1,23 @@
+SOV v1.0.166 — TK25 / DOF / DOF LiDAR Overlay Toggles
+
+Base:
+- sov-v1.0.166-FULL-geo-units-overlay-flicker-fix.zip
+
+Scope:
+- Adds ready-made overlay toggles in Maps & overlays -> Overlay slojevi.
+- Adds per-overlay opacity presets for TK25, DOF and DOF LiDAR.
+- Keeps existing Geological Units overlay.
+- Uses the existing WmsTilesOverlay renderer and its cache/flicker fixes.
+
+Added overlay options:
+- TK25 overlay: uses existing TK25_NOVI DGU WMS config.
+- DOF overlay: uses existing DGU DOF WMS config.
+- DOF LiDAR overlay: uses existing DGU orthophoto_lidar_2022_2023 WMS config.
+
+Notes:
+- These overlays are optional and disabled by default.
+- Multiple overlays can be enabled, but for field performance it is best to keep only 1-2 active.
+- DOF LiDAR can be slower or partially available depending on DGU service/area.
+
+Build note:
+- Source project is patched. APK inside the ZIP, if present, is from the previous package and must be rebuilt in Android Studio.

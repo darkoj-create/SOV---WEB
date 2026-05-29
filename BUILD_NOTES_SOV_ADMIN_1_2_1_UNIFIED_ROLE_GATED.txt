@@ -1,0 +1,33 @@
+SOV Admin APK 1.2.1 — unified-role-gated
+
+Version:
+- versionCode: 900007
+- versionName: 1.2.1-unified-role-gated
+- applicationId: com.darko.speleov1admin
+
+Base:
+- sov-admin-v1.2.0-unified-role-preview.zip
+
+Changes:
+1. Unified role preview is now active gating foundation.
+   - App still signs in to Supabase from the Home/Tools role card.
+   - Synced permissions are stored locally through SovPermissionsStore.
+
+2. Main APK navigation now checks stored permissions before opening modules:
+   - Search/Map: allowed when can_view_sov_base or can_view_katastar is true.
+   - Izleti: allowed when can_manage_trips is true.
+   - Slojevi/Offline: allowed when SOV view or trip management is true.
+   - Tools, calculator and Speleo Runner stay available.
+   - Home and Settings stay available for blocked/unapproved users.
+
+3. If a role is blocked or not approved:
+   - App redirects back to Home.
+   - User sees a short toast explaining that the current SOV role has no access.
+
+4. Offline admin fallback remains full-access.
+   - This preserves field/admin safety if there is no login session or internet.
+   - Once a Supabase session is synced, stored permissions control the gated modules.
+
+Build note:
+- Source patch prepared successfully.
+- Local compile in this ChatGPT runtime could not complete because Gradle wrapper needs to download Gradle 9.0.0 from services.gradle.org and outbound internet is unavailable here.

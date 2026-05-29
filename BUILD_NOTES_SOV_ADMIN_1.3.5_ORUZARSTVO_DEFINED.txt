@@ -1,0 +1,13 @@
+SOV Admin APK 1.3.5 — Oružarstvo mobile defined
+
+Sto je promijenjeno:
+- Izleti ostaju kakvi jesu; nisu prebaceni u novi flow.
+- Oružarstvo je mobilni field-companion modul, ne mini web admin.
+- User flow: katalog, search, filteri, detalj dostupnosti, zahtjev za opremu, moji zahtjevi.
+- Oružar/Admin flow: dodatni tab Oružar s queue pregledom i akcijama Odobri / Izdano / Vraceno.
+- Nema editiranja inventara, brisanja, importa ni SQL/admin alata iz APK-a.
+- Web ostaje source of truth; Supabase submission se ukljucuje tek nakon finalnog web workflowa posudbe.
+
+Version:
+- versionCode 900015
+- versionName 1.3.5-oruzarstvo-mobile-module

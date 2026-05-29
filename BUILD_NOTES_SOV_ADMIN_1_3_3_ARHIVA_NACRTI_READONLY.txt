@@ -1,0 +1,15 @@
+SOV Admin APK 1.3.3 — Arhiva/Nacrti read-only
+
+Base: SOV Admin APK 1.3.2 Oružarstvo read-only.
+
+Promjene:
+- versionCode 900013
+- versionName 1.3.3-arhiva-nacrti-readonly
+- dodan route SovAppRoutes.ARHIVA_NACRTI
+- dodan ulaz Alati > Arhiva i nacrti
+- dodan ArchiveDrawingsReadOnlyScreen kao siguran read-only foundation
+- bez upload/edit/delete akcija u APK-u
+- web/Supabase 5.37 ostaje source of truth za arhivu/nacrte
+
+Napomena:
+APK treba buildati i potpisati istim admin keystoreom kao dosadašnje admin buildove.
