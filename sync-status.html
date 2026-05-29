@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SOV Sync · Ekosustav status v5.58.9</title>
+  <title>SOV Sync · Ekosustav status v5.58.10</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap" rel="stylesheet">
@@ -18,14 +18,14 @@
 <body>
   <div class="shell">
     <header class="top">
-      <a class="brand" href="dashboard.html"><div class="mark">SOV</div><div><strong>SOV Sync</strong><small>ekosustav status · v5.58.9</small></div></a>
+      <a class="brand" href="dashboard.html"><div class="mark">SOV</div><div><strong>SOV Sync</strong><small>ekosustav status · v5.58.10</small></div></a>
       <nav class="nav"><a href="dashboard.html">Dashboard</a><a href="baza.html">Karta</a><a href="arhivar-dashboard.html">Arhivar</a><a href="news-editor.html">Vijesti CMS</a><a href="role-manager.html">Role</a><a class="primary" href="sync-status.html">SOV Sync</a></nav>
     </header>
 
     <section class="hero">
       <span class="eyebrow">SOV ekosustav · admin kontrolna ploča</span>
       <h1>Jedno mjesto za provjeru synca.</h1>
-      <p>Ova stranica je usklađena s web buildom v5.58.9. Čita endpointove i Supabase tablice: nacrti, izleti, role, novosti CMS i arhivarske predaje. Ne mijenja podatke.</p>
+      <p>Ova stranica je usklađena s web buildom v5.58.10. Čita endpointove i Supabase tablice: nacrti, izleti, role, novosti CMS, user predaje članaka i arhivarske predaje. Ne mijenja podatke.</p>
       <div class="actions">
         <button class="btn" id="runAllBtn">Provjeri sve</button>
         <button class="btn secondary" id="runDrawingsBtn">Nacrti</button>
@@ -102,8 +102,8 @@
 
       <article class="card">
         <h2>Build verzije</h2>
-        <div class="kv"><b>Web</b><span>v5.58.9 news editor save RPC fix</span></div>
-        <div class="kv"><b>News CMS SQL</b><span>v5.58.9 save RPC + v5.58.7 storage + v5.58.5 hard profile RLS reset</span></div>
+        <div class="kv"><b>Web</b><span>v5.58.10 user dashboard article submission + armory search cleanup</span></div>
+        <div class="kv"><b>News CMS SQL</b><span>v5.58.10 user article submit RPC + v5.58.9 save RPC + v5.58.7 storage + v5.58.5 hard profile RLS reset</span></div>
         <div class="kv"><b>Arhivar SQL</b><span>v5.58.1 submissions + v5.57.8 workflow</span></div>
         <div class="kv"><b>Admin APK source</b><span>v1.4.13.7 arhivar submissions</span></div>
       </article>
@@ -123,7 +123,7 @@
       </article>
     </section>
 
-    <div class="footer">SOV web v5.58.9 · sync-status.html · admin read-only kontrolna ploča</div>
+    <div class="footer">SOV web v5.58.10 · sync-status.html · admin read-only kontrolna ploča</div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

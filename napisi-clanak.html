@@ -1,1 +1,101 @@
-<!doctype html><html lang="hr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Preusmjeravanje na Urednik vijesti</title><meta http-equiv="refresh" content="0; url=news-editor.html"><link rel="stylesheet" href="assets/site.css"><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#06110e;color:#eef8f2;font-family:system-ui}.box{max-width:560px;padding:28px;border:1px solid rgba(255,255,255,.14);border-radius:24px;background:rgba(255,255,255,.06)}a{color:#d7f66f;font-weight:900}</style></head><body><div class="box"><h1>Urednik vijesti je premješten</h1><p>Stari draft alat sada vodi na pravi CMS za vijesti.</p><p><a href="news-editor.html">Otvori Urednik vijesti</a></p></div></body></html>
+<!doctype html>
+<html lang="hr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Napiši članak · SOV Cloud</title>
+  <link rel="stylesheet" href="assets/site.css">
+  <link rel="stylesheet" href="assets/mobile.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/supabase-config.js"></script>
+  <script src="assets/auth.js"></script>
+  <style>
+    :root{--bg:#050807;--panel:rgba(255,255,255,.065);--line:rgba(255,255,255,.13);--muted:#aabbb4;--lime:#d7f66f;--teal:#83e6c2;--cyan:#78d7ff;--danger:#ff8f8f}
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 82% 6%,rgba(120,215,255,.16),transparent 32%),radial-gradient(circle at 15% 10%,rgba(215,246,111,.13),transparent 30%),linear-gradient(180deg,#030504,#07120f 55%,#030504);color:#eef8f2;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}.shell{width:min(1040px,calc(100% - 28px));margin:0 auto;padding:22px 0 70px}.top{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:18px}.brand{display:flex;gap:12px;align-items:center;text-decoration:none;color:#fff}.mark{width:44px;height:44px;border-radius:16px;display:grid;place-items:center;background:rgba(255,255,255,.08);border:1px solid var(--line);font-weight:1000}.nav{display:flex;gap:8px;flex-wrap:wrap}.nav a{border:1px solid var(--line);background:rgba(255,255,255,.06);border-radius:999px;padding:10px 13px;color:#fff;text-decoration:none;font-weight:900;font-size:13px}.hero{border:1px solid var(--line);background:linear-gradient(135deg,rgba(255,255,255,.085),rgba(255,255,255,.035));border-radius:34px;padding:28px;margin-bottom:18px;box-shadow:0 24px 80px rgba(0,0,0,.34)}.eyebrow{display:inline-flex;border:1px solid rgba(215,246,111,.28);background:rgba(215,246,111,.11);color:#eaffb3;border-radius:999px;padding:8px 11px;font-weight:950;font-size:12px;letter-spacing:.08em;text-transform:uppercase}.hero h1{font-size:clamp(36px,6vw,70px);letter-spacing:-.06em;line-height:.94;margin:16px 0 10px}.hero p,.hint{color:var(--muted);line-height:1.6}.layout{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:18px;align-items:start}.panel{border:1px solid var(--line);background:var(--panel);border-radius:28px;padding:18px;box-shadow:0 20px 70px rgba(0,0,0,.24)}.form{display:grid;gap:14px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.full{grid-column:1/-1}label{display:grid;gap:7px;font-size:12px;font-weight:950;color:#dceae4;text-transform:uppercase;letter-spacing:.06em}input,textarea,select{width:100%;border:1px solid var(--line);background:rgba(0,0,0,.26);color:#fff;border-radius:16px;padding:12px;font:inherit;text-transform:none;letter-spacing:normal}textarea{min-height:120px;resize:vertical}.body-box{min-height:310px}.btn{border:0;border-radius:999px;padding:12px 15px;background:linear-gradient(135deg,var(--lime),var(--teal));color:#101510;font-weight:950;text-decoration:none;cursor:pointer;display:inline-flex;justify-content:center;align-items:center;gap:8px}.btn.secondary{background:rgba(255,255,255,.075);color:#eef8f2;border:1px solid var(--line)}.actions{display:flex;gap:10px;flex-wrap:wrap}.status{min-height:24px;color:#f7e7a2;font-weight:900}.preview{min-height:190px;border-radius:22px;background:#10201a center/cover no-repeat;border:1px solid var(--line);display:flex;align-items:end;overflow:hidden}.preview span{display:block;width:100%;background:linear-gradient(transparent,rgba(0,0,0,.82));padding:46px 16px 14px;font-weight:900;color:#d8e8e0}.list{display:grid;gap:10px;margin-top:12px}.item{border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.045);border-radius:18px;padding:13px}.item b{display:block}.item small{display:block;color:var(--muted);line-height:1.5;margin-top:4px}.ok{border-color:rgba(131,230,194,.32);background:rgba(131,230,194,.08)}@media(max-width:900px){.layout,.grid{grid-template-columns:1fr}.full{grid-column:auto}.hero{border-radius:26px}.panel{border-radius:22px}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="top">
+      <a class="brand" href="dashboard.html"><span class="mark">SOV</span><span><strong>SOV Cloud</strong><br><small>Predaja članka · v5.58.10</small></span></a>
+      <nav class="nav"><a href="dashboard.html">Dashboard</a><a href="vijesti.html">Vijesti</a><a href="news-editor.html" data-role-editor>Urednik</a></nav>
+    </header>
+
+    <section class="hero">
+      <span class="eyebrow">Članski tekstovi</span>
+      <h1>Napiši članak za SOV.</h1>
+      <p>Ovo nije urednički CMS. Član ovdje predaje tekst i fotografiju kao draft. Urednik kasnije otvara draft u Vijesti CMS-u, doradi ga i objavljuje.</p>
+    </section>
+
+    <section class="layout">
+      <form id="articleForm" class="panel form">
+        <div class="grid">
+          <label class="full">Naslov<input id="title" required placeholder="Naslov članka"></label>
+          <label>Autor<input id="author" placeholder="Ime i prezime / ekipa"></label>
+          <label>Kategorija<select id="category"><option>Novosti</option><option>Izleti</option><option>Istraživanja</option><option>Speleoškola</option><option>Odsjek</option><option>Ekologija</option><option>Velebiten</option></select></label>
+          <label class="full">Kratki sažetak<textarea id="summary" placeholder="2–3 rečenice za urednika i karticu vijesti"></textarea></label>
+          <label class="full">Naslovna fotografija URL<input id="imageUrl" placeholder="Možeš zalijepiti URL ili uploadati fotku ispod"></label>
+          <div class="full actions">
+            <input id="coverFile" type="file" accept="image/*" style="max-width:360px">
+            <button class="btn secondary" type="button" id="uploadBtn">Upload fotke</button>
+          </div>
+          <div class="full preview" id="preview"><span>Nema naslovne fotografije</span></div>
+          <label class="full">Tekst članka<textarea id="body" class="body-box" required placeholder="Napiši tekst. Urednik ga kasnije može doraditi prije objave."></textarea></label>
+        </div>
+        <div class="actions">
+          <button class="btn" type="submit">Predaj uredniku</button>
+          <button class="btn secondary" type="button" id="clearBtn">Očisti</button>
+          <span class="status" id="status"></span>
+        </div>
+      </form>
+
+      <aside class="panel">
+        <h2>Kako radi?</h2>
+        <div class="list">
+          <div class="item ok"><b>1. Predaš draft</b><small>Članak se sprema u bazu kao skrivena vijest. Ne objavljuje se automatski.</small></div>
+          <div class="item"><b>2. Urednik ga vidi</b><small>Urednik/Admin ga otvara u Vijesti CMS-u i može mijenjati tekst, fotke i status.</small></div>
+          <div class="item"><b>3. Objavljuje se kad je spremno</b><small>Tek kad urednik uključi “Objavljeno”, članak ide na javne vijesti.</small></div>
+        </div>
+        <p class="hint">Za ovo treba SQL <b>SUPABASE_SOV_NEWS_USER_ARTICLES_v5_58_10.sql</b>. Upload fotki koristi postojeći <b>sov-news</b> bucket iz v5.58.7.</p>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+  (function(){
+    const $=id=>document.getElementById(id); let sb=null;
+    const esc=s=>String(s||'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+    const msg=t=>{$('status').textContent=t||''};
+    function bodyToHtml(txt){return String(txt||'').split(/\n{2,}/).map(p=>p.trim()).filter(Boolean).map(p=>'<p>'+esc(p).replace(/\n/g,'<br>')+'</p>').join('\n')}
+    function getClient(){
+      if(sb)return sb;
+      if(window.SOVAuth&&SOVAuth.getClient)sb=SOVAuth.getClient();
+      if(!sb&&window.supabase){const cfg=window.SOV_SUPABASE_CONFIG||window.SUPABASE_CONFIG||{};const url=window.SOV_SUPABASE_URL||cfg.url||cfg.SUPABASE_URL;const key=window.SOV_SUPABASE_ANON_KEY||cfg.anonKey||cfg.SUPABASE_ANON_KEY;if(url&&key)sb=window.supabase.createClient(url,key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}})}
+      return sb;
+    }
+    async function boot(){try{if(window.SOVAuth&&SOVAuth.ready)await SOVAuth.ready();}catch(e){} sb=getClient(); if(!sb){msg('Supabase nije konfiguriran.');return} try{const p=await SOVAuth.getProfile(); if(p&&p.full_name&&!$('author').value)$('author').value=p.full_name}catch(e){} bind(); updatePreview();}
+    function bind(){
+      $('imageUrl').oninput=updatePreview;
+      $('clearBtn').onclick=()=>{$('articleForm').reset();updatePreview();msg('')};
+      $('uploadBtn').onclick=uploadCover;
+      $('articleForm').onsubmit=submit;
+    }
+    function updatePreview(){const v=$('imageUrl').value.trim(); $('preview').style.backgroundImage=v?`url('${v.replace(/'/g,'%27')}')`:''; $('preview').innerHTML='<span>'+(v?'Preview naslovne fotografije':'Nema naslovne fotografije')+'</span>'}
+    async function uploadCover(){
+      const file=$('coverFile').files&&$('coverFile').files[0]; if(!file){msg('Odaberi fotku.');return}
+      try{msg('Uploadam fotku...'); const safe=file.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9.]+/g,'-').replace(/^-+|-+$/g,''); const path=`user-submissions/${Date.now()}-${Math.random().toString(16).slice(2)}-${safe}`; const up=await sb.storage.from('sov-news').upload(path,file,{cacheControl:'3600',upsert:true,contentType:file.type||undefined}); if(up.error)throw up.error; const {data}=sb.storage.from('sov-news').getPublicUrl(path); $('imageUrl').value=data.publicUrl; updatePreview(); msg('Fotka uploadana. Sad predaj članak.');}
+      catch(e){msg('Greška uploada: '+(e.message||e)+' — provjeri sov-news storage policy v5.58.7.');}
+    }
+    async function submit(ev){
+      ev.preventDefault(); if(!sb){msg('Supabase nije konfiguriran.');return}
+      const title=$('title').value.trim(), body=$('body').value.trim(); if(!title||!body){msg('Naslov i tekst su obavezni.');return}
+      const payload={title, author_name:$('author').value.trim(), category:$('category').value.trim()||'Novosti', summary:$('summary').value.trim(), image_url:$('imageUrl').value.trim(), body, content_html:bodyToHtml(body)};
+      msg('Predajem članak uredniku...');
+      try{const r=await sb.rpc('sov_news_submit_article',{p_payload:payload}); if(r.error)throw r.error; msg('Predano uredniku. Članak je spremljen kao draft.'); $('articleForm').reset(); updatePreview();}
+      catch(e){msg('Greška predaje: '+(e.message||e)+' — pokreni SUPABASE_SOV_NEWS_USER_ARTICLES_v5_58_10.sql.');}
+    }
+    document.addEventListener('DOMContentLoaded',boot);
+  })();
+  </script>
+</body>
+</html>

@@ -1,3 +1,13 @@
+
+## v5.58.10 — Cloud User UI: oprema + predaja članka
+
+- User dashboard vraća korisne članske module: Oprema i Napiši članak.
+- Oprema vodi na postojeću člansku pretragu oružarstva / zahtjev za posudbu.
+- Novi `napisi-clanak.html` sprema članski tekst kao skriveni draft za urednika.
+- Dodan SQL `SUPABASE_SOV_NEWS_USER_ARTICLES_v5_58_10.sql` s RPC-em `sov_news_submit_article`.
+- Maknut `sov-inbox.js` s dashboarda da nestane donji notification/inbox artefakt.
+- `sync-status.html` usklađen na v5.58.10.
+
 # v5.58.9 — News editor save RPC fix
 
 - Urednik vijesti više ne koristi Supabase `.single()` u save flowu, što je rušilo spremanje s porukom `Cannot coerce the result to a single JSON object`.

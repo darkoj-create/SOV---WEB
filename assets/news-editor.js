@@ -67,10 +67,11 @@
       if(f==='hidden'&&n.published) return false;
       if(f==='pinned'&&!n.pinned) return false;
       if(f==='featured'&&!n.featured) return false;
+      if(f==='submitted'&&!String(n.source||'').includes('user-submission')) return false;
       if(q&&!norm([n.title,n.summary,n.body,n.category,n.slug].join(' ')).includes(q)) return false;
       return true;
     });
-    els.list.innerHTML=view.map(n=>`<button class="news-row ${selected&&selected.id===n.id?'active':''}" data-id="${esc(n.id)}"><span class="thumb" style="background-image:url('${esc(n.image_url||'assets/sov-logo.png')}')"></span><span><strong>${esc(n.title||'Bez naslova')}</strong><span class="meta">${esc(n.category||'Novosti')} · ${dateText(n.published_at||n.created_at)}</span><span class="badges"><span class="badge ${n.published?'live':'hidden'}">${n.published?'objavljeno':'skriveno'}</span>${n.pinned?'<span class="badge">📌 vrh</span>':''}${n.featured?'<span class="badge">featured</span>':''}</span></span></button>`).join('') || '<div class="empty">Nema rezultata.</div>';
+    els.list.innerHTML=view.map(n=>`<button class="news-row ${selected&&selected.id===n.id?'active':''}" data-id="${esc(n.id)}"><span class="thumb" style="background-image:url('${esc(n.image_url||'assets/sov-logo.png')}')"></span><span><strong>${esc(n.title||'Bez naslova')}</strong><span class="meta">${esc(n.category||'Novosti')} · ${dateText(n.published_at||n.created_at)}</span><span class="badges"><span class="badge ${n.published?'live':'hidden'}">${n.published?'objavljeno':'skriveno'}</span>${n.pinned?'<span class="badge">📌 vrh</span>':''}${n.featured?'<span class="badge">featured</span>':''}${String(n.source||'').includes('user-submission')?'<span class="badge">predao član</span>':''}</span></span></button>`).join('') || '<div class="empty">Nema rezultata.</div>';
     els.list.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>open(rows.find(r=>String(r.id)===String(b.dataset.id))));
   }
   function open(n){
