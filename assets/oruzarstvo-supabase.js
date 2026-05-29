@@ -778,4 +778,61 @@
   }
 
   window.SOVArmoryDB={configured,upsertSimpleItem,retireSimpleItem,loadArmoryNotes,saveArmoryNote,doneArmoryNote,loadRequests,createRequest,updateRequestStatus,issueRequest,returnRequestItems,importStaticData,loadAllData,loadCatalogManifest,createEquipmentItem,createEquipmentPiece,createEquipmentPieces,createRope,updateEquipmentStatus};
+
+  // v5.48.1: true cache-first wrapper. The old v5.48 path still asked the manifest view
+  // before returning cached data; on large Supabase views that made every page open feel like a full sync.
+  // Now UI gets the last valid catalog immediately, while a single background refresh may update the cache.
+  (function installFastCacheFirstWrapper(){
+    const CACHE_KEY='sov_armory_catalog_cache_v548';
+    const MIN_ROWS=20;
+    let inflight=null;
+    const originalLoadAllData=window.SOVArmoryDB.loadAllData;
+    function rowCount(d){
+      if(!d) return 0;
+      return (Array.isArray(d.items)?d.items.length:0)+(Array.isArray(d.ropes)?d.ropes.length:0)+(Array.isArray(d.pieces)?d.pieces.length:0)+(Array.isArray(d.raw_app_catalog)?d.raw_app_catalog.length:0);
+    }
+    function readCache(){try{return JSON.parse(localStorage.getItem(CACHE_KEY)||'null');}catch(e){return null;}}
+    function markCached(cached){
+      const data=cached && cached.data;
+      if(data){
+        data.summary=data.summary||{};
+        data.summary.source='Lokalni cache · provjera u pozadini';
+        data.summary.cache_saved_at=cached.saved_at||null;
+      }
+      return data;
+    }
+    function startBackgroundRefresh(){
+      if(inflight || !configured()) return;
+      inflight=(async()=>{
+        try{
+          const fresh=await originalLoadAllData({force:true,background:true});
+          if(fresh && rowCount(fresh)>=MIN_ROWS){
+            try{window.dispatchEvent(new CustomEvent('sov-armory-catalog-refreshed',{detail:fresh}));}catch(e){}
+          }
+          return fresh;
+        }catch(e){console.warn('armory background refresh skipped', e&&e.message?e.message:e); return null;}
+        finally{setTimeout(()=>{inflight=null;},1500);}
+      })();
+    }
+    window.SOVArmoryDB.loadAllData=async function fastCacheFirstLoadAllData(options){
+      options=options||{};
+      if(!options.force){
+        const cached=readCache();
+        if(cached && rowCount(cached.data)>=MIN_ROWS){
+          startBackgroundRefresh();
+          return markCached(cached);
+        }
+      }
+      if(inflight && !options.force){
+        const cached=readCache();
+        if(cached && rowCount(cached.data)>=MIN_ROWS) return markCached(cached);
+        return inflight;
+      }
+      if(options.force){
+        return originalLoadAllData(options);
+      }
+      inflight=originalLoadAllData(options).finally(()=>setTimeout(()=>{inflight=null;},1500));
+      return inflight;
+    };
+  })();
 })();

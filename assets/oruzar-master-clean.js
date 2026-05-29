@@ -41,7 +41,7 @@
       if(!res.ok) throw new Error('static json HTTP '+res.status);
       return await res.json();
     }catch(e){
-      console.warn('[armory master v5.48] static catalog failed',e);
+      console.warn('[armory master v5.48.1] static catalog failed',e);
       return {items:[],ropes:[],pieces:[],categories:[]};
     }
   }
@@ -57,27 +57,43 @@
     }
     return d;
   }
+  function applyLiveCatalog(live){
+    const liveRows=rowCountFromData(live);
+    if(!live || liveRows<20) return false;
+    STATE.data=live; STATE.source='supabase-cache/live'; STATE.liveRows=liveRows; STATE.rows=makeRows(STATE.data);
+    try{ renderKpis(); renderMaster(); renderInventory(); }catch(e){console.warn('[armory master v5.48.1] live rerender failed',e)}
+    return true;
+  }
+  async function refreshLiveInBackground(){
+    if(STATE._liveRefreshStarted) return;
+    STATE._liveRefreshStarted=true;
+    setTimeout(async()=>{
+      try{
+        if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.loadAllData){
+          const live=preferRawCatalogForMaster(await SOVArmoryDB.loadAllData());
+          applyLiveCatalog(live);
+        }
+      }catch(e){console.warn('[armory master v5.48.1] background live catalog failed',e)}
+    },250);
+  }
   async function loadData(){
     if(STATE.data) return STATE.data;
-    let live=null, liveRows=0, staticData=null, staticRows=0, source='empty';
-    try{
-      if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.loadAllData){
-        live=preferRawCatalogForMaster(await SOVArmoryDB.loadAllData());
-        liveRows=rowCountFromData(live);
-      }
-    }catch(e){console.warn('[armory master v5.48] Supabase catalog failed',e)}
-    // Always keep static JSON as a safety net for Oružar Master. If live/RLS/view returns 0,
-    // master must still show the known imported catalog instead of a blank screen.
+    let staticData=null, staticRows=0;
+    // v5.48.1: Master must open instantly. Use local JSON immediately, then refresh Supabase/cache in background.
     staticData=await loadStaticCatalog();
     staticRows=rowCountFromData(staticData);
-    let chosen=null;
-    if(live && liveRows>=20){ chosen=live; source='supabase-live'; }
-    else if(staticRows>0){ chosen=staticData; source=liveRows>0?'static-fallback-live-too-small':'static-fallback'; }
-    else { chosen=live||staticData||{items:[],ropes:[],pieces:[],categories:[]}; source='empty'; }
-    STATE.data=chosen||{}; STATE.source=source; STATE.liveRows=liveRows; STATE.staticRows=staticRows; STATE.rows=makeRows(STATE.data);
-    if(!STATE.rows.length && source!=='static-fallback'){
-      STATE.data=staticData; STATE.source='static-fallback-after-empty-render'; STATE.rows=makeRows(STATE.data);
+    if(staticRows>0){
+      STATE.data=staticData; STATE.source='static-first · live refresh u pozadini'; STATE.liveRows=0; STATE.staticRows=staticRows; STATE.rows=makeRows(STATE.data);
+      refreshLiveInBackground();
+      return STATE.data;
     }
+    try{
+      if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.loadAllData){
+        const live=preferRawCatalogForMaster(await SOVArmoryDB.loadAllData());
+        if(applyLiveCatalog(live)) return STATE.data;
+      }
+    }catch(e){console.warn('[armory master v5.48.1] Supabase catalog failed',e)}
+    STATE.data={items:[],ropes:[],pieces:[],categories:[]}; STATE.source='empty'; STATE.liveRows=0; STATE.staticRows=0; STATE.rows=[];
     return STATE.data;
   }
   function makeRows(d){
