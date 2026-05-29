@@ -36,14 +36,14 @@
         <button class="btn" onclick="toggleMarkers()">Markeri</button>
         <span id="tk25Status" class="mapPill">TK25: učitavanje...</span>
       </div>
-      <div class="legend"><div class="legendRow"><span class="dot green"></span>U katastru</div><div class="legendRow"><span class="dot red"></span>Nije u katastru</div><div class="legendRow"><span class="dot grey"></span>Provjera / ostalo</div></div>
+      <div class="legend"><div class="legendRow"><span class="dot green"></span>U katastru</div><div class="legendRow"><span class="dot red"></span>Nije u katastru / fali nešto</div><div class="legendRow"><span class="dot grey"></span>Provjera / ostalo</div></div>
       <div id="map"></div>
     </section>
     <aside class="panel" id="sidePanel">
       <div class="intro">
         <span class="eyebrow">SOV Cloud</span>
         <h1>Karta objekata</h1>
-        <p>Brza pretraga speleoloških objekata iz aktualne SOV baze. Klik na marker ili rezultat otvara opis, koordinate i nacrte ako postoje.</p>
+        <p>Brza pretraga speleoloških objekata iz iste Arhivar baze. Status boja sada prvo sluša Arhivar truth: “nije u katastru” nikad ne smije ispasti zeleno.</p>
       </div>
       <div class="searchCard">
         <input id="q" class="search" placeholder="Traži objekt, mjesto, općinu..." oninput="render()" autocomplete="off">
@@ -86,9 +86,14 @@ function setBase(which){[tk25,dof,geo,osm].forEach(l=>map.removeLayer(l));({tk25
 function hasMapPoint(o){return Number.isFinite(Number(o.lat))&&Number.isFinite(Number(o.lon))}
 function statusType(o){
   const ready=norm(o.katastar_readiness||'');
-  const st=norm([o.cadastre_status,o.record_status,o.workflow_raw,o.field_tasks,o.missing_categories_text].join(' '));
-  if(o.base_in_cadastre===true||o.in_cadastre_bool===true||ready==='u_katastru'||st.includes('u_katastru')||st.includes('u katastru'))return 'green';
-  if(ready.includes('nije_u_katastru')||ready.includes('nepotpuno')||ready.includes('provjeriti')||o.base_ready_for_katastar===true||st.includes('nije_u_katastru')||st.includes('nije u katastru')||st.includes('za_unos'))return 'red';
+  const st=norm([o.cadastre_status,o.record_status,o.workflow_raw,o.field_tasks,o.missing_categories_text,o.archive_status].join(' '));
+  const negativeReady = ready.includes('nije_u_katastru') || ready.includes('nepotpuno') || ready.includes('provjeriti');
+  const negativeText = st.includes('nije_u_katastru') || st.includes('nije u katastru') || st.includes('nije objekt u katastru') || st.includes('ne nalazi se u katastru') || st.includes('fali') || st.includes('nema ') || st.includes('nepotpun');
+  const hasMissing = !!(o.missing_categories_text || o.missing_plate || o.missing_coordinates || o.missing_drawing || o.missing_record || o.needs_redraw);
+  // Arhivar truth wins: phrases like "nije u katastru" contain "u katastru", so red must be tested first.
+  if(negativeReady || negativeText || hasMissing || o.base_ready_for_katastar===true) return 'red';
+  const explicitGreen = ready==='u_katastru' || o.base_in_cadastre===true || o.in_cadastre_bool===true || /^u_katastru$/.test(st) || /(^|[^a-z0-9])u katastru([^a-z0-9]|$)/.test(st) || st.includes('objekt u katastru');
+  if(explicitGreen) return 'green';
   return 'grey'
 }
 function color(o){return statusType(o)==='green'?'#36e879':statusType(o)==='red'?'#ff7272':'#aeb8b9'}
@@ -116,6 +121,6 @@ function applyPointFromParams(params){const lat=Number(params.get('lat')),lon=Nu
 async function boot(){try{if(window.SOVAuth&&SOVAuth.ready)await SOVAuth.ready();all=await SOVMapDB.loadObjects(DATA_URL);await loadDrawings();const pts=all.filter(o=>Number.isFinite(Number(o.lat))&&Number.isFinite(Number(o.lon))).length;$('dataStatus').innerHTML='Izvor: <b>'+esc(window.SOV_MAP_DATA_SOURCE||'baza')+'</b> · <b>'+all.length+'</b> objekata · <b>'+pts+'</b> s koordinatama';const params=new URLSearchParams(location.search);const q=params.get('q');if(q)$('q').value=q;render();const oid=params.get('object')||params.get('id');if(oid){const o=all.find(x=>String(x.id)===String(oid)||String(x.source_id)===String(oid));if(o)openObject(o,true);else applyPointFromParams(params)}else if(!applyPointFromParams(params)){fitCurrent()}if(location.hash==='#predaj-jamu')setTimeout(()=>window.SOVSpeleoSubmissions&&SOVSpeleoSubmissions.open(),500)}catch(e){console.error(e);$('dataStatus').textContent='Greška učitavanja baze';$('results').innerHTML='<div class="empty">Ne mogu učitati kartu: '+esc(e.message||e)+'</div>'}}
 boot();
 </script>
-<script src="assets/speleo-submissions.js?v=5.58.17"></script>
+<script src="assets/speleo-submissions.js?v=5.58.19"></script>
 </body>
 </html>

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SOV Arhivar — uređivanje arhive</title>
 <link rel="stylesheet" href="assets/site.css">
-<link rel="stylesheet" href="assets/arhivar-workbench.css?v=5.58.2">
+<link rel="stylesheet" href="assets/arhivar-workbench.css?v=5.58.19">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/supabase-config.js"></script>
 <script src="assets/auth.js"></script>
@@ -28,9 +28,9 @@
 <main class="aw-shell">
   <section class="aw-hero">
     <div>
-      <p class="aw-eyebrow">Radni centar arhivara <span id="awVersionBadge" class="aw-build">v5.58.2</span></p>
+      <p class="aw-eyebrow">Radni centar arhivara <span id="awVersionBadge" class="aw-build">v5.58.19</span></p>
       <h1>Uređivanje arhive</h1>
-      <p>Ovo je prvi arhivarski ulaz: uređivanje postojećih objekata i provjera falinki za katastar. Nove jame koje korisnici predaju iz Baze nalaze se u posebnoj sekciji “Predane jame”.</p>
+      <p>Čisti radni ekran za postojeću arhivu: pretraga objekata, falinke, status za katastar, puni opis i brze akcije. Predane nove jame su odvojene u posebnom inboxu.</p>
     </div>
     <div class="aw-actions">
       <button class="aw-btn primary" id="newObjectBtn">+ Novi objekt</button>
@@ -38,12 +38,12 @@
     </div>
   </section>
 
-  <section class="aw-stats" id="stats"></section>
+  <section class="aw-stats compact" id="stats"></section>
 
   <section class="aw-grid">
     <div class="aw-panel">
-      <h2>Objekti i arhivski status</h2>
-      <p class="aw-muted">Prioritet imaju objekti kojima fali nacrt, koordinate ili zapisnik.</p>
+      <h2>Arhivski popis</h2>
+      <p class="aw-muted">Traži objekt, otvori detalj i odmah označi što je riješeno ili što još fali.</p>
       <div class="aw-toolbar">
         <input class="aw-input" id="searchBox" placeholder="Traži objekt, pločicu, mjesto...">
         <select class="aw-select" id="filterBox">
@@ -58,8 +58,8 @@
       </div>
       <div class="aw-export-box" id="archiveExportBox">
         <div>
-          <b>Export arhive</b>
-          <small>Sve, po falinkama ili samo odabrani objekt.</small>
+          <b>Brzi export</b>
+          <small>CSV/XLS/PDF za trenutni filter, falinke ili odabrani objekt.</small>
         </div>
         <select class="aw-select" id="archiveExportScope">
           <option value="current">Trenutni prikaz / filter</option>
@@ -88,6 +88,6 @@
     </aside>
   </section>
 </main>
-<script src="assets/arhivar-workbench.js?v=5.58.2"></script>
+<script src="assets/arhivar-workbench.js?v=5.58.19"></script>
 </body>
 </html>

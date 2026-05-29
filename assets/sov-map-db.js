@@ -43,7 +43,10 @@
     const lat = num(pick(row,['lat','latitude','wgs84_lat','gps_lat','y','coord_lat','koordinata_lat','n']));
     const lon = num(pick(row,['lon','lng','longitude','wgs84_lon','wgs84_lng','gps_lon','gps_lng','x','coord_lon','koordinata_lon','e']));
     const missingCategories = arr(row.missing_categories||row.missing_categories_text);
-    const baseInCadastre = bool(row.base_in_cadastre);
+    let baseInCadastre = bool(row.base_in_cadastre);
+    const readyRaw = str(row.katastar_readiness||'');
+    const negativeReady = /nije[_\s-]*u[_\s-]*katastru|nepotpuno|provjeriti/i.test(readyRaw);
+    if(negativeReady) baseInCadastre = false;
     const baseReady = bool(row.base_ready_for_katastar);
     const out={
       ...raw,
@@ -154,5 +157,5 @@
     window.SOV_MAP_DATA_SOURCE='JSON fallback';
     return uniqueRows(Array.isArray(data)?data:[]);
   }
-  window.SOVMapDB={loadObjects,normalize,pick,num,bool};
+  window.SOVMapDB={loadObjects,normalize,pick,num,bool,build:'5.58.19'};
 })();
