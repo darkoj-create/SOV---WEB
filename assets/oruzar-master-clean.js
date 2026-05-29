@@ -41,7 +41,7 @@
       if(!res.ok) throw new Error('static json HTTP '+res.status);
       return await res.json();
     }catch(e){
-      console.warn('[armory master v5.47.4] static catalog failed',e);
+      console.warn('[armory master v5.48] static catalog failed',e);
       return {items:[],ropes:[],pieces:[],categories:[]};
     }
   }
@@ -65,7 +65,7 @@
         live=preferRawCatalogForMaster(await SOVArmoryDB.loadAllData());
         liveRows=rowCountFromData(live);
       }
-    }catch(e){console.warn('[armory master v5.47.4] Supabase catalog failed',e)}
+    }catch(e){console.warn('[armory master v5.48] Supabase catalog failed',e)}
     // Always keep static JSON as a safety net for Oružar Master. If live/RLS/view returns 0,
     // master must still show the known imported catalog instead of a blank screen.
     staticData=await loadStaticCatalog();

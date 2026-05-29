@@ -1,1 +1,1 @@
-SOV Web v5.47.3 — read layer stabilize
+SOV Web v5.48 — Fast Armory Sync / Cache-first

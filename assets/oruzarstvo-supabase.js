@@ -504,10 +504,49 @@
   }
 
 
+  const ARMORY_CATALOG_CACHE_KEY='sov_armory_catalog_cache_v548';
+
+  function catalogRowCount(d){
+    if(!d) return 0;
+    return (Array.isArray(d.items)?d.items.length:0)+(Array.isArray(d.ropes)?d.ropes.length:0)+(Array.isArray(d.pieces)?d.pieces.length:0)+(Array.isArray(d.raw_app_catalog)?d.raw_app_catalog.length:0);
+  }
+  function readCatalogCache(){
+    try{return JSON.parse(localStorage.getItem(ARMORY_CATALOG_CACHE_KEY)||'null');}catch(e){return null;}
+  }
+  function writeCatalogCache(manifest,data){
+    try{
+      if(!data || catalogRowCount(data)<20) return;
+      localStorage.setItem(ARMORY_CATALOG_CACHE_KEY, JSON.stringify({saved_at:Date.now(), manifest:manifest||null, data}));
+    }catch(e){console.warn('armory catalog cache save skipped',e);}
+  }
+  async function loadCatalogManifest(){
+    if(!configured()) return null;
+    try{
+      const client=sb();
+      const {data,error}=await client.from('sov_equipment_catalog_manifest').select('*').limit(1);
+      if(error){console.warn('armory manifest unavailable',error.message); return null;}
+      return (data&&data[0])||null;
+    }catch(e){console.warn('armory manifest failed',e.message||e); return null;}
+  }
+
   async function loadAllData(){
     if(!configured()) return null;
     const client=sb();
     const out={summary:{source:'Supabase live'},categories:[],items:[],pieces:[],ropes:[],loans:[],inventories:[],inventory_items:[],procurement:[],services:[],disposed:[],lost:[],field:[],locations:[]};
+    const manifest=await loadCatalogManifest();
+    const cached=readCatalogCache();
+    if(manifest && cached && cached.manifest && cached.manifest.catalog_version===manifest.catalog_version && catalogRowCount(cached.data)>=20){
+      cached.data.summary=cached.data.summary||{};
+      cached.data.summary.source='Supabase cache-first · katalog već ažuran';
+      cached.data.summary.catalog_version=manifest.catalog_version;
+      cached.data.summary.cache_saved_at=cached.saved_at;
+      return cached.data;
+    }
+    if(!manifest && cached && catalogRowCount(cached.data)>=20){
+      cached.data.summary=cached.data.summary||{};
+      cached.data.summary.source='Lokalni cache · manifest nedostupan';
+      return cached.data;
+    }
     async function safe(table, cols='*'){
       try{const {data,error}=await client.from(table).select(cols).limit(7000); if(error){console.warn('SOVArmoryDB load '+table,error.message); return [];} return data||[];}catch(e){console.warn('SOVArmoryDB load '+table,e.message||e); return [];}
     }
@@ -554,6 +593,8 @@
       out.summary.count_ropes=0;
       out.summary.count_pieces=0;
       out.summary.count_categories=out.categories.length;
+      if(manifest){ out.summary.catalog_version=manifest.catalog_version; out.summary.raw_row_count=manifest.raw_row_count; out.summary.grouped_row_count=manifest.grouped_row_count; }
+      writeCatalogCache(manifest,out);
       return out;
     }
     const items=await safe('equipment_items','*');
@@ -590,9 +631,13 @@
     out.summary.count_items=out.items.length; out.summary.count_ropes=out.ropes.length; out.summary.count_categories=out.categories.length;
     const totalRows = (out.items?.length||0) + (out.ropes?.length||0) + (out.pieces?.length||0);
     if (!totalRows) {
-      console.warn('SOVArmoryDB loadAllData: Supabase returned zero catalog rows, falling back to static JSON.');
+      console.warn('SOVArmoryDB loadAllData: Supabase returned zero catalog rows, falling back to static JSON/cache.');
+      const cachedAgain=readCatalogCache();
+      if(cachedAgain && catalogRowCount(cachedAgain.data)>=20) return cachedAgain.data;
       return null;
     }
+    if(manifest){ out.summary.catalog_version=manifest.catalog_version; out.summary.raw_row_count=manifest.raw_row_count; out.summary.grouped_row_count=manifest.grouped_row_count; }
+    writeCatalogCache(manifest,out);
     return out;
   }
 
@@ -732,5 +777,5 @@
     return true;
   }
 
-  window.SOVArmoryDB={configured,upsertSimpleItem,retireSimpleItem,loadArmoryNotes,saveArmoryNote,doneArmoryNote,loadRequests,createRequest,updateRequestStatus,issueRequest,returnRequestItems,importStaticData,loadAllData,createEquipmentItem,createEquipmentPiece,createEquipmentPieces,createRope,updateEquipmentStatus};
+  window.SOVArmoryDB={configured,upsertSimpleItem,retireSimpleItem,loadArmoryNotes,saveArmoryNote,doneArmoryNote,loadRequests,createRequest,updateRequestStatus,issueRequest,returnRequestItems,importStaticData,loadAllData,loadCatalogManifest,createEquipmentItem,createEquipmentPiece,createEquipmentPieces,createRope,updateEquipmentStatus};
 })();
