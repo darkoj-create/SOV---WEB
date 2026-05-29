@@ -104,11 +104,41 @@
     ev.preventDefault();
     const row=rowFromForm();
     if(!row.title){ msg('Naslov je obavezan.'); return; }
-    msg(row.id?'Spremam...':'Spremam u bazu...');
-    const id=els.id.value;
-    const res=id ? await sb.from('sov_news').update(row).eq('id',id).select().single() : await sb.from('sov_news').insert(row).select().single();
-    if(res.error){ msg('Greška spremanja: '+res.error.message); return; }
-    selected=res.data; await load(); open(rows.find(r=>String(r.id)===String(selected.id))||selected); msg('Spremljeno.');
+    const id=els.id.value || null;
+    msg(id?'Spremam izmjene...':'Spremam novu vijest...');
+
+    // v5.58.9: save preko RPC-a da izbjegnemo Supabase/PostgREST .single() grešku
+    // "Cannot coerce the result to a single JSON object". RPC uvijek vraća jedan JSON objekt
+    // ili jasnu grešku. Ako SQL još nije pokrenut, postoji fallback bez .single().
+    let saved=null;
+    try{
+      const rpc=await sb.rpc('sov_news_save',{p_id:id,p_payload:row});
+      if(rpc.error) throw rpc.error;
+      saved=rpc.data || null;
+    }catch(e){
+      const msgText=String(e && e.message || e || '');
+      const rpcMissing=/sov_news_save|function .* does not exist|Could not find the function/i.test(msgText);
+      if(!rpcMissing){ msg('Greška spremanja: '+msgText); return; }
+
+      // Fallback za slučaj da web ode gore prije SQL-a: nikad ne koristimo .single().
+      const q=id
+        ? await sb.from('sov_news').update(row).eq('id',id).select().limit(1)
+        : await sb.from('sov_news').insert(row).select().limit(1);
+      if(q.error){ msg('Greška spremanja: '+q.error.message); return; }
+      saved=Array.isArray(q.data) ? q.data[0] : q.data;
+      if(!saved){
+        msg(id
+          ? 'Spremanje nije vratilo vijest. Provjeri SQL v5.58.9 i prava za urednika.'
+          : 'Nova vijest je možda spremljena, ali je baza nije vratila. Pokreni SQL v5.58.9 pa osvježi.');
+        await load();
+        return;
+      }
+    }
+
+    selected=saved;
+    await load();
+    open(rows.find(r=>String(r.id)===String(saved.id))||saved);
+    msg('Spremljeno.');
   }
   async function uploadFile(file,folder){
     if(!file) throw new Error('Nema datoteke.');
@@ -140,12 +170,26 @@
     if(!selected){ msg('Prvo odaberi vijest.'); return; }
     const copy={...selected,title:(selected.title||'Vijest')+' — kopija',slug:(selected.slug||slugify(selected.title||'vijest'))+'-kopija',published:false,pinned:false,featured:false};
     delete copy.id; delete copy.created_at; delete copy.updated_at; delete copy.created_by; delete copy.updated_by;
-    msg('Dupliciram...'); const {error}=await sb.from('sov_news').insert(copy); if(error){msg('Greška dupliciranja: '+error.message);return;} await load(); msg('Duplicirano kao skrivena kopija.');
+    msg('Dupliciram...');
+    const rpc=await sb.rpc('sov_news_save',{p_id:null,p_payload:copy});
+    if(rpc.error){ msg('Greška dupliciranja: '+rpc.error.message); return; }
+    await load(); open(rows.find(r=>String(r.id)===String(rpc.data && rpc.data.id))||rpc.data||null); msg('Duplicirano kao skrivena kopija.');
   }
   async function removeSelected(){
     if(!selected){ msg('Prvo odaberi vijest.'); return; }
     if(!confirm('Obrisati vijest "'+(selected.title||'')+'"?')) return;
-    msg('Brišem...'); const {error}=await sb.from('sov_news').delete().eq('id',selected.id); if(error){msg('Greška brisanja: '+error.message);return;} selected=null; await load(); open(null); msg('Obrisano.');
+    msg('Brišem...');
+    try{
+      const rpc=await sb.rpc('sov_news_delete',{p_id:selected.id});
+      if(rpc.error) throw rpc.error;
+    }catch(e){
+      const msgText=String(e && e.message || e || '');
+      const rpcMissing=/sov_news_delete|function .* does not exist|Could not find the function/i.test(msgText);
+      if(!rpcMissing){ msg('Greška brisanja: '+msgText); return; }
+      const {error}=await sb.from('sov_news').delete().eq('id',selected.id);
+      if(error){ msg('Greška brisanja: '+error.message); return; }
+    }
+    selected=null; await load(); open(null); msg('Obrisano.');
   }
   document.addEventListener('DOMContentLoaded',boot);
 })();

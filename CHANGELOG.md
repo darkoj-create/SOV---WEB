@@ -1,3 +1,10 @@
+# v5.58.9 — News editor save RPC fix
+
+- Urednik vijesti više ne koristi Supabase `.single()` u save flowu, što je rušilo spremanje s porukom `Cannot coerce the result to a single JSON object`.
+- Dodan SQL RPC `sov_news_save(p_id, p_payload)` koji vraća jedan JSON objekt ili jasnu grešku.
+- `news-editor.html` cache-bust na `assets/news-editor.js?v=5.58.9`.
+- `sync-status.html` usklađen na v5.58.9.
+
 
 ## v5.58.8 — Dashboard user UI cleanup
 
