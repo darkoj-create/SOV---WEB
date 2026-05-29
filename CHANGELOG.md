@@ -1,3 +1,13 @@
+# Changelog
+
+## v5.58.20 — Karta full object detail
+
+- `karta.html` sada na klik objekta / Detalji zove isti `sov_arhivar_get_object_detail` RPC koji koristi Arhivar.
+- Detail panel na karti više nije skraćena map kartica nego normalan puni opis: osnovni podaci, opis/pristup/povijest/ekipa/hidrologija/geologija/opasnosti/napomena, zapisnici i nacrti.
+- Tehnički SQL/raw dump se i dalje skriva iz korisničkog prikaza.
+- Dodan loading/error state za puni detail da korisnik vidi ako RPC nije dostupan.
+- `sync-status.html` usklađen na v5.58.20.
+
 
 ## v5.58.18 — Oružar Master UX/mobile cleanup
 

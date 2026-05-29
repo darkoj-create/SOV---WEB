@@ -1,5 +1,5 @@
 (function(){
-const BUILD='5.58.19';
+const BUILD='5.58.21';
 const state={items:[],filtered:[],selected:null,tab:'status',profile:null,loadingDetailId:null};
 const $=s=>document.querySelector(s);
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
@@ -57,6 +57,19 @@ function val(map){
   for(const key of arguments){const t=String(map[key]||'').trim(); if(t && t!=='null' && t!=='undefined' && t!=='{}')return t;}
   return '';
 }
+function directVal(it){
+  for(let i=1;i<arguments.length;i++){const k=arguments[i]; const t=String((it&&it[k])||'').trim(); if(t && t!=='null' && t!=='undefined' && t!=='{}')return t;}
+  return '';
+}
+function fieldVal(it,map,label){
+  const keys=Array.prototype.slice.call(arguments,3);
+  const direct=directVal.apply(null,[it].concat(keys));
+  if(direct)return direct;
+  const labels=Array.isArray(label)?label:[label];
+  for(const l of labels){const t=val(map,l); if(t)return t;}
+  return '';
+}
+function editValue(it,map,label){return esc(fieldVal.apply(null,arguments));}
 function kvHuman(label,value){
   const clean=String(value||'').trim(); if(!clean)return '';
   return `<div class="aw-human-item"><span>${esc(label)}</span><b>${esc(clean).replace(/\n/g,'<br>')}</b></div>`;
@@ -162,7 +175,12 @@ async function loadObjectDetail(id){
   const client=sb(); if(!client)return;
   state.loadingDetailId=String(id);
   try{
-    const {data,error}=await client.rpc('sov_arhivar_get_object_detail',{p_object_id:String(id)});
+    let {data,error}=await client.rpc('sov_arhivar_get_object_detail_v2',{p_object_id:String(id)});
+    if(error){
+      console.warn('v2 detail RPC failed, fallback old detail RPC',error);
+      const fallback=await client.rpc('sov_arhivar_get_object_detail',{p_object_id:String(id)});
+      data=fallback.data; error=fallback.error;
+    }
     if(error){
       const msg='Detalji nisu učitani: '+error.message;
       toast(msg);
@@ -197,32 +215,32 @@ function renderDetail(isLoading=false){
   }
   const labelMap=parseLabelText(it.base_details_text || it.full_details_text || '');
   const opisHtml=[
-    textHuman('Opis objekta', val(labelMap,'Opis')),
-    textHuman('Pristup', val(labelMap,'Pristup')),
-    textHuman('Istraživanje / povijest', val(labelMap,'Istraživanje / povijest')),
-    textHuman('Autori / ekipa', val(labelMap,'Autori / ekipa')),
-    textHuman('Hidrologija', val(labelMap,'Hidrologija')),
-    textHuman('Geologija / morfologija', val(labelMap,'Geologija / morfologija')),
-    textHuman('Opasnosti / zaštita', val(labelMap,'Opasnosti / zaštita')),
-    textHuman('Napomena', val(labelMap,'Napomena'))
+    textHuman('Opis objekta', fieldVal(it,labelMap,'Opis','description','technical_description','opis','opis_objekta')),
+    textHuman('Pristup', fieldVal(it,labelMap,'Pristup','access_description','access','pristup')),
+    textHuman('Istraživanje / povijest', fieldVal(it,labelMap,'Istraživanje / povijest','research','history','exploration','istrazivanje')),
+    textHuman('Autori / ekipa', fieldVal(it,labelMap,'Autori / ekipa','authors','members','team','ekipa')),
+    textHuman('Hidrologija', fieldVal(it,labelMap,'Hidrologija','hydrology','hydrogeology','hidrologija')),
+    textHuman('Geologija / morfologija', fieldVal(it,labelMap,'Geologija / morfologija','geology','morphology','geologija','morfologija')),
+    textHuman('Opasnosti / zaštita', fieldVal(it,labelMap,'Opasnosti / zaštita','hazards','protection','observed_threats','opasnosti','zastita')),
+    textHuman('Napomena', fieldVal(it,labelMap,'Napomena','note','remarks','napomena'))
   ].filter(Boolean).join('');
   const statusHtml=`<div class="aw-human-grid">${[
-    kvHuman('Katastarski status', val(labelMap,'Katastarski status')||it.cadastre_status),
-    kvHuman('Status zapisa', val(labelMap,'Status zapisa')||it.record_status),
-    kvHuman('Zadaci / što fali', val(labelMap,'Zadaci / što fali')||it.field_tasks||missingText(it)),
-    kvHuman('Workflow', val(labelMap,'Workflow')||it.workflow_raw),
-    kvHuman('Digitalni nacrt', val(labelMap,'Digitalni nacrt')||it.digital_survey_status),
-    kvHuman('Bibliografija / zapisnik', val(labelMap,'Bibliografija/zapisnik')||it.bibliography_status),
-    kvHuman('GPS tracklog', val(labelMap,'GPS tracklog')||it.gps_tracklog),
-    kvHuman('Georef zapis', val(labelMap,'Georef zapis')||it.georef_record)
+    kvHuman('Katastarski status', fieldVal(it,labelMap,'Katastarski status','cadastre_status')),
+    kvHuman('Status zapisa', fieldVal(it,labelMap,'Status zapisa','record_status')),
+    kvHuman('Zadaci / što fali', fieldVal(it,labelMap,'Zadaci / što fali','field_tasks')||missingText(it)),
+    kvHuman('Workflow', fieldVal(it,labelMap,'Workflow','workflow_raw')),
+    kvHuman('Digitalni nacrt', fieldVal(it,labelMap,'Digitalni nacrt','digital_survey_status')),
+    kvHuman('Bibliografija / zapisnik', fieldVal(it,labelMap,['Bibliografija/zapisnik','Bibliografija / zapisnik'],'bibliography_status')),
+    kvHuman('GPS tracklog', fieldVal(it,labelMap,'GPS tracklog','gps_tracklog')),
+    kvHuman('Georef zapis', fieldVal(it,labelMap,'Georef zapis','georef_record'))
   ].filter(Boolean).join('')}</div>`;
   const osnovnoHtml=`<div class="aw-human-grid">${[
-    kvHuman('Naziv', val(labelMap,'Naziv')||it.object_name),
-    kvHuman('Tip', val(labelMap,'Tip')||it.object_type),
-    kvHuman('Pločica', val(labelMap,'Pločica')||it.plate_number||'—'),
-    kvHuman('Najbliže mjesto', val(labelMap,'Najbliže mjesto')||it.nearest_place),
-    kvHuman('Županija/regija', val(labelMap,'Županija/regija')||it.county),
-    kvHuman('Općina', val(labelMap,'Općina')||it.municipality),
+    kvHuman('Naziv', fieldVal(it,labelMap,'Naziv','object_name','name')),
+    kvHuman('Tip', fieldVal(it,labelMap,'Tip','object_type','object_type_final')),
+    kvHuman('Pločica', fieldVal(it,labelMap,'Pločica','plate_number','cadastral_number')||'—'),
+    kvHuman('Najbliže mjesto', fieldVal(it,labelMap,'Najbliže mjesto','nearest_place','locality')),
+    kvHuman('Županija/regija', fieldVal(it,labelMap,'Županija/regija','county')),
+    kvHuman('Općina', fieldVal(it,labelMap,'Općina','municipality')),
     kvHuman('Koordinate', it.lat&&it.lon?`${it.lat}, ${it.lon}`:''),
     kvHuman('Baza kaže da fali', missingText(it)||'—')
   ].filter(Boolean).join('')}</div>`;
@@ -247,11 +265,86 @@ function renderActionPanel(){
 function statusForm(it){const c=workflowChecks(it); const extra=[['Digitalni nacrt',it.digital_survey_status],['Bibliografija / zapisnik',it.bibliography_status],['GPS tracklog',it.gps_tracklog],['Georef zapis',it.georef_record]].filter(([,v])=>String(v||'').trim()).map(([l,v])=>`<div class="aw-mini-kv"><span>${esc(l)}</span><b>${esc(v)}</b></div>`).join(''); $('#tabBody').innerHTML=`<div class="aw-forms"><h2>Što baza kaže da imamo za katastar?</h2><p class="aw-muted">Ovo je sada puni arhivarski checklist. Prva četiri polja su ključna za katastar, a fotka/ponoviti nacrt dolaze iz field_tasks/workflow_raw kad ih baza navodi.</p><div class="aw-muted"><b>Baza kaže da fali:</b> ${esc(missingText(it)||'ništa eksplicitno')}</div><div class="aw-badges">${baseMissingBadges(it)}</div><div class="aw-check-grid"><label class="aw-check ${c.plate?'ok':''}"><input id="hasPlate" type="checkbox" ${c.plate?'checked':''}> Pločica</label><label class="aw-check ${c.coordinates?'ok':''}"><input id="hasCoords" type="checkbox" ${c.coordinates?'checked':''}> Koordinate</label><label class="aw-check ${c.drawing?'ok':''}"><input id="hasDrawing" type="checkbox" ${c.drawing?'checked':''}> Nacrt</label><label class="aw-check ${c.record?'ok':''}"><input id="hasRecord" type="checkbox" ${c.record?'checked':''}> Zapisnik</label><label class="aw-check ${c.photo?'ok':''}"><input id="hasPhoto" type="checkbox" ${c.photo?'checked':''}> Fotka</label><label class="aw-check ${c.redrawOk?'ok':''}"><input id="redrawOk" type="checkbox" ${c.redrawOk?'checked':''}> Nacrt ne treba ponoviti</label></div><div class="aw-form-grid"><input id="plateInput" class="aw-input" placeholder="Broj pločice / katastarski broj" value="${esc(it.plate_number||'')}"><select id="priority" class="aw-select"><option value="normal">Normalno</option><option value="high">Prioritetno</option><option value="low">Niski prioritet</option></select></div>${extra?`<div class="aw-extra-status">${extra}</div>`:''}<textarea id="statusNote" class="aw-textarea" rows="3" placeholder="Napomena: što fali, tko ima nacrt, gdje je zapisnik...">${esc(it.last_note||'')}</textarea><button class="aw-btn primary" id="saveStatus">Spremi status</button></div>`;$('#priority').value=it.priority||'normal';$('#saveStatus').onclick=saveStatus;}
 async function saveStatus(){const it=state.selected; const client=sb(); const plate=$('#plateInput').value.trim(); const hasPlate=$('#hasPlate').checked; const hasCoords=$('#hasCoords').checked; const hasDrawing=$('#hasDrawing').checked; const hasRecord=$('#hasRecord').checked; const hasPhoto=$('#hasPhoto').checked; const redrawOk=$('#redrawOk').checked; const ready=hasPlate&&hasCoords&&hasDrawing&&hasRecord&&hasPhoto&&redrawOk; const basePayload={p_object_id:it.object_id,p_object_name:it.object_name,p_plate_number:plate||it.plate_number||null,p_has_coordinates:hasCoords,p_has_drawing:hasDrawing,p_has_record:hasRecord,p_archive_status:ready?'ready':'needs_review',p_priority:$('#priority').value,p_note:$('#statusNote').value.trim()}; const v2={...basePayload,p_has_plate:hasPlate,p_has_photo:hasPhoto,p_needs_redraw:!redrawOk,p_extra_checks:{plate:hasPlate,coordinates:hasCoords,drawing:hasDrawing,record:hasRecord,photo:hasPhoto,redraw_ok:redrawOk,source:'arhivar_html_'+BUILD}}; let res=await client.rpc('sov_archive_update_object_status_v2',v2); if(res.error){console.warn('v2 status RPC failed, fallback old RPC',res.error); res=await client.rpc('sov_archive_update_object_status',basePayload);} if(res.error)return toast('Greška: '+res.error.message); if(plate && plate!==String(it.plate_number||'')){try{await client.from('speleo_object_overrides').upsert({object_id:it.object_id,data:{plate_number:plate,cadastral_number:plate},updated_at:new Date().toISOString()},{onConflict:'object_id'});}catch(e){console.warn('plate override skipped',e)}} toast('Status arhive spremljen.');await load();selectObject(it.object_id);}
 function drawingForm(it){$('#tabBody').innerHTML=`<div class="aw-forms"><h2>Dodaj predani nacrt</h2><input id="drTitle" class="aw-input" placeholder="Naziv nacrta" value="${esc(it.object_name||'Nacrt')}"><input id="drUrl" class="aw-input" placeholder="Drive/Supabase/file URL"><div class="aw-form-grid"><input id="drAuthor" class="aw-input" placeholder="Autor"><input id="drYear" class="aw-input" placeholder="Godina"></div><textarea id="drNote" class="aw-textarea" rows="3" placeholder="Napomena"></textarea><button class="aw-btn primary" id="saveDrawing">Spremi nacrt</button></div>`;$('#saveDrawing').onclick=saveDrawing;}
-async function saveDrawing(){const it=state.selected,client=sb();const row={object_id:it.object_id,object_name:it.object_name,plate_number:it.plate_number||null,drawing_title:$('#drTitle').value.trim()||it.object_name,drawing_type:'nacrt',archive_status:'verified',drive_url:$('#drUrl').value.trim()||null,preview_url:$('#drUrl').value.trim()||null,source:'arhivar_web',author_name:$('#drAuthor').value.trim()||null,survey_year:parseInt($('#drYear').value,10)||null,match_status:'verified',public_visible:true,note:$('#drNote').value.trim()||null,metadata:{module:'arhivar',added_from:'web_5.58.19',note:'Upload u SOV arhivu; ne mijenja automatski bazni katastarski status osim kroz ručni RPC.'}};const {error}=await client.from('speleo_object_drawings').insert(row);if(error)return toast('Greška nacrta: '+error.message);await client.rpc('sov_archive_update_object_status',{p_object_id:it.object_id,p_object_name:it.object_name,p_plate_number:it.plate_number||null,p_has_coordinates:!!it.has_coordinates,p_has_drawing:true,p_has_record:!!it.has_record,p_archive_status:'needs_review',p_priority:it.priority||'normal',p_note:'Dodan nacrt: '+row.drawing_title});toast('Nacrt dodan.');await load();selectObject(it.object_id);}
+async function saveDrawing(){const it=state.selected,client=sb();const row={object_id:it.object_id,object_name:it.object_name,plate_number:it.plate_number||null,drawing_title:$('#drTitle').value.trim()||it.object_name,drawing_type:'nacrt',archive_status:'verified',drive_url:$('#drUrl').value.trim()||null,preview_url:$('#drUrl').value.trim()||null,source:'arhivar_web',author_name:$('#drAuthor').value.trim()||null,survey_year:parseInt($('#drYear').value,10)||null,match_status:'verified',public_visible:true,note:$('#drNote').value.trim()||null,metadata:{module:'arhivar',added_from:'web_5.58.21',note:'Upload u SOV arhivu; ne mijenja automatski bazni katastarski status osim kroz ručni RPC.'}};const {error}=await client.from('speleo_object_drawings').insert(row);if(error)return toast('Greška nacrta: '+error.message);await client.rpc('sov_archive_update_object_status',{p_object_id:it.object_id,p_object_name:it.object_name,p_plate_number:it.plate_number||null,p_has_coordinates:!!it.has_coordinates,p_has_drawing:true,p_has_record:!!it.has_record,p_archive_status:'needs_review',p_priority:it.priority||'normal',p_note:'Dodan nacrt: '+row.drawing_title});toast('Nacrt dodan.');await load();selectObject(it.object_id);}
 function reportForm(it){$('#tabBody').innerHTML=`<div class="aw-forms"><h2>Dodaj zapisnik / izvještaj</h2><div class="aw-form-grid"><input id="rpStart" class="aw-input" type="date"><input id="rpEnd" class="aw-input" type="date"></div><textarea id="rpDesc" class="aw-textarea" rows="4" placeholder="Opis zapisnika / zahvata"></textarea><input id="rpMembers" class="aw-input" placeholder="Članovi"><textarea id="rpNote" class="aw-textarea" rows="3" placeholder="Interna napomena"></textarea><button class="aw-btn primary" id="saveReport">Spremi zapisnik</button></div>`;$('#saveReport').onclick=saveReport;}
 async function saveReport(){const it=state.selected,client=sb();const row={object_name:it.object_name,plate_number:it.plate_number||null,object_type:it.object_type||null,nearest_place:it.nearest_place||null,coordinate_system:(it.lat&&it.lon)?'WGS84':null,x_coord:it.lon?String(it.lon):null,y_coord:it.lat?String(it.lat):null,date_start:$('#rpStart').value||null,date_end:$('#rpEnd').value||null,purpose:'Speleološka istraživanja',activity_description:$('#rpDesc').value.trim()||null,members:$('#rpMembers').value.trim()||null,note:$('#rpNote').value.trim()||null,raw:{module:'arhivar',object_id:it.object_id}};const {error}=await client.from('speleo_activity_reports').insert(row);if(error)return toast('Greška zapisnika: '+error.message);await client.rpc('sov_archive_update_object_status',{p_object_id:it.object_id,p_object_name:it.object_name,p_plate_number:it.plate_number||null,p_has_coordinates:!!it.has_coordinates,p_has_drawing:!!it.has_drawing,p_has_record:true,p_archive_status:'needs_review',p_priority:it.priority||'normal',p_note:'Dodan zapisnik.'});toast('Zapisnik dodan.');await load();selectObject(it.object_id);}
-function editForm(it){$('#tabBody').innerHTML=`<div class="aw-forms"><h2>Edit objekta</h2><p class="aw-muted">Sigurni override preko arhivarskog sloja. Ne briše raw import.</p><div class="aw-form-grid"><input id="edName" class="aw-input" placeholder="Naziv" value="${esc(it.object_name||'')}"><input id="edPlate" class="aw-input" placeholder="Pločica" value="${esc(it.plate_number||'')}"><input id="edType" class="aw-input" placeholder="Tip" value="${esc(it.object_type||'')}"><input id="edPlace" class="aw-input" placeholder="Najbliže mjesto" value="${esc(it.nearest_place||'')}"><input id="edLat" class="aw-input" placeholder="Lat" value="${esc(it.lat||'')}"><input id="edLon" class="aw-input" placeholder="Lon" value="${esc(it.lon||'')}"><textarea id="edNote" class="aw-textarea wide" rows="3" placeholder="Napomena promjene"></textarea></div><button class="aw-btn primary" id="saveEdit">Spremi edit</button></div>`;$('#saveEdit').onclick=saveEdit;}
-async function saveEdit(){const it=state.selected,client=sb();const data={name:$('#edName').value.trim(),plate_number:$('#edPlate').value.trim(),object_type:$('#edType').value.trim(),nearest_place:$('#edPlace').value.trim(),lat:$('#edLat').value.trim(),lon:$('#edLon').value.trim()};let {error}=await client.from('speleo_object_overrides').upsert({object_id:it.object_id,data,updated_at:new Date().toISOString()},{onConflict:'object_id'});if(error)return toast('Greška edita: '+error.message);await client.from('speleo_object_edits').insert({object_id:it.object_id,changed_fields:Object.keys(data),new_values:data,note:$('#edNote').value.trim()||'Arhivar edit'});toast('Edit spremljen.');await load();selectObject(it.object_id);}
+function editForm(it){
+  const labelMap=parseLabelText(it.base_details_text || it.full_details_text || '');
+  const v=(label, ...keys)=>editValue(it,labelMap,label,...keys);
+  $('#tabBody').innerHTML=`<div class="aw-forms aw-full-edit">
+    <h2>Uredi cijeli objekt</h2>
+    <p class="aw-muted">Ovo je arhivarski override preko baze. Raw import ostaje sačuvan, ali javni prikaz, karta i Arhivar nakon spremanja koriste ove ispravljene podatke.</p>
+    <div class="aw-form-grid">
+      <input id="edName" class="aw-input" placeholder="Naziv" value="${v('Naziv','object_name','name')}">
+      <input id="edPlate" class="aw-input" placeholder="Pločica / katastarski broj" value="${v('Pločica','plate_number','cadastral_number')}">
+      <input id="edType" class="aw-input" placeholder="Tip objekta" value="${v('Tip','object_type','object_type_final')}">
+      <input id="edPlace" class="aw-input" placeholder="Najbliže mjesto" value="${v('Najbliže mjesto','nearest_place','locality')}">
+      <input id="edCounty" class="aw-input" placeholder="Županija/regija" value="${v('Županija/regija','county')}">
+      <input id="edMunicipality" class="aw-input" placeholder="Općina" value="${v('Općina','municipality')}">
+      <input id="edLat" class="aw-input" placeholder="Lat" value="${esc(it.lat||'')}">
+      <input id="edLon" class="aw-input" placeholder="Lon" value="${esc(it.lon||'')}">
+    </div>
+    <div class="aw-section-label">Opisni speleo zapisnik</div>
+    <textarea id="edDescription" class="aw-textarea" rows="6" placeholder="Opis objekta / tehnički opis">${v('Opis','description','technical_description','opis','opis_objekta')}</textarea>
+    <textarea id="edAccess" class="aw-textarea" rows="4" placeholder="Pristup">${v('Pristup','access_description','access','pristup')}</textarea>
+    <textarea id="edResearch" class="aw-textarea" rows="4" placeholder="Istraživanje / povijest">${v('Istraživanje / povijest','research','history','exploration','istrazivanje')}</textarea>
+    <textarea id="edAuthors" class="aw-textarea" rows="3" placeholder="Autori / ekipa / članovi">${v('Autori / ekipa','authors','members','team','ekipa')}</textarea>
+    <textarea id="edHydrology" class="aw-textarea" rows="3" placeholder="Hidrologija / hidrogeologija">${v('Hidrologija','hydrology','hydrogeology','hidrologija')}</textarea>
+    <textarea id="edGeology" class="aw-textarea" rows="3" placeholder="Geologija / morfologija">${v('Geologija / morfologija','geology','morphology','geologija','morfologija')}</textarea>
+    <textarea id="edHazards" class="aw-textarea" rows="3" placeholder="Opasnosti / zaštita / ugroze">${v('Opasnosti / zaštita','hazards','protection','observed_threats','opasnosti','zastita')}</textarea>
+    <textarea id="edNotePublic" class="aw-textarea" rows="3" placeholder="Napomena za objekt">${v('Napomena','note','remarks','napomena')}</textarea>
+    <div class="aw-section-label">Katastar / workflow podaci</div>
+    <div class="aw-form-grid">
+      <input id="edCadastreStatus" class="aw-input" placeholder="Katastarski status" value="${v('Katastarski status','cadastre_status')}">
+      <input id="edRecordStatus" class="aw-input" placeholder="Status zapisa" value="${v('Status zapisa','record_status')}">
+      <input id="edDigitalSurvey" class="aw-input" placeholder="Digitalni nacrt" value="${v('Digitalni nacrt','digital_survey_status')}">
+      <input id="edBibliography" class="aw-input" placeholder="Bibliografija / zapisnik" value="${v(['Bibliografija/zapisnik','Bibliografija / zapisnik'],'bibliography_status')}">
+      <input id="edGpsTracklog" class="aw-input" placeholder="GPS tracklog" value="${v('GPS tracklog','gps_tracklog')}">
+      <input id="edGeorefRecord" class="aw-input" placeholder="Georef zapis" value="${v('Georef zapis','georef_record')}">
+    </div>
+    <textarea id="edFieldTasks" class="aw-textarea" rows="3" placeholder="Zadaci / što fali">${v('Zadaci / što fali','field_tasks')}</textarea>
+    <textarea id="edWorkflowRaw" class="aw-textarea" rows="3" placeholder="Workflow / interna napomena">${v('Workflow','workflow_raw')}</textarea>
+    <textarea id="edNote" class="aw-textarea" rows="3" placeholder="Napomena promjene — ovo ide u audit log, ne u javni opis"></textarea>
+    <button class="aw-btn primary" id="saveEdit">Spremi cijeli objekt</button>
+  </div>`;
+  $('#saveEdit').onclick=saveEdit;
+}
+async function saveEdit(){
+  const it=state.selected,client=sb();
+  const val=id=>($('#'+id)&&$('#'+id).value||'').trim();
+  const data={
+    name:val('edName'), object_name:val('edName'),
+    plate_number:val('edPlate'), cadastral_number:val('edPlate'),
+    object_type:val('edType'), object_type_final:val('edType'),
+    nearest_place:val('edPlace'), county:val('edCounty'), municipality:val('edMunicipality'),
+    lat:val('edLat'), lon:val('edLon'),
+    description:val('edDescription'), technical_description:val('edDescription'), opis:val('edDescription'),
+    access_description:val('edAccess'), access:val('edAccess'), pristup:val('edAccess'),
+    research:val('edResearch'), history:val('edResearch'), istrazivanje:val('edResearch'),
+    authors:val('edAuthors'), members:val('edAuthors'), team:val('edAuthors'),
+    hydrology:val('edHydrology'), hidrologija:val('edHydrology'),
+    geology:val('edGeology'), morphology:val('edGeology'),
+    hazards:val('edHazards'), protection:val('edHazards'), observed_threats:val('edHazards'),
+    note:val('edNotePublic'), remarks:val('edNotePublic'),
+    cadastre_status:val('edCadastreStatus'), record_status:val('edRecordStatus'),
+    field_tasks:val('edFieldTasks'), workflow_raw:val('edWorkflowRaw'),
+    digital_survey_status:val('edDigitalSurvey'), bibliography_status:val('edBibliography'),
+    gps_tracklog:val('edGpsTracklog'), georef_record:val('edGeorefRecord'),
+    edited_from:'arhivar_html_'+BUILD
+  };
+  Object.keys(data).forEach(k=>{if(data[k]==='')delete data[k];});
+  let res=await client.rpc('sov_arhivar_update_object_full',{p_object_id:it.object_id,p_data:data,p_note:val('edNote')||'Arhivar full edit'});
+  if(res.error){
+    console.warn('full edit RPC failed, fallback override upsert',res.error);
+    const old={error:null};
+    try{const up=await client.from('speleo_object_overrides').upsert({object_id:it.object_id,data,updated_at:new Date().toISOString()},{onConflict:'object_id'}); old.error=up.error;}catch(e){old.error=e;}
+    if(old.error)return toast('Greška edita: '+(res.error.message||old.error.message||old.error));
+    try{await client.from('speleo_object_edits').insert({object_id:it.object_id,changed_fields:Object.keys(data),new_values:data,note:val('edNote')||'Arhivar full edit fallback'});}catch(e){console.warn(e)}
+  }
+  toast('Cijeli objekt je spremljen.');
+  await load();
+  await selectObject(it.object_id);
+}
 function newObjectForm(){state.selected=null;renderList();$('#detailPanel').innerHTML='<h2>Novi objekt</h2><p class="aw-muted">Dodaje se u speleo staging bazu i odmah dobiva arhivarski status.</p>';$('#actionPanel').innerHTML=`<div class="aw-forms"><input id="nwName" class="aw-input" placeholder="Naziv objekta"><div class="aw-form-grid"><input id="nwType" class="aw-input" placeholder="Tip objekta"><input id="nwPlate" class="aw-input" placeholder="Pločica"><input id="nwPlace" class="aw-input" placeholder="Najbliže mjesto"><input id="nwCounty" class="aw-input" placeholder="Županija/regija"><input id="nwLat" class="aw-input" placeholder="Lat"><input id="nwLon" class="aw-input" placeholder="Lon"></div><textarea id="nwNote" class="aw-textarea" rows="3" placeholder="Napomena"></textarea><button class="aw-btn primary" id="saveNew">Dodaj objekt</button></div>`;$('#saveNew').onclick=saveNewObject;}
 async function saveNewObject(){const client=sb();const name=$('#nwName').value.trim(); if(!name)return toast('Unesi naziv objekta.');const id='manual_'+Date.now();const row={source_id:id,source_system:'arhivar_manual',name,object_type_final:$('#nwType').value.trim()||null,cadastral_number:$('#nwPlate').value.trim()||null,nearest_place:$('#nwPlace').value.trim()||null,county:$('#nwCounty').value.trim()||null,lat:parseFloat($('#nwLat').value)||null,lon:parseFloat($('#nwLon').value)||null,record_status:'arhivar_manual',cadastre_status:'needs_review',raw:{note:$('#nwNote').value.trim(),module:'arhivar'}};const {error}=await client.from('speleo_objects_staging').insert(row);if(error)return toast('Greška novog objekta: '+error.message);await client.rpc('sov_archive_update_object_status',{p_object_id:id,p_object_name:name,p_plate_number:row.cadastral_number,p_has_coordinates:!!(row.lat&&row.lon),p_has_drawing:false,p_has_record:false,p_archive_status:'needs_review',p_priority:'high',p_note:$('#nwNote').value.trim()||'Novi objekt dodan kroz Arhivar'});toast('Novi objekt dodan.');await load();selectObject(id);}
 document.addEventListener('DOMContentLoaded',init);

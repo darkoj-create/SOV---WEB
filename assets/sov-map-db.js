@@ -157,5 +157,5 @@
     window.SOV_MAP_DATA_SOURCE='JSON fallback';
     return uniqueRows(Array.isArray(data)?data:[]);
   }
-  window.SOVMapDB={loadObjects,normalize,pick,num,bool,build:'5.58.19'};
+  window.SOVMapDB={loadObjects,normalize,pick,num,bool,build:'5.58.20'};
 })();
