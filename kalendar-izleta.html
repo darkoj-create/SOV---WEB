@@ -27,7 +27,7 @@
 </header>
 <section class="hero">
 <div class="hero-grid">
-<div><span class="eyebrow">Zajednički raspored</span><h1>Kalendar izleta.</h1><p class="lead">Web verzija logike iz Android appa: čita zajednički raspored iz Google Sheeta, prikazuje buduće i prošle izlete, prognozu za teren, prijave i raspored automobila.</p></div>
+<div><span class="eyebrow">Zajednički raspored</span><h1>Kalendar izleta.</h1><p class="lead">Web verzija logike iz Android appa: čita zajednički raspored iz Supabase SOV Cloud baze, prikazuje buduće i prošle izlete, prognozu za teren, prijave i raspored automobila.</p></div>
 <div class="quick"><div class="stat"><b id="statUpcoming">—</b><span>budućih izleta</span></div><div class="stat"><b id="statWeather">—</b><span>s prognozom</span></div><div class="stat"><b id="statDrivers">—</b><span>prijavljenih vozača</span></div></div>
 </div>
 <div class="toolbar"><input id="search" placeholder="Pretraži lokaciju, voditelja, cilj, opis…"/><select id="filter"><option value="upcoming">Budući izleti</option><option value="past">Prošli izleti / arhiva</option><option value="all">Svi izleti</option><option value="mine">Moje prijave</option></select><button class="btn lime" id="refresh">↻ Osvježi</button><a class="btn" href="izleti.html">＋ Kreiraj izlet</a><button class="btn" id="showPastTrips">📜 Prošli izleti</button></div>
@@ -37,13 +37,14 @@
 <section class="trip-list" id="tripList"></section>
 <aside class="side">
 <section class="panel"><h3>Brza prijava</h3><p>Osnovni podaci spremaju se lokalno u browseru za bržu prijavu na sljedeće izlete.</p><div class="form-grid"><input id="quickName" placeholder="Ime i prezime"/><input id="quickPhone" placeholder="Broj mobitela"/><input id="quickEmail" placeholder="Mail adresa — opcionalno"/><button class="btn lime" id="saveName">Spremi podatke</button></div></section>
-<section class="panel"><h3>Izvor podataka</h3><p class="small">Raspored: Google Apps Script endpoint iz Android appa.<br/>Prijave se šalju u tablicu izleta, a gumb <b>Raspored autiju</b> samo otvara već kreirani sheet.<br/>Vrijeme: Open‑Meteo geocoding + forecast.</p><button class="btn" id="openSheetSource">Otvori Apps Script endpoint</button><button class="btn" id="setTripsEndpoint">Promijeni endpoint</button></section>
+<section class="panel"><h3>Izvor podataka</h3><p class="small">Raspored: Supabase SOV Trips Cloud.<br/>Prijave se šalju direktno u Supabase, a gumb <b>Raspored autiju</b> samo otvara već kreirani sheet.<br/>Vrijeme: Open‑Meteo geocoding + forecast.</p><button class="btn" id="openSheetSource">Otvori SOV Cloud Sheet View</button><button class="btn" id="setTripsEndpoint">Cloud refresh</button></section>
 <section class="panel"><h3>Napomena za web</h3><p class="small">Ako browser blokira direktan poziv prema Apps Scriptu zbog CORS-a, stranica pokazuje testne podatke i u konzoli vidiš grešku. Za produkciju je najbolje dodati mali Vercel API proxy.</p></section>
 </aside>
 </main>
 </div>
 <dialog id="signupDialog"><div class="modal"><h3 id="signupTitle">Prijava na izlet</h3><p class="small" id="signupMeta" style="margin-top:-4px"></p><div class="form-grid"><input id="signupName" placeholder="Ime i prezime"/><input id="signupPhone" placeholder="Broj mobitela"/><input id="signupEmail" placeholder="Mail adresa — opcionalno"/></div><label class="check"><input id="signupDriving" type="checkbox"/> Mogu voziti / idem autom</label><div class="modal-actions"><button class="btn" onclick="signupDialog.close()">Odustani</button><button class="btn lime" id="confirmSignup">Pošalji prijavu</button></div></div></dialog>
 <div class="toast" id="toast"></div>
+<script src="assets/sov-trips-cloud.js?v=5.49"></script>
 <script>
 const DEFAULT_TRIPS_WEBAPP_URL='https://script.google.com/macros/s/AKfycbybGi7p6_ImXAXEErJ6P9K0GYHy8lHW850K9cQe2py8yUV2oJO6UW1DJi00quorVTHOGQ/exec';
 const OLD_TRIPS_WEBAPP_URL='https://script.google.com/macros/s/AKfycbxVrStMsScP6UWVESnC6hcQV7MM2XRpzEQYZYblOgjHt1gzIhiinUfpQewjAY3ZnR2w/exec';
@@ -215,8 +216,21 @@ window.openMapForTrip=function(row){
   if(c){location.href=`baza.html?lat=${c.lat}&lon=${c.lon}&zoom=13&trip=${enc(t.location||'Izlet')}`}else{location.href=`baza.html?q=${enc(t.location)}`}
 }
 
-$('refresh').onclick=()=>{toast('Osvježavam izlete iz Sheeta…'); fetchTrips();};
-$('setTripsEndpoint').onclick=()=>{const u=prompt('Apps Script /exec URL za izlete:',tripsEndpoint()); if(u){localStorage.setItem('sov_trips_webapp_url',u.trim()); toast('Endpoint spremljen. Učitavam…'); fetchTrips();}};
+async function fetchTripsFromCloud(){
+  const btn=$('refresh'); if(btn) btn.disabled=true;
+  const cached = window.SOVTripsCloud ? window.SOVTripsCloud.loadCache() : [];
+  if(cached.length){ trips=cached.map(window.SOVTripsCloud.mapToLegacy); $('status').textContent='Prikazujem spremljeni SOV Cloud raspored…'; render(); loadVisibleWeather(); }
+  try{
+    if(!window.SOVTripsCloud) throw new Error('SOV Trips Cloud nije učitan');
+    const rows=await window.SOVTripsCloud.listTrips();
+    trips=rows.map(window.SOVTripsCloud.mapToLegacy);
+    $('status').textContent='Učitano '+trips.length+' izleta iz Supabase SOV Clouda.';
+    render(); loadVisibleWeather();
+  }catch(e){ console.warn(e); $('status').textContent=cached.length?'Cloud refresh nije uspio, prikazujem cache.':'Cloud sync nije uspio: '+(e.message||e); }
+  if(btn) btn.disabled=false;
+}
+$('refresh').onclick=()=>{toast('Osvježavam SOV Cloud izlete…'); fetchTripsFromCloud();};
+$('setTripsEndpoint').onclick=()=>{toast('Osvježavam SOV Cloud…'); fetchTripsFromCloud();};
 $('showPastTrips').onclick=()=>{ $('filter').value='past'; render(); loadVisibleWeather(); document.getElementById('tripList').scrollIntoView({behavior:'smooth',block:'start'}); toast('Prikazujem arhivu prošlih izleta.'); };
 $('search').oninput=()=>{render();loadVisibleWeather()};
 $('filter').onchange=()=>{render();loadVisibleWeather()};
@@ -224,8 +238,10 @@ $('saveName').onclick=()=>{localStorage.setItem('sov_member_name',clean($('quick
 $('quickName').value=localStorage.getItem('sov_member_name')||'';
 $('quickPhone').value=localStorage.getItem('sov_member_phone')||'';
 $('quickEmail').value=localStorage.getItem('sov_member_email')||'';
-$('openSheetSource').onclick=()=>window.open(tripsEndpoint()+'?action=listTrips','_blank');
-fetchTrips();
+$('openSheetSource').onclick=()=>window.open('izleti-cloud.html','_blank');
+const oldConfirmSignup=$('confirmSignup').onclick;
+$('confirmSignup').onclick=async()=>{const t=selectedTrip; const name=clean($('signupName').value); const phone=clean($('signupPhone').value); const email=clean($('signupEmail').value); if(!t||!name){toast('Upiši ime i prezime.');return} if(!phone){toast('Upiši broj mobitela.');return} localStorage.setItem('sov_member_name',name); localStorage.setItem('sov_member_phone',phone); localStorage.setItem('sov_member_email',email); const row={name,phone,email,driving:$('signupDriving').checked,createdAt:new Date().toISOString()}; try{await window.SOVTripsCloud.signupTrip(t,row); setSigned(t); saveLocalSignup(t,row); signupDialog.close(); toast('Prijava poslana u SOV Cloud.'); fetchTripsFromCloud();}catch(e){console.warn(e); setSigned(t); saveLocalSignup(t,row); signupDialog.close(); toast('Prijava spremljena lokalno — Cloud sync nije prošao.'); render();}};
+fetchTripsFromCloud();
 
 </script>
 <script src="assets/sov-inbox.js?v=4.90"></script></body>

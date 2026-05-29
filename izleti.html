@@ -14,10 +14,10 @@
 <link rel="stylesheet" href="assets/sov-inbox.css?v=4.90"></head>
 <body>
 <div class="app">
-<header class="top"><a class="brand" href="dashboard.html"><div class="mark">SOV</div><div>Izleti<br><small>SOV CLOUD</small></div></a><nav class="nav"><a href="dashboard.html">Dashboard</a><a href="baza.html">SOV Karta</a><button class="btn primary" onclick="submitTripToSheet()">Objavi u kalendar</button><button class="btn" onclick="saveTrip()">Spremi lokalno</button><button class="btn" onclick="exportTripJson()">Export JSON</button></nav></header>
+<header class="top"><a class="brand" href="dashboard.html"><div class="mark">SOV</div><div>Izleti<br><small>SOV CLOUD</small></div></a><nav class="nav"><a href="dashboard.html">Dashboard</a><a href="izleti-cloud.html">Sheet View</a><a href="baza.html">SOV Karta</a><button class="btn primary" onclick="submitTripToSheet()">Objavi u SOV Cloud</button><button class="btn" onclick="saveTrip()">Spremi lokalno</button><button class="btn" onclick="exportTripJson()">Export JSON</button></nav></header>
 <main class="layout">
 <aside class="left">
-<div class="eyebrow">Organizacija izleta</div><h1>Novi terenski paket</h1><p class="muted">Kreiraj izlet, označi područje karte, dodaj trackove i pripremi sve za ekipu.</p>
+<div class="eyebrow">Organizacija izleta</div><h1>Novi terenski paket</h1><p class="muted">Kreiraj izlet, označi područje karte, dodaj trackove i objavi direktno u SOV Cloud. Google Sheet više nije backend.</p>
 <section class="section"><h2>1. Osnovni podaci</h2><div class="field"><label>Naziv izleta</label><input id="tripName" placeholder="npr. Rožanski kukovi vikend"></div><div class="grid2"><div class="field"><label>Od</label><input id="dateFrom" type="date"></div><div class="field"><label>Do</label><input id="dateTo" type="date"></div></div><div class="grid2"><div class="field"><label>Voditelj</label><input id="leader" placeholder="Ime voditelja"></div><div class="field"><label>Tip</label><select id="tripType"><option>Istraživanje</option><option>Izlet</option><option>Rekognosciranje</option><option>Speleoškola</option><option>Vježba</option></select></div></div><div class="field"><label>Lokacija</label><input id="location" placeholder="Velebit, Crnopac, Medvednica..."></div><div class="field"><label>Grad / regija za prognozu</label><input id="weatherCity" placeholder="npr. Krasno, Gračac, Samobor"></div><div class="field"><label>Plan / cilj</label><textarea id="goal" placeholder="Ciljevi, pristup, objekti, napomene..."></textarea></div></section>
 <section class="section"><h2>2. Područje karte</h2><p class="muted">Klikni “Označi područje”, pa na karti odaberi prvi i drugi kut. Nakon drugog klika pojavit će se označeni pravokutnik i možeš preuzeti offline mapu. Kvadrat/pravokutnik je područje za offline paket.</p><div class="toolsRow"><button class="btn primary" onclick="startAreaSelect()">Označi područje</button><button class="btn" onclick="clearArea()">Očisti</button><button class="btn" onclick="downloadMbtiles()">Preuzmi offline mapu</button></div><div class="grid2" style="margin-top:12px"><div class="field"><label>Min zoom</label><input id="zMin" type="number" value="10" min="6" max="18"></div><div class="field"><label>Max zoom</label><input id="zMax" type="number" value="15" min="6" max="18"></div></div><div id="bboxText" class="muted">Područje još nije označeno.</div></section>
 <section class="section"><h2>3. Trackovi i datoteke</h2><div class="drop"><input id="files" type="file" multiple accept=".gpx,.kml,.kmz,.geojson" onchange="handleFiles()"><p class="muted">GPX, KML, KMZ ili GeoJSON za izlet.</p></div><div id="fileList" class="list" style="margin-top:12px"></div></section>
@@ -25,7 +25,7 @@
 <section class="mapPane"><div class="mapTools"><button class="btn primary" onclick="setBase('tk25')">TK25</button><button class="btn" onclick="setBase('dof')">DOF</button><button class="btn" onclick="setBase('geo')">Geo karta</button><button class="btn" onclick="setBase('osm')">OSM</button><button class="btn" onclick="zoomHome()">Velebit</button><button class="btn" onclick="toggleObjects()">Objekti</button><button class="btn" onclick="exportAreaKml()">Export area KML</button></div><div id="tripMap"></div><div class="areaInfo"><b>Offline područje:</b> <span id="areaStatus">nije odabrano</span><br><span class="muted">Odabrano područje koristi se za pripremu terenskog paketa i map download. generira demonstracijski .mbtiles placeholder s istim metapodacima.</span></div></section>
 <aside class="right">
 <section class="section"><div class="tabs"><button class="tab active" onclick="showTab('team')">Ekipa</button><button class="tab" onclick="showTab('gear')">Oprema</button><button class="tab" onclick="showTab('exports')">Exporti</button></div><div id="tabContent"></div></section>
-<section class="section"><h2>Sažetak paketa</h2><div class="summaryLine"><span>Naziv</span><b id="sumName">—</b></div><div class="summaryLine"><span>Lokacija</span><b id="sumLoc">—</b></div><div class="summaryLine"><span>Tip</span><b id="sumType">—</b></div><div class="summaryLine"><span>Datoteke</span><b id="sumFiles">0</b></div><div class="summaryLine"><span>Područje</span><b id="sumArea">nije odabrano</b></div><div class="toolsRow"><button class="btn primary" onclick="submitTripToSheet()">Objavi u kalendar</button><button class="btn" onclick="saveTrip()">Spremi lokalno</button><button class="btn" onclick="loadLastTrip()">Učitaj zadnji</button><button class="btn danger" onclick="resetTrip()">Reset</button></div></section>
+<section class="section"><h2>Sažetak paketa</h2><div class="summaryLine"><span>Naziv</span><b id="sumName">—</b></div><div class="summaryLine"><span>Lokacija</span><b id="sumLoc">—</b></div><div class="summaryLine"><span>Tip</span><b id="sumType">—</b></div><div class="summaryLine"><span>Datoteke</span><b id="sumFiles">0</b></div><div class="summaryLine"><span>Područje</span><b id="sumArea">nije odabrano</b></div><div class="toolsRow"><button class="btn primary" onclick="submitTripToSheet()">Objavi u SOV Cloud</button><button class="btn" onclick="saveTrip()">Spremi lokalno</button><button class="btn" onclick="loadLastTrip()">Učitaj zadnji</button><button class="btn danger" onclick="resetTrip()">Reset</button></div></section>
 </aside>
 </main></div><div id="toast" class="toast"></div>
 <script>
@@ -118,7 +118,25 @@ async function createCarsSheetForTrip(payload){
   }catch(e){console.warn('cars sheet create failed',e)}
   return '';
 }
-async function submitTripToSheet(){const payload=buildSheetPayload(); if(!payload.date||!payload.leader||!payload.location){toast('Upiši barem datum, voditelja i lokaciju.');return} saveTrip(); toast('Kreiram Raspored autiju za izlet…'); const carsUrl=await createCarsSheetForTrip(payload); if(carsUrl) payload.rasporedUrl=carsUrl; toast('Šaljem izlet u zajednički kalendar…'); try{const res=await fetch(tripsEndpoint(),{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},body:new URLSearchParams(payload)}); const txt=await res.text(); let ok=res.ok; try{const json=JSON.parse(txt); ok=json.ok!==false}catch{} if(!ok)throw new Error(txt||('HTTP '+res.status)); toast(carsUrl?'Izlet i Raspored autiju su kreirani.':'Izlet je upisan; Raspored autiju nije potvrđen.'); setTimeout(()=>location.href='kalendar-izleta.html',900);}catch(e){console.warn(e); const pending=JSON.parse(localStorage.getItem('sov_pending_web_trips')||'[]'); pending.push(payload); localStorage.setItem('sov_pending_web_trips',JSON.stringify(pending)); toast('Nije prošao direktan upis iz browsera; spremljeno u pending. Provjeri Apps Script/CORS.');}}
+async function submitTripToSheet(){
+  const payload=buildSheetPayload();
+  if(!payload.date||!payload.leader||!payload.location){toast('Upiši barem datum, voditelja i lokaciju.');return}
+  saveTrip();
+  toast('Šaljem izlet u SOV Cloud…');
+  try{
+    if(!window.SOVTripsCloud) throw new Error('SOV Trips Cloud modul nije učitan.');
+    const created=await window.SOVTripsCloud.createTripFromForm(payload,{area,files:tripFiles});
+    toast('Izlet je spremljen u Supabase / SOV Cloud.');
+    localStorage.setItem('sov_last_cloud_trip_id', created.id || '');
+    setTimeout(()=>location.href='izleti-cloud.html',700);
+  }catch(e){
+    console.warn(e);
+    const pending=JSON.parse(localStorage.getItem('sov_pending_web_trips_cloud')||'[]');
+    pending.push({...payload, pendingAt:new Date().toISOString()});
+    localStorage.setItem('sov_pending_web_trips_cloud',JSON.stringify(pending));
+    toast('Cloud upis nije prošao; spremljeno lokalno u pending.');
+  }
+}
 function saveTrip(){const trip=getTrip();localStorage.setItem('sov_last_trip',JSON.stringify(trip));toast('Izlet spremljen u browser storage.');updateSummary()}
 function loadLastTrip(){const raw=localStorage.getItem('sov_last_trip');if(!raw){toast('Nema spremljenog izleta.');return}const t=JSON.parse(raw);['tripName','dateFrom','dateTo','leader','tripType','location','weatherCity','goal'].forEach(id=>{if(document.getElementById(id))document.getElementById(id).value=t[id==='tripName'?'name':id.replace('dateFrom','from').replace('dateTo','to').replace('tripType','type')]||''});team=t.team||[];tripFiles=t.files||[];area=t.area||null;if(area){if(rectLayer)map.removeLayer(rectLayer);rectLayer=L.rectangle([[area.south,area.west],[area.north,area.east]],{color:'#d7f66f',weight:4,fillOpacity:.18}).addTo(map);map.fitBounds(rectLayer.getBounds())}renderFiles();updateAreaText();updateSummary();toast('Zadnji izlet učitan.')}
 function resetTrip(){if(!confirm('Resetirati formu?'))return;document.querySelectorAll('input,textarea').forEach(x=>{if(x.type!=='number')x.value=''});tripFiles=[];team=[];clearArea();renderFiles();updateSummary();toast('Forma resetirana.')}
@@ -130,4 +148,4 @@ function updateSummary(){document.getElementById('sumName').textContent=val('tri
 function val(id){return document.getElementById(id)?.value||''}function esc(s){return String(s).replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]))}function download(name,content,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
 ['tripName','location','tripType','weatherCity'].forEach(id=>setTimeout(()=>document.getElementById(id).addEventListener('input',updateSummary),0));
 initMap();showTab('team');updateSummary();
-</script><script src="assets/sov-inbox.js?v=4.90"></script></body></html>
+</script><script src="assets/sov-trips-cloud.js?v=5.49"></script><script src="assets/sov-inbox.js?v=4.90"></script></body></html>
