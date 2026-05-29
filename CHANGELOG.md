@@ -1,3 +1,10 @@
+
+## v5.39 — Premium UI/UX consolidation
+- Rebuilt dashboard as role-aware SOV Cloud control center.
+- Added premium module cards, better hierarchy, and friendlier empty/system states.
+- Added read-only dashboard KPI helper for profiles/devices/audit/drawings when Supabase views are available.
+- No SQL changes and no object database changes.
+
 # v5.36 — Oružarstvo canonical role/audit integration
 
 - Added canonical safe SQL for armory tables, RLS and audit integration.

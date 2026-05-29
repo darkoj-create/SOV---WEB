@@ -51,9 +51,10 @@ function normalizeArmoryCategory(x){
   return canonicalArmoryCategory(raw,text);
 }
 let USER_CAT=null, USER_SUB=null;
-const USER_CATEGORY_ORDER=['Osobna oprema','Užad i užetna oprema','Oprema za postavljanje','Oprema za crtanje','Bušilice i baterije','Elektro i foto oprema','Alpinistička oprema','Ronilačka oprema','Oprema za logor','Oprema za proširivanje','Čisto podzemlje','Medicinska oprema','Ostali alat','Ostalo'];
+const USER_CATEGORY_ORDER=['Užad i užetna oprema','Oprema za postavljanje','Oprema za crtanje','Osobna oprema - komplet','Osobna oprema','Bušilice i baterije','Elektro i foto oprema','Alpinistička oprema','Ronilačka oprema','Oprema za logor','Oprema za proširivanje','Čisto podzemlje','Medicinska oprema','Ostali alat','Ostalo'];
 const USER_CATEGORY_META={
-  'Osobna oprema':['🧑‍🚒','Pojasevi, crollovi, descenderi, blokeri i osobna speleo oprema.'],
+  'Osobna oprema - komplet':['🧗','Pojas, croll, descender, prsni pojas, bloker i stremeni.'],
+  'Osobna oprema':['🧑‍🚒','Kacige, rasvjeta, odjeća, obuća i ostala osobna oprema.'],
   'Užad i užetna oprema':['🪢','Užad, transportne vreće, prusici, trake, gurtne, koloture i užetni pribor.'],
   'Oprema za postavljanje':['🔩','Spitovi, sidrišta, pločice, ringovi, ankeri i materijal za opremanje.'],
   'Oprema za crtanje':['🗺️','Tableti, mjerne trake, kompasi, Disto/laser, pribor za nacrte i dokumentaciju.'],

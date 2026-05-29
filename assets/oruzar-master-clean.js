@@ -23,7 +23,8 @@ function fmtQty(v){ return String(countInt(v)); }
 
 function canonicalCategory(raw,text){
   const r=lower(raw), t=lower([raw,text].filter(Boolean).join(' '));
-  if(/descender|\bstop\b|rig|maestro|id['’]?s|croll|krol|crol|bloker|zumar|pojas|sjedal|pedal|stremen|prsni|pupak|pupcano/.test(t)) return 'Osobna oprema';
+  if((/descender|\bstop\b|rig|maestro|id['’]?s|croll|krol|crol|bloker|zumar|ascender|pojas|sjedal|pedal|stremen|prsni|pupak|pupcano/.test(t))&&!/penjack|penjac|alpinist|climbing/.test(t)) return 'Osobna oprema - komplet';
+    if(/osob|kacig|helmet|kombinezon|odijel|rukavic|cizm|obuc/.test(t)) return 'Osobna oprema';
   if(/uzad|uzetna|\buze\b|rope|prusik|gurt|traka|kolotur|transportna vreca/.test(t) && !/busil|bater|punjac|svrd/.test(t)) return 'Užad i užetna oprema';
   if(/busil|baterija bosch|bosch.*bater|punjac|svrd|gbh18|gbh180|boschhammer/.test(t)) return 'Bušilice i baterije';
   if(/postavlj|spit|sidrist|ploc|ring|anker|bolt|karabiner|matica|hms/.test(t) && !/descender|croll|bloker|pojas/.test(t)) return 'Oprema za postavljanje';
@@ -63,7 +64,7 @@ function mergeDisplayRows(rows){
   return out;
 }
 function toast(m){let t=document.getElementById('cmToast'); if(!t){t=document.createElement('div');t.id='cmToast';t.className='cm-toast';document.body.appendChild(t)} t.textContent=m;t.classList.add('show');clearTimeout(t._to);t._to=setTimeout(()=>t.classList.remove('show'),2300)}
-function iconFor(t){t=lower(t); if(t.includes('osobna'))return '🧑‍🚒'; if(t.includes('už')||t.includes('uz'))return '🪢'; if(t.includes('postav')||t.includes('spit')||t.includes('sidri'))return '⚓'; if(t.includes('crtan')||t.includes('mjer'))return '📐'; if(t.includes('bus')||t.includes('buš')||t.includes('bater'))return '🔋'; if(t.includes('elektro')||t.includes('foto'))return '📷'; if(t.includes('alpin'))return '⛰️'; if(t.includes('med'))return '🧰'; if(t.includes('ronil'))return '🤿'; if(t.includes('kamp')||t.includes('logor')||t.includes('eksp'))return '⛺'; if(t.includes('čisto')||t.includes('cisto'))return '🧹'; if(t.includes('proš')||t.includes('pros'))return '🔨'; if(t.includes('alat'))return '🧰'; return '📦'}
+function iconFor(t){t=lower(t); if(t.includes('osobna oprema - komplet'))return '🧗'; if(t.includes('osobna'))return '🧑‍🚒'; if(t.includes('už')||t.includes('uz'))return '🪢'; if(t.includes('postav')||t.includes('spit')||t.includes('sidri'))return '⚓'; if(t.includes('crtan')||t.includes('mjer'))return '📐'; if(t.includes('bus')||t.includes('buš')||t.includes('bater'))return '🔋'; if(t.includes('elektro')||t.includes('foto'))return '📷'; if(t.includes('alpin'))return '⛰️'; if(t.includes('med'))return '🧰'; if(t.includes('ronil'))return '🤿'; if(t.includes('kamp')||t.includes('logor')||t.includes('eksp'))return '⛺'; if(t.includes('čisto')||t.includes('cisto'))return '🧹'; if(t.includes('proš')||t.includes('pros'))return '🔨'; if(t.includes('alat'))return '🧰'; return '📦'}
 let STATE={data:null,rows:[],cat:null,sub:null,query:'',requests:[]};
 async function loadData(){
   if(STATE.data) return STATE.data;

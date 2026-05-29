@@ -3,219 +3,149 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>SOV Cloud — Dashboard</title>
+  <title>SOV Cloud — Dashboard v5.39</title>
   <link rel="stylesheet" href="assets/site.css">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="assets/supabase-config.js"></script><script src="assets/auth.js"></script>
-  <style>
-    :root{
-      --bg:#030506;--panel:rgba(9,15,17,.76);--panel2:rgba(255,255,255,.055);--stroke:rgba(255,255,255,.13);
-      --lime:#d7f66f;--cyan:#78d7ff;--amber:#ffb15f;--ink:#f5f8f7;--muted:#9dadad;--soft:#d8e4e3;
-    }
-    body.dashboard-page{min-height:100vh;background:
-      radial-gradient(circle at 82% 12%,rgba(120,215,255,.18),transparent 28%),
-      radial-gradient(circle at 12% 18%,rgba(215,246,111,.14),transparent 26%),
-      radial-gradient(circle at 50% 92%,rgba(255,177,95,.08),transparent 30%),
-      linear-gradient(180deg,#020303 0%,#071012 52%,#020303 100%);color:var(--ink);}
-    body.dashboard-page:after{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;opacity:.62;background:
-      linear-gradient(180deg,rgba(0,0,0,.1),rgba(0,0,0,.78)),
-      url("data:image/svg+xml,%3Csvg width='320' height='320' viewBox='0 0 320 320' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='rgba(255,255,255,.045)' stroke-width='1.2'%3E%3Cpath d='M0 205 C60 152 105 214 166 165 S265 115 320 154'/%3E%3Cpath d='M0 112 C70 145 115 82 178 119 S262 172 320 132'/%3E%3Cpath d='M55 0 C62 68 100 100 88 169 S76 260 126 320'/%3E%3Cpath d='M225 0 C188 70 230 119 205 176 S165 260 195 320'/%3E%3C/g%3E%3C/svg%3E");}
-    .dash-shell{width:min(1460px,calc(100% - 36px));margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
-    .dash-top{min-height:84px;display:flex;align-items:center;justify-content:space-between;gap:18px}
-    .brand{display:flex;gap:12px;align-items:center;text-decoration:none;color:#fff}.mark{width:44px;height:44px;border-radius:16px;display:grid;place-items:center;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);font-weight:1000}.brand strong{display:block;font-size:14px}.brand small{display:block;color:var(--lime);font-weight:900;margin-top:2px}
-    .dash-nav{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.dash-nav a{color:#d8e4e3;text-decoration:none;border:1px solid var(--stroke);border-radius:999px;padding:10px 13px;background:rgba(255,255,255,.035);font-weight:850;font-size:13px;backdrop-filter:blur(18px)}.dash-nav a.primary{background:var(--lime);color:#101400;border:0;box-shadow:0 0 30px rgba(215,246,111,.18)}
-    .user-chip{display:flex;gap:10px;align-items:center;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.055);border-radius:999px;padding:8px 12px;color:#dce8e8;font-weight:850;font-size:13px}.status-dot{width:9px;height:9px;border-radius:999px;background:#66e28d;box-shadow:0 0 20px rgba(102,226,141,.7)}
-    .dash-hero{position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.13);border-radius:38px;background:
-      linear-gradient(120deg,rgba(6,10,11,.94),rgba(7,13,15,.76) 52%,rgba(9,20,23,.55)),
-      radial-gradient(circle at 49% 45%,rgba(215,246,111,.13),transparent 22%),
-      radial-gradient(circle at 87% 20%,rgba(120,215,255,.18),transparent 28%),
-      linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.02));box-shadow:0 28px 100px rgba(0,0,0,.55);min-height:calc(100vh - 130px);display:flex;align-items:stretch}
-    .dash-hero:before{content:"";position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='1080' height='680' viewBox='0 0 1080 680' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='rgba(255,255,255,.08)' stroke-width='2'%3E%3Cpath d='M60 515 C160 410 260 468 338 382 C420 292 515 330 590 246 C690 135 805 220 913 112 C986 39 1038 76 1070 45'/%3E%3Cpath d='M55 570 C210 525 280 568 412 488 C520 422 595 440 705 340 C810 244 930 285 1075 193'/%3E%3Cpath d='M250 0 C205 112 245 190 212 294 C178 405 200 500 138 680'/%3E%3Cpath d='M710 0 C662 104 708 210 650 315 C595 415 615 542 558 680'/%3E%3Ccircle cx='913' cy='112' r='7'/%3E%3Ccircle cx='590' cy='246' r='5'/%3E%3Ccircle cx='338' cy='382' r='6'/%3E%3C/g%3E%3C/svg%3E") center/90% auto no-repeat;opacity:.72}
-    .cloud-grid{position:relative;z-index:2;width:100%;display:grid;grid-template-columns:390px minmax(280px,1fr) 390px;gap:28px;padding:54px;align-items:center}
-    .menu-panel{border:1px solid rgba(255,255,255,.14);background:rgba(5,9,11,.62);backdrop-filter:blur(22px);border-radius:30px;padding:22px;box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 20px 70px rgba(0,0,0,.28)}
-    .panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}.panel-head b{font-size:22px;letter-spacing:-.04em}.panel-head span{color:var(--muted);font-size:13px;font-weight:850}.panel-head .dot{width:9px;height:9px;border-radius:50%;background:var(--lime);box-shadow:0 0 22px rgba(215,246,111,.75)}
-    .menu-list{display:grid;gap:12px}.menu-item{border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.045);border-radius:22px;padding:15px;display:grid;grid-template-columns:44px 1fr auto;gap:13px;align-items:center;text-decoration:none;color:inherit;transition:transform .16s ease,border-color .16s ease,background .16s ease}.menu-item:hover{transform:translateY(-2px);border-color:rgba(215,246,111,.34);background:rgba(255,255,255,.07)}
-    .menu-icon{width:44px;height:44px;border-radius:16px;display:grid;place-items:center;color:#fff}
-    .menu-icon svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-    .menu-icon.blue{background:rgba(56,139,255,.15);border:1px solid rgba(56,139,255,.32);color:#7ab7ff}
-    .menu-icon.teal{background:rgba(45,195,180,.13);border:1px solid rgba(45,195,180,.30);color:#4dd9c8}
-    .menu-icon.amber{background:rgba(255,177,95,.13);border:1px solid rgba(255,177,95,.30);color:#ffb15f}
-    .menu-icon.purple{background:rgba(160,100,255,.13);border:1px solid rgba(160,100,255,.30);color:#b07fff}
-    .menu-icon.lime{background:rgba(215,246,111,.12);border:1px solid rgba(215,246,111,.28);color:#d7f66f}
-    .menu-icon.red{background:rgba(255,80,80,.12);border:1px solid rgba(255,80,80,.28);color:#ff7070}
-    .menu-icon.gray{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);color:#9dadad}
-    .menu-icon.green{background:rgba(102,226,141,.11);border:1px solid rgba(102,226,141,.26);color:#66e28d}
-    .menu-item strong{display:block;font-size:15px}.menu-item small{display:block;color:var(--muted);margin-top:4px;line-height:1.38}.pill{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);border-radius:999px;padding:6px 9px;font-size:11px;font-weight:950;color:#dfe9e8;white-space:nowrap}
-    .center-stage{min-height:560px;display:grid;place-items:center;text-align:center;position:relative}.center-stage:before{content:"";position:absolute;width:min(520px,90%);height:min(520px,90%);border-radius:50%;background:radial-gradient(circle,rgba(215,246,111,.15),rgba(120,215,255,.08) 38%,transparent 66%);filter:blur(2px)}
-    .center-logo{position:relative;display:grid;place-items:center;gap:26px}.logo-card{width:min(430px,82vw);aspect-ratio:2.6/1;border:1px solid rgba(255,255,255,.16);border-radius:30px;background:rgba(0,0,0,.5);box-shadow:0 26px 90px rgba(0,0,0,.55),0 0 70px rgba(215,246,111,.08);display:grid;place-items:center;padding:22px}.logo-card img{max-width:100%;max-height:100%;object-fit:contain;filter:drop-shadow(0 16px 24px rgba(0,0,0,.45))}
-    .center-stage h1{font-size:clamp(44px,5.3vw,86px);line-height:.88;letter-spacing:-.075em;margin:0;max-width:720px}.center-stage p{font-size:18px;line-height:1.55;color:#cbd8d8;max-width:620px;margin:0 auto}.center-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}.center-actions a{display:inline-flex;align-items:center;gap:9px;border-radius:999px;padding:13px 17px;text-decoration:none;font-weight:950;border:1px solid rgba(255,255,255,.14);color:#ecf7f6;background:rgba(255,255,255,.055);backdrop-filter:blur(18px)}.center-actions a.main{background:var(--lime);color:#101400;border:0;box-shadow:0 16px 42px rgba(215,246,111,.17)}
-    .dev-open{position:fixed;right:14px;bottom:14px;z-index:99999;border:1px solid rgba(215,246,111,.35);background:rgba(7,13,15,.92);color:#d7f66f;border-radius:999px;padding:9px 12px;font:800 12px Inter,system-ui,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.35)}
-    @media(max-width:1180px){.cloud-grid{grid-template-columns:1fr 1fr;align-items:stretch}.center-stage{grid-column:1/-1;grid-row:1;min-height:430px}.menu-panel{align-self:start}}
-    @media(max-width:780px){.dash-shell{width:min(100% - 24px,720px)}.dash-top{align-items:flex-start;flex-direction:column;padding:16px 0}.dash-nav{width:100%;overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px}.dash-nav a{white-space:nowrap}.dash-hero{border-radius:28px;min-height:auto}.cloud-grid{grid-template-columns:1fr;padding:22px;gap:18px}.center-stage{grid-column:auto;grid-row:auto;min-height:380px}.center-stage h1{font-size:48px}.logo-card{border-radius:24px}.menu-item{grid-template-columns:44px 1fr}.menu-item .pill{grid-column:2}.dev-open{left:12px;right:auto;bottom:12px}}
-  </style>
   <link rel="stylesheet" href="assets/mobile.css">
-<link rel="stylesheet" href="assets/sov-inbox.css?v=4.90"></head>
-<body class="dashboard-page">
-  <div class="dash-shell">
-    <header class="dash-top">
-      <a class="brand" href="index.html">
-        <div class="mark">SOV</div>
-        <div><strong>Speleološki odsjek Velebit</strong><small>SOV Cloud</small></div>
+  <link rel="stylesheet" href="assets/sov-premium-ui.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/supabase-config.js"></script>
+  <script src="assets/auth.js"></script>
+</head>
+<body class="sov-premium dashboard-page">
+  <div class="sov-shell">
+    <header class="sov-top">
+      <a class="sov-brand" href="dashboard.html">
+        <div class="sov-mark">SOV</div>
+        <div><strong>Speleološki odsjek Velebit</strong><small>SOV Cloud · v5.39</small></div>
       </a>
-      <nav class="dash-nav" aria-label="Glavna navigacija">
-        <a href="index.html">Novosti</a><a href="o-drustvu.html">O društvu</a><a href="povijest.html">Povijest</a><a href="dashboard.html" class="primary">SOV Cloud</a><span class="user-chip"><i class="status-dot"></i> <span data-user-role>SOV Cloud</span>
+      <nav class="sov-nav" aria-label="Glavna navigacija">
+        <a href="index.html">Novosti</a>
+        <a href="baza.html">Karta</a>
+        <a href="izleti.html">Izleti</a>
+        <a href="oruzarstvo.html" data-role-armory>Oružarstvo</a>
+        <a href="topodroid.html" data-role-archive>Arhiva</a>
+        <a href="dashboard.html" class="primary">SOV Cloud</a>
+        <span class="sov-chip"><span data-user-name data-dash-name>—</span> · <span data-user-role data-dash-role>—</span></span>
       </nav>
     </header>
 
-    <main class="dash-hero">
-<section class="role-card sync-control-card" data-role-panel="sync-control" style="margin:16px 0;padding:18px;border-radius:20px;background:rgba(15,23,42,.72);border:1px solid rgba(148,163,184,.28);box-shadow:0 18px 50px rgba(15,23,42,.22);">
-  <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;">
-    <div>
-      <div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;">SOV Cloud</div>
-      <h2 style="margin:.2rem 0 .35rem;font-size:22px;">Unified Identity + Sync Control</h2>
-      <p style="margin:0;color:#cbd5e1;max-width:760px;">Centralni panel za role, uređaje i offline queue. APK 1.3.1 može lokalno spremati akcije, a web/Supabase sloj dobiva tablice za siguran postupni sync.</p>
-    </div>
-    <div id="sov-sync-badge" style="padding:10px 14px;border-radius:999px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.35);color:#bbf7d0;font-weight:700;">Sync miran</div>
-  </div>
-</section>
-<script src="sov-sync-control.js"></script>
-<script>window.SOV_SYNC_CONTROL && window.SOV_SYNC_CONTROL.renderSyncBadge('#sov-sync-badge');</script>
-
-      <div class="cloud-grid">
-        <aside class="menu-panel" aria-label="Glavni izbornik">
-          <div class="panel-head"><b>Glavni izbornik</b><span>teren i baza</span></div>
-          <div class="menu-list">
-
-            <a class="menu-item" href="baza.html">
-              <div class="menu-icon blue"><svg viewBox="0 0 24 24"><path d="M9 18l-6 3V6l6-3 6 3 6-3v15l-6 3-6-3z"/><path d="M9 3v15"/><path d="M15 6v15"/><path d="M12 8.5c1.35 0 2.45 1.1 2.45 2.45 0 1.85-2.45 4.55-2.45 4.55s-2.45-2.7-2.45-4.55c0-1.35 1.1-2.45 2.45-2.45z"/><path d="M12 11h.01"/></svg></div>
-              <div><strong>SOV Karta</strong><small>TK25 karta, objekti, statusi, search, exporti i Map download.</small></div>
-              <div class="pill">GIS</div>
-            </a>
-
-            <a class="menu-item" href="pregled-baze.html">
-              <div class="menu-icon teal"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v4c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 9v4c0 1.66 4.03 3 9 3s9-1.34 9-3V9"/><path d="M3 13v4c0 1.66 4.03 3 9 3s9-1.34 9-3v-4"/></svg></div>
-              <div><strong>Baza</strong><small>Pregled objekata, detalji, filtriranje i čisti prikaz podataka.</small></div>
-              <div class="pill">Objekti</div>
-            </a>
-            <a class="menu-item" data-role-admin data-role-sql href="speleo-sql-safe.html">
-              <div class="menu-icon amber"><svg viewBox="0 0 24 24"><path d="M4 6c0-1.7 3.6-3 8-3s8 1.3 8 3-3.6 3-8 3-8-1.3-8-3z"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg></div>
-              <div><strong>SQL preview baze</strong><small>Sigurni import u staging tablicu. Ne dira živu Bazu.</small></div>
-              <div class="pill">SAFE</div>
-            </a>
-
-            <a class="menu-item" href="izleti.html">
-              <div class="menu-icon amber"><svg viewBox="0 0 24 24"><path d="M3 17l4-8 4 4 4-6 4 10"/><path d="M3 21h18"/></svg></div>
-              <div><strong>Izleti</strong><small>Kreiranje izleta, područje karte, ekipa, oprema i paket za teren.</small></div>
-              <div class="pill">Plan</div>
-            </a>
-
-            <a class="menu-item" href="baza.html#import">
-              <div class="menu-icon purple"><svg viewBox="0 0 24 24"><path d="M12 19V5m-7 7 7-7 7 7"/><path d="M5 19h14"/></svg></div>
-              <div><strong>GPX / KML</strong><small>Import trackova i waypointa, pregled na karti i export za teren.</small></div>
-              <div class="pill">Import</div>
-            </a>
-
-            <a class="menu-item" href="topodroid.html">
-              <div class="menu-icon lime"><svg viewBox="0 0 24 24"><path d="M12 3L2 9l10 6 10-6-10-6z"/><path d="M2 15l10 6 10-6"/><path d="M2 12l10 6 10-6"/></svg></div>
-              <div><strong>Arhiva i nacrti</strong><small>Canonical nacrti, Drive/TopoDroid metadata, role prava i audit.</small></div>
-              <div class="pill">5.37</div>
-            </a>
-
-            <a class="menu-item" href="https://google.com/url?sa=D&q=https://forms.gle/xXK6uBU8m9myL9YNA&ust=1779696240000000&usg=AOvVaw3-5YHTAqbpAJJ1UVgzNyVr&hl=en&source=gmail" target="_blank" rel="noopener">
-              <div class="menu-icon red"><svg viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6M7 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1"/><path d="M9 4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1V4z"/></svg></div>
-              <div><strong>Speleo zapisnik</strong><small>Otvara službeni Google Forms zapisnik za terenski unos podataka.</small></div>
-              <div class="pill">Form</div>
-            </a>
-
-            <a class="menu-item" href="arhivar-zahvati.html" data-role-archive>
-              <div class="menu-icon green"><svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h8l6 6v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5z"/><path d="M14 3v6h6"/><path d="M8 13h8M8 17h6"/></svg></div>
-              <div><strong>Zahvati i radnje</strong><small>Arhivarska web forma s live sheet previewom i spremanjem u bazu.</small></div>
-              <div class="pill">Arhivar</div>
-            </a>
-
+    <main>
+      <section class="sov-hero">
+        <div class="sov-hero-grid">
+          <div>
+            <span class="sov-eyebrow">Unified SOV ecosystem</span>
+            <h1>Jedna ploča za teren, opremu, arhivu i ljude.</h1>
+            <p>Ovo je prvi UI consolidation build: manje tehničkih ulaza, jasniji moduli po rolama, bolji prazni prikazi i dashboard koji izgleda kao proizvod, ne kao skup patch stranica.</p>
+            <div class="sov-actions">
+              <a class="sov-btn main" href="baza.html">Otvori SOV kartu →</a>
+              <a class="sov-btn" href="izleti.html">Planiraj izlet</a>
+              <a class="sov-btn" href="oruzarstvo.html" data-role-armory>Oružarstvo</a>
+              <a class="sov-btn" href="topodroid.html" data-role-archive>Arhiva i nacrti</a>
+            </div>
           </div>
-        </aside>
+          <aside class="sov-status-card">
+            <h3>Moja prava</h3>
+            <div class="sov-mini-grid">
+              <div class="sov-mini"><b data-dash-role>—</b><span>trenutna rola</span></div>
+              <div class="sov-mini"><b data-auth-status>—</b><span>status računa</span></div>
+              <div class="sov-mini"><b data-kpi-devices>—</b><span>uređaji</span></div>
+              <div class="sov-mini"><b data-kpi-audit>—</b><span>audit zapisi</span></div>
+            </div>
+            <p class="sov-soft" data-access-summary style="margin-top:14px">Učitavam prava...</p>
+          </aside>
+        </div>
+      </section>
 
-        <section class="center-stage" aria-label="SOV Cloud">
-          <div class="center-logo">
-            <div class="logo-card"><img src="assets/sov-logo.png" alt="Speleološki odsjek Velebit"></div>
-            <h1>SOV Cloud</h1>
-            <p>Karte, baza, izleti, dokumenti i interni alati Odsjeka.</p>
-            <div class="center-actions"><a class="main" href="baza.html">Otvori SOV Kartu →</a><a href="izleti.html">Novi izlet</a></div>
-          </div>
-        </section>
-
-        <aside class="menu-panel" aria-label="Društvo i interna zona">
-          <div class="panel-head"><b>Interno i društvo</b><span>organizacija</span></div>
-          <div class="menu-list">
-
-            <a class="menu-item" href="kalendar-izleta.html">
-              <div class="menu-icon blue"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg></div>
-              <div><strong>Kalendar izleta</strong><small>Pregled planiranih akcija, škola, vježbi i terenskih termina.</small></div>
-              <div class="pill">Kalendar</div>
-            </a>
-
-            <a class="menu-item" href="oruzarstvo.html" data-role-armory>
-              <div class="menu-icon amber"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-              <div><strong>Oružarstvo</strong><small>Katalog opreme i zahtjevi; oružar vidi zaduženja, servise i inventure.</small></div>
-              <div class="pill">Oprema</div>
-            </a>
-
-            <a class="menu-item" href="dokumentacija.html" data-role-archive>
-              <div class="menu-icon gray"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
-              <div><strong>Dokumenti</strong><small>Zapisnici, upute, dopuštenja i interna arhiva društva.</small></div>
-              <div class="pill">Arhiva</div>
-            </a>
-
-            <a class="menu-item" href="admin-users.html" data-role-admin>
-              <div class="menu-icon red"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
-              <div><strong>Korisnici</strong><small>Odobravanje registracija i dodjela rola.</small></div>
-              <div class="pill">Admin</div>
-            </a>
-
-            <a class="menu-item" href="role-manager.html" data-role-admin>
-              <div class="menu-icon purple"><svg viewBox="0 0 24 24"><path d="M12 3l7 4v5c0 5-3.5 8-7 9-3.5-1-7-4-7-9V7l7-4z"/><path d="M9 12l2 2 4-5"/><path d="M8 18h8"/></svg></div>
-              <div><strong>Role manager</strong><small>Permission matrica za web i budući unified SOV APK.</small></div>
-              <div class="pill">v5.33</div>
-            </a>
-
-
-            <a class="menu-item" href="audit-status.html" data-role-admin>
-              <span>🧾</span>
-              <div><strong>Audit i uređaji</strong><small>Tko je što mijenjao, prijavljeni uređaji i sync health po korisniku.</small></div>
-            </a>
-            <a class="menu-item" href="sync-status.html" data-role-admin>
-              <div class="menu-icon teal"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/><path d="M3 12a9 9 0 0 0 15.36 6.36"/><path d="M3 21v-6h6"/></svg></div>
-              <div><strong>SOV Sync</strong><small>Status app/web/Drive/Supabase ekosustava, nacrti index i izleti endpoint.</small></div>
-              <div class="pill">v5.33</div>
-            </a>
-
-            <a class="menu-item" href="https://drive.google.com/file/d/1iLSKkdOQTxBe8l_2ZUstqDl2-6yZbLOr/view?usp=sharing" target="_blank" rel="noopener">
-              <div class="menu-icon lime"><svg viewBox="0 0 24 24"><path d="M7 8h10v8.5a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V8z"/><path d="M9 8 7.5 5.5"/><path d="M15 8l1.5-2.5"/><path d="M9.5 12h.01"/><path d="M14.5 12h.01"/><path d="M6 10v5"/><path d="M18 10v5"/><path d="M10 18.5v2"/><path d="M14 18.5v2"/></svg></div>
-              <div><strong>SOV app</strong><small>Direktan download / pregled aktualnog SOV Android builda na Google Driveu.</small></div>
-              <div class="pill">App</div>
-            </a>
-
-            <a class="menu-item" href="napisi-clanak.html" data-role-editor>
-              <div class="menu-icon green"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
-              <div><strong>Napiši članak</strong><small>Jednostavan editor za vijesti: naslov, uvod, tekst, slike i priprema za objavu.</small></div>
-              <div class="pill">Novosti</div>
-            </a>
-
-          </div>
-        </aside>
+      <div class="sov-section-head">
+        <div><h2>Operativni moduli</h2><p>Najvažnije stvari su sada grupirane po stvarnom radu u klubu.</p></div>
+        <span class="sov-tag">role-aware</span>
       </div>
-    
-<section class="card" data-role="admin arhivar" data-permission="archive" style="margin-top:16px">
-  <h2>TopoDroid import pipeline</h2>
-  <p>Batch import nacrta i TopoDroid exporta u arhivu, s review queueom i audit tragom.</p>
-  <a class="btn primary" href="topodroid-import.html">Otvori import pipeline</a>
-</section>
-</main>
+      <section class="sov-grid" aria-label="Operativni moduli">
+        <a class="sov-module" href="baza.html" style="--accent:rgba(120,215,255,.18)">
+          <div class="sov-icon">🗺️</div><h3>SOV karta</h3><p>Objekti, TK25, katastar/SOV statusi, search i exporti za teren.</p><div class="sov-module-foot"><span class="sov-tag">GIS</span><span class="sov-soft">Otvori</span></div>
+        </a>
+        <a class="sov-module" href="pregled-baze.html" style="--accent:rgba(131,230,194,.16)">
+          <div class="sov-icon">🧭</div><h3>Baza objekata</h3><p>Čist pregled objekata, detalji, filtriranje i priprema za unified SQL layer.</p><div class="sov-module-foot"><span class="sov-tag">Objekti</span><span class="sov-soft">Pregled</span></div>
+        </a>
+        <a class="sov-module" href="izleti.html" style="--accent:rgba(255,191,107,.18)">
+          <div class="sov-icon">⛺</div><h3>Izleti</h3><p>Plan izleta, ekipa, područje karte, priprema offline paketa i terenski flow.</p><div class="sov-module-foot"><span class="sov-tag">Teren</span><span class="sov-soft">Planiraj</span></div>
+        </a>
+        <a class="sov-module" href="baza.html#import" style="--accent:rgba(176,127,255,.18)">
+          <div class="sov-icon">📍</div><h3>GPX / KML</h3><p>Import trackova i waypointa, pregled na karti i priprema za zajedničke podatke.</p><div class="sov-module-foot"><span class="sov-tag">Import</span><span class="sov-soft">Dodaj</span></div>
+        </a>
+      </section>
+
+      <div class="sov-section-head">
+        <div><h2>Interni sustavi</h2><p>Moduli se prikazuju samo korisnicima koji imaju odgovarajuća prava.</p></div>
+        <span class="sov-tag">Admin · Oružar · Arhivar · Urednik</span>
+      </div>
+      <section class="sov-grid" aria-label="Interni moduli">
+        <a class="sov-module" href="oruzarstvo.html" data-role-armory style="--accent:rgba(255,191,107,.2)">
+          <div class="sov-icon">🛠️</div><h3>Oružarstvo</h3><p>Katalog opreme, zahtjevi, zaduženja, servis, inventura i audit foundation.</p><div class="sov-module-foot"><span class="sov-tag">Oprema</span><span class="sov-soft">Otvori</span></div>
+        </a>
+        <a class="sov-module" href="topodroid.html" data-role-archive style="--accent:rgba(215,246,111,.16)">
+          <div class="sov-icon">📐</div><h3>Arhiva i nacrti</h3><p>Nacrti, metadata, objekt matching, Drive/TopoDroid pipeline i review queue.</p><div class="sov-module-foot"><span class="sov-tag">Arhiva</span><span class="sov-soft">Otvori</span></div>
+        </a>
+        <a class="sov-module" href="topodroid-import.html" data-role-archive style="--accent:rgba(131,230,194,.18)">
+          <div class="sov-icon">⬆️</div><h3>TopoDroid import</h3><p>Batch upload/export pipeline za buduće nacrte i survey pakete.</p><div class="sov-module-foot"><span class="sov-tag">Pipeline</span><span class="sov-soft">Import</span></div>
+        </a>
+        <a class="sov-module" href="napisi-clanak.html" data-role-editor style="--accent:rgba(102,226,141,.17)">
+          <div class="sov-icon">✍️</div><h3>Vijesti</h3><p>Urednički unos i priprema članaka za javni dio weba.</p><div class="sov-module-foot"><span class="sov-tag">Urednik</span><span class="sov-soft">Piši</span></div>
+        </a>
+        <a class="sov-module" href="admin-users.html" data-role-admin style="--accent:rgba(255,123,123,.18)">
+          <div class="sov-icon">👥</div><h3>Korisnici</h3><p>Odobravanje registracija, statusi i dodjela rola.</p><div class="sov-module-foot"><span class="sov-tag">Admin</span><span class="sov-soft">Uredi</span></div>
+        </a>
+        <a class="sov-module" href="role-manager.html" data-role-admin style="--accent:rgba(176,127,255,.18)">
+          <div class="sov-icon">🛡️</div><h3>Role manager</h3><p>Permission matrica za web i APK; centralno mjesto za prava.</p><div class="sov-module-foot"><span class="sov-tag">Roles</span><span class="sov-soft">Postavi</span></div>
+        </a>
+        <a class="sov-module" href="audit-status.html" data-role-admin style="--accent:rgba(120,215,255,.16)">
+          <div class="sov-icon">🧾</div><h3>Audit i uređaji</h3><p>Tko je što mijenjao, koji uređaji su viđeni i kakav je sync health.</p><div class="sov-module-foot"><span class="sov-tag">Audit</span><span class="sov-soft">Pregled</span></div>
+        </a>
+        <a class="sov-module" href="sync-status.html" data-role-admin style="--accent:rgba(131,230,194,.15)">
+          <div class="sov-icon">🔄</div><h3>SOV Sync</h3><p>Kontrola endpointova, Drive indexa, izleta i Supabase statusa.</p><div class="sov-module-foot"><span class="sov-tag">Health</span><span class="sov-soft">Provjeri</span></div>
+        </a>
+      </section>
+
+      <div class="sov-section-head">
+        <div><h2>Stanje sustava</h2><p>Read-only overview. Nema promjene podataka iz ovog bloka.</p></div>
+        <span class="sov-tag">live ako Supabase dopušta</span>
+      </div>
+      <section class="sov-two">
+        <article class="sov-panel">
+          <h3>Brzi brojevi</h3>
+          <div class="sov-mini-grid">
+            <div class="sov-mini"><b data-kpi-users>—</b><span>profili</span></div>
+            <div class="sov-mini"><b data-kpi-drawings>—</b><span>nacrti metadata</span></div>
+            <div class="sov-mini"><b data-kpi-devices>—</b><span>uređaji</span></div>
+            <div class="sov-mini"><b data-kpi-audit>—</b><span>audit log</span></div>
+          </div>
+        </article>
+        <article class="sov-panel">
+          <h3>Što dalje?</h3>
+          <div class="sov-list">
+            <div class="sov-list-item"><div><b>UI cleanup modula</b><small>Oružarstvo, Arhiva i Izleti trebaju isti vizualni jezik kao dashboard.</small></div><span class="sov-tag">next</span></div>
+            <div class="sov-list-item"><div><b>Bolji empty states</b><small>Korisnik uvijek mora znati zašto nešto ne vidi i što može napraviti.</small></div><span class="sov-tag">UX</span></div>
+            <div class="sov-list-item"><div><b>APK polish</b><small>Nakon weba, isti princip prenijeti u field app.</small></div><span class="sov-tag">1.3.4</span></div>
+          </div>
+        </article>
+        <article class="sov-panel">
+          <h3>Zadnje audit akcije</h3>
+          <div class="sov-list" data-recent-audit><div class="sov-empty">Učitavam audit...</div></div>
+        </article>
+        <article class="sov-panel">
+          <h3>Uređaji i sync</h3>
+          <div class="sov-list" data-device-health><div class="sov-empty">Učitavam uređaje...</div></div>
+        </article>
+      </section>
+    </main>
   </div>
-  <script>SOVAuth.renderUserBadge && SOVAuth.renderUserBadge()</script>
-  
-<script src="assets/sov-inbox.js?v=4.90"></script>
-<a data-role-admin data-role-sql href="speleo-sql-edit-sandbox.html" style="position:fixed;right:18px;bottom:18px;z-index:9999;background:#d7f66f;color:#101400;border-radius:999px;padding:12px 16px;font-weight:900;text-decoration:none;box-shadow:0 12px 30px rgba(0,0,0,.35)">SQL edit sandbox</a>
-<a data-role-admin data-role-sql href="speleo-sql-go-live.html" style="position:fixed;left:18px;bottom:18px;z-index:9999;background:#78d7ff;color:#031014;border-radius:999px;padding:12px 16px;font-weight:900;text-decoration:none;box-shadow:0 12px 30px rgba(0,0,0,.35)">SQL Go Live</a>
+
+  <div class="sov-dev-float" data-role-admin data-role-sql>
+    <a href="speleo-sql-edit-sandbox.html">SQL sandbox</a>
+    <a href="speleo-sql-go-live.html">SQL Go Live</a>
+  </div>
+
+  <script src="assets/sov-dashboard-premium.js"></script>
+  <script src="assets/sov-inbox.js?v=4.90"></script>
 </body>
 </html>

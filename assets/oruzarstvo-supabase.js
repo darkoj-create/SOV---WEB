@@ -90,7 +90,8 @@
   function canonicalArmoryCategory(raw, text){
     const r=stripDiacritics(raw);
     const t=stripDiacritics([raw,text].filter(Boolean).join(' '));
-    if(/descender|\bstop\b|rig|maestro|id['’]?s|croll|krol|crol|bloker|zumar|pojas|sjedal|pedal|stremen|prsni|pupak|pupcano/.test(t)) return 'Osobna oprema';
+    if((/descender|\bstop\b|rig|maestro|id['’]?s|croll|krol|crol|bloker|zumar|ascender|pojas|sjedal|pedal|stremen|prsni|pupak|pupcano/.test(t))&&!/penjack|penjac|alpinist|climbing/.test(t)) return 'Osobna oprema - komplet';
+    if(/osob|kacig|helmet|kombinezon|odijel|rukavic|cizm|obuc/.test(t)) return 'Osobna oprema';
     if(/uzad|uzetna|\buze\b|rope|prusik|gurt|traka|kolotur|transportna vreca/.test(t) && !/busil|bater|punjac|svrd/.test(t)) return 'Užad i užetna oprema';
     if(/busil|baterija bosch|bosch.*bater|punjac|svrd|gbh18|gbh180|boschhammer/.test(t)) return 'Bušilice i baterije';
     if(/postavlj|spit|sidrist|ploc|ring|anker|bolt|karabiner|matica|hms/.test(t) && !/descender|croll|bloker|pojas/.test(t)) return 'Oprema za postavljanje';
