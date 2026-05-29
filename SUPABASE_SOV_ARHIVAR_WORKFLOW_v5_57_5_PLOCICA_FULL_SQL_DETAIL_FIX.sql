@@ -1,4 +1,4 @@
--- SOV Web v5.57.5 / APK 1.4.13.4 — PLOČICA + FULL SQL DETAIL FIX / split list vs detail
+-- SOV Arhivar v5.57.5 — PLOČICA + FULL SQL DETAIL FIX / split list vs detail
 -- Problem v5.57.3: web lista je čitala puni worklist view koji je za svaki objekt radio raw::text,
 -- regexe i string_agg nacrta/zapisnika. Na većoj bazi to može završiti s: canceling statement due to statement timeout.
 -- Fix:
