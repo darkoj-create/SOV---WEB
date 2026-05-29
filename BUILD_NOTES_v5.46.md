@@ -1,4 +1,4 @@
-# SOV Web v5.46 — Oružar Master cleanup
+# SOV Web v5.47 — Oružar Master cleanup
 
 - Web Oružar Master koristi isti statusni model kao APK: `requested/pending -> issued -> returned | partial_return (+ cancelled)`.
 - Maknut je web-side regex kao glavni izvor kategorizacije u Master JS-u; SQL canonical view ostaje mozak.
