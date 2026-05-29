@@ -88,25 +88,12 @@
 
   function stripDiacritics(s){ return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim(); }
   function canonicalArmoryCategory(raw, text){
-    const r=stripDiacritics(raw);
-    const t=stripDiacritics([raw,text].filter(Boolean).join(' '));
-    if((/descender|\bstop\b|rig|maestro|id['’]?s|croll|krol|crol|bloker|zumar|ascender|pojas|sjedal|pedal|stremen|prsni|pupak|pupcano/.test(t))&&!/penjack|penjac|alpinist|climbing/.test(t)) return 'Osobna oprema - komplet';
-    if(/osob|kacig|helmet|kombinezon|odijel|rukavic|cizm|obuc/.test(t)) return 'Osobna oprema';
-    if(/uzad|uzetna|\buze\b|rope|prusik|gurt|traka|kolotur|transportna vreca/.test(t) && !/busil|bater|punjac|svrd/.test(t)) return 'Užad i užetna oprema';
-    if(/busil|baterija bosch|bosch.*bater|punjac|svrd|gbh18|gbh180|boschhammer/.test(t)) return 'Bušilice i baterije';
-    if(/postavlj|spit|sidrist|ploc|ring|anker|bolt|karabiner|matica|hms/.test(t) && !/descender|croll|bloker|pojas/.test(t)) return 'Oprema za postavljanje';
-    if(/crtan|mjeren|disto|kompas|topodroid|dokumentac|nacrt|skic/.test(t)) return 'Oprema za crtanje';
-    if(/elektro|foto|kamera|video|rasvjet|svjetl|lampa|ceona|ceo/.test(t)) return 'Elektro i foto oprema';
-    if(/medicin|medicina|prva pomoc|prva pom/.test(t)) return 'Medicinska oprema';
-    if(/ronil|ronjenje|neopren|maska|peraj|boca/.test(t)) return 'Ronilačka oprema';
-    if(/alpinist|alpin|penjack|penjac/.test(t)) return 'Alpinistička oprema';
-    if(/cisto podzemlje|ciscenje|cistoc|otpad/.test(t)) return 'Čisto podzemlje';
-    if(/prosir|prosirivanje|klin|cekic|macol|dlijet|stem/.test(t)) return 'Oprema za proširivanje';
-    if(/logor|kamp|ekspedic|sator|kuhal|plin|podlog|vreca za spavanje/.test(t)) return 'Oprema za logor';
-    if(/alat|kljuc|odvijac|klijest|toolbox/.test(t)) return 'Ostali alat';
-    if(/ostalo|razno/.test(r)) return 'Ostalo';
-    return raw && String(raw).trim() ? String(raw).trim() : 'Ostalo';
+    // v5.45: SQL view is the only canonical armory brain.
+    // Web keeps only a tiny fallback for legacy/static/offline rows.
+    const clean=String(raw||'').trim();
+    return clean || 'Ostalo';
   }
+
 
 
   function normalizeArticleName(name){
@@ -170,6 +157,16 @@
     return Array.from(map.values());
   }
 
+
+  function normalizeArmoryRequestStatus(status){
+    const x=String(status||'pending').toLowerCase();
+    if(['approved','prepared','reserved','requested','pending'].includes(x)) return 'pending';
+    if(['issued','izdano'].includes(x)) return 'issued';
+    if(['partial_return','partial'].includes(x)) return 'partial_return';
+    if(['returned','closed','vraceno','vraćeno'].includes(x)) return 'returned';
+    if(['cancelled','canceled','rejected','odbijeno','otkazano'].includes(x)) return 'cancelled';
+    return x || 'pending';
+  }
   function requestToUi(r, items){
     return {
       id:r.id,
@@ -180,7 +177,7 @@
       from:r.date_from || '',
       to:r.date_to || '',
       note:r.note || '',
-      status:r.status || 'pending',
+      status:normalizeArmoryRequestStatus(r.status),
       items:(items||[]).filter(i=>i.request_id===r.id).map(i=>({id:i.equipment_legacy_id||i.equipment_item_id||i.id,name:i.item_name,quantity:Number(i.quantity)||1,note:i.note||''}))
     };
   }
@@ -219,6 +216,7 @@
     const rows=(req.items||[]).map(i=>({
       request_id:data.id,
       equipment_legacy_id:i.id || null,
+      name:i.name,
       item_name:i.name,
       quantity:Number(i.quantity)||1,
       note:i.note || null
@@ -233,7 +231,7 @@
     if(!configured()) return false;
     const client=sb();
     const patch={status,updated_at:new Date().toISOString()};
-    if(['approved','rejected','prepared','issued','returned'].includes(status)){
+    if(['cancelled','rejected','issued','returned','partial_return'].includes(status)){
       const profile=await SOVAuth.getProfile();
       patch.decided_by=profile && profile.id;
       patch.decided_at=new Date().toISOString();
@@ -514,6 +512,50 @@
       try{const {data,error}=await client.from(table).select(cols); if(error){console.warn('SOVArmoryDB load '+table,error.message); return [];} return data||[];}catch(e){console.warn('SOVArmoryDB load '+table,e.message||e); return [];}
     }
     const cats=await safe('equipment_categories','*');
+    const groupedCatalog=await safe('sov_equipment_app_catalog_grouped','*');
+    const rawAppCatalog=await safe('sov_equipment_app_catalog','*');
+    if(groupedCatalog && groupedCatalog.length){
+      out.summary.source='Supabase canonical grouped catalog v5.45';
+      out.categories=[...new Map(groupedCatalog.map((g,idx)=>{
+        const name=g.main_category||g.category||g.category_name||'Ostalo';
+        return [name,{id:'cat-'+idx,name,description:'Canonical grouped catalog',type:'canonical',sort_order:g.priority||idx}];
+      })).values()];
+      out.items=groupedCatalog.map((g,idx)=>({
+        id:g.app_id||g.source_id||('GROUP-'+idx),
+        legacy_id:g.source_id||g.app_id||('GROUP-'+idx),
+        catalog_id:g.catalog_group_key||g.source_id||g.app_id||('GROUP-'+idx),
+        name:g.display_name||g.name||'Artikl',
+        category:g.main_category||g.category||g.category_name||'Ostalo',
+        category_name:g.main_category||g.category||g.category_name||'Ostalo',
+        subcategory:g.subcategory||g.raw_subcategory||'Ostalo',
+        unit:g.unit||'kom',
+        tracking_type:'grouped_catalog',
+        quantity:safeQuantity(g.total_qty)||0,
+        quantity_label:String(g.total_qty??''),
+        available:safeQuantity(g.available_qty)||0,
+        available_label:String(g.available_qty??''),
+        loaned:Math.max(0,(safeQuantity(g.total_qty)||0)-(safeQuantity(g.available_qty)||0)),
+        minimum:'',
+        status:g.status||g.availability||'aktivno',
+        availability:g.availability||g.status||'dostupno',
+        member_visible:g.member_visible!==false,
+        internal_note:g.detail_summary||g.note||'',
+        source_sheet:'sov_equipment_app_catalog_grouped',
+        location:g.location_name||'',
+        location_name:g.location_name||'',
+        catalog_group_key:g.catalog_group_key||'',
+        variant_count:g.variant_count||1,
+        search_text:g.search_text||''
+      })).filter(i=>i.name);
+      out.ropes=[];
+      out.pieces=[];
+      out.raw_app_catalog=rawAppCatalog||[];
+      out.summary.count_items=out.items.length;
+      out.summary.count_ropes=0;
+      out.summary.count_pieces=0;
+      out.summary.count_categories=out.categories.length;
+      return out;
+    }
     const items=await safe('equipment_items','*');
     const ropes=await safe('equipment_ropes','*');
     const pieces=await safe('equipment_pieces','*');

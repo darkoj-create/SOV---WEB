@@ -1,1 +1,1 @@
-5.43-oruzarstvo-canonical-sorting
+5.45-armory-core-cleanup
