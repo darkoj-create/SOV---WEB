@@ -23,7 +23,7 @@
   const REGISTERED_PAGES = new Set([
     'dashboard.html','baza.html','pregled-baze.html','izleti.html','izleti-cloud.html','kalendar-izleta.html',
     'dokumentacija.html','pregled-zapisnika.html','zapisnici-skupstine.html','novi-zapisnik.html',
-    'speleo-zapisnik.html','topodroid.html','napisi-clanak.html','arhivar.html','arhivar-zahvati.html','speleo-sql-safe.html','speleo-sql-edit-sandbox.html','speleo-sql-compare.html','speleo-sql-object-hub.html','speleo-sql-promote.html','speleo-sql-go-live.html','oruzarstvo.html','oruzarstvo-import.html','admin-users.html','role-manager.html','news-editor.html','sync-status.html'
+    'speleo-zapisnik.html','topodroid.html','napisi-clanak.html','arhivar-dashboard.html','arhivar.html','arhivar-zahvati.html','arhivar-predane-jame.html','arhivar-izvoz.html','speleo-sql-safe.html','speleo-sql-edit-sandbox.html','speleo-sql-compare.html','speleo-sql-object-hub.html','speleo-sql-promote.html','speleo-sql-go-live.html','oruzarstvo.html','oruzarstvo-import.html','admin-users.html','role-manager.html','news-editor.html','sync-status.html'
   ]);
   const ROLE_LABELS = {admin:'Admin',editor:'Urednik',oruzar:'Oružar',arhivar:'Arhivar',user:'Član'};
   const ADMIN_ROLES = ['admin'];
@@ -293,11 +293,11 @@
   async function autoProtect(){
     const p = pageName();
     if(!REGISTERED_PAGES.has(p)){ await renderUserBadge(); return; }
-    if(p === 'admin-users.html' || p === 'role-manager.html') await requireAdmin();
+    if(p === 'admin-users.html' || p === 'role-manager.html' || p === 'sync-status.html' || p === 'audit-status.html') await requireAdmin();
     else if(p.startsWith('speleo-sql-')) await requireAdmin();
     else if(p === 'news-editor.html' || p === 'napisi-clanak.html') await requireEditor();
     else if(p === 'oruzarstvo.html' || p === 'oruzarstvo-import.html' || p.startsWith('oruzar-master') || p === 'inventura.html') await requireArmory();
-    else if(p === 'arhivar.html' || p === 'arhivar-zahvati.html') await requireArchive();
+    else if(p === 'arhivar-dashboard.html' || p === 'arhivar.html' || p === 'arhivar-zahvati.html' || p === 'arhivar-predane-jame.html' || p === 'arhivar-izvoz.html') await requireArchive();
     else await requireApproved();
     await renderUserBadge();
   }

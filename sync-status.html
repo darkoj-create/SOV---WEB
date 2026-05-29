@@ -3,34 +3,36 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SOV Sync · Ekosustav status</title>
+  <title>SOV Sync · Ekosustav status v5.58.6</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root{--bg:#07100d;--card:#0d1a16;--card2:#10221d;--line:rgba(255,255,255,.10);--text:#eef8f2;--muted:#a9bdb4;--lime:#d7f66f;--teal:#83e6c2;--blue:#78d7ff;--red:#ff7a7a;--amber:#ffd36f;--shadow:0 24px 80px rgba(0,0,0,.40)}
     *{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:radial-gradient(circle at top left,rgba(131,230,194,.15),transparent 36%),radial-gradient(circle at 80% 12%,rgba(120,215,255,.12),transparent 30%),var(--bg);color:var(--text)}
-    a{color:inherit}.shell{width:min(1180px,calc(100% - 28px));margin:0 auto;padding:24px 0 44px}.top{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:22px}.brand{display:flex;align-items:center;gap:12px;text-decoration:none}.mark{width:46px;height:46px;border-radius:16px;background:linear-gradient(135deg,var(--lime),var(--teal));color:#111;display:grid;place-items:center;font-weight:950;box-shadow:0 14px 40px rgba(215,246,111,.14)}.brand strong{display:block}.brand small{color:var(--muted);font-weight:800}.nav{display:flex;gap:8px;flex-wrap:wrap}.nav a{padding:10px 13px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--line);text-decoration:none;font-weight:900;font-size:13px}.nav a.primary{background:linear-gradient(135deg,var(--lime),var(--teal));color:#111;border:0}.hero{border:1px solid rgba(255,255,255,.12);border-radius:34px;background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.035));box-shadow:var(--shadow);padding:28px;margin-bottom:18px}.eyebrow{display:inline-flex;gap:8px;align-items:center;padding:8px 11px;border-radius:999px;background:rgba(215,246,111,.12);border:1px solid rgba(215,246,111,.25);color:#eaffb3;font-weight:950;font-size:12px;text-transform:uppercase;letter-spacing:.06em}.hero h1{font-size:clamp(34px,5vw,64px);line-height:.95;margin:18px 0 12px}.hero p{color:var(--muted);max-width:780px;font-size:16px;line-height:1.6}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}.btn{border:0;border-radius:999px;padding:12px 15px;font-weight:950;cursor:pointer;background:linear-gradient(135deg,var(--lime),var(--teal));color:#111;text-decoration:none}.btn.secondary{background:rgba(255,255,255,.07);color:var(--text);border:1px solid var(--line)}.btn:disabled{opacity:.55;cursor:not-allowed}
-    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px}.card{border:1px solid var(--line);border-radius:26px;background:rgba(13,26,22,.82);box-shadow:0 18px 60px rgba(0,0,0,.24);padding:18px;min-height:150px}.card.big{grid-column:span 2}.card h2{margin:0 0 10px;font-size:18px}.metric{font-size:34px;font-weight:950;letter-spacing:-.04em}.muted{color:var(--muted);font-size:13px;line-height:1.45}.status{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:950;border:1px solid var(--line);background:rgba(255,255,255,.05)}.dot{width:9px;height:9px;border-radius:999px;background:#8b98a0}.ok .dot{background:var(--teal)}.warn .dot{background:var(--amber)}.bad .dot{background:var(--red)}.split{display:grid;grid-template-columns:1fr 1fr;gap:12px}.line{height:1px;background:var(--line);margin:13px 0}.kv{display:grid;grid-template-columns:150px 1fr;gap:8px;font-size:13px;margin:8px 0}.kv b{color:#dceee6}.kv span{color:var(--muted);overflow-wrap:anywhere}.table{width:100%;border-collapse:collapse;font-size:13px}.table th,.table td{padding:9px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left;vertical-align:top}.table th{color:#e9ffd6}.log{max-height:280px;overflow:auto;background:rgba(0,0,0,.22);border:1px solid var(--line);border-radius:18px;padding:12px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;color:#cfe1da;white-space:pre-wrap}.tiny{font-size:11px;color:var(--muted)}.pill{display:inline-flex;padding:4px 8px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.05);font-size:11px;font-weight:950;color:#ddf7ec}.danger{color:#ffc6c6}.good{color:#cfffdf}.manual{padding:18px;border-radius:24px;background:rgba(255,255,255,.055);border:1px solid var(--line);line-height:1.55}.manual h3{margin:0 0 8px}.manual code{background:rgba(0,0,0,.28);border:1px solid var(--line);border-radius:8px;padding:2px 5px;color:#eaffb3}.footer{margin-top:18px;color:var(--muted);font-size:12px;text-align:center}.hidden{display:none!important}
+    a{color:inherit}.shell{width:min(1180px,calc(100% - 28px));margin:0 auto;padding:24px 0 44px}.top{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:22px}.brand{display:flex;align-items:center;gap:12px;text-decoration:none}.mark{width:46px;height:46px;border-radius:16px;background:linear-gradient(135deg,var(--lime),var(--teal));color:#111;display:grid;place-items:center;font-weight:950;box-shadow:0 14px 40px rgba(215,246,111,.14)}.brand strong{display:block}.brand small{color:var(--muted);font-weight:800}.nav{display:flex;gap:8px;flex-wrap:wrap}.nav a{padding:10px 13px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--line);text-decoration:none;font-weight:900;font-size:13px}.nav a.primary{background:linear-gradient(135deg,var(--lime),var(--teal));color:#111;border:0}.hero{border:1px solid rgba(255,255,255,.12);border-radius:34px;background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.035));box-shadow:var(--shadow);padding:28px;margin-bottom:18px}.eyebrow{display:inline-flex;gap:8px;align-items:center;padding:8px 11px;border-radius:999px;background:rgba(215,246,111,.12);border:1px solid rgba(215,246,111,.25);color:#eaffb3;font-weight:950;font-size:12px;text-transform:uppercase;letter-spacing:.06em}.hero h1{font-size:clamp(34px,5vw,64px);line-height:.95;margin:18px 0 12px}.hero p{color:var(--muted);max-width:820px;font-size:16px;line-height:1.6}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}.btn{border:0;border-radius:999px;padding:12px 15px;font-weight:950;cursor:pointer;background:linear-gradient(135deg,var(--lime),var(--teal));color:#111;text-decoration:none}.btn.secondary{background:rgba(255,255,255,.07);color:var(--text);border:1px solid var(--line)}.btn:disabled{opacity:.55;cursor:not-allowed}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px}.card{border:1px solid var(--line);border-radius:26px;background:rgba(13,26,22,.82);box-shadow:0 18px 60px rgba(0,0,0,.24);padding:18px;min-height:150px}.card.big{grid-column:span 2}.card h2{margin:0 0 10px;font-size:18px}.metric{font-size:34px;font-weight:950;letter-spacing:-.04em}.muted{color:var(--muted);font-size:13px;line-height:1.45}.status{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:950;border:1px solid var(--line);background:rgba(255,255,255,.05)}.dot{width:9px;height:9px;border-radius:999px;background:#8b98a0}.ok .dot{background:var(--teal)}.warn .dot{background:var(--amber)}.bad .dot{background:var(--red)}.split{display:grid;grid-template-columns:1fr 1fr;gap:12px}.line{height:1px;background:var(--line);margin:13px 0}.kv{display:grid;grid-template-columns:160px 1fr;gap:8px;font-size:13px;margin:8px 0}.kv b{color:#dceee6}.kv span{color:var(--muted);overflow-wrap:anywhere}.log{max-height:320px;overflow:auto;background:rgba(0,0,0,.22);border:1px solid var(--line);border-radius:18px;padding:12px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;color:#cfe1da;white-space:pre-wrap}.tiny{font-size:11px;color:var(--muted)}.pill{display:inline-flex;padding:4px 8px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.05);font-size:11px;font-weight:950;color:#ddf7ec}.manual{padding:18px;border-radius:24px;background:rgba(255,255,255,.055);border:1px solid var(--line);line-height:1.55}.manual h3{margin:0 0 8px}.manual code{background:rgba(0,0,0,.28);border:1px solid var(--line);border-radius:8px;padding:2px 5px;color:#eaffb3}.footer{margin-top:18px;color:var(--muted);font-size:12px;text-align:center}.hidden{display:none!important}
     @media(max-width:920px){.grid{grid-template-columns:1fr}.card.big{grid-column:auto}.split{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}.kv{grid-template-columns:1fr}.hero{border-radius:26px}.card{border-radius:22px}}
   </style>
 </head>
 <body>
   <div class="shell">
     <header class="top">
-      <a class="brand" href="dashboard.html"><div class="mark">SOV</div><div><strong>SOV Sync</strong><small>ekosustav status · v5.32</small></div></a>
-      <nav class="nav"><a href="dashboard.html">Dashboard</a><a href="baza.html">Karta</a><a href="pregled-baze.html">Baza</a><a href="izleti.html">Izleti</a><a href="admin-users.html" data-role-admin>Korisnici</a><a class="primary" href="sync-status.html">SOV Sync</a></nav>
+      <a class="brand" href="dashboard.html"><div class="mark">SOV</div><div><strong>SOV Sync</strong><small>ekosustav status · v5.58.6</small></div></a>
+      <nav class="nav"><a href="dashboard.html">Dashboard</a><a href="baza.html">Karta</a><a href="arhivar-dashboard.html">Arhivar</a><a href="news-editor.html">Vijesti CMS</a><a href="role-manager.html">Role</a><a class="primary" href="sync-status.html">SOV Sync</a></nav>
     </header>
 
     <section class="hero">
-      <span class="eyebrow">SOV ekosustav · kontrolna ploča</span>
+      <span class="eyebrow">SOV ekosustav · admin kontrolna ploča</span>
       <h1>Jedno mjesto za provjeru synca.</h1>
-      <p>Ova stranica ne mijenja SQL bazu objekata. Samo čita endpointove i Supabase tablice da vidimo jesu li app, web, Drive index, izleti i role usklađeni.</p>
+      <p>Ova stranica je usklađena s web buildom v5.58.6. Čita endpointove i Supabase tablice: nacrti, izleti, role, novosti CMS i arhivarske predaje. Ne mijenja podatke.</p>
       <div class="actions">
         <button class="btn" id="runAllBtn">Provjeri sve</button>
-        <button class="btn secondary" id="runDrawingsBtn">Provjeri nacrte</button>
-        <button class="btn secondary" id="runTripsBtn">Provjeri izlete</button>
-        <button class="btn secondary" id="runSupabaseBtn">Provjeri Supabase</button>
+        <button class="btn secondary" id="runDrawingsBtn">Nacrti</button>
+        <button class="btn secondary" id="runTripsBtn">Izleti</button>
+        <button class="btn secondary" id="runSupabaseBtn">Supabase</button>
+        <button class="btn secondary" id="runNewsBtn">Vijesti</button>
+        <button class="btn secondary" id="runSubmissionsBtn">Predane jame</button>
       </div>
     </section>
 
@@ -59,15 +61,33 @@
         <div class="kv"><b>Endpoint</b><span id="tripsEndpoint">—</span></div>
       </article>
 
+      <article class="card">
+        <div id="newsStatus" class="status"><span class="dot"></span><span>Vijesti</span></div>
+        <h2>Vijesti CMS</h2>
+        <div class="metric" id="newsCount">—</div>
+        <div class="kv"><b>Objavljeno</b><span id="newsPublishedCount">—</span></div>
+        <div class="kv"><b>Draft/skriveno</b><span id="newsDraftCount">—</span></div>
+        <div class="kv"><b>Storage</b><span>sov-news bucket</span></div>
+      </article>
+
+      <article class="card">
+        <div id="submissionsStatus" class="status"><span class="dot"></span><span>Predane jame</span></div>
+        <h2>Arhivarske predaje</h2>
+        <div class="metric" id="submissionsCount">—</div>
+        <div class="kv"><b>Pending / review</b><span id="submissionsPending">—</span></div>
+        <div class="kv"><b>Approved</b><span id="submissionsApproved">—</span></div>
+        <div class="kv"><b>Privitci</b><span id="submissionFilesCount">—</span></div>
+      </article>
+
       <article class="card big">
         <div id="supabaseStatus" class="status"><span class="dot"></span><span>Supabase</span></div>
-        <h2>Supabase cache i role</h2>
+        <h2>Supabase cache, role i baza</h2>
         <div class="split">
           <div>
             <div class="kv"><b>Nacrti u Supabaseu</b><span id="sbDrawingsCount">—</span></div>
             <div class="kv"><b>Verified / auto</b><span id="sbDrawingsAuto">—</span></div>
             <div class="kv"><b>Possible / partial</b><span id="sbDrawingsPartial">—</span></div>
-            <div class="kv"><b>Objekti live SQL</b><span id="sbObjectsCount">—</span></div>
+            <div class="kv"><b>Objekti staging/live</b><span id="sbObjectsCount">—</span></div>
           </div>
           <div>
             <div class="kv"><b>Profili</b><span id="sbProfilesCount">—</span></div>
@@ -77,23 +97,23 @@
           </div>
         </div>
         <div class="line"></div>
-        <p class="muted">Ovo su read-only provjere. Upis u <code>speleo_object_drawings</code> se i dalje radi iz gumba “Sync nacrte” na Baza/Karta stranicama.</p>
+        <p class="muted">Read-only provjere. Ako neka tablica vrati <code>n/a</code>, to obično znači da SQL migracija još nije pokrenuta ili RLS ne dopušta admin read.</p>
       </article>
 
       <article class="card">
-        <h2>App verzije</h2>
-        <div class="kv"><b>Unified smjer</b><span>razvijati admin-capable APK, role odlučuju vidljivost</span></div>
-        <div class="kv"><b>Public zadnje</b><span>SOV 1.1.4 / versionCode 468</span></div>
-        <div class="kv"><b>Admin zadnje</b><span>admin.5 / versionCode 900005</span></div>
-        <div class="kv"><b>Nacrti endpoint</b><span>v2.0.2 fast-search</span></div>
+        <h2>Build verzije</h2>
+        <div class="kv"><b>Web</b><span>v5.58.6 dashboard admin card + role preview</span></div>
+        <div class="kv"><b>News CMS SQL</b><span>v5.58.5 hard profile RLS reset</span></div>
+        <div class="kv"><b>Arhivar SQL</b><span>v5.58.1 submissions + v5.57.8 workflow</span></div>
+        <div class="kv"><b>Admin APK source</b><span>v1.4.13.7 arhivar submissions</span></div>
       </article>
 
       <article class="card big">
-        <h2>Plan integracije app + web</h2>
+        <h2>Pravilo za buduće buildove</h2>
         <div class="manual">
-          <h3>Predloženi smjer</h3>
-          <p><b>Jedan unified/admin-capable APK</b> + Supabase role/permissions. App i web koriste istu Supabase rolu za prikaz modula: <code>user</code>, <code>editor</code>, <code>arhivar</code>, <code>oruzar</code>, <code>admin</code>.</p>
-          <p><b>Ne diramo SQL bazu objekata ovim dashboardom.</b> Objekti ostaju u postojećoj live/staging logici. Nacrti su zaseban cache u <code>speleo_object_drawings</code>.</p>
+          <h3>sync-status.html je dio builda</h3>
+          <p>Od v5.58.6 ova stranica se mora ažurirati uz svaki relevantan web build: verzija, novi moduli, nove SQL tablice i novi endpointi. Tehnički status ostaje samo Adminu.</p>
+          <p>Dashboard preview je samo vizualni filter na dashboardu. Ne mijenja stvarne role i ne daje pristup zaštićenim stranicama.</p>
         </div>
       </article>
 
@@ -103,14 +123,14 @@
       </article>
     </section>
 
-    <div class="footer">SOV web v5.32 · sync-status.html · read-only kontrolna ploča</div>
+    <div class="footer">SOV web v5.58.6 · sync-status.html · admin read-only kontrolna ploča</div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="assets/supabase-config.js"></script>
   <script src="assets/auth.js"></script>
   <script>
-    const state = {drawings:false,trips:false,supabase:false};
+    const state = {drawings:false,trips:false,supabase:false,news:false,submissions:false};
     const $ = (id)=>document.getElementById(id);
     function now(){ return new Date().toLocaleString('hr-HR'); }
     function log(msg, data){ const box=$('logBox'); const line='['+now()+'] '+msg+(data?'\n'+JSON.stringify(data,null,2):''); box.textContent = (box.textContent==='Čeka provjeru...'?'':box.textContent+'\n\n') + line; box.scrollTop=box.scrollHeight; }
@@ -147,13 +167,7 @@
     }
 
     async function countTable(sb, table, filter){
-      try{
-        let q=sb.from(table).select('*',{count:'exact',head:true});
-        if(filter) q=filter(q);
-        const {count,error}=await q;
-        if(error) return {ok:false,error:error.message,count:null};
-        return {ok:true,count:count||0};
-      }catch(e){ return {ok:false,error:e.message,count:null}; }
+      try{ let q=sb.from(table).select('*',{count:'exact',head:true}); if(filter) q=filter(q); const {count,error}=await q; if(error) return {ok:false,error:error.message,count:null}; return {ok:true,count:count||0}; }catch(e){ return {ok:false,error:e.message,count:null}; }
     }
     async function checkSupabase(){
       setStatus('supabaseStatus','warn','Provjeravam Supabase...');
@@ -162,7 +176,8 @@
       const drawings=await countTable(sb,'speleo_object_drawings');
       const auto=await countTable(sb,'speleo_object_drawings',q=>q.in('match_status',['auto_matched','verified']));
       const partial=await countTable(sb,'speleo_object_drawings',q=>q.in('match_status',['partial_match','possible','unmatched']));
-      const objects=await countTable(sb,'speleo_objects_live_sql');
+      let objects=await countTable(sb,'speleo_objects_live_sql');
+      if(!objects.ok) objects=await countTable(sb,'speleo_objects_staging');
       const profiles=await countTable(sb,'profiles');
       const admins=await countTable(sb,'profiles',q=>q.eq('role','admin'));
       const editors=await countTable(sb,'profiles',q=>q.in('role',['editor','arhivar','oruzar']));
@@ -177,12 +192,31 @@
       setStatus('supabaseStatus',ok?'ok':'bad',ok?'Supabase OK':'Supabase greška'); state.supabase=ok;
       const result={drawings,auto,partial,objects,profiles,admins,editors}; log('Supabase counts',result); return result;
     }
-    function updateOverall(){ const ok=[state.drawings,state.trips,state.supabase].filter(Boolean).length; $('overallMetric').textContent=ok+'/3'; if(ok===3){setStatus('overallStatus','ok','Sve osnovno OK');$('overallText').textContent='Nacrti, izleti i Supabase odgovaraju.'} else if(ok>0){setStatus('overallStatus','warn','Djelomično OK');$('overallText').textContent='Neki moduli rade, neke treba provjeriti.'} else {setStatus('overallStatus','bad','Nije OK');$('overallText').textContent='Ni jedan osnovni modul nije potvrđen.'}}
+    async function checkNews(){
+      setStatus('newsStatus','warn','Provjeravam vijesti...');
+      const sb=window.SOVAuth&&SOVAuth.getClient&&SOVAuth.getClient(); if(!sb){ setStatus('newsStatus','bad','Supabase fali'); throw new Error('Supabase client nije dostupan'); }
+      const all=await countTable(sb,'sov_news');
+      const published=await countTable(sb,'sov_news',q=>q.eq('published',true));
+      const drafts=await countTable(sb,'sov_news',q=>q.eq('published',false));
+      $('newsCount').textContent=all.ok?all.count:'n/a'; $('newsPublishedCount').textContent=published.ok?published.count:'n/a'; $('newsDraftCount').textContent=drafts.ok?drafts.count:'n/a';
+      const ok=all.ok; setStatus('newsStatus',ok?'ok':'bad',ok?'Vijesti CMS OK':'sov_news nije dostupan'); state.news=ok; const result={all,published,drafts}; log('Vijesti CMS',result); return result;
+    }
+    async function checkSubmissions(){
+      setStatus('submissionsStatus','warn','Provjeravam predane jame...');
+      const sb=window.SOVAuth&&SOVAuth.getClient&&SOVAuth.getClient(); if(!sb){ setStatus('submissionsStatus','bad','Supabase fali'); throw new Error('Supabase client nije dostupan'); }
+      const all=await countTable(sb,'speleo_object_submissions');
+      const pending=await countTable(sb,'speleo_object_submissions',q=>q.in('status',['submitted','pending','needs_changes','review']));
+      const approved=await countTable(sb,'speleo_object_submissions',q=>q.eq('status','approved'));
+      const files=await countTable(sb,'speleo_object_submission_files');
+      $('submissionsCount').textContent=all.ok?all.count:'n/a'; $('submissionsPending').textContent=pending.ok?pending.count:'n/a'; $('submissionsApproved').textContent=approved.ok?approved.count:'n/a'; $('submissionFilesCount').textContent=files.ok?files.count:'n/a';
+      const ok=all.ok; setStatus('submissionsStatus',ok?'ok':'bad',ok?'Predane jame OK':'submission tablice nisu dostupne'); state.submissions=ok; const result={all,pending,approved,files}; log('Arhivarske predaje',result); return result;
+    }
+    function updateOverall(){ const ok=[state.drawings,state.trips,state.supabase,state.news,state.submissions].filter(Boolean).length; $('overallMetric').textContent=ok+'/5'; if(ok===5){setStatus('overallStatus','ok','Sve osnovno OK');$('overallText').textContent='Nacrti, izleti, Supabase, vijesti i predane jame odgovaraju.'} else if(ok>0){setStatus('overallStatus','warn','Djelomično OK');$('overallText').textContent='Neki moduli rade, neke treba provjeriti.'} else {setStatus('overallStatus','bad','Nije OK');$('overallText').textContent='Ni jedan osnovni modul nije potvrđen.'}}
     async function runOne(fn){ try{await fn()}catch(e){log('Greška: '+(e.message||e));} updateOverall(); }
-    async function runAll(){ $('logBox').textContent=''; state.drawings=state.trips=state.supabase=false; await runOne(checkDrawings); await runOne(checkTrips); await runOne(checkSupabase); updateOverall(); }
+    async function runAll(){ $('logBox').textContent=''; Object.keys(state).forEach(k=>state[k]=false); await runOne(checkDrawings); await runOne(checkTrips); await runOne(checkSupabase); await runOne(checkNews); await runOne(checkSubmissions); updateOverall(); }
     document.addEventListener('DOMContentLoaded',()=>{
       $('drawingsEndpoint').textContent=safeEndpoint(window.SOV_DRAWINGS_SYNC_ENDPOINT||''); $('tripsEndpoint').textContent=safeEndpoint(window.SOV_TRIPS_WEBAPP_URL||'');
-      $('runAllBtn').onclick=runAll; $('runDrawingsBtn').onclick=()=>runOne(checkDrawings); $('runTripsBtn').onclick=()=>runOne(checkTrips); $('runSupabaseBtn').onclick=()=>runOne(checkSupabase);
+      $('runAllBtn').onclick=runAll; $('runDrawingsBtn').onclick=()=>runOne(checkDrawings); $('runTripsBtn').onclick=()=>runOne(checkTrips); $('runSupabaseBtn').onclick=()=>runOne(checkSupabase); $('runNewsBtn').onclick=()=>runOne(checkNews); $('runSubmissionsBtn').onclick=()=>runOne(checkSubmissions);
       setTimeout(runAll,500);
     });
   </script>

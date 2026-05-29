@@ -57,7 +57,7 @@
   async function load(){
     msg('Učitavam vijesti iz baze...');
     const {data,error}=await sb.from('sov_news').select('*').order('pinned',{ascending:false}).order('featured',{ascending:false}).order('published_at',{ascending:false}).order('created_at',{ascending:false});
-    if(error){ els.list.innerHTML='<div class="empty">Ne mogu učitati sov_news. Pokreni SUPABASE_SOV_NEWS_CMS_v5_58_3.sql.<br>'+esc(error.message)+'</div>'; msg('Greška učitavanja.'); return; }
+    if(error){ els.list.innerHTML='<div class="empty">Ne mogu učitati sov_news. Pokreni SUPABASE_SOV_NEWS_CMS_v5_58_5_HARD_PROFILE_RLS_RESET.sql.<br>'+esc(error.message)+'</div>'; msg('Greška učitavanja.'); return; }
     rows=data||[]; renderList(); msg(rows.length?`Učitano ${rows.length} vijesti.`:'Nema vijesti u bazi. Pokreni SQL seed ili dodaj novu.');
   }
   function renderList(){
