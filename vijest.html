@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="hr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>SOV Novosti</title>
+  <link rel="stylesheet" href="assets/site.css">
+  <link rel="stylesheet" href="assets/mobile.css">
+  <style>
+    body{margin:0;background:radial-gradient(circle at 18% 0%,rgba(213,168,91,.12),transparent 34%),linear-gradient(180deg,#05070a,#0b1016 46%,#05070a);color:#f6f0e7;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}.topbar{position:sticky;top:0;z-index:50;background:rgba(5,7,10,.78);backdrop-filter:blur(18px);border-bottom:1px solid rgba(255,255,255,.12)}.nav{max-width:1180px;margin:auto;padding:14px 22px;display:flex;align-items:center;justify-content:space-between;gap:16px}.brand{display:flex;gap:12px;align-items:center;color:#fff;text-decoration:none;font-weight:950}.brand img{width:36px;height:36px}.nav a{color:#d8e3de;text-decoration:none}.detail-wrap{width:min(980px,calc(100% - 28px));margin:0 auto;padding:34px 0 80px}.detail-card{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.12);border-radius:34px;padding:clamp(20px,4vw,46px);box-shadow:0 26px 100px rgba(0,0,0,.35)}.back,.edit-link{display:inline-flex;margin-bottom:20px;color:#f0c477;text-decoration:none;font-weight:900}.edit-link{display:none;margin-top:28px;border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:10px 14px}.role-admin .edit-link,.role-editor .edit-link{display:inline-flex}.detail-meta{color:#f0c477;font-size:12px;text-transform:uppercase;letter-spacing:.13em;font-weight:900;margin-bottom:14px}.detail-card h1{font-size:clamp(38px,7vw,76px);letter-spacing:-.06em;line-height:.93;margin:0 0 18px}.lead{font-size:20px;line-height:1.55;color:#d4ddd8}.hero-img{width:100%;max-height:620px;object-fit:cover;border-radius:26px;margin:20px 0;border:1px solid rgba(255,255,255,.12)}.article-body{font-size:18px;line-height:1.72;color:#f2efe8}.article-body p{margin:0 0 1.15em}.article-body img{max-width:100%;height:auto;border-radius:22px}.article-body a{color:#f0c477}.gallery{margin-top:28px}.gallery h2{font-size:28px}.gallery>div{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}.gallery img{width:100%;height:190px;object-fit:cover;border-radius:18px;border:1px solid rgba(255,255,255,.12)}.detail-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:28px}.btn{border:0;border-radius:999px;padding:12px 15px;background:#d7f66f;color:#101510;font-weight:950;text-decoration:none}.btn.secondary{background:rgba(255,255,255,.075);color:#eef8f2;border:1px solid rgba(255,255,255,.13)}.empty{padding:30px;border:1px dashed rgba(255,255,255,.22);border-radius:20px;color:#d8e3de;text-align:center}
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/supabase-config.js"></script>
+  <script src="assets/auth.js"></script>
+</head>
+<body>
+<header class="topbar"><nav class="nav"><a class="brand" href="index.html"><img src="assets/sov-logo.png" alt="SOV"><span>SOV Velebit</span></a><a href="index.html">Novosti</a></nav></header>
+<main class="detail-wrap" id="newsDetail"><div class="empty">Učitavam vijest...</div></main>
+<script src="assets/news-detail.js?v=5.58.3"></script>
+</body>
+</html>

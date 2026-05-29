@@ -1,4 +1,10 @@
 
+## v5.58.1 — Arhivar submissions SQL profile fix
+- Fixed SQL install error caused by hard-coded `public.sov_user_profiles`.
+- Added safe role/profile helpers compatible with existing `public.profiles` role model.
+- No frontend behavior change from v5.58.0.
+
+
 ## v5.39 — Premium UI/UX consolidation
 - Rebuilt dashboard as role-aware SOV Cloud control center.
 - Added premium module cards, better hierarchy, and friendlier empty/system states.
@@ -343,3 +349,11 @@ Dodani pravi HTML fajlovi:
 - Dodane safe SQL tablice za import queue.
 - Dodan RPC za publish import itema u canonical arhivu nacrta.
 - Admin/Arhivar write, User read-only.
+
+
+## v5.58.2 — Arhivar archive export iz uređivanja arhive
+- U `arhivar.html` dodan export postojeće arhive direktno iz ekrana Uređivanje arhive.
+- Export scope: trenutni filter, sve, sve gdje nešto fali, pojedinačne falinke (`pločica`, `koordinate`, `nacrt`, `zapisnik`, `fotka`, `ponoviti nacrt`) i odabrani objekt.
+- Formati: CSV, Excel-compatible XLS i PDF/print izvještaj.
+- Pojedinačni PDF uključuje i puni opisni detail kad je dostupan kroz `sov_arhivar_get_object_detail`.
+- Nema novog SQL-a: koristi postojeći `sov_arhivar_worklist` i postojeći detail RPC.

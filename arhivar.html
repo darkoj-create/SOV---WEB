@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SOV Arhivar — uređivanje arhive</title>
 <link rel="stylesheet" href="assets/site.css">
-<link rel="stylesheet" href="assets/arhivar-workbench.css?v=5.57.8">
+<link rel="stylesheet" href="assets/arhivar-workbench.css?v=5.58.2">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/supabase-config.js"></script>
 <script src="assets/auth.js"></script>
@@ -28,7 +28,7 @@
 <main class="aw-shell">
   <section class="aw-hero">
     <div>
-      <p class="aw-eyebrow">Radni centar arhivara <span id="awVersionBadge" class="aw-build">v5.57.8</span></p>
+      <p class="aw-eyebrow">Radni centar arhivara <span id="awVersionBadge" class="aw-build">v5.58.2</span></p>
       <h1>Uređivanje arhive</h1>
       <p>Ovo je prvi arhivarski ulaz: uređivanje postojećih objekata i provjera falinki za katastar. Nove jame koje korisnici predaju iz Baze nalaze se u posebnoj sekciji “Predane jame”.</p>
     </div>
@@ -56,6 +56,29 @@
           <option value="ready">Spremno za katastar</option>
         </select>
       </div>
+      <div class="aw-export-box" id="archiveExportBox">
+        <div>
+          <b>Export arhive</b>
+          <small>Sve, po falinkama ili samo odabrani objekt.</small>
+        </div>
+        <select class="aw-select" id="archiveExportScope">
+          <option value="current">Trenutni prikaz / filter</option>
+          <option value="all">Sve iz arhive</option>
+          <option value="missing">Sve gdje nešto fali</option>
+          <option value="missing_plate">Fali pločica</option>
+          <option value="missing_coordinates">Fale koordinate</option>
+          <option value="missing_drawing">Fali nacrt</option>
+          <option value="missing_record">Fali zapisnik</option>
+          <option value="missing_photo">Fali fotka</option>
+          <option value="needs_redraw">Treba ponoviti nacrt</option>
+          <option value="selected">Pojedinačni odabrani objekt</option>
+        </select>
+        <div class="aw-export-actions">
+          <button class="aw-btn" id="exportArchiveCsvBtn">CSV</button>
+          <button class="aw-btn" id="exportArchiveXlsBtn">XLS</button>
+          <button class="aw-btn primary" id="exportArchivePdfBtn">PDF</button>
+        </div>
+      </div>
       <div class="aw-list" id="objectList"><div class="aw-empty">Učitavam...</div></div>
     </div>
 
@@ -65,6 +88,6 @@
     </aside>
   </section>
 </main>
-<script src="assets/arhivar-workbench.js?v=5.57.8"></script>
+<script src="assets/arhivar-workbench.js?v=5.58.2"></script>
 </body>
 </html>

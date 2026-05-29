@@ -3,10 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Uredi vijesti · SOV</title>
+  <title>Urednik vijesti · SOV</title>
   <link rel="stylesheet" href="assets/site.css">
+  <link rel="stylesheet" href="assets/mobile.css">
   <style>
-    body{background:#07110e;color:#eef7ef;font-family:system-ui,-apple-system,Segoe UI,sans-serif;margin:0}.editor-shell{max-width:1180px;margin:0 auto;padding:22px}.editor-top{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:18px}.editor-top h1{margin:0;font-size:clamp(26px,4vw,42px)}.editor-actions{display:flex;gap:10px;flex-wrap:wrap}.btn{border:0;border-radius:14px;padding:11px 14px;font-weight:900;cursor:pointer;background:#d7f66f;color:#102016;text-decoration:none;display:inline-flex;align-items:center;gap:8px}.btn.secondary{background:#18352d;color:#dff5e8;border:1px solid rgba(255,255,255,.13)}.btn.danger{background:#703232;color:#fff}.btn.ghost{background:transparent;border:1px solid rgba(255,255,255,.18);color:#eaf5ee}.panel{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:24px;padding:18px;box-shadow:0 18px 60px rgba(0,0,0,.28)}#status{margin:10px 0;color:#f7e7a2;font-weight:800}.filters{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}.filters input,.filters select{background:#0d211c;color:#fff;border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:12px;min-width:220px}.news-list{display:grid;gap:12px}.news-admin-card{display:grid;grid-template-columns:150px 1fr auto;gap:14px;align-items:stretch;background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:12px}.thumb{background:#13251f center/cover no-repeat;border-radius:14px;min-height:95px;border:1px solid rgba(255,255,255,.1)}.news-admin-card h3{margin:0 0 6px;font-size:20px}.news-admin-card p{margin:0 0 8px;color:#cfe2d7}.meta{font-size:12px;color:#9db4a7}.card-buttons{display:flex;flex-direction:column;gap:8px;min-width:118px}dialog{border:0;border-radius:24px;padding:0;background:#0b1714;color:#eef7ef;max-width:900px;width:calc(100vw - 28px);box-shadow:0 30px 120px rgba(0,0,0,.65)}dialog::backdrop{background:rgba(0,0,0,.72)}.modal{padding:20px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.form-grid .full{grid-column:1/-1}label{display:grid;gap:6px;font-weight:800;color:#d7eadf}input,textarea{background:#06110e;color:#fff;border:1px solid rgba(255,255,255,.16);border-radius:13px;padding:11px;font:inherit}textarea{min-height:90px}.modal-menu{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}.preview-img{max-width:100%;max-height:210px;border-radius:14px;object-fit:cover;border:1px solid rgba(255,255,255,.12)}.empty{padding:24px;text-align:center;color:#cfe2d7;border:1px dashed rgba(255,255,255,.2);border-radius:18px}@media(max-width:760px){.news-admin-card{grid-template-columns:1fr}.card-buttons{flex-direction:row;flex-wrap:wrap}.form-grid{grid-template-columns:1fr}}
+    :root{--bg:#050807;--panel:rgba(255,255,255,.065);--line:rgba(255,255,255,.13);--muted:#aabbb4;--lime:#d7f66f;--cyan:#78d7ff;--danger:#ff8f8f}
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 82% 6%,rgba(120,215,255,.16),transparent 32%),radial-gradient(circle at 15% 10%,rgba(215,246,111,.12),transparent 30%),linear-gradient(180deg,#030504,#07120f 55%,#030504);color:#eef8f2;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}.editor-shell{width:min(1380px,calc(100% - 28px));margin:0 auto;padding:22px 0 80px}.top{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:18px}.brand{display:flex;gap:12px;align-items:center;text-decoration:none;color:#fff}.brand-mark{width:44px;height:44px;border-radius:16px;display:grid;place-items:center;background:rgba(255,255,255,.08);border:1px solid var(--line);font-weight:1000}.top h1{margin:0;font-size:clamp(30px,5vw,58px);letter-spacing:-.055em;line-height:.95}.top p{margin:8px 0 0;color:var(--muted);max-width:760px}.top-actions,.toolbar,.form-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.btn{border:0;border-radius:999px;padding:11px 15px;background:var(--lime);color:#101510;font-weight:950;text-decoration:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px}.btn.secondary{background:rgba(255,255,255,.075);color:#eef8f2;border:1px solid var(--line)}.btn.ghost{background:transparent;color:#eef8f2;border:1px solid var(--line)}.btn.danger{background:#733;color:#fff}.layout{display:grid;grid-template-columns:390px minmax(0,1fr);gap:18px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:28px;box-shadow:0 24px 90px rgba(0,0,0,.28);overflow:hidden}.panel-head{padding:18px;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}.panel-head h2{margin:0;font-size:20px}.filters{padding:14px 18px;border-bottom:1px solid var(--line);display:grid;gap:10px}.filters input,.filters select{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:15px;color:#fff;padding:12px;font:inherit}.news-list{max-height:calc(100vh - 270px);overflow:auto;padding:12px;display:grid;gap:10px}.news-row{display:grid;grid-template-columns:82px 1fr;gap:11px;align-items:center;border:1px solid rgba(255,255,255,.09);border-radius:18px;background:rgba(0,0,0,.18);padding:9px;cursor:pointer;text-align:left;color:#fff}.news-row.active{border-color:rgba(215,246,111,.62);box-shadow:0 0 0 2px rgba(215,246,111,.08)}.thumb{height:70px;border-radius:13px;background:#10201a center/cover no-repeat;border:1px solid rgba(255,255,255,.09)}.news-row strong{display:block;line-height:1.15}.meta{color:var(--muted);font-size:12px;margin-top:5px}.badges{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}.badge{font-size:11px;font-weight:900;border-radius:999px;padding:4px 7px;background:rgba(255,255,255,.08);color:#cfe0d8}.badge.live{background:rgba(215,246,111,.16);color:#eaffb2}.badge.hidden{background:rgba(255,143,143,.15);color:#ffd1d1}.editor-form{padding:18px;display:grid;gap:14px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.full{grid-column:1/-1}label{display:grid;gap:7px;font-size:12px;font-weight:950;color:#dceae4;text-transform:uppercase;letter-spacing:.06em}input,textarea,select{width:100%;border:1px solid var(--line);background:rgba(0,0,0,.26);color:#fff;border-radius:16px;padding:12px;font:inherit;text-transform:none;letter-spacing:normal}textarea{min-height:110px;resize:vertical}.body-box{min-height:300px}.hint{color:var(--muted);font-size:12px;line-height:1.45;text-transform:none;letter-spacing:normal}.cover-preview{min-height:260px;border-radius:22px;background:#10201a center/cover no-repeat;border:1px solid var(--line);display:flex;align-items:end;overflow:hidden}.cover-preview span{display:block;width:100%;background:linear-gradient(transparent,rgba(0,0,0,.78));padding:45px 16px 14px;color:#d8e8e0;font-weight:900}.upload-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.upload-row input[type=file]{padding:9px}.toggles{display:flex;gap:12px;flex-wrap:wrap}.toggles label{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.055);border:1px solid var(--line);border-radius:999px;padding:9px 12px;text-transform:none;letter-spacing:0}.toggles input{width:auto}.status{min-height:22px;color:#f7e7a2;font-weight:850}.preview-card{border:1px solid var(--line);border-radius:24px;background:rgba(0,0,0,.2);overflow:hidden}.preview-card .img{height:230px;background:#12251e center/cover no-repeat}.preview-card .copy{padding:18px}.preview-card h3{font-size:28px;line-height:1;margin:0 0 10px}.preview-card p{color:#cbd8d1;line-height:1.55}.two-cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}.empty{border:1px dashed rgba(255,255,255,.2);border-radius:18px;padding:22px;text-align:center;color:#b6c7bf}.danger-zone{border-top:1px solid var(--line);padding-top:14px;margin-top:4px}@media(max-width:980px){.layout{grid-template-columns:1fr}.news-list{max-height:none}.form-grid,.two-cols{grid-template-columns:1fr}.full{grid-column:auto}.cover-preview{min-height:200px}}
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="assets/supabase-config.js"></script>
@@ -14,17 +16,80 @@
 </head>
 <body>
   <main class="editor-shell">
-    <div class="editor-top">
-      <div><h1>Uredi vijesti</h1><p>Dodavanje, uređivanje, sakrivanje i brisanje postojećih vijesti.</p></div>
-      <div class="editor-actions"><a class="btn secondary" href="vijesti.html">← Vijesti</a><button class="btn secondary" id="refreshBtn">Osvježi</button><button class="btn" id="newBtn">+ Nova vijest</button></div>
-    </div>
-    <section class="panel">
-      <div class="filters"><input id="search" placeholder="Traži naslov, tekst, link..."><select id="filter"><option value="all">Sve vijesti</option><option value="published">Objavljene</option><option value="hidden">Skrivene</option><option value="pinned">Prikvačene</option></select><button class="btn ghost" id="importStaticBtn" title="Uvezi osnovne statičke vijesti u bazu ako ih nema">Uvezi statičke vijesti</button></div>
-      <div id="status"></div>
-      <div id="list" class="news-list"></div>
+    <header class="top">
+      <a class="brand" href="dashboard.html"><span class="brand-mark">SOV</span><span><strong>SOV Cloud</strong><br><small>Urednik vijesti</small></span></a>
+      <div>
+        <h1>Vijesti i urednik</h1>
+        <p>Sve postojeće novosti sada žive u bazi. Urednik može uređivati naslov, tekst, naslovnu fotku, galeriju, PDF/linkove, status objave i prikvačene vijesti.</p>
+      </div>
+      <div class="top-actions">
+        <a class="btn secondary" href="index.html">Javne novosti</a>
+        <a class="btn secondary" href="vijesti.html">Vijesti stranica</a>
+        <button class="btn" id="newBtn">+ Nova vijest</button>
+      </div>
+    </header>
+
+    <section class="layout">
+      <aside class="panel">
+        <div class="panel-head"><h2>Baza vijesti</h2><button class="btn secondary" id="refreshBtn">Osvježi</button></div>
+        <div class="filters">
+          <input id="search" placeholder="Traži naslov, tekst, kategoriju...">
+          <select id="filter">
+            <option value="all">Sve vijesti</option>
+            <option value="published">Objavljene</option>
+            <option value="hidden">Skrivene</option>
+            <option value="pinned">Prikvačene</option>
+            <option value="featured">Featured</option>
+          </select>
+        </div>
+        <div id="list" class="news-list"><div class="empty">Učitavam...</div></div>
+      </aside>
+
+      <section class="panel">
+        <div class="panel-head"><h2 id="formTitle">Odaberi vijest ili dodaj novu</h2><div class="status" id="status"></div></div>
+        <form id="form" class="editor-form">
+          <input type="hidden" id="id">
+          <div class="form-grid">
+            <label class="full">Naslov<input id="title" required placeholder="Naslov vijesti"></label>
+            <label>Slug / URL<input id="slug" placeholder="auto-iz-naslova"></label>
+            <label>Kategorija<input id="category" list="categoryList" placeholder="Novosti, Speleoškola, Istraživanja..."><datalist id="categoryList"><option>Novosti</option><option>Speleoškola</option><option>Istraživanja</option><option>Ekspedicije</option><option>Ekologija</option><option>Velebiten</option><option>Odsjek</option></datalist></label>
+            <label>Autor<input id="author_name" placeholder="Ime autora / ekipa"></label>
+            <label>Datum objave<input id="published_at" type="datetime-local"></label>
+            <label class="full">Kratki opis za karticu<textarea id="summary" placeholder="2–3 rečenice za listu vijesti"></textarea></label>
+            <label class="full">Naslovna fotografija URL<input id="image_url" placeholder="https://... ili upload ispod"></label>
+            <label class="full">Alt tekst fotografije<input id="image_alt" placeholder="Kratki opis fotografije za pristupačnost"></label>
+            <div class="full upload-row">
+              <input id="coverFile" type="file" accept="image/*">
+              <button class="btn secondary" type="button" id="uploadCoverBtn">Upload naslovne fotke</button>
+              <span class="hint">Upload ide u Supabase Storage bucket <b>sov-news</b>.</span>
+            </div>
+            <div class="full cover-preview" id="coverPreview"><span>Nema naslovne fotografije</span></div>
+            <label class="full">Tekst vijesti<textarea id="body" class="body-box" placeholder="Puni tekst. Novi redovi se na javnoj stranici pretvaraju u odlomke."></textarea><span class="hint">Za starije migrirane vijesti čuvamo i originalni HTML. Kad ovdje spremiš tekst, novi tekst postaje glavni prikaz.</span></label>
+            <label class="full">Galerija — jedan URL po redu<textarea id="gallery_urls" placeholder="https://...\nhttps://..."></textarea></label>
+            <div class="full upload-row">
+              <input id="galleryFiles" type="file" accept="image/*" multiple>
+              <button class="btn secondary" type="button" id="uploadGalleryBtn">Upload u galeriju</button>
+            </div>
+            <label>PDF URL<input id="pdf_url" placeholder="https://... ili assets/news/...pdf"></label>
+            <label>CTA tekst<input id="cta_label" placeholder="Otvori / Prijavi se / Preuzmi"></label>
+            <label class="full">CTA link<input id="cta_url" placeholder="Vanjski link, forma ili ostavi prazno za detail stranicu"></label>
+            <div class="full toggles">
+              <label><input id="published" type="checkbox" checked> Objavljeno</label>
+              <label><input id="pinned" type="checkbox"> Prikvači na vrh</label>
+              <label><input id="featured" type="checkbox"> Velika/featured vijest</label>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="btn" id="saveBtn" type="submit">Spremi u bazu</button>
+            <button class="btn secondary" id="duplicateBtn" type="button">Dupliciraj</button>
+            <a class="btn ghost" id="openPublicBtn" href="vijest.html" target="_blank" rel="noopener">Otvori javno</a>
+            <button class="btn ghost" id="clearBtn" type="button">Očisti formu</button>
+          </div>
+          <div class="danger-zone"><button class="btn danger" id="deleteBtn" type="button">Obriši vijest</button></div>
+        </form>
+      </section>
     </section>
   </main>
-  <dialog id="editorDialog"><form method="dialog" id="form" class="modal"><h2 id="modalTitle">Vijest</h2><input type="hidden" id="id"><div class="form-grid"><label class="full">Naslov<input id="title" required></label><label>Kratki opis<textarea id="summary"></textarea></label><label>Tekst vijesti<textarea id="body"></textarea></label><label>Slika/banner URL<input id="image_url" placeholder="assets/news/banner.png ili https://..."></label><label>PDF URL<input id="pdf_url"></label><label>CTA tekst<input id="cta_label" placeholder="Prijavi se"></label><label>CTA link<input id="cta_url"></label><label>Datum objave<input id="published_at" type="datetime-local"></label><label>Opcije<span><input id="published" type="checkbox" checked> Objavljeno<br><input id="pinned" type="checkbox"> Prikvači na vrh</span></label><div class="full" id="imagePreviewWrap"></div></div><menu class="modal-menu"><button class="btn ghost" value="cancel">Odustani</button><button class="btn" id="saveBtn" value="default">Spremi promjene</button></menu></form></dialog>
-  <script src="assets/news-editor.js"></script>
+  <script src="assets/news-editor.js?v=5.58.3"></script>
 </body>
 </html>

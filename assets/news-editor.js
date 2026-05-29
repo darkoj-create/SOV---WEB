@@ -1,79 +1,151 @@
 (function(){
-  const cfg = window.SOV_SUPABASE_CONFIG || window.SUPABASE_CONFIG || {};
-  const url = window.SOV_SUPABASE_URL || cfg.url || cfg.SUPABASE_URL;
-  const key = window.SOV_SUPABASE_ANON_KEY || cfg.anonKey || cfg.SUPABASE_ANON_KEY;
-  const sb = (window.supabase && url && key) ? window.supabase.createClient(url,key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}) : null;
   const $ = id => document.getElementById(id);
-  const status=$('status'), list=$('list'), dialog=$('editorDialog');
-  let rows=[];
-  const previewRole = (()=>{try{return localStorage.getItem('SOV_PREVIEW_ROLE')||'admin'}catch(e){return 'admin'}})();
-  const isAdmin = previewRole === 'admin';
-  const STATIC_SEED = [
-    {title:'Speleološka ekspedicija Sjeverni Velebit 2026',summary:'SO PDS Velebit poziva na ekspediciju na području Hajdučkih i Rožanskih kukova od 25.7. do 9.8.2026.',body:'Ciljevi ekspedicije su rekognosciranje terena, prikupljanje podataka o poznatim objektima, monitoring leda i nastavak istraživanja u jami Nedam. Prijave su otvorene do 20.7.',image_url:'assets/ekspedicija-sjeverni-velebit-2026-banner.png',pdf_url:'assets/news/ekspedicija-sov-2026.pdf',cta_label:'Prijavi se',cta_url:'https://docs.google.com/forms/d/e/1FAIpQLSfhDMbQJi0Nb6xykRwlYlBng_Hw_BsLga1HMO3Ao-Y1fr3fjg/viewform',published:true,pinned:true,published_at:new Date().toISOString()},
-    {title:'Sve što je lijepo kratko traje, osim puta do Velebitaškog duha',summary:'Priča iz speleoškole i puta prema Velebitaškom duhu.',image_url:'https://i0.wp.com/sovelebit.wordpress.com/wp-content/uploads/2026/05/demonstracija-tehnickog-penjanja_gorana-peric.jpg?fit=1200%2C676&ssl=1',cta_label:'Otvori',cta_url:'novosti/sve-sto-je-lijepo-kratko-traje-osim-puta-do-velebitaskog-duha.html',published:true,pinned:false,published_at:'2026-05-07T10:00:00Z'},
-    {title:'Pa po užetu dol’ pa po užetu gor’!',summary:'Školarci se spuštaju u jamu i vraćaju po užetu.',image_url:'https://i0.wp.com/sovelebit.wordpress.com/wp-content/uploads/2026/05/jutarnje-zagrijavanje_gorana-peric.jpg?fit=1200%2C676&ssl=1',cta_label:'Otvori',cta_url:'novosti/pa-po-uzetu-dol-pa-po-uzetu-gor.html',published:true,pinned:false,published_at:'2026-05-05T10:00:00Z'},
-    {title:'56. Zagrebačka speleoškola',summary:'Prijave i informacije za speleoškolu.',image_url:'https://i0.wp.com/sovelebit.wordpress.com/wp-content/uploads/2025/04/ponorac-na-stijeni-mikic-t.jpg?fit=1200%2C800&ssl=1',cta_label:'Otvori',cta_url:'novosti/56-zagrebacka-speleoskola.html',published:true,pinned:false,published_at:'2026-01-20T10:00:00Z'}
-  ];
-  function msg(t){ status.textContent=t||''; }
+  const els = {
+    list:$('list'), status:$('status'), form:$('form'), formTitle:$('formTitle'),
+    id:$('id'), title:$('title'), slug:$('slug'), category:$('category'), author_name:$('author_name'), published_at:$('published_at'),
+    summary:$('summary'), image_url:$('image_url'), image_alt:$('image_alt'), coverPreview:$('coverPreview'), body:$('body'),
+    gallery_urls:$('gallery_urls'), pdf_url:$('pdf_url'), cta_label:$('cta_label'), cta_url:$('cta_url'),
+    published:$('published'), pinned:$('pinned'), featured:$('featured'), search:$('search'), filter:$('filter'),
+    coverFile:$('coverFile'), galleryFiles:$('galleryFiles'), openPublicBtn:$('openPublicBtn')
+  };
+  let sb=null, rows=[], selected=null, dirtySlug=false;
+
   function esc(s){return String(s||'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
-  function dtLocal(v){ if(!v) return ''; const d=new Date(v); if(Number.isNaN(d.getTime())) return ''; d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,16); }
-  function dateText(v){ const d=new Date(v||Date.now()); return Number.isNaN(d.getTime())?'bez datuma':d.toLocaleString('hr-HR'); }
+  function msg(t){ els.status.textContent=t||''; }
   function norm(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');}
-  async function load(){
-    if(!sb){ msg('Supabase nije konfiguriran.'); return; }
-    msg('Učitavam postojeće vijesti...');
-    const {data,error}=await sb.from('sov_news').select('*').order('pinned',{ascending:false}).order('published_at',{ascending:false}).order('created_at',{ascending:false});
-    if(error){ msg('Greška učitavanja vijesti: '+error.message); list.innerHTML='<div class="empty">Ne mogu učitati postojeće vijesti. Provjeri SQL/RLS za sov_news.</div>'; return; }
-    rows=data||[]; render(); msg(rows.length ? `Učitano ${rows.length} vijesti.` : 'Nema vijesti u bazi. Klikni + Nova vijest ili Uvezi statičke vijesti.');
+  function slugify(s){return norm(s).replace(/đ/g,'d').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,90);}
+  function dtLocal(v){ if(!v) return ''; const d=new Date(v); if(Number.isNaN(d.getTime())) return ''; d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,16); }
+  function isoFromLocal(v){ return v ? new Date(v).toISOString() : new Date().toISOString(); }
+  function dateText(v){ const d=new Date(v||Date.now()); return Number.isNaN(d.getTime())?'bez datuma':d.toLocaleDateString('hr-HR'); }
+  function linesToArray(v){return String(v||'').split('\n').map(x=>x.trim()).filter(Boolean);}
+  function arrayToLines(a){return Array.isArray(a)?a.filter(Boolean).join('\n'):'';}
+  function bodyToHtml(txt){return String(txt||'').split(/\n{2,}/).map(p=>p.trim()).filter(Boolean).map(p=>'<p>'+esc(p).replace(/\n/g,'<br>')+'</p>').join('\n');}
+  function getClient(){
+    if(sb) return sb;
+    if(window.SOVAuth && SOVAuth.getClient) sb=SOVAuth.getClient();
+    if(!sb && window.supabase){
+      const cfg=window.SOV_SUPABASE_CONFIG||window.SUPABASE_CONFIG||{};
+      const url=window.SOV_SUPABASE_URL||cfg.url||cfg.SUPABASE_URL;
+      const key=window.SOV_SUPABASE_ANON_KEY||cfg.anonKey||cfg.SUPABASE_ANON_KEY;
+      if(url&&key) sb=window.supabase.createClient(url,key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+    }
+    return sb;
   }
-  function render(){
-    const q=norm($('search').value); const f=$('filter').value;
-    let view=rows.filter(n=>{
-      if(f==='published' && !n.published) return false;
-      if(f==='hidden' && n.published) return false;
-      if(f==='pinned' && !n.pinned) return false;
-      if(q && !norm([n.title,n.summary,n.body,n.cta_url,n.pdf_url].join(' ')).includes(q)) return false;
+  async function boot(){
+    if(window.SOVAuth && SOVAuth.ready){ try{await SOVAuth.ready();}catch(e){} }
+    sb=getClient();
+    if(!sb){ els.list.innerHTML='<div class="empty">Supabase nije konfiguriran.</div>'; return; }
+    bind(); await load();
+    const qs=new URLSearchParams(location.search); const edit=qs.get('edit')||qs.get('slug');
+    if(edit){ const row=rows.find(r=>r.slug===edit || String(r.id)===edit); if(row) open(row); }
+  }
+  function bind(){
+    $('newBtn').onclick=()=>open(null);
+    $('refreshBtn').onclick=load;
+    $('clearBtn').onclick=()=>open(null);
+    $('deleteBtn').onclick=removeSelected;
+    $('duplicateBtn').onclick=duplicateSelected;
+    $('uploadCoverBtn').onclick=uploadCover;
+    $('uploadGalleryBtn').onclick=uploadGallery;
+    els.form.onsubmit=save;
+    els.search.oninput=renderList;
+    els.filter.onchange=renderList;
+    els.image_url.oninput=updateCover;
+    els.title.oninput=()=>{ if(!dirtySlug && !els.id.value) els.slug.value=slugify(els.title.value); renderOpenLink(); };
+    els.slug.oninput=()=>{ dirtySlug=true; renderOpenLink(); };
+  }
+  async function load(){
+    msg('Učitavam vijesti iz baze...');
+    const {data,error}=await sb.from('sov_news').select('*').order('pinned',{ascending:false}).order('featured',{ascending:false}).order('published_at',{ascending:false}).order('created_at',{ascending:false});
+    if(error){ els.list.innerHTML='<div class="empty">Ne mogu učitati sov_news. Pokreni SUPABASE_SOV_NEWS_CMS_v5_58_3.sql.<br>'+esc(error.message)+'</div>'; msg('Greška učitavanja.'); return; }
+    rows=data||[]; renderList(); msg(rows.length?`Učitano ${rows.length} vijesti.`:'Nema vijesti u bazi. Pokreni SQL seed ili dodaj novu.');
+  }
+  function renderList(){
+    const q=norm(els.search.value), f=els.filter.value;
+    const view=rows.filter(n=>{
+      if(f==='published'&&!n.published) return false;
+      if(f==='hidden'&&n.published) return false;
+      if(f==='pinned'&&!n.pinned) return false;
+      if(f==='featured'&&!n.featured) return false;
+      if(q&&!norm([n.title,n.summary,n.body,n.category,n.slug].join(' ')).includes(q)) return false;
       return true;
     });
-    list.innerHTML = view.map(card).join('') || '<div class="empty">Nema rezultata.</div>';
-    list.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>openEdit(rows.find(x=>String(x.id)===String(b.dataset.edit))));
-    list.querySelectorAll('[data-toggle]').forEach(b=>b.onclick=()=>togglePublish(rows.find(x=>String(x.id)===String(b.dataset.toggle))));
-    list.querySelectorAll('[data-dup]').forEach(b=>b.onclick=()=>duplicate(rows.find(x=>String(x.id)===String(b.dataset.dup))));
-    list.querySelectorAll('[data-delete]').forEach(b=>b.onclick=()=>remove(rows.find(x=>String(x.id)===String(b.dataset.delete))));
+    els.list.innerHTML=view.map(n=>`<button class="news-row ${selected&&selected.id===n.id?'active':''}" data-id="${esc(n.id)}"><span class="thumb" style="background-image:url('${esc(n.image_url||'assets/sov-logo.png')}')"></span><span><strong>${esc(n.title||'Bez naslova')}</strong><span class="meta">${esc(n.category||'Novosti')} · ${dateText(n.published_at||n.created_at)}</span><span class="badges"><span class="badge ${n.published?'live':'hidden'}">${n.published?'objavljeno':'skriveno'}</span>${n.pinned?'<span class="badge">📌 vrh</span>':''}${n.featured?'<span class="badge">featured</span>':''}</span></span></button>`).join('') || '<div class="empty">Nema rezultata.</div>';
+    els.list.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>open(rows.find(r=>String(r.id)===String(b.dataset.id))));
   }
-  function card(n){
-    const img=n.image_url||'';
-    return `<article class="news-admin-card"><div class="thumb" style="background-image:url('${esc(img)}')"></div><div><h3>${n.pinned?'📌 ':''}${esc(n.title||'Bez naslova')}</h3><p>${esc(n.summary||n.body||'')}</p><div class="meta">${n.published?'Objavljeno':'Skriveno'} · ${dateText(n.published_at||n.created_at)} · ID ${esc(n.id)}</div></div><div class="card-buttons"><button class="btn" data-edit="${esc(n.id)}">Uredi</button><button class="btn secondary" data-toggle="${esc(n.id)}">${n.published?'Sakrij':'Objavi'}</button><button class="btn ghost" data-dup="${esc(n.id)}">Dupliciraj</button>${isAdmin?`<button class="btn danger" data-delete="${esc(n.id)}">Obriši</button>`:''}</div></article>`;
+  function open(n){
+    selected=n||null; dirtySlug=!!n;
+    els.formTitle.textContent=n?'Uredi vijest':'Nova vijest';
+    els.id.value=n?.id||''; els.title.value=n?.title||''; els.slug.value=n?.slug||''; els.category.value=n?.category||'Novosti'; els.author_name.value=n?.author_name||'';
+    els.published_at.value=dtLocal(n?.published_at||new Date().toISOString()); els.summary.value=n?.summary||''; els.image_url.value=n?.image_url||''; els.image_alt.value=n?.image_alt||'';
+    els.body.value=n?.body||htmlToPlain(n?.content_html)||''; els.gallery_urls.value=arrayToLines(n?.gallery_urls); els.pdf_url.value=n?.pdf_url||''; els.cta_label.value=n?.cta_label||''; els.cta_url.value=n?.cta_url||'';
+    els.published.checked=n?!!n.published:true; els.pinned.checked=n?!!n.pinned:false; els.featured.checked=n?!!n.featured:false;
+    updateCover(); renderOpenLink(); renderList(); msg(n?'Vijest otvorena za uređivanje.':'Nova vijest.');
   }
-  function openEdit(n){
-    $('modalTitle').textContent=n?'Uredi vijest':'Nova vijest';
-    $('id').value=n?.id||''; $('title').value=n?.title||''; $('summary').value=n?.summary||''; $('body').value=n?.body||''; $('image_url').value=n?.image_url||''; $('pdf_url').value=n?.pdf_url||''; $('cta_label').value=n?.cta_label||''; $('cta_url').value=n?.cta_url||'';
-    $('published').checked=n ? !!n.published : true; $('pinned').checked=n ? !!n.pinned : false; $('published_at').value=dtLocal(n?.published_at||new Date().toISOString()); previewImage();
-    if(dialog.showModal) dialog.showModal(); else alert('Browser ne podržava modal; probaj Chrome/Edge.');
+  function htmlToPlain(html){
+    if(!html) return '';
+    const d=document.createElement('div'); d.innerHTML=html;
+    d.querySelectorAll('br').forEach(br=>br.replaceWith('\n'));
+    d.querySelectorAll('p,div,h2,h3,li').forEach(el=>el.appendChild(document.createTextNode('\n\n')));
+    return d.textContent.replace(/\n{3,}/g,'\n\n').trim();
   }
-  function rowFromForm(){ return {title:$('title').value.trim(),summary:$('summary').value.trim(),body:$('body').value.trim(),image_url:$('image_url').value.trim(),pdf_url:$('pdf_url').value.trim(),cta_label:$('cta_label').value.trim(),cta_url:$('cta_url').value.trim(),published:$('published').checked,pinned:$('pinned').checked,published_at:$('published_at').value?new Date($('published_at').value).toISOString():new Date().toISOString()}; }
+  function rowFromForm(){
+    const slug=els.slug.value.trim()||slugify(els.title.value);
+    const body=els.body.value.trim();
+    return {
+      title:els.title.value.trim(), slug, category:els.category.value.trim()||'Novosti', author_name:els.author_name.value.trim(),
+      published_at:isoFromLocal(els.published_at.value), summary:els.summary.value.trim(), image_url:els.image_url.value.trim(), image_alt:els.image_alt.value.trim(),
+      body, content_html:body ? bodyToHtml(body) : (selected?.content_html||''), gallery_urls:linesToArray(els.gallery_urls.value), pdf_url:els.pdf_url.value.trim(),
+      cta_label:els.cta_label.value.trim(), cta_url:els.cta_url.value.trim() || ('vijest.html?slug='+encodeURIComponent(slug)),
+      published:els.published.checked, pinned:els.pinned.checked, featured:els.featured.checked
+    };
+  }
   async function save(ev){
-    ev.preventDefault(); if(!sb) return msg('Supabase nije konfiguriran.');
-    const id=$('id').value; const row=rowFromForm(); if(!row.title) return msg('Naslov je obavezan.');
-    msg(id?'Spremam postojeću vijest...':'Spremam novu vijest...');
-    let res = id ? await sb.from('sov_news').update(row).eq('id',id).select().single() : await sb.from('sov_news').insert(row).select().single();
+    ev.preventDefault();
+    const row=rowFromForm();
+    if(!row.title){ msg('Naslov je obavezan.'); return; }
+    msg(row.id?'Spremam...':'Spremam u bazu...');
+    const id=els.id.value;
+    const res=id ? await sb.from('sov_news').update(row).eq('id',id).select().single() : await sb.from('sov_news').insert(row).select().single();
     if(res.error){ msg('Greška spremanja: '+res.error.message); return; }
-    dialog.close(); await load(); msg('Spremljeno.');
+    selected=res.data; await load(); open(rows.find(r=>String(r.id)===String(selected.id))||selected); msg('Spremljeno.');
   }
-  async function togglePublish(n){ if(!n) return; msg('Mijenjam status...'); const {error}=await sb.from('sov_news').update({published:!n.published}).eq('id',n.id); if(error) return msg('Greška: '+error.message); await load(); }
-  async function duplicate(n){ if(!n) return; const copy={...n,title:(n.title||'Vijest')+' — kopija'}; delete copy.id; delete copy.created_at; delete copy.updated_at; msg('Dupliciram...'); const {error}=await sb.from('sov_news').insert(copy); if(error) return msg('Greška: '+error.message); await load(); }
-  async function remove(n){ if(!n) return; if(!confirm('Obrisati vijest: '+(n.title||'')+'?')) return; msg('Brišem...'); const {error}=await sb.from('sov_news').delete().eq('id',n.id); if(error) return msg('Greška brisanja: '+error.message); await load(); }
-  async function importStatic(){
-    if(!confirm('Uvesti osnovne statičke vijesti u bazu ako nedostaju?')) return;
-    msg('Uvozim statičke vijesti...'); let added=0;
-    for(const n of STATIC_SEED){
-      const exists = rows.some(r=>norm(r.title)===norm(n.title));
-      if(exists) continue;
-      const {error}=await sb.from('sov_news').insert(n); if(error){ msg('Greška uvoza: '+error.message); return; } added++;
-    }
-    await load(); msg(added ? `Uvezeno ${added} vijesti.` : 'Nema novih za uvoz.');
+  async function uploadFile(file,folder){
+    if(!file) throw new Error('Nema datoteke.');
+    const safe=file.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9.]+/g,'-').replace(/^-+|-+$/g,'');
+    const path=`${folder}/${Date.now()}-${Math.random().toString(16).slice(2)}-${safe}`;
+    const {error}=await sb.storage.from('sov-news').upload(path,file,{cacheControl:'3600',upsert:true,contentType:file.type||undefined});
+    if(error) throw error;
+    const {data}=sb.storage.from('sov-news').getPublicUrl(path);
+    return data.publicUrl;
   }
-  function previewImage(){ const v=$('image_url').value.trim(); $('imagePreviewWrap').innerHTML=v?`<img class="preview-img" src="${esc(v)}" alt="preview">`:''; }
-  $('newBtn').onclick=()=>openEdit(null); $('refreshBtn').onclick=load; $('saveBtn').onclick=save; $('search').oninput=render; $('filter').onchange=render; $('image_url').oninput=previewImage; $('importStaticBtn').onclick=importStatic;
-  document.addEventListener('DOMContentLoaded',load); load();
+  async function uploadCover(){
+    const file=els.coverFile.files && els.coverFile.files[0];
+    if(!file){ msg('Odaberi naslovnu fotografiju.'); return; }
+    try{ msg('Uploadam naslovnu fotku...'); const url=await uploadFile(file,'covers'); els.image_url.value=url; updateCover(); msg('Fotka uploadana. Ne zaboravi spremiti vijest.'); }
+    catch(e){ msg('Greška uploada: '+e.message+' — provjeri bucket sov-news i storage policy.'); }
+  }
+  async function uploadGallery(){
+    const files=[...(els.galleryFiles.files||[])];
+    if(!files.length){ msg('Odaberi jednu ili više fotki za galeriju.'); return; }
+    try{
+      msg('Uploadam galeriju...'); const urls=[];
+      for(const file of files) urls.push(await uploadFile(file,'gallery'));
+      const current=linesToArray(els.gallery_urls.value); els.gallery_urls.value=[...current,...urls].join('\n'); msg(`Uploadano ${urls.length} fotki. Ne zaboravi spremiti vijest.`);
+    }catch(e){ msg('Greška uploada galerije: '+e.message); }
+  }
+  function updateCover(){ const v=els.image_url.value.trim(); els.coverPreview.style.backgroundImage=v?`url('${v.replace(/'/g,'%27')}')`:''; els.coverPreview.innerHTML='<span>'+esc(v?'Preview naslovne fotografije':'Nema naslovne fotografije')+'</span>'; }
+  function renderOpenLink(){ const slug=els.slug.value.trim()||slugify(els.title.value); els.openPublicBtn.href=slug?'vijest.html?slug='+encodeURIComponent(slug):'vijest.html'; }
+  async function duplicateSelected(){
+    if(!selected){ msg('Prvo odaberi vijest.'); return; }
+    const copy={...selected,title:(selected.title||'Vijest')+' — kopija',slug:(selected.slug||slugify(selected.title||'vijest'))+'-kopija',published:false,pinned:false,featured:false};
+    delete copy.id; delete copy.created_at; delete copy.updated_at; delete copy.created_by; delete copy.updated_by;
+    msg('Dupliciram...'); const {error}=await sb.from('sov_news').insert(copy); if(error){msg('Greška dupliciranja: '+error.message);return;} await load(); msg('Duplicirano kao skrivena kopija.');
+  }
+  async function removeSelected(){
+    if(!selected){ msg('Prvo odaberi vijest.'); return; }
+    if(!confirm('Obrisati vijest "'+(selected.title||'')+'"?')) return;
+    msg('Brišem...'); const {error}=await sb.from('sov_news').delete().eq('id',selected.id); if(error){msg('Greška brisanja: '+error.message);return;} selected=null; await load(); open(null); msg('Obrisano.');
+  }
+  document.addEventListener('DOMContentLoaded',boot);
 })();
