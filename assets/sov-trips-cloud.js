@@ -1,5 +1,5 @@
 (function(){
-  const CACHE_KEY='sov_trips_cloud_cache_v5_53';
+  const CACHE_KEY='sov_trips_cloud_cache_v5_55';
   function sb(){
     if(window.SOVAuth && window.SOVAuth.getClient) return window.SOVAuth.getClient();
     if(window.supabase && window.SOV_SUPABASE_URL && window.SOV_SUPABASE_ANON_KEY){
@@ -57,7 +57,7 @@
     return data||[];
   }
   function payloadFromTripForm(payload, extra={}){
-    const meta={source:'sov_web_v5_53_trip_mail_announcement', legacyPayload:payload||{}};
+    const meta={source:'sov_web_v5_55_premium_trip_ui', legacyPayload:payload||{}};
     if(payload.weatherCity) meta.weatherCity=payload.weatherCity;
     if(payload.rasporedUrl) meta.rasporedUrl=payload.rasporedUrl;
     const start=isoDate(payload.date || payload.from || payload.start_date);
@@ -71,8 +71,8 @@
       location_name:clean(payload.location),
       objective:clean(payload.goal),
       description:clean(payload.description),
-      status:'planned',
-      visibility:'club',
+      status: clean(payload.status) || 'planned',
+      visibility: clean(payload.visibility) || 'club',
       min_lat: null,
       max_lat: null,
       min_lon: null,
@@ -127,7 +127,7 @@
     const bucket='sov-trip-files';
     const up=await c.storage.from(bucket).upload(path, file, {upsert:true, contentType:file.type || 'application/octet-stream'});
     if(up.error) throw up.error;
-    const payload={p_trip_id:tripId,p_file_type:type,p_file_name:file.name,p_storage_path:path,p_public_url:null,p_meta:{...meta,size:file.size,lastModified:file.lastModified,source:'web_v5_53_mail_announcement'}};
+    const payload={p_trip_id:tripId,p_file_type:type,p_file_name:file.name,p_storage_path:path,p_public_url:null,p_meta:{...meta,size:file.size,lastModified:file.lastModified,source:'web_v5_55_premium_trip_ui'}};
     const rpc=await c.rpc('sov_add_trip_file', payload);
     if(rpc.error){
       const row={trip_id:tripId,file_type:type,file_name:file.name,storage_bucket:bucket,storage_path:path,mime_type:file.type||'',size_bytes:file.size||null,meta:payload.p_meta};
