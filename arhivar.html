@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SOV Arhivar — radna ploča</title>
+<link rel="stylesheet" href="assets/site.css">
+<link rel="stylesheet" href="assets/arhivar-workbench.css?v=5.57">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/supabase-config.js"></script>
+<script src="assets/auth.js"></script>
+</head>
+<body class="arhivar-workbench">
+<header class="aw-top">
+  <a class="aw-brand" href="dashboard.html"><span class="aw-mark">SOV</span><span><b>Arhivar</b><small>objekti · nacrti · zapisnici · katastar readiness</small></span></a>
+  <nav class="aw-nav">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="pregled-baze.html">Speleo baza</a>
+    <a href="arhivar.html" class="active">Arhivar</a>
+    <a href="arhivar-zahvati.html">Zapisnik/zahvat</a>
+    <a href="topodroid.html">Nacrti</a>
+    <a href="login.html" data-logout>Odjava</a>
+  </nav>
+</header>
+<main class="aw-shell">
+  <section class="aw-hero">
+    <div>
+      <p class="aw-eyebrow">Radni centar arhivara</p>
+      <h1>Arhiva za katastar</h1>
+      <p>Jednostavan workflow: nađi objekt iz speleo baze, označi što imamo, što fali za katastar, dodaj nacrt/zapisnik ili po potrebi ubaci novi objekt.</p>
+    </div>
+    <div class="aw-actions">
+      <button class="aw-btn primary" id="newObjectBtn">+ Novi objekt</button>
+      <button class="aw-btn" id="refreshBtn">Osvježi</button>
+    </div>
+  </section>
+
+  <section class="aw-stats" id="stats"></section>
+
+  <section class="aw-grid">
+    <div class="aw-panel">
+      <h2>Objekti i arhivski status</h2>
+      <p class="aw-muted">Prioritet imaju objekti kojima fali nacrt, koordinate ili zapisnik.</p>
+      <div class="aw-toolbar">
+        <input class="aw-input" id="searchBox" placeholder="Traži objekt, pločicu, mjesto...">
+        <select class="aw-select" id="filterBox">
+          <option value="all">Svi</option>
+          <option value="missing">Fali nešto</option>
+          <option value="missing_drawing">Fali nacrt</option>
+          <option value="missing_coordinates">Fale koordinate</option>
+          <option value="missing_record">Fali zapisnik</option>
+          <option value="ready">Spremno za katastar</option>
+        </select>
+      </div>
+      <div class="aw-list" id="objectList"><div class="aw-empty">Učitavam...</div></div>
+    </div>
+
+    <aside class="aw-detail">
+      <div class="aw-panel" id="detailPanel"><div class="aw-empty">Odaberi objekt s lijeve strane.</div></div>
+      <div class="aw-panel" id="actionPanel"></div>
+    </aside>
+  </section>
+</main>
+<script src="assets/arhivar-workbench.js?v=5.57"></script>
+</body>
+</html>
