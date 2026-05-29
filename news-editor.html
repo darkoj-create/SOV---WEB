@@ -61,7 +61,7 @@
             <div class="full upload-row">
               <input id="coverFile" type="file" accept="image/*">
               <button class="btn secondary" type="button" id="uploadCoverBtn">Upload naslovne fotke</button>
-              <span class="hint">Upload ide u Supabase Storage bucket <b>sov-news</b>.</span>
+              <span class="hint">Upload ide u Supabase Storage bucket <b>sov-news</b>. Ako upload javlja RLS grešku, pokreni SQL v5.58.7.</span>
             </div>
             <div class="full cover-preview" id="coverPreview"><span>Nema naslovne fotografije</span></div>
             <label class="full">Tekst vijesti<textarea id="body" class="body-box" placeholder="Puni tekst. Novi redovi se na javnoj stranici pretvaraju u odlomke."></textarea><span class="hint">Za starije migrirane vijesti čuvamo i originalni HTML. Kad ovdje spremiš tekst, novi tekst postaje glavni prikaz.</span></label>
@@ -90,6 +90,6 @@
       </section>
     </section>
   </main>
-  <script src="assets/news-editor.js?v=5.58.5"></script>
+  <script src="assets/news-editor.js?v=5.58.7"></script>
 </body>
 </html>
