@@ -1,3 +1,12 @@
+
+## v5.58.18 — Oružar Master UX/mobile cleanup
+
+- Sređen UI za `oruzar-master-posudbe.html`, `oruzar-master-inventar.html` i `oruzar-master-inventura.html`.
+- Uklonjen vidljivi debug/izvor tekst iz posudbi i nepotrebni `Notes` ulaz iz master navigacije.
+- Dodan novi premium responsive CSS za operativne oružarske ekrane.
+- Mobile browser layout: sticky header, horizontal nav, jedan stupac, veći touch gumbi i bottom-sheet modali.
+- Nema SQL promjena.
+
 ## v5.58.16 — Oružarstvo access fix + mobile UX
 
 - Popravljen ulaz u Oružarski dio: stari legacy patch je skrivao i brisao Oružar Master gumb.
