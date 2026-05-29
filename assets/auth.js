@@ -21,7 +21,7 @@
     return {...OPEN_PREVIEW_PROFILE_BASE, role, full_name:'Preview '+(ROLE_LABELS[role]||role)};
   }
   const REGISTERED_PAGES = new Set([
-    'dashboard.html','baza.html','pregled-baze.html','izleti.html','kalendar-izleta.html',
+    'dashboard.html','baza.html','pregled-baze.html','izleti.html','izleti-cloud.html','kalendar-izleta.html',
     'dokumentacija.html','pregled-zapisnika.html','zapisnici-skupstine.html','novi-zapisnik.html',
     'speleo-zapisnik.html','topodroid.html','napisi-clanak.html','arhivar-zahvati.html','speleo-sql-safe.html','speleo-sql-edit-sandbox.html','speleo-sql-compare.html','speleo-sql-object-hub.html','speleo-sql-promote.html','speleo-sql-go-live.html','oruzarstvo.html','oruzarstvo-import.html','admin-users.html','role-manager.html','news-editor.html','sync-status.html'
   ]);

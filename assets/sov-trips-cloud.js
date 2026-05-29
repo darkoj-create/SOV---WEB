@@ -1,5 +1,5 @@
 (function(){
-  const CACHE_KEY='sov_trips_cloud_cache_v5_49';
+  const CACHE_KEY='sov_trips_cloud_cache_v5_53';
   function sb(){
     if(window.SOVAuth && window.SOVAuth.getClient) return window.SOVAuth.getClient();
     if(window.supabase && window.SOV_SUPABASE_URL && window.SOV_SUPABASE_ANON_KEY){
@@ -57,10 +57,9 @@
     return data||[];
   }
   function payloadFromTripForm(payload, extra={}){
-    const meta={source:'sov_web_v5_49', legacyPayload:payload||{}};
+    const meta={source:'sov_web_v5_53_trip_mail_announcement', legacyPayload:payload||{}};
     if(payload.weatherCity) meta.weatherCity=payload.weatherCity;
     if(payload.rasporedUrl) meta.rasporedUrl=payload.rasporedUrl;
-    if(extra.files) meta.localFiles=(extra.files||[]).map(f=>({name:f.name,size:f.size,type:f.type||''}));
     const start=isoDate(payload.date || payload.from || payload.start_date);
     let end=start;
     const range=clean(payload.date).split(/\s+-\s+/);
@@ -74,12 +73,12 @@
       description:clean(payload.description),
       status:'planned',
       visibility:'club',
-      min_lat: payload.minLat===''?null:Number(payload.minLat ?? extra.area?.south ?? NaN),
-      max_lat: payload.maxLat===''?null:Number(payload.maxLat ?? extra.area?.north ?? NaN),
-      min_lon: payload.minLon===''?null:Number(payload.minLon ?? extra.area?.west ?? NaN),
-      max_lon: payload.maxLon===''?null:Number(payload.maxLon ?? extra.area?.east ?? NaN),
-      center_lat: payload.centerLat===''?null:Number(payload.centerLat ?? NaN),
-      center_lon: payload.centerLon===''?null:Number(payload.centerLon ?? NaN),
+      min_lat: null,
+      max_lat: null,
+      min_lon: null,
+      max_lon: null,
+      center_lat: null,
+      center_lon: null,
       source:'web',
       legacy_external_id: payload.packageId || ('web_'+Date.now()),
       meta
@@ -105,6 +104,51 @@
     const c=sb(); if(!c) throw new Error('Supabase nije konfiguriran.');
     const {error}=await c.from('sov_trips').delete().eq('id',id); if(error) throw error; return true;
   }
+
+  function fileTypeFromName(name){
+    const n=clean(name).toLowerCase();
+    if(n.endsWith('.gpx')) return 'gpx';
+    if(n.endsWith('.kml')) return 'kml';
+    if(n.endsWith('.kmz')) return 'kmz';
+    if(n.endsWith('.geojson') || n.endsWith('.json')) return 'geojson';
+    if(n.endsWith('.zip')) return 'zip';
+    if(/\.(jpg|jpeg|png|webp)$/i.test(n)) return 'photo';
+    if(n.endsWith('.pdf')) return 'pdf';
+    return 'other';
+  }
+  function safeFileName(name){
+    return clean(name).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9._-]+/g,'_').replace(/^_+|_+$/g,'').slice(0,120) || ('file_'+Date.now());
+  }
+  async function uploadTripFile(tripId, file, meta={}){
+    const c=sb(); if(!c) throw new Error('Supabase nije konfiguriran.');
+    if(!tripId) throw new Error('Izlet nema ID. Spremi izlet prije dodavanja filea.');
+    const type=fileTypeFromName(file.name);
+    const path=`${tripId}/${Date.now()}_${safeFileName(file.name)}`;
+    const bucket='sov-trip-files';
+    const up=await c.storage.from(bucket).upload(path, file, {upsert:true, contentType:file.type || 'application/octet-stream'});
+    if(up.error) throw up.error;
+    const payload={p_trip_id:tripId,p_file_type:type,p_file_name:file.name,p_storage_path:path,p_public_url:null,p_meta:{...meta,size:file.size,lastModified:file.lastModified,source:'web_v5_53_mail_announcement'}};
+    const rpc=await c.rpc('sov_add_trip_file', payload);
+    if(rpc.error){
+      const row={trip_id:tripId,file_type:type,file_name:file.name,storage_bucket:bucket,storage_path:path,mime_type:file.type||'',size_bytes:file.size||null,meta:payload.p_meta};
+      const ins=await c.from('sov_trip_files').insert(row).select('*').single();
+      if(ins.error) throw ins.error;
+      return ins.data;
+    }
+    return rpc.data;
+  }
+  async function uploadTripFiles(tripId, files, meta={}){
+    const out=[];
+    for(const file of Array.from(files||[])) out.push(await uploadTripFile(tripId,file,meta));
+    return out;
+  }
+  async function listTripFiles(tripId){
+    const c=sb(); if(!c) throw new Error('Supabase nije konfiguriran.');
+    const {data,error}=await c.from('sov_trip_file_list').select('*').eq('trip_id',tripId).order('created_at',{ascending:false}).limit(200);
+    if(error) throw error;
+    return data||[];
+  }
+
   async function signupTrip(trip, member){
     const id=trip.cloudId || trip.id; if(!id) throw new Error('Ovaj izlet nema cloud ID. Osvježi raspored.');
     const c=sb(); if(!c) throw new Error('Supabase nije konfiguriran.');
@@ -115,5 +159,5 @@
     const c=sb(); if(!c) throw new Error('Supabase nije konfiguriran.');
     const {data,error}=await c.from('sov_trips_sync_manifest').select('*').maybeSingle(); if(error) throw error; return data;
   }
-  window.SOVTripsCloud={sb,listTrips,loadCache,saveCache,mapToLegacy:toLegacy,createTripFromForm,updateTrip,deleteTrip,signupTrip,manifest,isoDate,hrDate};
+  window.SOVTripsCloud={sb,listTrips,loadCache,saveCache,mapToLegacy:toLegacy,createTripFromForm,updateTrip,deleteTrip,signupTrip,manifest,isoDate,hrDate,uploadTripFile,uploadTripFiles,listTripFiles,fileTypeFromName,announcementText:null};
 })();
