@@ -1,3 +1,11 @@
+## v5.58.14 — Oružarstvo clean UI + mobile browser polish
+
+- Cleaned `oruzarstvo.html` for ordinary users: removed visible version/dev text, role explanation cards, noisy counters and storage-table wording.
+- Added cleaner hero, simpler filters, cleaner category cards and item cards.
+- Removed `sov-inbox` assets from Oružarstvo to avoid notification artefacts.
+- Added mobile-browser layout polish: compact hero, one-column flow, sticky tabs, bottom-sheet request drawer and touch-friendly spacing.
+- `sync-status.html` updated to v5.58.14.
+
 ## v5.58.13 — SQL function drop fix
 - SQL hotfix for PostgreSQL 42P13 on `sov_has_permission(text)`: drops/recreates helper safely before applying Webmaster/Admin split.
 - Supersedes v5.58.11/v5.58.12 SQL if either failed halfway.
