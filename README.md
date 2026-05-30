@@ -6,6 +6,7 @@ Foundation refactor build za SOV Cloud web.
 - Dashboard preview je Webmaster-only; Admin nema SQL/sync/tech ulaze.
 - Karta koristi Arhivar paged full feed i full object detail, bez user-facing source/debug teksta.
 - Arhivar, Oružarstvo i News CMS dobili su dodatni mobile/touch i user-facing cleanup.
+- Početna stranica ima premium mobile hamburger, Facebook link u headeru i jači hero/news polish.
 - SQL alati su Webmaster-only i imaju produkcijski banner + dvostruku potvrdu.
 - Novi SQL nije potreban za ovaj build.
 

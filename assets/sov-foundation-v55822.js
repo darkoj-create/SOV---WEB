@@ -3,10 +3,85 @@
   const VERSION='5.58.22';
   function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn()}
   function esc(s){return String(s||'').replace(/[&<>'"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m]))}
+  function setupIndexHome(){
+    const path=(location.pathname||'').replace(/\\/g,'/');
+    if(path && !/(^|\/)(index\.html?)?$/i.test(path)) return;
+    document.body.classList.add('index-premium-home');
+    const header=document.querySelector('.topbar');
+    const nav=header&&header.querySelector('.nav');
+    const links=header&&header.querySelector('.navlinks-main');
+    if(!header||!nav||!links) return;
+    links.id=links.id||'indexMobileNav';
+    links.setAttribute('data-index-nav-panel','1');
+    if(!header.querySelector('.index-menu-toggle')){
+      const btn=document.createElement('button');
+      btn.type='button';
+      btn.className='index-menu-toggle';
+      btn.setAttribute('aria-label','Otvori izbornik');
+      btn.setAttribute('aria-controls',links.id);
+      btn.setAttribute('aria-expanded','false');
+      btn.innerHTML='<span class="index-menu-glyph" aria-hidden="true">☰</span>';
+      const brand=nav.querySelector('.brand-sov,.brand');
+      nav.insertBefore(btn, brand ? brand.nextSibling : links);
+    }
+    const menuButton=header.querySelector('.index-menu-toggle');
+    if(menuButton && menuButton.parentNode!==document.body) document.body.appendChild(menuButton);
+    const syncMenuButton=()=>{
+      if(!menuButton) return;
+      if(matchMedia('(max-width:980px)').matches){
+        const left=Math.max(12,Math.min((window.innerWidth||390)-58,320));
+        menuButton.style.cssText='position:fixed;left:'+left+'px;top:15px;z-index:9999;display:flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:16px;border:1px solid rgba(255,255,255,.2);background:linear-gradient(135deg,#d7ff52,#6fe7cf);color:#07100d;font-size:24px;font-weight:1000;box-shadow:0 16px 42px rgba(0,0,0,.32);';
+      } else {
+        menuButton.removeAttribute('style');
+      }
+    };
+    syncMenuButton();
+    window.addEventListener('resize',syncMenuButton,{passive:true});
+    if(!links.querySelector('.facebook-link')){
+      const fb=document.createElement('a');
+      fb.className='facebook-link';
+      fb.href='https://www.facebook.com/sovelebit';
+      fb.target='_blank';
+      fb.rel='noopener';
+      fb.setAttribute('aria-label','Otvori SOV Velebit Facebook stranicu');
+      fb.innerHTML='<span class="fb-mark" aria-hidden="true">f</span><span>Facebook</span>';
+      links.appendChild(fb);
+    }
+    const heroActions=document.querySelector('.portal-hero .hero-actions');
+    if(heroActions && !heroActions.querySelector('.hero-secondary')){
+      const gallery=document.createElement('a');
+      gallery.className='hero-secondary';
+      gallery.href='#galerija';
+      gallery.innerHTML='Pogledaj galeriju <span>↓</span>';
+      heroActions.appendChild(gallery);
+    }
+    const heroInner=document.querySelector('.portal-hero-inner');
+    if(heroInner && !heroInner.querySelector('.index-hero-chips')){
+      const chips=document.createElement('div');
+      chips.className='index-hero-chips';
+      chips.innerHTML='<span>Terenski dnevnik</span><span>Speleoškola</span><span>Ekspedicije</span>';
+      heroInner.appendChild(chips);
+    }
+    const footer=document.querySelector('.footer');
+    if(footer && /v4\.10/i.test(footer.textContent||'')){
+      footer.textContent='Speleološki odsjek PDS Velebit · SOV portal · v5.58.24';
+    }
+    const btn=header.querySelector('.index-menu-toggle');
+    const close=()=>{document.body.classList.remove('index-menu-open'); btn&&btn.setAttribute('aria-expanded','false')};
+    const toggle=()=>{const open=!document.body.classList.contains('index-menu-open'); document.body.classList.toggle('index-menu-open',open); btn&&btn.setAttribute('aria-expanded',String(open))};
+    if(btn && !btn.dataset.bound){
+      btn.dataset.bound='1';
+      btn.addEventListener('click',toggle);
+      links.addEventListener('click',e=>{ if(e.target.closest('a')) close(); });
+      document.addEventListener('keydown',e=>{ if(e.key==='Escape') close(); });
+    }
+  }
   ready(function(){
     document.documentElement.classList.add('sov-foundation-loaded');
+    setupIndexHome();
     // Add scroll hint wrapper to every horizontal nav row without changing markup semantics.
     document.querySelectorAll('.nav,.navlinks,.dash-nav,.aw-nav,.az-nav,.armory-nav,.tabs,.aw-tabs,.om-tabs,.topbar nav').forEach(nav=>{
+      if(document.body.classList.contains('index-premium-home') && nav.closest('.topbar')) return;
       if(nav.closest('.sov-scroll-wrap')) return;
       const cs=getComputedStyle(nav);
       const likelyScrollable=cs.overflowX==='auto'||cs.overflowX==='scroll'||nav.scrollWidth>nav.clientWidth+8;
