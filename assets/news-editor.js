@@ -57,8 +57,8 @@
   async function load(){
     msg('Učitavam vijesti iz baze...');
     const {data,error}=await sb.from('sov_news').select('*').order('pinned',{ascending:false}).order('featured',{ascending:false}).order('published_at',{ascending:false}).order('created_at',{ascending:false});
-    if(error){ els.list.innerHTML='<div class="empty">Ne mogu učitati sov_news. Pokreni SUPABASE_SOV_NEWS_CMS_v5_58_5_HARD_PROFILE_RLS_RESET.sql, a za upload fotki i SUPABASE_SOV_NEWS_CMS_v5_58_7_STORAGE_BUCKET_POLICY_FIX.sql.<br>'+esc(error.message)+'</div>'; msg('Greška učitavanja.'); return; }
-    rows=data||[]; renderList(); msg(rows.length?`Učitano ${rows.length} vijesti.`:'Nema vijesti u bazi. Pokreni SQL seed ili dodaj novu.');
+    if(error){ els.list.innerHTML='<div class="empty">Ne mogu učitati vijesti. Provjeri prijavu, rolu urednika i Supabase pristup.<br>'+esc(error.message)+'</div>'; msg('Greška učitavanja.'); return; }
+    rows=data||[]; renderList(); msg(rows.length?`Učitano ${rows.length} vijesti.`:'Nema vijesti u bazi. Dodaj prvu vijest.');
   }
   function renderList(){
     const q=norm(els.search.value), f=els.filter.value;
@@ -129,8 +129,8 @@
       saved=Array.isArray(q.data) ? q.data[0] : q.data;
       if(!saved){
         msg(id
-          ? 'Spremanje nije vratilo vijest. Provjeri SQL v5.58.9 i prava za urednika.'
-          : 'Nova vijest je možda spremljena, ali je baza nije vratila. Pokreni SQL v5.58.9 pa osvježi.');
+          ? 'Spremanje nije vratilo vijest. Provjeri prava za urednika i osvježi listu.'
+          : 'Nova vijest je možda spremljena, ali je baza nije vratila. Osvježi listu i provjeri prava za urednika.');
         await load();
         return;
       }
@@ -154,7 +154,7 @@
     const file=els.coverFile.files && els.coverFile.files[0];
     if(!file){ msg('Odaberi naslovnu fotografiju.'); return; }
     try{ msg('Uploadam naslovnu fotku...'); const url=await uploadFile(file,'covers'); els.image_url.value=url; updateCover(); msg('Fotka uploadana. Ne zaboravi spremiti vijest.'); }
-    catch(e){ msg('Greška uploada: '+e.message+' — pokreni SUPABASE_SOV_NEWS_CMS_v5_58_7_STORAGE_BUCKET_POLICY_FIX.sql i provjeri da si prijavljen.'); }
+    catch(e){ msg('Greška uploada: '+e.message+' — provjeri prijavu, rolu urednika i pristup sov-news bucketu.'); }
   }
   async function uploadGallery(){
     const files=[...(els.galleryFiles.files||[])];
@@ -163,7 +163,7 @@
       msg('Uploadam galeriju...'); const urls=[];
       for(const file of files) urls.push(await uploadFile(file,'gallery'));
       const current=linesToArray(els.gallery_urls.value); els.gallery_urls.value=[...current,...urls].join('\n'); msg(`Uploadano ${urls.length} fotki. Ne zaboravi spremiti vijest.`);
-    }catch(e){ msg('Greška uploada galerije: '+e.message+' — pokreni SQL v5.58.7 za sov-news Storage policy.'); }
+    }catch(e){ msg('Greška uploada galerije: '+e.message+' — provjeri prijavu, rolu urednika i pristup sov-news bucketu.'); }
   }
   function updateCover(){ const v=els.image_url.value.trim(); els.coverPreview.style.backgroundImage=v?`url('${v.replace(/'/g,'%27')}')`:''; els.coverPreview.innerHTML='<span>'+esc(v?'Preview naslovne fotografije':'Nema naslovne fotografije')+'</span>'; }
   function renderOpenLink(){ const slug=els.slug.value.trim()||slugify(els.title.value); els.openPublicBtn.href=slug?'vijest.html?slug='+encodeURIComponent(slug):'vijest.html'; }

@@ -4,7 +4,7 @@ Ovaj build nastavlja UX foundation cleanup iz v5.58.22.
 
 ## Promjene
 
-- Dodan `assets/sov-shell-v55823.css` i `assets/sov-shell-v55823.js`.
+- Dodan `assets/sov-shell-v55824.css` i `assets/sov-shell-v55824.js`.
 - App/admin/module stranice sada dobivaju zajednički shell sloj za header, aktivni link i mobile drawer.
 - Stari header sustavi (`sov-top`, `aw-top`, `as-top`, `cm/topbar`, oružarski headeri) vizualno se normaliziraju u isti SOV Cloud stil.
 - Na mobitelu se header više ne oslanja samo na horizontalni scroll: dodan je hamburger/drawer s role-aware linkovima.

@@ -1,4 +1,15 @@
 
+## v5.58.24 — Foundation refactor stabilization
+
+- Dodan `assets/sov-shell-v55824.css/js` s jačim role-aware shellom, vidljivim focus ringom, 44px touch targetima i mobile drawer polishom.
+- Dashboard role preview zaključan je na Webmaster-only; Admin ostaje operativna rola bez tech/SQL/sync alata.
+- SQL, sync, audit i role-manager ulazi pojačani su Webmaster-only guardom; SQL alati zadržavaju PRODUKCIJA banner i dvostruku potvrdu.
+- Karta zadržava Arhivar paged full-feed logiku bez 1000-object cap-a, uklonjen je user-facing `Izvor:` tekst, a status boja više ne penalizira "spremno za katastar" kao falinku.
+- Arhivar mobile UX dodatno pojačan kroz kartice, veće akcijske gumbe i full edit polja bez raw SQL/JSON prikaza.
+- News editor i članska predaja članka više ne prikazuju SQL/upute korisniku; javne vijesti ostaju CMS-first uz statički fallback.
+- `sync-status.html`, cache-bust asseti, `VERSION.txt` i `BUILD_VERSION.txt` usklađeni su na v5.58.24.
+- Nema novog SQL-a.
+
 ## v5.58.23 — Shared shell / header convergence
 
 - Dodan zajednički SOV shell sloj za app/admin/module stranice.

@@ -1,5 +1,5 @@
 (function(){
-const BUILD='5.58.21';
+const BUILD='5.58.24';
 const state={items:[],filtered:[],selected:null,tab:'status',profile:null,loadingDetailId:null};
 const $=s=>document.querySelector(s);
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
@@ -112,7 +112,7 @@ function bindArchiveExport(){const csv=$('#exportArchiveCsvBtn'),xls=$('#exportA
 
 
 async function init(){
-  const vb=document.getElementById('awVersionBadge'); if(vb)vb.textContent='Arhivar HTML v'+BUILD+' · normalni opis + workflow checkovi + TK25 + export';
+  const vb=document.getElementById('awVersionBadge'); if(vb)vb.textContent='Arhivar';
   if(window.SOVAuth&&SOVAuth.requireArchive){const ok=await SOVAuth.requireArchive(); if(!ok)return;}
   try{state.profile=await SOVAuth.getProfile();}catch(e){}
   $('#refreshBtn').onclick=load;
@@ -252,7 +252,7 @@ function renderDetail(isLoading=false){
     reportSection('Zapisnici / istraživanja / tko je bio', it.report_details_text || '', false),
     reportSection('Predani nacrti i prilozi', it.drawing_details_text || '', false)
   ].filter(Boolean).join('') || '<div class="aw-empty small">Za ovaj objekt nema dodatnog teksta u bazi.</div>';
-  $('#detailPanel').innerHTML=`<h2>${esc(it.object_name)}</h2><div class="aw-detail-version">HTML v${BUILD} · čitljiv opis iz SQL-a</div><div class="aw-kv"><span>ID</span><b>${esc(it.object_id)}</b><span>Broj pločice</span><b>${esc(it.plate_number||'—')}</b><span>Tip</span><b>${esc(it.object_type||'—')}</b><span>Mjesto</span><b>${esc(it.nearest_place||'—')}</b><span>Koordinate</span><b>${it.lat&&it.lon?esc(`${it.lat}, ${it.lon}`):'—'}</b><span>Nacrti u SOV arhivi</span><b>${esc(it.archive_drawing_count??it.drawing_count??0)}</b><span>Zapisnici u SOV arhivi</span><b>${esc(it.archive_report_count??it.report_count??0)}</b><span>Status iz baze</span><b>${esc(readinessLabel(it))}</b><span>Baza kaže da fali</span><b>${esc(missingText(it)||'—')}</b></div><div class="aw-object-actions">${tk25Button(it)}<button class="aw-btn" onclick="navigator.clipboard&&navigator.clipboard.writeText('${hasCoords(it)?esc(String(it.lat)+', '+String(it.lon)):''}')">Kopiraj koordinate</button></div><div class="aw-badges" style="margin-top:14px">${baseMissingBadges(it)}</div><p class="aw-muted">Prikaz je sada normalan arhivarski opis: osnovni podaci, opis/pristup/istraživanje i statusi. Sirova SQL staging polja više se ne guraju u desni panel.</p><div class="aw-full-details"><h3>Tekst i podaci iz baze</h3>${fullDetails}</div>`;
+  $('#detailPanel').innerHTML=`<h2>${esc(it.object_name)}</h2><div class="aw-kv"><span>ID</span><b>${esc(it.object_id)}</b><span>Broj pločice</span><b>${esc(it.plate_number||'—')}</b><span>Tip</span><b>${esc(it.object_type||'—')}</b><span>Mjesto</span><b>${esc(it.nearest_place||'—')}</b><span>Koordinate</span><b>${it.lat&&it.lon?esc(`${it.lat}, ${it.lon}`):'—'}</b><span>Nacrti u SOV arhivi</span><b>${esc(it.archive_drawing_count??it.drawing_count??0)}</b><span>Zapisnici u SOV arhivi</span><b>${esc(it.archive_report_count??it.report_count??0)}</b><span>Status iz baze</span><b>${esc(readinessLabel(it))}</b><span>Baza kaže da fali</span><b>${esc(missingText(it)||'—')}</b></div><div class="aw-object-actions">${tk25Button(it)}<button class="aw-btn" onclick="navigator.clipboard&&navigator.clipboard.writeText('${hasCoords(it)?esc(String(it.lat)+', '+String(it.lon)):''}')">Kopiraj koordinate</button></div><div class="aw-badges" style="margin-top:14px">${baseMissingBadges(it)}</div><div class="aw-full-details"><h3>Tekst i podaci iz baze</h3>${fullDetails}</div>`;
   renderActionPanel();
 }
 function renderActionPanel(){

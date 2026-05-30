@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SOV Sync · Ekosustav status v5.58.23</title>
+  <title>SOV Sync · Ekosustav status v5.58.24</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap" rel="stylesheet">
@@ -14,18 +14,18 @@
     .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px}.card{border:1px solid var(--line);border-radius:26px;background:rgba(13,26,22,.82);box-shadow:0 18px 60px rgba(0,0,0,.24);padding:18px;min-height:150px}.card.big{grid-column:span 2}.card h2{margin:0 0 10px;font-size:18px}.metric{font-size:34px;font-weight:950;letter-spacing:-.04em}.muted{color:var(--muted);font-size:13px;line-height:1.45}.status{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:950;border:1px solid var(--line);background:rgba(255,255,255,.05)}.dot{width:9px;height:9px;border-radius:999px;background:#8b98a0}.ok .dot{background:var(--teal)}.warn .dot{background:var(--amber)}.bad .dot{background:var(--red)}.split{display:grid;grid-template-columns:1fr 1fr;gap:12px}.line{height:1px;background:var(--line);margin:13px 0}.kv{display:grid;grid-template-columns:160px 1fr;gap:8px;font-size:13px;margin:8px 0}.kv b{color:#dceee6}.kv span{color:var(--muted);overflow-wrap:anywhere}.log{max-height:320px;overflow:auto;background:rgba(0,0,0,.22);border:1px solid var(--line);border-radius:18px;padding:12px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;color:#cfe1da;white-space:pre-wrap}.tiny{font-size:11px;color:var(--muted)}.pill{display:inline-flex;padding:4px 8px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.05);font-size:11px;font-weight:950;color:#ddf7ec}.manual{padding:18px;border-radius:24px;background:rgba(255,255,255,.055);border:1px solid var(--line);line-height:1.55}.manual h3{margin:0 0 8px}.manual code{background:rgba(0,0,0,.28);border:1px solid var(--line);border-radius:8px;padding:2px 5px;color:#eaffb3}.footer{margin-top:18px;color:var(--muted);font-size:12px;text-align:center}.hidden{display:none!important}
     @media(max-width:920px){.grid{grid-template-columns:1fr}.card.big{grid-column:auto}.split{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}.kv{grid-template-columns:1fr}.hero{border-radius:26px}.card{border-radius:22px}}
   </style>
-<link rel="stylesheet" href="assets/sov-foundation-v55822.css"><link rel="stylesheet" href="assets/sov-shell-v55823.css"></head>
+<link rel="stylesheet" href="assets/sov-foundation-v55822.css"><link rel="stylesheet" href="assets/sov-shell-v55824.css"></head>
 <body>
   <div class="shell">
     <header class="top">
-      <a class="brand" href="dashboard.html"><div class="mark">SOV</div><div><strong>SOV Sync</strong><small>ekosustav status · v5.58.23</small></div></a>
+      <a class="brand" href="dashboard.html"><div class="mark">SOV</div><div><strong>SOV Sync</strong><small>ekosustav status · v5.58.24</small></div></a>
       <nav class="nav"><a href="dashboard.html">Dashboard</a><a href="karta.html">Karta</a><a href="arhivar-dashboard.html">Arhivar</a><a href="news-editor.html">Vijesti CMS</a><a href="role-manager.html">Role</a><a class="primary" href="sync-status.html">SOV Sync</a></nav>
     </header>
 
     <section class="hero">
       <span class="eyebrow">SOV ekosustav · admin kontrolna ploča</span>
       <h1>Jedno mjesto za provjeru synca.</h1>
-      <p>Ova stranica je usklađena s web buildom v5.58.23. Čita endpointove i Supabase tablice: karta/baza objekata, puni detail objekta, nacrti, izleti, role, novosti CMS, user predaje članaka i arhivarske predaje. Ne mijenja podatke.</p>
+      <p>Ova stranica je usklađena s web buildom v5.58.24. Čita endpointove i Supabase tablice: karta/baza objekata, puni detail objekta, nacrti, izleti, role, novosti CMS, user predaje članaka, arhivarske predaje i Webmaster-only zaštitu. Ne mijenja podatke.</p>
       <div class="actions">
         <button class="btn" id="runAllBtn">Provjeri sve</button>
         <button class="btn secondary" id="runDrawingsBtn">Nacrti</button>
@@ -113,9 +113,9 @@
 
       <article class="card">
         <h2>Build verzije</h2>
-        <div class="kv"><b>Web</b><span>v5.58.23 karta full object detail</span></div>
-        <div class="kv"><b>News CMS SQL</b><span>v5.58.23 role/helper compatibility + v5.58.23 save RPC + v5.58.23 storage</span></div>
-        <div class="kv"><b>Arhivar SQL</b><span>v5.58.23 full edit + v5.58.23 submissions + v5.57.8 workflow</span></div>
+        <div class="kv"><b>Web</b><span>v5.58.24 shared shell, mobile touch, role cleanup, karta full detail</span></div>
+        <div class="kv"><b>News CMS SQL</b><span>postojeći sov_news RPC/storage bez nove migracije</span></div>
+        <div class="kv"><b>Arhivar SQL</b><span>postojeći full edit + submissions + workflow provjere</span></div>
         <div class="kv"><b>Admin APK source</b><span>v1.4.13.7 arhivar submissions</span></div>
       </article>
 
@@ -123,7 +123,7 @@
         <h2>Pravilo za buduće buildove</h2>
         <div class="manual">
           <h3>sync-status.html je dio builda</h3>
-          <p>Od v5.58.23 ova stranica se mora ažurirati uz svaki relevantan web build: verzija, novi moduli, nove SQL tablice i novi endpointi. Tehnički status ostaje samo Webmasteru.</p>
+          <p>Od v5.58.24 ova stranica se ažurira uz svaki relevantan web build: verzija, novi moduli, SQL potrebe i endpointi. Tehnički status ostaje samo Webmasteru.</p>
           <p>Dashboard preview je samo vizualni filter na dashboardu. Ne mijenja stvarne role i ne daje pristup zaštićenim stranicama.</p>
         </div>
       </article>
@@ -134,7 +134,7 @@
       </article>
     </section>
 
-    <div class="footer">SOV web v5.58.23 · sync-status.html · webmaster read-only kontrolna ploča</div>
+    <div class="footer">SOV web v5.58.24 · sync-status.html · webmaster read-only kontrolna ploča</div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -186,9 +186,16 @@
       const sb=window.SOVAuth&&SOVAuth.getClient&&SOVAuth.getClient(); if(!sb){ setStatus('mapStatus','bad','Supabase fali'); throw new Error('Supabase client nije dostupan'); }
       let result={ok:false,count:null,error:null,source:'sov_map_objects_page() / sov_arhivar_worklist'};
       try{
-        const res=await sb.rpc('sov_map_objects_page',{p_offset:0,p_limit:1000});
-        if(res.error) throw res.error;
-        result.ok=true; result.count=(res.data||[]).length;
+        let rows=[], offset=0, step=1000;
+        while(offset<100000){
+          const res=await sb.rpc('sov_map_objects_page',{p_offset:offset,p_limit:step});
+          if(res.error) throw res.error;
+          const part=Array.isArray(res.data?.rows)?res.data.rows:(Array.isArray(res.data)?res.data:[]);
+          rows=rows.concat(part);
+          if(part.length<step) break;
+          offset+=step;
+        }
+        result.ok=true; result.count=rows.length;
       }catch(e){
         const c=await countTable(sb,'speleo_objects_staging');
         result={ok:c.ok,count:c.count,error:c.error||e.message,source:'speleo_objects_staging fallback'};
@@ -236,8 +243,8 @@
       }catch(e){ storage={ok:false,error:e.message,data:null}; }
       $('newsCount').textContent=all.ok?all.count:'n/a'; $('newsPublishedCount').textContent=published.ok?published.count:'n/a'; $('newsDraftCount').textContent=drafts.ok?drafts.count:'n/a';
       const st=$('newsStorageStatus');
-      if(st){ st.textContent=storage.ok ? 'sov-news OK · public read · authenticated upload' : ('sov-news problem · '+(storage.error||'pokreni SQL v5.58.23')); }
-      const ok=all.ok && storage.ok; setStatus('newsStatus',ok?'ok':(all.ok?'warn':'bad'),ok?'Vijesti CMS + Storage OK':(all.ok?'Vijesti rade, Storage treba SQL v5.58.23':'sov_news nije dostupan')); state.news=ok; const result={all,published,drafts,storage}; log('Vijesti CMS',result); return result;
+      if(st){ st.textContent=storage.ok ? 'sov-news OK · public read · authenticated upload' : ('sov-news storage treba provjeru · '+(storage.error||'policy nije potvrđen')); }
+      const ok=all.ok && storage.ok; setStatus('newsStatus',ok?'ok':(all.ok?'warn':'bad'),ok?'Vijesti CMS + Storage OK':(all.ok?'Vijesti rade, Storage treba provjeru':'sov_news nije dostupan')); state.news=ok; const result={all,published,drafts,storage}; log('Vijesti CMS',result); return result;
     }
     async function checkSubmissions(){
       setStatus('submissionsStatus','warn','Provjeravam predane jame...');
@@ -252,11 +259,12 @@
     function updateOverall(){ const ok=[state.drawings,state.trips,state.supabase,state.news,state.submissions,state.map].filter(Boolean).length; $('overallMetric').textContent=ok+'/6'; if(ok===6){setStatus('overallStatus','ok','Sve osnovno OK');$('overallText').textContent='Nacrti, izleti, Supabase, vijesti, predane jame i karta odgovaraju.'} else if(ok>0){setStatus('overallStatus','warn','Djelomično OK');$('overallText').textContent='Neki moduli rade, neke treba provjeriti.'} else {setStatus('overallStatus','bad','Nije OK');$('overallText').textContent='Ni jedan osnovni modul nije potvrđen.'}}
     async function runOne(fn){ try{await fn()}catch(e){log('Greška: '+(e.message||e));} updateOverall(); }
     async function runAll(){ $('logBox').textContent=''; Object.keys(state).forEach(k=>state[k]=false); await runOne(checkDrawings); await runOne(checkTrips); await runOne(checkSupabase); await runOne(checkNews); await runOne(checkSubmissions); await runOne(checkMap); updateOverall(); }
-    document.addEventListener('DOMContentLoaded',()=>{
+    document.addEventListener('DOMContentLoaded',async()=>{
+      if(window.SOVAuth&&SOVAuth.requireWebmaster){ const ok=await SOVAuth.requireWebmaster(); if(!ok)return; }
       $('drawingsEndpoint').textContent=safeEndpoint(window.SOV_DRAWINGS_SYNC_ENDPOINT||''); $('tripsEndpoint').textContent=safeEndpoint(window.SOV_TRIPS_WEBAPP_URL||'');
       $('runAllBtn').onclick=runAll; $('runDrawingsBtn').onclick=()=>runOne(checkDrawings); $('runTripsBtn').onclick=()=>runOne(checkTrips); $('runSupabaseBtn').onclick=()=>runOne(checkSupabase); $('runNewsBtn').onclick=()=>runOne(checkNews); $('runSubmissionsBtn').onclick=()=>runOne(checkSubmissions); if($('runMapBtn')) $('runMapBtn').onclick=()=>runOne(checkMap);
       setTimeout(runAll,500);
     });
   </script>
-<script src="assets/sov-foundation-v55822.js" defer></script><script src="assets/sov-shell-v55823.js" defer></script><script>console.info("SOV sync v5.58.23: shared shell/header convergence active.");</script></body>
+<script src="assets/sov-foundation-v55822.js" defer></script><script src="assets/sov-shell-v55824.js" defer></script><script>console.info("SOV sync v5.58.24: foundation refactor active.");</script></body>
 </html>

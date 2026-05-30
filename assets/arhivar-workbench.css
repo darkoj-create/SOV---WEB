@@ -45,3 +45,11 @@ body.arhivar-workbench{background:radial-gradient(circle at 18% -8%,rgba(121,217
 /* v5.58.21 full object edit */
 .aw-full-edit textarea{min-height:104px;line-height:1.48}.aw-full-edit .aw-section-label{margin-top:6px;color:var(--aw-cyan);font-weight:1000;text-transform:uppercase;letter-spacing:.12em;font-size:12px}.aw-full-edit .aw-textarea{resize:vertical}.aw-full-edit .aw-btn.primary{justify-self:start;padding-inline:18px}
 @media(max-width:760px){.aw-full-edit textarea{min-height:120px}.aw-full-edit .aw-btn.primary{width:100%}}
+
+/* v5.58.24 — mobile/touch polish */
+.aw-btn,.aw-tab,.aw-input,.aw-select,.aw-textarea{min-height:44px}
+.aw-check-grid .aw-check,.aw-check{min-height:48px}
+@media(max-width:760px){
+  .aw-object{display:grid;gap:8px;padding:15px}
+  .aw-object-actions .aw-btn{min-height:44px}
+}

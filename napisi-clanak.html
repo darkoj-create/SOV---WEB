@@ -13,11 +13,11 @@
     :root{--bg:#050807;--panel:rgba(255,255,255,.065);--line:rgba(255,255,255,.13);--muted:#aabbb4;--lime:#d7f66f;--teal:#83e6c2;--cyan:#78d7ff;--danger:#ff8f8f}
     *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 82% 6%,rgba(120,215,255,.16),transparent 32%),radial-gradient(circle at 15% 10%,rgba(215,246,111,.13),transparent 30%),linear-gradient(180deg,#030504,#07120f 55%,#030504);color:#eef8f2;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}.shell{width:min(1040px,calc(100% - 28px));margin:0 auto;padding:22px 0 70px}.top{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:18px}.brand{display:flex;gap:12px;align-items:center;text-decoration:none;color:#fff}.mark{width:44px;height:44px;border-radius:16px;display:grid;place-items:center;background:rgba(255,255,255,.08);border:1px solid var(--line);font-weight:1000}.nav{display:flex;gap:8px;flex-wrap:wrap}.nav a{border:1px solid var(--line);background:rgba(255,255,255,.06);border-radius:999px;padding:10px 13px;color:#fff;text-decoration:none;font-weight:900;font-size:13px}.hero{border:1px solid var(--line);background:linear-gradient(135deg,rgba(255,255,255,.085),rgba(255,255,255,.035));border-radius:34px;padding:28px;margin-bottom:18px;box-shadow:0 24px 80px rgba(0,0,0,.34)}.eyebrow{display:inline-flex;border:1px solid rgba(215,246,111,.28);background:rgba(215,246,111,.11);color:#eaffb3;border-radius:999px;padding:8px 11px;font-weight:950;font-size:12px;letter-spacing:.08em;text-transform:uppercase}.hero h1{font-size:clamp(36px,6vw,70px);letter-spacing:-.06em;line-height:.94;margin:16px 0 10px}.hero p,.hint{color:var(--muted);line-height:1.6}.layout{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:18px;align-items:start}.panel{border:1px solid var(--line);background:var(--panel);border-radius:28px;padding:18px;box-shadow:0 20px 70px rgba(0,0,0,.24)}.form{display:grid;gap:14px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.full{grid-column:1/-1}label{display:grid;gap:7px;font-size:12px;font-weight:950;color:#dceae4;text-transform:uppercase;letter-spacing:.06em}input,textarea,select{width:100%;border:1px solid var(--line);background:rgba(0,0,0,.26);color:#fff;border-radius:16px;padding:12px;font:inherit;text-transform:none;letter-spacing:normal}textarea{min-height:120px;resize:vertical}.body-box{min-height:310px}.btn{border:0;border-radius:999px;padding:12px 15px;background:linear-gradient(135deg,var(--lime),var(--teal));color:#101510;font-weight:950;text-decoration:none;cursor:pointer;display:inline-flex;justify-content:center;align-items:center;gap:8px}.btn.secondary{background:rgba(255,255,255,.075);color:#eef8f2;border:1px solid var(--line)}.actions{display:flex;gap:10px;flex-wrap:wrap}.status{min-height:24px;color:#f7e7a2;font-weight:900}.preview{min-height:190px;border-radius:22px;background:#10201a center/cover no-repeat;border:1px solid var(--line);display:flex;align-items:end;overflow:hidden}.preview span{display:block;width:100%;background:linear-gradient(transparent,rgba(0,0,0,.82));padding:46px 16px 14px;font-weight:900;color:#d8e8e0}.list{display:grid;gap:10px;margin-top:12px}.item{border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.045);border-radius:18px;padding:13px}.item b{display:block}.item small{display:block;color:var(--muted);line-height:1.5;margin-top:4px}.ok{border-color:rgba(131,230,194,.32);background:rgba(131,230,194,.08)}@media(max-width:900px){.layout,.grid{grid-template-columns:1fr}.full{grid-column:auto}.hero{border-radius:26px}.panel{border-radius:22px}}
   </style>
-<link rel="stylesheet" href="assets/sov-foundation-v55822.css"><link rel="stylesheet" href="assets/sov-shell-v55823.css"></head>
+<link rel="stylesheet" href="assets/sov-foundation-v55822.css"><link rel="stylesheet" href="assets/sov-shell-v55824.css"></head>
 <body>
   <main class="shell">
     <header class="top">
-      <a class="brand" href="dashboard.html"><span class="mark">SOV</span><span><strong>SOV Cloud</strong><br><small>Predaja članka · v5.58.23</small></span></a>
+      <a class="brand" href="dashboard.html"><span class="mark">SOV</span><span><strong>SOV Cloud</strong><br><small>Predaja članka</small></span></a>
       <nav class="nav"><a href="dashboard.html">Dashboard</a><a href="vijesti.html">Vijesti</a><a href="news-editor.html" data-role-editor>Urednik</a></nav>
     </header>
 
@@ -56,7 +56,7 @@
           <div class="item"><b>2. Urednik ga vidi</b><small>Urednik/Admin ga otvara u Vijesti CMS-u i može mijenjati tekst, fotke i status.</small></div>
           <div class="item"><b>3. Objavljuje se kad je spremno</b><small>Tek kad urednik uključi “Objavljeno”, članak ide na javne vijesti.</small></div>
         </div>
-        <p class="hint">Za ovo treba SQL <b>SUPABASE_SOV_NEWS_USER_ARTICLES_v5_58_10.sql</b>. Upload fotki koristi postojeći <b>sov-news</b> bucket iz v5.58.23.</p>
+        <p class="hint">Fotografije i tekst ostaju kao urednički draft dok ih urednik ne pregleda i objavi.</p>
       </aside>
     </section>
   </main>
@@ -84,7 +84,7 @@
     async function uploadCover(){
       const file=$('coverFile').files&&$('coverFile').files[0]; if(!file){msg('Odaberi fotku.');return}
       try{msg('Uploadam fotku...'); const safe=file.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9.]+/g,'-').replace(/^-+|-+$/g,''); const path=`user-submissions/${Date.now()}-${Math.random().toString(16).slice(2)}-${safe}`; const up=await sb.storage.from('sov-news').upload(path,file,{cacheControl:'3600',upsert:true,contentType:file.type||undefined}); if(up.error)throw up.error; const {data}=sb.storage.from('sov-news').getPublicUrl(path); $('imageUrl').value=data.publicUrl; updatePreview(); msg('Fotka uploadana. Sad predaj članak.');}
-      catch(e){msg('Greška uploada: '+(e.message||e)+' — provjeri sov-news storage policy v5.58.23.');}
+      catch(e){msg('Greška uploada: '+(e.message||e)+' — provjeri prijavu i pokušaj ponovno.');}
     }
     async function submit(ev){
       ev.preventDefault(); if(!sb){msg('Supabase nije konfiguriran.');return}
@@ -92,10 +92,10 @@
       const payload={title, author_name:$('author').value.trim(), category:$('category').value.trim()||'Novosti', summary:$('summary').value.trim(), image_url:$('imageUrl').value.trim(), body, content_html:bodyToHtml(body)};
       msg('Predajem članak uredniku...');
       try{const r=await sb.rpc('sov_news_submit_article',{p_payload:payload}); if(r.error)throw r.error; msg('Predano uredniku. Članak je spremljen kao draft.'); $('articleForm').reset(); updatePreview();}
-      catch(e){msg('Greška predaje: '+(e.message||e)+' — pokreni SUPABASE_SOV_NEWS_USER_ARTICLES_v5_58_10.sql.');}
+      catch(e){msg('Greška predaje: '+(e.message||e)+' — provjeri prijavu i pokušaj ponovno.');}
     }
     document.addEventListener('DOMContentLoaded',boot);
   })();
   </script>
-<script src="assets/sov-foundation-v55822.js" defer></script><script src="assets/sov-shell-v55823.js" defer></script></body>
+<script src="assets/sov-foundation-v55822.js" defer></script><script src="assets/sov-shell-v55824.js" defer></script></body>
 </html>

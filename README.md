@@ -1,3 +1,14 @@
+# SOV web build v5.58.24
+
+Foundation refactor build za SOV Cloud web.
+
+- Shared shell je dignut na `sov-shell-v55824` i pokriva app/admin/module header, mobile drawer, active state, role-aware linkove i skip link.
+- Dashboard preview je Webmaster-only; Admin nema SQL/sync/tech ulaze.
+- Karta koristi Arhivar paged full feed i full object detail, bez user-facing source/debug teksta.
+- Arhivar, Oružarstvo i News CMS dobili su dodatni mobile/touch i user-facing cleanup.
+- SQL alati su Webmaster-only i imaju produkcijski banner + dvostruku potvrdu.
+- Novi SQL nije potreban za ovaj build.
+
 # SOV web build v5.58.20
 
 Patch na v5.58.19. Glavna promjena: `karta.html` sada pri kliku na objekt/Detalji povlači puni objekt detail iz Arhivar RPC-a i prikazuje ga kao normalan korisnički opis, ne samo kratka map kartica.

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>SOV Cloud — Dashboard v5.58.23</title>
+  <title>SOV Cloud — Dashboard v5.58.24</title>
   <link rel="stylesheet" href="assets/site.css">
   <link rel="stylesheet" href="assets/mobile.css">
   <link rel="stylesheet" href="assets/sov-premium-ui.css">
@@ -16,13 +16,13 @@
     [data-dash-visible].is-preview-hidden,.sov-module.is-preview-hidden,.sov-panel.is-preview-hidden,.sov-section-head.is-preview-hidden{display:none!important}.sov-admin-tools{display:grid;gap:10px;margin-top:14px}.sov-admin-tools a{display:flex;align-items:center;justify-content:space-between;gap:10px;text-decoration:none;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:10px 12px;background:rgba(255,255,255,.045);color:inherit}.sov-admin-tools a:hover{border-color:rgba(215,246,111,.38);transform:translateY(-1px)}.sov-admin-tools small{color:rgba(230,240,235,.62);font-weight:800}.sov-admin-warning{margin-top:12px;color:#ffd7b0;font-size:12px;line-height:1.45}.sov-preview-note{margin-left:auto;color:#b8c9c3;font-size:12px;font-weight:900}.sov-dev-float{display:none!important}
     @media(max-width:940px){.sov-role-preview{width:100%;justify-content:center;border-radius:18px;flex-wrap:wrap}.sov-role-preview .rp-label{display:none}.sov-role-preview button{font-size:11px;padding:7px 8px}.sov-preview-note{width:100%;margin:4px 0 0;text-align:center}}
   </style>
-<link rel="stylesheet" href="assets/sov-foundation-v55822.css"><link rel="stylesheet" href="assets/sov-shell-v55823.css"></head>
+<link rel="stylesheet" href="assets/sov-foundation-v55822.css"><link rel="stylesheet" href="assets/sov-shell-v55824.css"></head>
 <body class="sov-premium dashboard-page">
   <div class="sov-shell">
     <header class="sov-top">
       <a class="sov-brand" href="dashboard.html">
         <div class="sov-mark">SOV</div>
-        <div><strong>Speleološki odsjek Velebit</strong><small>SOV Cloud · v5.58.23</small></div>
+        <div><strong>Speleološki odsjek Velebit</strong><small>SOV Cloud</small></div>
       </a>
       <nav class="sov-nav" aria-label="Glavna navigacija">
         <a href="index.html">Novosti</a>
@@ -66,7 +66,7 @@
               <div class="sov-mini"><b data-dash-role>—</b><span>stvarna rola</span></div>
               <div class="sov-mini"><b data-preview-role-label>—</b><span>preview view</span></div>
               <div class="sov-mini"><b data-auth-status>—</b><span>status računa</span></div>
-              <div class="sov-mini"><b>5.58.13</b><span>web build</span></div>
+              <div class="sov-mini"><b>5.58.24</b><span>web build</span></div>
             </div>
             <p class="sov-soft" data-access-summary style="margin-top:14px">Učitavam prava...</p>
           </aside>
@@ -207,15 +207,13 @@
       document.addEventListener('DOMContentLoaded',async()=>{
         const box=document.getElementById('dashboardRolePreview'); if(!box) return;
         let profile=null; try{ if(window.SOVAuth){ await SOVAuth.ready(); profile=await SOVAuth.getProfile(); } }catch(e){}
-        const isAdmin=!!(profile&&(profile.role==='webmaster'||profile.role==='admin'));
         const isWebmaster=!!(profile&&profile.role==='webmaster');
-        if(isAdmin){ box.classList.add('is-on'); } else { box.classList.remove('is-on'); }
-        if(!isWebmaster){ box.querySelectorAll('[data-preview-dashboard-role="webmaster"]').forEach(b=>b.style.display='none'); }
+        if(isWebmaster){ box.classList.add('is-on'); } else { box.classList.remove('is-on'); }
         box.querySelectorAll('button[data-preview-dashboard-role]').forEach(btn=>btn.addEventListener('click',()=>apply(btn.dataset.previewDashboardRole)));
-        apply(isAdmin ? (isWebmaster ? getSaved() : (getSaved()==='webmaster'?'admin':getSaved())) : (profile&&profile.role)||'user');
-        setTimeout(()=>apply(isAdmin ? (isWebmaster ? getSaved() : (getSaved()==='webmaster'?'admin':getSaved())) : (profile&&profile.role)||'user'),350);
+        apply(isWebmaster ? getSaved() : (profile&&profile.role)||'user');
+        setTimeout(()=>apply(isWebmaster ? getSaved() : (profile&&profile.role)||'user'),350);
       });
     })();
   </script>
-<script src="assets/sov-foundation-v55822.js" defer></script><script src="assets/sov-shell-v55823.js" defer></script></body>
+<script src="assets/sov-foundation-v55822.js" defer></script><script src="assets/sov-shell-v55824.js" defer></script></body>
 </html>

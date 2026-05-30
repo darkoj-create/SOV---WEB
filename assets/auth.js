@@ -23,7 +23,7 @@
   const REGISTERED_PAGES = new Set([
     'dashboard.html','karta.html','pregled-baze.html','izleti.html','izleti-cloud.html','kalendar-izleta.html',
     'dokumentacija.html','pregled-zapisnika.html','zapisnici-skupstine.html','novi-zapisnik.html',
-    'speleo-zapisnik.html','topodroid.html','napisi-clanak.html','arhivar-dashboard.html','arhivar.html','arhivar-zahvati.html','arhivar-predane-jame.html','arhivar-izvoz.html','speleo-sql-safe.html','speleo-sql-edit-sandbox.html','speleo-sql-compare.html','speleo-sql-object-hub.html','speleo-sql-promote.html','speleo-sql-go-live.html','oruzarstvo.html','oruzarstvo-import.html','oruzar-master-notes.html','oruzar-master-inventura.html','oruzar-master-inventar.html','oruzar-master-posudbe.html','oruzar-master.html','admin-users.html','admin-notifications.html','role-manager.html','news-editor.html','sync-status.html'
+    'speleo-zapisnik.html','topodroid.html','napisi-clanak.html','arhivar-dashboard.html','arhivar.html','arhivar-zahvati.html','arhivar-predane-jame.html','arhivar-izvoz.html','speleo-sql-safe.html','speleo-sql-edit-sandbox.html','speleo-sql-compare.html','speleo-sql-object-hub.html','speleo-sql-promote.html','speleo-sql-go-live.html','oruzarstvo.html','oruzarstvo-import.html','oruzar-master-notes.html','oruzar-master-inventura.html','oruzar-master-inventar.html','oruzar-master-posudbe.html','oruzar-master.html','admin-users.html','admin-notifications.html','role-manager.html','news-editor.html','sync-status.html','audit-status.html'
   ]);
   const ROLE_LABELS = {webmaster:'Webmaster',admin:'Admin',editor:'Urednik',oruzar:'Oružar',arhivar:'Arhivar',user:'Član'};
   const ADMIN_ROLES = ['webmaster','admin'];
