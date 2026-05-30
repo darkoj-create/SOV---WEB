@@ -8,6 +8,7 @@
 - Arhivar mobile UX dodatno pojačan kroz kartice, veće akcijske gumbe i full edit polja bez raw SQL/JSON prikaza.
 - News editor i članska predaja članka više ne prikazuju SQL/upute korisniku; javne vijesti ostaju CMS-first uz statički fallback.
 - Početna stranica dobiva premium mobile polish: hamburger drawer, Facebook link u headeru i dorađen hero/news UX.
+- Hamburger na početnoj sada ima pouzdan click handler i mobile drawer open/closed state.
 - `sync-status.html`, cache-bust asseti, `VERSION.txt` i `BUILD_VERSION.txt` usklađeni su na v5.58.24.
 - Nema novog SQL-a.
 

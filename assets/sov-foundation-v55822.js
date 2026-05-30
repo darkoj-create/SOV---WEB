@@ -24,19 +24,30 @@
       const brand=nav.querySelector('.brand-sov,.brand');
       nav.insertBefore(btn, brand ? brand.nextSibling : links);
     }
-    const menuButton=header.querySelector('.index-menu-toggle');
+    const menuButton=header.querySelector('.index-menu-toggle') || document.querySelector('.index-menu-toggle');
     if(menuButton && menuButton.parentNode!==document.body) document.body.appendChild(menuButton);
+    const isMobile=()=>matchMedia('(max-width:980px)').matches;
     const syncMenuButton=()=>{
       if(!menuButton) return;
-      if(matchMedia('(max-width:980px)').matches){
+      if(isMobile()){
         const left=Math.max(12,Math.min((window.innerWidth||390)-58,320));
         menuButton.style.cssText='position:fixed;left:'+left+'px;top:15px;z-index:9999;display:flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:16px;border:1px solid rgba(255,255,255,.2);background:linear-gradient(135deg,#d7ff52,#6fe7cf);color:#07100d;font-size:24px;font-weight:1000;box-shadow:0 16px 42px rgba(0,0,0,.32);';
       } else {
         menuButton.removeAttribute('style');
       }
     };
+    const syncDrawer=()=>{
+      const open=document.body.classList.contains('index-menu-open');
+      if(!isMobile()){
+        links.removeAttribute('style');
+        return;
+      }
+      const base='position:fixed;left:10px;right:10px;top:72px;z-index:9998;max-height:calc(100svh - 86px);overflow:auto;display:grid;grid-template-columns:1fr;gap:10px;padding:14px;border:1px solid rgba(255,255,255,.16);border-radius:24px;background:linear-gradient(180deg,rgba(8,13,15,.98),rgba(5,8,10,.96));box-shadow:0 32px 100px rgba(0,0,0,.62);transition:transform .18s ease,opacity .18s ease;';
+      links.style.cssText=base+(open?'opacity:1;pointer-events:auto;transform:translateY(0) scale(1);':'opacity:0;pointer-events:none;transform:translateY(-12px) scale(.98);');
+    };
     syncMenuButton();
-    window.addEventListener('resize',syncMenuButton,{passive:true});
+    syncDrawer();
+    window.addEventListener('resize',()=>{syncMenuButton(); syncDrawer();},{passive:true});
     if(!links.querySelector('.facebook-link')){
       const fb=document.createElement('a');
       fb.className='facebook-link';
@@ -66,9 +77,9 @@
     if(footer && /v4\.10/i.test(footer.textContent||'')){
       footer.textContent='Speleološki odsjek PDS Velebit · SOV portal · v5.58.24';
     }
-    const btn=header.querySelector('.index-menu-toggle');
-    const close=()=>{document.body.classList.remove('index-menu-open'); btn&&btn.setAttribute('aria-expanded','false')};
-    const toggle=()=>{const open=!document.body.classList.contains('index-menu-open'); document.body.classList.toggle('index-menu-open',open); btn&&btn.setAttribute('aria-expanded',String(open))};
+    const btn=menuButton || document.querySelector('.index-menu-toggle');
+    const close=()=>{document.body.classList.remove('index-menu-open'); btn&&btn.setAttribute('aria-expanded','false'); syncDrawer();};
+    const toggle=()=>{const open=!document.body.classList.contains('index-menu-open'); document.body.classList.toggle('index-menu-open',open); btn&&btn.setAttribute('aria-expanded',String(open)); syncDrawer();};
     if(btn && !btn.dataset.bound){
       btn.dataset.bound='1';
       btn.addEventListener('click',toggle);

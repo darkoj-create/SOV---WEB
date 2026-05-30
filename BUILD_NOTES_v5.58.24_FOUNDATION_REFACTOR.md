@@ -9,6 +9,7 @@
 - Arhivar i predane jame imaju dodatne mobile kartice/touch polish; full edit polja ostaju prisutna.
 - News editor i članska predaja članka više ne prikazuju SQL/dev upute u normalnom UI-u.
 - `index.html` dobio je premium mobile home polish: hamburger drawer, top-right Facebook link, jači hero UX i mobilne touch/layout dorade.
+- Hamburger fix: mobile menu button se veže nakon premještanja na `body`, a drawer dobiva pouzdan open/closed inline state.
 - `sync-status.html`, `CHANGELOG.md`, `README.md`, `VERSION.txt` i `BUILD_VERSION.txt` dignuti su na v5.58.24.
 
 ## SQL
