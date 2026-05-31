@@ -62,7 +62,7 @@ begin
       where t.id = p_trip_id
         and (
           t.created_by = auth.uid()
-          or lower(coalesce(t.visibility::text,''club'')) in ('club','public')
+          or lower(coalesce(t.visibility::text,'club')) in ('club','public')
         )
     ) then return true; end if;
   end if;

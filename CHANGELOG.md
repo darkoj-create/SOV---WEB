@@ -1,3 +1,12 @@
+# v5.59.3 — Field Tracking izlet/team selector
+
+- `tracking.html` sada ima odvojene filtere: **Izlet** i **Team/teren**.
+- Moguće je prikazati jedan team ili sve teamove za odabrani izlet.
+- Web viewer povlači latest pozicije i trailove po teamu te ih spaja u isti prikaz.
+- Dodan SQL RPC `sov_tracking_create_field_event_v2()` koji omogućuje više teamova za isti izlet bez kolizije ID-a.
+- GPX export sada exporta trenutni prikaz, ne samo jedan teren.
+- `sync-status.html`, `VERSION.txt` i `BUILD_VERSION.txt` usklađeni su na v5.59.3.
+
 # v5.59.2 — Field Tracking SQL syntax fix
 
 - Popravljen SQL syntax error u `sov_tracking_can_view_trip()` gdje je fallback visibility vrijednost završila kao `''club''` umjesto `'club'`.
