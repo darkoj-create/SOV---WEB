@@ -1,11 +1,26 @@
-# v5.59.3 — Field Tracking izlet/team selector
+# v5.59.5 — Tracking simplified team UI
+
+- `tracking.html` redesigned into simple flow: Izlet → Team → Prati na karti.
+- Added cleaner team creation and join-code UX.
+- Mobile layout simplified for terrain use.
+- No SQL change; keeps v5.59.4/v5.59.3 RPCs.
+- `sync-status.html`, `VERSION.txt`, `BUILD_VERSION.txt` updated to v5.59.5.
+
+# v5.59.4 — Field Tracking sync-status view fix
+
+- Fixes Supabase SQL ERROR 42P16 when recreating `sov_tracking_sync_status`.
+- Drops and recreates the view instead of trying to rename columns through `CREATE OR REPLACE VIEW`.
+- Keeps trip/team selector SQL from v5.59.3.
+- No APK changes required.
+
+# v5.59.4 — Field Tracking izlet/team selector
 
 - `tracking.html` sada ima odvojene filtere: **Izlet** i **Team/teren**.
 - Moguće je prikazati jedan team ili sve teamove za odabrani izlet.
 - Web viewer povlači latest pozicije i trailove po teamu te ih spaja u isti prikaz.
 - Dodan SQL RPC `sov_tracking_create_field_event_v2()` koji omogućuje više teamova za isti izlet bez kolizije ID-a.
 - GPX export sada exporta trenutni prikaz, ne samo jedan teren.
-- `sync-status.html`, `VERSION.txt` i `BUILD_VERSION.txt` usklađeni su na v5.59.3.
+- `sync-status.html`, `VERSION.txt` i `BUILD_VERSION.txt` usklađeni su na v5.59.4.
 
 # v5.59.2 — Field Tracking SQL syntax fix
 

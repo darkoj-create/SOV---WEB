@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<title>SOV Field Tracking Lite — v5.59.3</title>
+<title>SOV Field Tracking — v5.59.5</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -13,70 +13,110 @@
 <link rel="stylesheet" href="assets/sov-foundation-v55822.css"/>
 <link rel="stylesheet" href="assets/sov-shell-v55825.css"/>
 <link rel="stylesheet" href="assets/sov-polish-v55826.css"/>
-<link rel="stylesheet" href="assets/sov-tracking-lite.css?v=5.59.3"/>
+<link rel="stylesheet" href="assets/sov-tracking-lite.css?v=5.59.5"/>
 </head>
 <body class="sov-tracking-page" data-sov-page="tracking">
 <div class="tracking-app">
 <header class="tracking-top">
-<a class="tracking-brand" href="dashboard.html"><div class="tracking-mark">SOV</div><div><b>Field Tracking Lite</b><small>teren · ekipa · lite ping · ruta</small></div></a>
-<nav class="tracking-actions" aria-label="Navigacija">
-<a class="tracking-btn" href="dashboard.html">Dashboard</a>
-<a class="tracking-btn" href="izleti.html">Izleti</a>
-<a class="tracking-btn" href="karta.html">Karta</a>
-<button class="tracking-btn primary" id="refreshBtn" type="button">Osvježi</button>
-</nav>
+  <a class="tracking-brand" href="dashboard.html" aria-label="Povratak na SOV dashboard">
+    <div class="tracking-mark">SOV</div>
+    <div><b>Field Tracking</b><small>izlet · team · zadnje pozicije</small></div>
+  </a>
+  <nav class="tracking-actions" aria-label="Navigacija">
+    <a class="tracking-btn ghost" href="dashboard.html">Dashboard</a>
+    <a class="tracking-btn ghost" href="izleti.html">Izleti</a>
+    <a class="tracking-btn ghost" href="karta.html">Karta</a>
+    <button class="tracking-btn primary" id="refreshBtn" type="button">Osvježi</button>
+  </nav>
 </header>
-<main class="tracking-layout">
-<section class="tracking-map-wrap"><div id="trackingMap" class="tracking-map"></div></section>
-<aside class="tracking-panel">
-<section class="tracking-card">
-<h1>Live pregled izleta</h1>
-<p>Prikazuje zadnju poznatu poziciju članova i trag koji je stigao iz Android appa. Ako nema signala, app lokalno čuva točke i šalje ih kad se veza vrati.</p>
-<div class="tracking-warning">SOV Field Tracking je pomoćni alat. Ovisi o GPS-u, bateriji i mobilnoj mreži. Nije službeni sustav za spašavanje.</div>
-</section>
-<section class="tracking-card tracking-create-card">
-<h2>Otvori team za izlet</h2>
-<p>Prvo odaberi izlet u pregledu niže, zatim otvori team/teren i podijeli kod ekipi. Možeš imati više teamova za isti izlet.</p>
-<div class="tracking-mode-grid">
-<label class="tracking-mode"><input type="radio" name="defaultMode" value="lite" checked><b>Lite auto ping</b><span>60–120 s · minimalna baterija · zna se gdje je tko</span></label>
-<label class="tracking-mode"><input type="radio" name="defaultMode" value="route"><b>Tracking ruta / GPX</b><span>15–30 s · gušći trag · bolji GPX export</span></label>
-</div>
-<input id="createTerrainTitle" class="tracking-input" placeholder="Naziv teama/terena, npr. Ekipa 1 — Lukina jama"/>
-<input id="createTerrainLocation" class="tracking-input" placeholder="Lokacija / područje"/>
-<div class="tracking-row"><button class="tracking-btn primary" id="createTerrainBtn" type="button">Otvori teren</button><span id="joinCodeOut" class="tracking-code">Kod ekipe: —</span></div>
-</section>
-<section class="tracking-card">
-<h2>Pridruži se terenu</h2>
-<div class="tracking-row"><input id="joinCodeInput" class="tracking-input" placeholder="Kod ekipe, npr. A1B2C3" maxlength="12"/><button class="tracking-btn" id="joinTerrainBtn" type="button">Pridruži me</button></div>
-</section>
-<section class="tracking-card">
-<h2>Izlet, team i period</h2>
-<p class="tracking-help">Odaberi izlet, zatim team/teren koji želiš gledati. Opcija “svi teamovi” prikazuje sve članove i tragove za taj izlet.</p>
-<div class="tracking-row tracking-filter-row">
-<select id="tripSelect" class="tracking-select" aria-label="Izlet"></select>
-<select id="teamSelect" class="tracking-select" aria-label="Team / teren"></select>
-<select id="hoursSelect" class="tracking-select" aria-label="Period">
-<option value="2">Zadnja 2 sata</option>
-<option value="6" selected>Zadnjih 6 sati</option>
-<option value="12">Zadnjih 12 sati</option>
-<option value="24">Zadnja 24 sata</option>
-<option value="0">Cijeli teren</option>
-</select>
-</div>
-<div class="tracking-row" style="margin-top:10px"><button class="tracking-btn" id="exportBtn" type="button">Export GPX prikaza</button><span id="trackingStatus" style="color:var(--sov-track-muted);font-weight:850">Učitavam…</span></div>
-</section>
-<section class="tracking-card">
-<div class="tracking-kpis"><div class="tracking-kpi"><b id="kpiTeams">—</b><span>teamova</span></div><div class="tracking-kpi"><b id="kpiPeople">—</b><span>članova</span></div><div class="tracking-kpi"><b id="kpiOnline">—</b><span>online</span></div><div class="tracking-kpi"><b id="kpiPoints">—</b><span>točaka</span></div></div>
-</section>
-<section class="tracking-card">
-<h2>Članovi na terenu</h2>
-<div id="peopleList" class="tracking-status-list"><div class="tracking-empty">Odaberi izlet i team.</div></div>
-</section>
-</aside>
+<main class="tracking-page-shell">
+  <section class="tracking-hero-card" aria-labelledby="trackingTitle">
+    <div>
+      <p class="tracking-eyebrow">SOV Field Tracking Lite</p>
+      <h1 id="trackingTitle">Jednostavno prati ekipu na terenu</h1>
+      <p>Odaberi izlet, dodaj ili odaberi team i gledaj zadnje poznate pozicije članova. Android app prvo sprema lokalno, pa šalje kad uhvati signal.</p>
+    </div>
+    <div class="tracking-disclaimer">Pomoćni alat — nije službeni/spasilački sustav. Ovisi o GPS-u, bateriji i mobilnoj mreži.</div>
+  </section>
+
+  <section class="tracking-control-strip" aria-label="Odabir izleta i teama">
+    <div class="tracking-step">
+      <span class="tracking-step-no">1</span>
+      <label for="tripSelect"><b>Izlet</b><small>odaberi aktivni teren/izlet</small></label>
+      <select id="tripSelect" class="tracking-select" aria-label="Izlet"></select>
+    </div>
+    <div class="tracking-step">
+      <span class="tracking-step-no">2</span>
+      <label for="teamSelect"><b>Team</b><small>jedan team ili svi teamovi</small></label>
+      <select id="teamSelect" class="tracking-select" aria-label="Team"></select>
+    </div>
+    <div class="tracking-step tracking-step-actions">
+      <span class="tracking-step-no">3</span>
+      <label><b>Pregled</b><small>marker + trag + last seen</small></label>
+      <button id="watchBtn" class="tracking-btn primary" type="button">Prati na karti</button>
+    </div>
+  </section>
+
+  <section class="tracking-quick-actions" aria-label="Team akcije">
+    <details class="tracking-action-card" id="newTeamDetails">
+      <summary><span>➕ Dodaj team</span><small>otvori novi team za odabrani izlet</small></summary>
+      <div class="tracking-action-body">
+        <div class="tracking-mode-grid">
+          <label class="tracking-mode"><input type="radio" name="defaultMode" value="lite" checked><b>Lite auto ping</b><span>60–120 s · minimalna baterija</span></label>
+          <label class="tracking-mode"><input type="radio" name="defaultMode" value="route"><b>Ruta / GPX</b><span>15–30 s · gušći trag i GPX</span></label>
+        </div>
+        <input id="createTerrainTitle" class="tracking-input" placeholder="Naziv teama, npr. Ekipa A"/>
+        <input id="createTerrainLocation" class="tracking-input" placeholder="Lokacija / napomena, opcionalno"/>
+        <button class="tracking-btn primary full" id="createTerrainBtn" type="button">Otvori team</button>
+        <div id="joinCodeOut" class="tracking-code">Kod ekipe: —</div>
+      </div>
+    </details>
+    <details class="tracking-action-card">
+      <summary><span>🔑 Pridruži se kodom</span><small>za članove koji ulaze u team</small></summary>
+      <div class="tracking-action-body tracking-join-row">
+        <input id="joinCodeInput" class="tracking-input" placeholder="Kod ekipe, npr. A1B2C3" maxlength="12"/>
+        <button class="tracking-btn" id="joinTerrainBtn" type="button">Pridruži me</button>
+      </div>
+    </details>
+  </section>
+
+  <section class="tracking-live-shell">
+    <div class="tracking-map-card">
+      <div id="trackingMap" class="tracking-map"></div>
+      <div class="tracking-map-status" id="trackingStatus">Učitavam…</div>
+    </div>
+    <aside class="tracking-side">
+      <div class="tracking-card compact">
+        <div class="tracking-side-head">
+          <div><h2>Članovi</h2><p id="currentSelectionLabel">Odaberi izlet i team.</p></div>
+          <select id="hoursSelect" class="tracking-select small" aria-label="Period">
+            <option value="2">2 h</option>
+            <option value="6" selected>6 h</option>
+            <option value="12">12 h</option>
+            <option value="24">24 h</option>
+            <option value="0">sve</option>
+          </select>
+        </div>
+        <div class="tracking-kpis">
+          <div class="tracking-kpi"><b id="kpiTeams">—</b><span>teamova</span></div>
+          <div class="tracking-kpi"><b id="kpiPeople">—</b><span>članova</span></div>
+          <div class="tracking-kpi"><b id="kpiOnline">—</b><span>online</span></div>
+          <div class="tracking-kpi"><b id="kpiPoints">—</b><span>točaka</span></div>
+        </div>
+      </div>
+      <div class="tracking-card compact">
+        <div class="tracking-side-head">
+          <h2>Ekipa na terenu</h2>
+          <button class="tracking-btn" id="exportBtn" type="button">GPX</button>
+        </div>
+        <div id="peopleList" class="tracking-status-list"><div class="tracking-empty">Odaberi team i klikni “Prati na karti”.</div></div>
+      </div>
+    </aside>
+  </section>
 </main>
 </div>
 <script src="assets/sov-shell-v55825.js"></script>
 <script src="assets/sov-polish-v55826.js"></script>
-<script src="assets/sov-tracking-lite.js?v=5.59.3"></script>
+<script src="assets/sov-tracking-lite.js?v=5.59.5"></script>
 </body>
 </html>
