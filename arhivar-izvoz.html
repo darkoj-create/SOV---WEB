@@ -1,57 +1,57 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="hr">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
 <title>SOV Arhivar — izvoz</title>
-<link rel="stylesheet" href="assets/site.css">
-<link rel="stylesheet" href="assets/arhivar-submissions.css?v=5.58.24">
+<link href="assets/site.css" rel="stylesheet"/>
+<link href="assets/arhivar-submissions.css?v=5.58.26" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 <script src="assets/supabase-config.js"></script>
 <script src="assets/auth.js"></script>
-<link rel="stylesheet" href="assets/sov-foundation-v55822.css"><link rel="stylesheet" href="assets/sov-shell-v55824.css"></head>
+<link href="assets/sov-foundation-v55822.css" rel="stylesheet"/><link href="assets/sov-shell-v55825.css" rel="stylesheet"/><link href="assets/sov-polish-v55826.css" rel="stylesheet"/></head>
 <body class="arhivar-submissions as-clean">
 <header class="as-top">
-  <a class="as-brand" href="arhivar-dashboard.html"><span class="as-mark">SOV</span><span><b>Arhivarski izvoz</b><small>CSV · XML · ZIP paketi</small></span></a>
-  <nav class="as-nav">
-    <a href="dashboard.html">Dashboard</a>
-    <a href="arhivar-dashboard.html">Arhivar</a>
-    <a href="arhivar.html">Uređivanje arhive</a>
-    <a href="arhivar-predane-jame.html">Predane jame</a>
-    <a href="arhivar-izvoz.html" class="active">Izvoz</a>
-    <a href="login.html" data-logout>Odjava</a>
-  </nav>
+<a class="as-brand" href="arhivar-dashboard.html"><span class="as-mark">SOV</span><span><b>Arhivarski izvoz</b><small>CSV · XML · ZIP paketi</small></span></a>
+<nav class="as-nav">
+<a href="dashboard.html">Dashboard</a>
+<a href="arhivar-dashboard.html">Arhivar</a>
+<a href="arhivar.html">Uređivanje arhive</a>
+<a href="arhivar-predane-jame.html">Predane jame</a>
+<a class="active" href="arhivar-izvoz.html">Izvoz</a>
+<a data-logout="" href="login.html">Odjava</a>
+</nav>
 </header>
 <main class="as-shell">
-  <section class="as-hero clean-hero">
-    <div>
-      <p class="as-eyebrow">Izvoz / paketi <span class="as-badge submitted">Arhivar</span></p>
-      <h1>Izvoz predaja i paketa</h1>
-      <p>Za katastar, lokalnu arhivu ili ručnu obradu. Odaberi status, učitaj pregled, pa izvezi CSV/XML ili ZIP paket s manifestom i privitcima.</p>
-    </div>
-    <div class="as-actions hero-actions">
-      <button class="as-btn primary" onclick="SOVArchiveExport.exportCsv()">CSV</button>
-      <button class="as-btn" onclick="SOVArchiveExport.exportXml()">XML</button>
-      <button class="as-btn warn" onclick="SOVArchiveExport.exportZip()">ZIP paket</button>
-    </div>
-  </section>
-
-  <section class="as-panel export-panel">
-    <div class="panel-headline"><div><h2>Što izvozim?</h2><p class="as-muted">Ovaj izvoz je za predane jame i njihove privitke. Izvoz postojeće arhive radi se direktno u “Uređivanje arhive”.</p></div></div>
-    <div class="as-toolbar compact-toolbar">
-      <select id="exportFilter" class="as-select">
-        <option value="approved">Samo odobrene</option>
-        <option value="submitted">Čekaju review</option>
-        <option value="needs_changes">Fali nešto</option>
-        <option value="all">Sve predaje</option>
-      </select>
-      <button class="as-btn primary" onclick="SOVArchiveExport.load()">Učitaj pregled</button>
-    </div>
-    <div id="exportStats" class="as-muted export-status">Nije učitano.</div>
-    <div class="as-list export-list" id="exportList"></div>
-  </section>
+<section class="as-hero clean-hero">
+<div>
+<p class="as-eyebrow">Izvoz / paketi <span class="as-badge submitted">Arhivar</span></p>
+<h1>Izvoz predaja i paketa</h1>
+<p>Za katastar, lokalnu arhivu ili ručnu obradu. Odaberi status, učitaj pregled, pa izvezi CSV/XML ili ZIP paket s manifestom i privitcima.</p>
+</div>
+<div class="as-actions hero-actions">
+<button class="as-btn primary" onclick="SOVArchiveExport.exportCsv()">CSV</button>
+<button class="as-btn" onclick="SOVArchiveExport.exportXml()">XML</button>
+<button class="as-btn warn" onclick="SOVArchiveExport.exportZip()">ZIP paket</button>
+</div>
+</section>
+<section class="as-panel export-panel">
+<div class="panel-headline"><div><h2>Što izvozim?</h2><p class="as-muted">Ovaj izvoz je za predane jame i njihove privitke. Izvoz postojeće arhive radi se direktno u “Uređivanje arhive”.</p></div></div>
+<div class="as-toolbar compact-toolbar">
+<select class="as-select" id="exportFilter">
+<option value="approved">Samo odobrene</option>
+<option value="submitted">Čekaju review</option>
+<option value="needs_changes">Fali nešto</option>
+<option value="all">Sve predaje</option>
+</select>
+<button class="as-btn primary" onclick="SOVArchiveExport.load()">Učitaj pregled</button>
+</div>
+<div class="as-muted export-status" id="exportStats">Nije učitano.</div>
+<div class="as-list export-list" id="exportList"></div>
+</section>
 </main>
-<script src="assets/arhivar-export.js?v=5.58.24"></script>
-<script src="assets/sov-foundation-v55822.js" defer></script><script src="assets/sov-shell-v55824.js" defer></script></body>
+<script src="assets/arhivar-export.js?v=5.58.26"></script>
+<script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script defer="" src="assets/sov-polish-v55826.js"></script></body>
 </html>

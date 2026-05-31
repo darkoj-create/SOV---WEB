@@ -1,5 +1,13 @@
+# v5.58.25 — Codex review + public hamburger fix
 
-## v5.58.24 — Foundation refactor stabilization
+- Pregledan Codex v5.58.24 build. Potvrđeno: foundation/shared shell, mobile polish, SQL safety i role cleanup postoje.
+- Popravljen glavni javni ekran: `index.html` sada učitava shared shell CSS/JS i dobiva funkcionalan mobile hamburger/drawer.
+- Shared shell sada podržava javne stranice (`index`, `vijesti`, `o-drustvu`, `speleoskola`, `pridruzi-nam-se`, itd.), ne samo Cloud/app stranice.
+- Dodan delegated hamburger handler, pa drawer radi i ako se gumb naknadno premjesti/re-rendera.
+- Svi root HTML linkovi prebačeni su sa `sov-shell-v55824` na `sov-shell-v55825`; `sync-status.html` dignut je na 5.58.25.
+
+
+## v5.58.25 — Foundation refactor stabilization
 
 - Dodan `assets/sov-shell-v55824.css/js` s jačim role-aware shellom, vidljivim focus ringom, 44px touch targetima i mobile drawer polishom.
 - Dashboard role preview zaključan je na Webmaster-only; Admin ostaje operativna rola bez tech/SQL/sync alata.
@@ -9,7 +17,7 @@
 - News editor i članska predaja članka više ne prikazuju SQL/upute korisniku; javne vijesti ostaju CMS-first uz statički fallback.
 - Početna stranica dobiva premium mobile polish: hamburger drawer, Facebook link u headeru i dorađen hero/news UX.
 - Hamburger na početnoj sada ima pouzdan click handler i mobile drawer open/closed state.
-- `sync-status.html`, cache-bust asseti, `VERSION.txt` i `BUILD_VERSION.txt` usklađeni su na v5.58.24.
+- `sync-status.html`, cache-bust asseti, `VERSION.txt` i `BUILD_VERSION.txt` usklađeni su na v5.58.25.
 - Nema novog SQL-a.
 
 ## v5.58.23 — Shared shell / header convergence
@@ -472,3 +480,11 @@ Dodani pravi HTML fajlovi:
 - Karta primarno čita `sov_map_objects()` / `speleo_objects_staging`, odnosno aktualnu Supabase bazu objekata koju koristi Arhivar.
 - Dashboard, navigacija i sync-status prebačeni su na `karta.html`.
 - Dodan SQL `SUPABASE_SOV_MAP_v5_58_15_KARTA_REAL_DB.sql`.
+
+## v5.58.26 — final UX polish
+- Dodan `sov-polish-v55826.css/js` kao sigurni završni polish sloj preko v5.58.25.
+- Naslovnica dobila premium hero, dodatne CTA gumbe, bolji banner, čišće news kartice i čist footer bez starog dev/version teksta.
+- Public/mobile hamburger dodatno ojačan fallback gumbom i scroll-lockom dok je drawer otvoren.
+- Dashboard, public i app kartice dobile ujednačeniji radius, shadow, spacing i mobile ponašanje.
+- Dodan back-to-top gumb.
+- Nema novog SQL-a i nema APK promjena.

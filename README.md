@@ -1,4 +1,4 @@
-# SOV web build v5.58.24
+# SOV web build v5.58.25
 
 Foundation refactor build za SOV Cloud web.
 

@@ -1,11 +1,12 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="hr">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>SOV Cloud — Baza objekata</title>
-  <link rel="stylesheet" href="assets/site.css">
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>SOV Cloud — Baza objekata</title>
+<link href="assets/site.css" rel="stylesheet"/>
+<style>
     :root{--bg:#030607;--panel:rgba(10,16,18,.78);--card:rgba(255,255,255,.055);--stroke:rgba(255,255,255,.12);--text:#f5f8f7;--muted:#9baaaa;--lime:#d7f66f;--cyan:#78d7ff;--red:#ff6262;--green:#74e891;--grey:#aaa79e;--amber:#ffbb66}
     *{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at 16% 8%,rgba(215,246,111,.12),transparent 28%),radial-gradient(circle at 86% 18%,rgba(120,215,255,.14),transparent 30%),linear-gradient(180deg,#020303,#081012 55%,#020303);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh} body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.55;background:url("data:image/svg+xml,%3Csvg width='520' height='520' viewBox='0 0 520 520' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='rgba(255,255,255,.045)' stroke-width='1.1'%3E%3Cpath d='M0 360 C90 286 142 376 242 281 S420 190 520 262'/%3E%3Cpath d='M0 172 C120 230 185 105 294 180 S430 280 520 203'/%3E%3Cpath d='M130 0 C92 90 140 160 105 245 S85 405 150 520'/%3E%3Cpath d='M385 0 C318 105 390 198 328 300 S285 430 330 520'/%3E%3C/g%3E%3C/svg%3E") center/520px repeat}
     .shell{width:min(1480px,calc(100% - 32px));margin:0 auto;position:relative;z-index:1}.top{height:78px;display:flex;align-items:center;justify-content:space-between;gap:18px}.brand{display:flex;align-items:center;gap:12px;color:#fff;text-decoration:none}.mark{width:42px;height:42px;border-radius:15px;display:grid;place-items:center;border:1px solid var(--stroke);background:rgba(255,255,255,.07);font-weight:1000}.brand strong{font-size:14px;display:block}.brand small{color:var(--lime);font-weight:900}.nav{display:flex;gap:10px;flex-wrap:wrap}.nav a{color:#dbe7e6;text-decoration:none;border:1px solid var(--stroke);border-radius:999px;background:rgba(255,255,255,.045);padding:9px 12px;font-size:13px;font-weight:850}.nav .primary{background:var(--lime);color:#101400;border:0}
@@ -16,30 +17,30 @@
     .drawingsPanel{border:1px solid rgba(215,246,111,.18);background:linear-gradient(135deg,rgba(215,246,111,.055),rgba(255,255,255,.035));border-radius:24px;padding:16px;margin-top:18px}.drawingsPanel h3{margin:0 0 6px;font-size:20px}.drawingsPanel p,.hintBox{color:#aebbbb;line-height:1.5}.drawingList{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-top:12px}.drawingItem{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.045);border-radius:20px;overflow:hidden}.drawingThumb{width:100%;height:150px;object-fit:cover;display:block;background:#101719;cursor:pointer}.drawingMeta{padding:12px}.drawingMeta b{display:block;font-size:14px}.drawingMeta small{display:block;color:#aab8b8;margin-top:4px;font-size:12px}.miniActions{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}.drawingPreviewOverlay{display:none;position:fixed;z-index:99999;inset:0;background:rgba(0,0,0,.82);backdrop-filter:blur(12px);padding:18px}.drawingPreviewOverlay.show{display:grid;place-items:center}.drawingPreviewBox{width:min(1120px,96vw);height:min(88vh,820px);border:1px solid rgba(255,255,255,.16);border-radius:24px;background:#05090a;box-shadow:0 30px 90px rgba(0,0,0,.65);display:flex;flex-direction:column;overflow:hidden}.drawingPreviewHead{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.12)}.drawingPreviewBody{flex:1;display:grid;place-items:center;min-height:0}.drawingPreviewBody img{max-width:100%;max-height:100%;object-fit:contain}.drawingPreviewBody iframe{width:100%;height:100%;border:0;background:#fff}.syncTiny{font-size:12px;padding:8px 10px}
     @media(max-width:1050px){.hero{grid-template-columns:1fr}.stats{grid-template-columns:repeat(4,1fr)}.layout{grid-template-columns:1fr}.list{max-height:560px}.detailPanel,.empty{min-height:520px}}@media(max-width:680px){.shell{width:min(100% - 20px,720px)}.top{height:auto;padding:15px 0;align-items:flex-start;flex-direction:column}.nav{overflow:auto;flex-wrap:nowrap;width:100%;padding-bottom:4px}.nav a{white-space:nowrap}.hero{padding:22px;border-radius:28px}.stats{grid-template-columns:repeat(2,1fr)}.infoGrid{grid-template-columns:1fr}.kv{grid-template-columns:1fr}.detailHero{min-height:210px;padding:22px}.listPanel,.detailPanel{border-radius:24px}}
   </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="assets/supabase-config.js"></script><script src="assets/auth.js"></script><script src="assets/speleo-sql-live.js?v=5.15"></script>  <link rel="stylesheet" href="assets/mobile.css">
-<link rel="stylesheet" href="assets/sov-inbox.css?v=4.90"><link rel="stylesheet" href="assets/sov-foundation-v55822.css"><link rel="stylesheet" href="assets/sov-shell-v55824.css"></head>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="assets/supabase-config.js"></script><script src="assets/auth.js"></script><script src="assets/speleo-sql-live.js?v=5.15"></script> <link href="assets/mobile.css" rel="stylesheet"/>
+<link href="assets/sov-inbox.css?v=4.90" rel="stylesheet"/><link href="assets/sov-foundation-v55822.css" rel="stylesheet"/><link href="assets/sov-shell-v55825.css" rel="stylesheet"/><link href="assets/sov-polish-v55826.css" rel="stylesheet"/></head>
 <body>
-  <div class="shell">
-    <header class="top">
-      <a class="brand" href="dashboard.html"><div class="mark">SOV</div><div><strong>Speleološki odsjek Velebit</strong><small>SOV Cloud</small></div></a>
-      <nav class="nav"><a href="dashboard.html">Dashboard</a><a href="karta.html">SOV Karta</a><a class="primary" href="pregled-baze.html">Baza</a><button class="btn primary syncTiny" onclick="syncDriveDrawings()">🔄 Sync nacrte</button><a href="izleti.html">Izleti</a><a href="index.html">Novosti</a></nav>
-    </header>
-    <section class="hero">
-      <div><span class="kicker">● Baza objekata</span><h1>Abecedni popis speleoloških objekata.</h1><p>Brzi pregled baze s pretragom, statusima, detaljima objekta, linkom na kartu i oznakom postoji li nacrt / digitalni zapis.</p></div>
-      <div class="stats"><div class="stat"><b id="statTotal">—</b><span>objekata</span></div><div class="stat"><b id="statShown">—</b><span>prikazano</span></div><div class="stat"><b id="statCad">—</b><span>u katastru</span></div><div class="stat"><b id="statDraw">—</b><span>s nacrtom</span></div></div>
-    </section>
-    <main class="layout">
-      <section class="listPanel">
-        <div class="listHead">
-          <div class="search"><input id="q" placeholder="Traži po nazivu, mjestu, općini, pločici, katastru..." autocomplete="off"></div>
-          <div class="filters"><button class="chip active" data-filter="all">Sve</button><button class="chip" data-filter="cad">U katastru</button><button class="chip" data-filter="notcad">Nije u katastru</button><button class="chip" data-filter="grey">Sivo / provjera</button><button class="chip" data-filter="draw">Ima nacrt</button></div>
-          <div class="count" id="count">Učitavam bazu...</div>
-        </div>
-        <div class="list" id="list"></div>
-      </section>
-      <section class="detailPanel" id="detail"><div class="empty"><div><h2>Odaberi objekt</h2><p>Klikni objekt s lijeve strane za puni prikaz podataka, link na kartu i nacrt ako je evidentiran.</p></div></div></section>
-    </main>
-  </div>
+<div class="shell">
+<header class="top">
+<a class="brand" href="dashboard.html"><div class="mark">SOV</div><div><strong>Speleološki odsjek Velebit</strong><small>SOV Cloud</small></div></a>
+<nav class="nav"><a href="dashboard.html">Dashboard</a><a href="karta.html">SOV Karta</a><a class="primary" href="pregled-baze.html">Baza</a><button class="btn primary syncTiny" onclick="syncDriveDrawings()">🔄 Sync nacrte</button><a href="izleti.html">Izleti</a><a href="index.html">Novosti</a></nav>
+</header>
+<section class="hero">
+<div><span class="kicker">● Baza objekata</span><h1>Abecedni popis speleoloških objekata.</h1><p>Brzi pregled baze s pretragom, statusima, detaljima objekta, linkom na kartu i oznakom postoji li nacrt / digitalni zapis.</p></div>
+<div class="stats"><div class="stat"><b id="statTotal">—</b><span>objekata</span></div><div class="stat"><b id="statShown">—</b><span>prikazano</span></div><div class="stat"><b id="statCad">—</b><span>u katastru</span></div><div class="stat"><b id="statDraw">—</b><span>s nacrtom</span></div></div>
+</section>
+<main class="layout">
+<section class="listPanel">
+<div class="listHead">
+<div class="search"><input autocomplete="off" id="q" placeholder="Traži po nazivu, mjestu, općini, pločici, katastru..."/></div>
+<div class="filters"><button class="chip active" data-filter="all">Sve</button><button class="chip" data-filter="cad">U katastru</button><button class="chip" data-filter="notcad">Nije u katastru</button><button class="chip" data-filter="grey">Sivo / provjera</button><button class="chip" data-filter="draw">Ima nacrt</button></div>
+<div class="count" id="count">Učitavam bazu...</div>
+</div>
+<div class="list" id="list"></div>
+</section>
+<section class="detailPanel" id="detail"><div class="empty"><div><h2>Odaberi objekt</h2><p>Klikni objekt s lijeve strane za puni prikaz podataka, link na kartu i nacrt ako je evidentiran.</p></div></div></section>
+</main>
+</div>
 <div class="drawingPreviewOverlay" id="drawingPreviewOverlay" onclick="if(event.target===this)closeDrawingPreview()"><div class="drawingPreviewBox"><div class="drawingPreviewHead"><b id="drawingPreviewTitle">Nacrt</b><button class="btn" onclick="closeDrawingPreview()">Zatvori</button></div><div class="drawingPreviewBody" id="drawingPreviewBody"></div></div></div>
 <script>
 const DATA_URL='data/sov-baza.json';const DRAWINGS_DRIVE_FOLDER_ID='1vCPsPaznDOgwRMU_XVDiI4aUhu0o8yFB';const DRAWINGS_KEY='sov_drawings_index_v2';let all=[],shown=[],selected=null,filter='all';const $=id=>document.getElementById(id);
@@ -139,9 +140,8 @@ function copyCoords(id){const o=all.find(x=>Number(x.id)===Number(id));if(o)navi
 document.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{document.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));b.classList.add('active');filter=b.dataset.filter;apply()});$('q').addEventListener('input',apply);
 window.SOVSpeleoSQL.loadAppObjects(DATA_URL).then(async d=>{all=d.filter(o=>o&&o.name).sort((a,b)=>String(a.name).localeCompare(String(b.name),'hr',{sensitivity:'base'}));await hydrateDrawingsFromSupabase();$('statTotal').textContent=all.length;$('statCad').textContent=all.filter(o=>statusType(o)==='green').length;$('statDraw').textContent=all.filter(hasDrawing).length;apply();const params=new URLSearchParams(location.search);const id=params.get('object')||params.get('id');if(id){selectObj(Number(id));setTimeout(()=>document.querySelector('.item.active')?.scrollIntoView({block:'center'}),80)}}).catch(e=>{$('count').textContent='Ne mogu učitati SQL bazu ni JSON fallback';console.error(e)});
 </script>
-
 <script src="assets/sov-inbox.js?v=4.90"></script>
-<a data-role-sql href="speleo-sql-edit-sandbox.html" style="position:fixed;right:18px;bottom:18px;z-index:9999;background:#d7f66f;color:#101400;border-radius:999px;padding:12px 16px;font-weight:900;text-decoration:none;box-shadow:0 12px 30px rgba(0,0,0,.35)">SQL edit sandbox</a>
-<a data-role-sql href="speleo-sql-go-live.html" style="position:fixed;left:18px;bottom:18px;z-index:9999;background:#78d7ff;color:#031014;border-radius:999px;padding:12px 16px;font-weight:900;text-decoration:none;box-shadow:0 12px 30px rgba(0,0,0,.35)">SQL Go Live</a>
-<script src="assets/sov-foundation-v55822.js" defer></script><script src="assets/sov-shell-v55824.js" defer></script></body>
+<a data-role-sql="" href="speleo-sql-edit-sandbox.html" style="position:fixed;right:18px;bottom:18px;z-index:9999;background:#d7f66f;color:#101400;border-radius:999px;padding:12px 16px;font-weight:900;text-decoration:none;box-shadow:0 12px 30px rgba(0,0,0,.35)">SQL edit sandbox</a>
+<a data-role-sql="" href="speleo-sql-go-live.html" style="position:fixed;left:18px;bottom:18px;z-index:9999;background:#78d7ff;color:#031014;border-radius:999px;padding:12px 16px;font-weight:900;text-decoration:none;box-shadow:0 12px 30px rgba(0,0,0,.35)">SQL Go Live</a>
+<script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script defer="" src="assets/sov-polish-v55826.js"></script></body>
 </html>

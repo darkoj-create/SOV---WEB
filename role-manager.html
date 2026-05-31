@@ -1,92 +1,87 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="hr">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Role manager · Webmaster — SOV Cloud</title>
-  <link rel="stylesheet" href="assets/site.css">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="assets/supabase-config.js"></script>
-  <script src="assets/auth.js"></script>
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>Role manager · Webmaster — SOV Cloud</title>
+<link href="assets/site.css" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/supabase-config.js"></script>
+<script src="assets/auth.js"></script>
+<style>
     :root{--bg2:#071011;--card:rgba(255,255,255,.055);--line2:rgba(255,255,255,.13);--muted2:#aac0bb;--ok:#d7f66f;--cyan:#7ce3d2;--warn:#ffd37a;--bad:#ff9b9b}
     body{background:radial-gradient(circle at 20% 0%,rgba(124,227,210,.14),transparent 34%),radial-gradient(circle at 80% 10%,rgba(215,246,111,.10),transparent 28%),#050a0b;color:#eef8f2}
     .page{max-width:1240px;margin:34px auto 80px;padding:0 18px}.hero{border:1px solid var(--line2);border-radius:34px;background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.035));box-shadow:0 28px 90px rgba(0,0,0,.36);padding:28px;margin-bottom:18px}.heroTop{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap}.eyebrow{color:var(--ok);font-size:12px;text-transform:uppercase;letter-spacing:.12em;font-weight:950}.hero h1{margin:8px 0 8px;font-size:clamp(32px,5vw,56px);line-height:.98}.lead{color:var(--muted2);max-width:850px;line-height:1.55}.statusLine{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.pill{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line2);border-radius:999px;padding:8px 11px;background:rgba(255,255,255,.045);color:var(--muted2);font-size:12px;font-weight:900}.pill.ok{background:rgba(215,246,111,.13);color:#efffc1;border-color:rgba(215,246,111,.28)}.pill.warn{background:rgba(255,211,122,.12);color:#ffe2a2;border-color:rgba(255,211,122,.25)}
     .grid{display:grid;grid-template-columns:1.2fr .8fr;gap:18px}.card{border:1px solid var(--line2);border-radius:28px;background:var(--card);padding:20px;box-shadow:0 18px 50px rgba(0,0,0,.22)}.card h2{margin:0 0 6px}.sub{color:var(--muted2);font-size:13px;line-height:1.5}.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}.btn{border:1px solid var(--line2);border-radius:999px;padding:10px 13px;background:rgba(255,255,255,.055);color:#fff;font-weight:950;cursor:pointer}.btn:hover{background:rgba(255,255,255,.09)}.btn.primary{background:linear-gradient(135deg,var(--ok),var(--cyan));color:#08110f;border:0}.btn.danger{color:#ffc2c2;border-color:rgba(255,155,155,.35)}.btn.small{font-size:12px;padding:7px 10px}.input,.select{border:1px solid var(--line2);border-radius:16px;background:#071013;color:#fff;padding:10px 12px;font-weight:850;outline:none}.input{min-width:230px}.select{min-width:135px}.tableWrap{overflow:auto;border:1px solid var(--line2);border-radius:20px}.matrix{width:100%;border-collapse:separate;border-spacing:0;min-width:960px}.matrix th,.matrix td{padding:11px 10px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left;font-size:13px}.matrix th{position:sticky;top:0;background:#091213;color:#d9eee8;z-index:1}.matrix tr:last-child td{border-bottom:0}.matrix td.center,.matrix th.center{text-align:center}.roleLabel{font-weight:950}.desc{font-size:12px;color:var(--muted2);margin-top:3px}.toggle{width:20px;height:20px;accent-color:#d7f66f}.users{display:flex;flex-direction:column;gap:10px}.user{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;border:1px solid var(--line2);border-radius:20px;background:rgba(255,255,255,.035);padding:14px}.user b{display:block}.mail{font-size:12px;color:var(--muted2);margin-top:4px}.actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.mini{font-size:12px;color:var(--muted2)}.log{white-space:pre-wrap;border:1px solid var(--line2);border-radius:18px;background:rgba(0,0,0,.22);padding:13px;color:#cbe0da;font-size:12px;max-height:260px;overflow:auto}.jsonBox{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;white-space:pre-wrap;background:#031012;border:1px solid rgba(124,227,210,.2);border-radius:18px;padding:14px;color:#ccfff4;max-height:420px;overflow:auto}.split{display:grid;grid-template-columns:1fr 1fr;gap:14px}.notice{border:1px solid rgba(255,211,122,.22);background:rgba(255,211,122,.08);border-radius:20px;padding:14px;color:#ffe6b3;line-height:1.45}.okText{color:#eaffb4}.badText{color:#ffc2c2}.hidden{display:none!important}@media(max-width:920px){.grid,.split{grid-template-columns:1fr}.user{grid-template-columns:1fr}.actions{justify-content:flex-start}.hero{padding:22px}}
   </style>
-  <link rel="stylesheet" href="assets/mobile.css">
-<link rel="stylesheet" href="assets/sov-foundation-v55822.css"><link rel="stylesheet" href="assets/sov-shell-v55824.css"></head>
+<link href="assets/mobile.css" rel="stylesheet"/>
+<link href="assets/sov-foundation-v55822.css" rel="stylesheet"/><link href="assets/sov-shell-v55825.css" rel="stylesheet"/><link href="assets/sov-polish-v55826.css" rel="stylesheet"/></head>
 <body>
-  <header class="top wrap">
-    <a class="brand" href="dashboard.html"><div class="mark">SOV</div><div><strong>SOV Cloud</strong><small>Role manager · Webmaster</small></div></a>
-    <nav class="nav"><a href="dashboard.html">Dashboard</a><a href="admin-users.html">Korisnici</a><a href="sync-status.html">SOV Sync</a><a href="login.html" data-logout>Odjava</a></nav>
-  </header>
-
-  <main class="page">
-    <section class="hero">
-      <div class="heroTop">
-        <div>
-          <div class="eyebrow">SOV ecosystem v5.58.24</div>
-          <h1>Role manager · Webmaster</h1>
-          <p class="lead">Jedno mjesto za korisnike, role i permissione koje će kasnije čitati unified/admin APK. Ovdje ne diramo SQL bazu objekata — samo <b>profiles</b> i <b>sov_role_permissions</b>.</p>
-        </div>
-        <div class="statusLine">
-          <span class="pill" id="sessionPill">Provjera sesije...</span>
-          <span class="pill" id="schemaPill">Schema nije provjerena</span>
-          <span class="pill ok">APK role-ready</span>
-        </div>
-      </div>
-      <div class="toolbar">
-        <button class="btn primary" id="btnLoad">Učitaj sve</button>
-        <button class="btn" id="btnSaveMatrix">Spremi permissione</button>
-        <button class="btn" id="btnCopyJson">Kopiraj APK JSON</button>
-        <a class="btn" href="SUPABASE_SOV_ROLES_WEBMASTER_ADMIN_SPLIT_v5_58_12.sql" download>Preuzmi role SQL</a>
-      </div>
-    </section>
-
-    <section class="grid">
-      <div class="card">
-        <h2>Role permissions matrica</h2>
-        <p class="sub">Ovo je kanonska tablica za budući unified APK. App nakon logina treba čitati permissione i prema njima paliti/gasiti module.</p>
-        <div class="tableWrap" style="margin-top:16px">
-          <table class="matrix" id="matrixTable">
-            <thead><tr id="matrixHead"></tr></thead>
-            <tbody id="matrixBody"><tr><td>Učitavam...</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>APK permission JSON</h2>
-        <p class="sub">Ovo je format koji kasnije koristimo u appu: <code>role → permissions</code>. Dobar je za testiranje i za Kotlin model.</p>
-        <div id="apkJson" class="jsonBox">Učitaj role...</div>
-      </div>
-    </section>
-
-    <section class="grid" style="margin-top:18px">
-      <div class="card">
-        <h2>Korisnici i role</h2>
-        <p class="sub">Brzo odobravanje i promjena rola. Ako spremanje ne prođe, provjeri pristup, sesiju i dozvole za role tablice.</p>
-        <div class="toolbar">
-          <input class="input" id="userSearch" placeholder="Traži ime ili email...">
-          <select class="select" id="statusFilter"><option value="all">Svi statusi</option><option value="pending">Čekaju</option><option value="approved">Odobreni</option><option value="rejected">Odbijeni</option></select>
-          <select class="select" id="roleFilter"><option value="all">Sve role</option></select>
-        </div>
-        <div class="users" id="usersBox"><p class="sub">Učitavam korisnike...</p></div>
-      </div>
-
-      <div class="card">
-        <h2>Status i log</h2>
-        <div class="notice" id="sqlNotice">Ako ovo prvi put koristiš, prvo u Supabase SQL editoru pokreni <b>SUPABASE_SOV_ROLES_WEBMASTER_ADMIN_SPLIT_v5_58_12.sql</b>. Nakon toga ova stranica može mijenjati role i permissione.</div>
-        <div class="split" style="margin-top:14px">
-          <div><div class="mini">Ukupno korisnika</div><h2 id="countUsers">—</h2></div>
-          <div><div class="mini">Aktivnih rola</div><h2 id="countRoles">—</h2></div>
-        </div>
-        <div class="log" id="logBox" style="margin-top:14px">Ready.</div>
-      </div>
-    </section>
-  </main>
-
+<header class="top wrap">
+<a class="brand" href="dashboard.html"><div class="mark">SOV</div><div><strong>SOV Cloud</strong><small>Role manager · Webmaster</small></div></a>
+<nav class="nav"><a href="dashboard.html">Dashboard</a><a href="admin-users.html">Korisnici</a><a href="sync-status.html">SOV Sync</a><a data-logout="" href="login.html">Odjava</a></nav>
+</header>
+<main class="page">
+<section class="hero">
+<div class="heroTop">
+<div>
+<div class="eyebrow">SOV ecosystem v5.58.26</div>
+<h1>Role manager · Webmaster</h1>
+<p class="lead">Jedno mjesto za korisnike, role i permissione koje će kasnije čitati unified/admin APK. Ovdje ne diramo SQL bazu objekata — samo <b>profiles</b> i <b>sov_role_permissions</b>.</p>
+</div>
+<div class="statusLine">
+<span class="pill" id="sessionPill">Provjera sesije...</span>
+<span class="pill" id="schemaPill">Schema nije provjerena</span>
+<span class="pill ok">APK role-ready</span>
+</div>
+</div>
+<div class="toolbar">
+<button class="btn primary" id="btnLoad">Učitaj sve</button>
+<button class="btn" id="btnSaveMatrix">Spremi permissione</button>
+<button class="btn" id="btnCopyJson">Kopiraj APK JSON</button>
+<a class="btn" download="" href="SUPABASE_SOV_ROLES_WEBMASTER_ADMIN_SPLIT_v5_58_12.sql">Preuzmi role SQL</a>
+</div>
+</section>
+<section class="grid">
+<div class="card">
+<h2>Role permissions matrica</h2>
+<p class="sub">Ovo je kanonska tablica za budući unified APK. App nakon logina treba čitati permissione i prema njima paliti/gasiti module.</p>
+<div class="tableWrap" style="margin-top:16px">
+<table class="matrix" id="matrixTable">
+<thead><tr id="matrixHead"></tr></thead>
+<tbody id="matrixBody"><tr><td>Učitavam...</td></tr></tbody>
+</table>
+</div>
+</div>
+<div class="card">
+<h2>APK permission JSON</h2>
+<p class="sub">Ovo je format koji kasnije koristimo u appu: <code>role → permissions</code>. Dobar je za testiranje i za Kotlin model.</p>
+<div class="jsonBox" id="apkJson">Učitaj role...</div>
+</div>
+</section>
+<section class="grid" style="margin-top:18px">
+<div class="card">
+<h2>Korisnici i role</h2>
+<p class="sub">Brzo odobravanje i promjena rola. Ako spremanje ne prođe, provjeri pristup, sesiju i dozvole za role tablice.</p>
+<div class="toolbar">
+<input class="input" id="userSearch" placeholder="Traži ime ili email..."/>
+<select class="select" id="statusFilter"><option value="all">Svi statusi</option><option value="pending">Čekaju</option><option value="approved">Odobreni</option><option value="rejected">Odbijeni</option></select>
+<select class="select" id="roleFilter"><option value="all">Sve role</option></select>
+</div>
+<div class="users" id="usersBox"><p class="sub">Učitavam korisnike...</p></div>
+</div>
+<div class="card">
+<h2>Status i log</h2>
+<div class="notice" id="sqlNotice">Ako ovo prvi put koristiš, prvo u Supabase SQL editoru pokreni <b>SUPABASE_SOV_ROLES_WEBMASTER_ADMIN_SPLIT_v5_58_12.sql</b>. Nakon toga ova stranica može mijenjati role i permissione.</div>
+<div class="split" style="margin-top:14px">
+<div><div class="mini">Ukupno korisnika</div><h2 id="countUsers">—</h2></div>
+<div><div class="mini">Aktivnih rola</div><h2 id="countRoles">—</h2></div>
+</div>
+<div class="log" id="logBox" style="margin-top:14px">Ready.</div>
+</div>
+</section>
+</main>
 <script>
 const PERMISSION_COLUMNS = [
   ['can_view_sov_base','SOV baza','Vidi osnovnu SOV bazu i objekte.'],
@@ -163,7 +158,7 @@ function renderUsers(){
   document.querySelectorAll('[data-reject]').forEach(btn=>{ btn.onclick=async()=>{ await saveUserStatus(btn.dataset.reject,'rejected'); }; });
 }
 function buildApkJson(){
-  const out={version:'5.58.24',generatedAt:new Date().toISOString(),roles:{}};
+  const out={version:'5.58.26',generatedAt:new Date().toISOString(),roles:{}};
   roles.forEach(r=>{ out.roles[r.role]={label:r.label||r.role,permissions:{}}; PERMISSION_COLUMNS.forEach(([k])=>{ out.roles[r.role].permissions[k]=!!r[k]; }); });
   return out;
 }
@@ -213,5 +208,5 @@ document.addEventListener('DOMContentLoaded', async()=>{
   refreshAll();
 });
 </script>
-<script src="assets/sov-foundation-v55822.js" defer></script><script src="assets/sov-shell-v55824.js" defer></script></body>
+<script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script defer="" src="assets/sov-polish-v55826.js"></script></body>
 </html>

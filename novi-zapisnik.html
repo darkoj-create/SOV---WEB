@@ -1,13 +1,14 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="hr">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Novi zapisnik — SOV Cloud</title>
-  <link rel="stylesheet" href="assets/site.css">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="assets/supabase-config.js"></script><script src="assets/auth.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>Novi zapisnik — SOV Cloud</title>
+<link href="assets/site.css" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="assets/supabase-config.js"></script><script src="assets/auth.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
     :root{--bg:#040708;--panel:rgba(255,255,255,.055);--panel2:rgba(8,14,16,.78);--stroke:rgba(255,255,255,.13);--lime:#d7f66f;--cyan:#78d7ff;--amber:#ffb15f;--muted:#aab8b7;--ink:#f5f8f7}
     body{background:radial-gradient(circle at 82% 10%,rgba(120,215,255,.14),transparent 27%),radial-gradient(circle at 15% 20%,rgba(215,246,111,.13),transparent 28%),linear-gradient(180deg,#020303,#071012 50%,#020303);color:var(--ink)}
     .rec-shell{width:min(1480px,calc(100% - 34px));margin:0 auto 70px}.rec-hero{padding:58px 0 22px;display:grid;grid-template-columns:1fr auto;gap:22px;align-items:end}.rec-hero h1{font-size:clamp(50px,8vw,104px);letter-spacing:-.075em;line-height:.88;margin:10px 0 10px}.rec-hero p{max-width:760px;color:#bfcccc;font-size:18px;line-height:1.65;margin:0}.hero-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}.btn{border:1px solid var(--stroke);background:rgba(255,255,255,.055);color:#eef7f6;border-radius:999px;padding:12px 15px;text-decoration:none;font-weight:950;cursor:pointer}.btn.primary{background:var(--lime);color:#101400;border:0}.btn.amber{background:rgba(255,177,95,.14);border-color:rgba(255,177,95,.28)}.btn:disabled{opacity:.45;cursor:not-allowed}
@@ -16,40 +17,40 @@
     .dev-open{position:fixed;right:14px;bottom:14px;z-index:99999;border:1px solid rgba(215,246,111,.35);background:rgba(7,13,15,.92);color:#d7f66f;border-radius:999px;padding:9px 12px;font:800 12px Inter,system-ui,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.35)}
     @media(max-width:1050px){.rec-hero{grid-template-columns:1fr}.hero-actions{justify-content:flex-start}.rec-grid{grid-template-columns:1fr}.preview-wrap{max-height:none}.paper{padding:42px 28px}.row{grid-template-columns:1fr}}
   </style>
-  <link rel="stylesheet" href="assets/mobile.css">
-<link rel="stylesheet" href="assets/sov-inbox.css?v=4.90"><link rel="stylesheet" href="assets/sov-foundation-v55822.css"><link rel="stylesheet" href="assets/sov-shell-v55824.css"></head>
+<link href="assets/mobile.css" rel="stylesheet"/>
+<link href="assets/sov-inbox.css?v=4.90" rel="stylesheet"/><link href="assets/sov-foundation-v55822.css" rel="stylesheet"/><link href="assets/sov-shell-v55825.css" rel="stylesheet"/><link href="assets/sov-polish-v55826.css" rel="stylesheet"/></head>
 <body>
 <header class="top wrap"><a class="brand" href="index.html"><div class="mark">SOV</div><div><strong>Speleološki odsjek Velebit</strong><small>Zagreb</small></div></a><nav class="nav"><a href="dashboard.html">SOV Cloud</a><a href="dokumentacija.html">Dokumenti</a><a href="pregled-zapisnika.html">Pregled zapisnika</a></nav></header>
 <main class="rec-shell">
-  <section class="rec-hero">
-    <div><div class="eyebrow">Dokumenti / zapisnici</div><h1>Novi zapisnik</h1><p>Editor za sastanak koji sam povlači datum, vodi korisnika kroz stalne sekcije i iz previewa šalje zapisnik uredniku kao DOCX.</p></div>
-    <div class="hero-actions"><button class="btn" id="previewBtn">Preview</button><button class="btn amber" id="saveBtn">Spremi draft</button><button class="btn primary" id="sendBtn">Spremi i pošalji</button></div>
-  </section>
-  <section class="rec-grid">
-    <aside class="editor-panel">
-      <div class="panel-title"><b>Unos zapisnika</b><span>korak 1</span></div>
-      <div class="form">
-        <div class="row">
-          <div class="field"><label>Datum sastanka</label><input id="date" readonly></div>
-          <div class="field"><label>Naslov</label><input id="title" value="Zapisnik sastanka"></div>
-        </div>
-        <div class="row">
-          <div class="field"><label>Tko vodi sastanak?</label><input id="lead" placeholder="npr. Ivona Lišanin"></div>
-          <div class="field"><label>Tko je zapisničar?</label><input id="recorder" placeholder="npr. Tibor Jakrlin"></div>
-        </div>
-        <div class="hint">Format je složen prema primjeru zapisnika: naslov, stalne sekcije, pa na kraju “Sastanak vodio” i “Zapisnik vodila”.</div>
-        <div class="section-card"><h3>SPELEO IZLETI</h3><div class="field"><textarea id="speleIzleti" placeholder="Unesi speleo izlete, datume, sudionike, objekt i kratki tijek akcije..."></textarea></div></div>
-        <div class="section-card"><h3>INI IZLETI</h3><div class="field"><textarea id="iniIzleti" placeholder="Ostali izleti, ferate, ronjenja, planinarske aktivnosti..."></textarea></div></div>
-        <div class="section-card"><h3>NAJAVE</h3><div class="field"><textarea id="najave" placeholder="Najave vježbi, izleta, predavanja, ekspedicija, rokova..."></textarea></div></div>
-        <div class="section-card"><h3>RAZNO</h3><div class="field"><textarea id="razno" placeholder="Ostale informacije, odluke, dogovori, linkovi, obavijesti..."></textarea></div></div>
-        <div id="status" class="status"></div>
-      </div>
-    </aside>
-    <section class="preview-panel">
-      <div class="panel-title"><b>Preview zapisnika</b><span>DOCX stil</span></div>
-      <div class="preview-wrap"><article class="paper" id="paper"></article><div class="send-box"><b>Kako radi slanje:</b> u ovoj statičkoj verziji “Spremi i pošalji” sprema zapisnik u pending listu urednika i automatski skida DOCX. Kad spojimo Supabase/Drive, isti gumb šalje dokument uredniku bez lokalnog storagea.</div></div>
-    </section>
-  </section>
+<section class="rec-hero">
+<div><div class="eyebrow">Dokumenti / zapisnici</div><h1>Novi zapisnik</h1><p>Editor za sastanak koji sam povlači datum, vodi korisnika kroz stalne sekcije i iz previewa šalje zapisnik uredniku kao DOCX.</p></div>
+<div class="hero-actions"><button class="btn" id="previewBtn">Preview</button><button class="btn amber" id="saveBtn">Spremi draft</button><button class="btn primary" id="sendBtn">Spremi i pošalji</button></div>
+</section>
+<section class="rec-grid">
+<aside class="editor-panel">
+<div class="panel-title"><b>Unos zapisnika</b><span>korak 1</span></div>
+<div class="form">
+<div class="row">
+<div class="field"><label>Datum sastanka</label><input id="date" readonly=""/></div>
+<div class="field"><label>Naslov</label><input id="title" value="Zapisnik sastanka"/></div>
+</div>
+<div class="row">
+<div class="field"><label>Tko vodi sastanak?</label><input id="lead" placeholder="npr. Ivona Lišanin"/></div>
+<div class="field"><label>Tko je zapisničar?</label><input id="recorder" placeholder="npr. Tibor Jakrlin"/></div>
+</div>
+<div class="hint">Format je složen prema primjeru zapisnika: naslov, stalne sekcije, pa na kraju “Sastanak vodio” i “Zapisnik vodila”.</div>
+<div class="section-card"><h3>SPELEO IZLETI</h3><div class="field"><textarea id="speleIzleti" placeholder="Unesi speleo izlete, datume, sudionike, objekt i kratki tijek akcije..."></textarea></div></div>
+<div class="section-card"><h3>INI IZLETI</h3><div class="field"><textarea id="iniIzleti" placeholder="Ostali izleti, ferate, ronjenja, planinarske aktivnosti..."></textarea></div></div>
+<div class="section-card"><h3>NAJAVE</h3><div class="field"><textarea id="najave" placeholder="Najave vježbi, izleta, predavanja, ekspedicija, rokova..."></textarea></div></div>
+<div class="section-card"><h3>RAZNO</h3><div class="field"><textarea id="razno" placeholder="Ostale informacije, odluke, dogovori, linkovi, obavijesti..."></textarea></div></div>
+<div class="status" id="status"></div>
+</div>
+</aside>
+<section class="preview-panel">
+<div class="panel-title"><b>Preview zapisnika</b><span>DOCX stil</span></div>
+<div class="preview-wrap"><article class="paper" id="paper"></article><div class="send-box"><b>Kako radi slanje:</b> u ovoj statičkoj verziji “Spremi i pošalji” sprema zapisnik u pending listu urednika i automatski skida DOCX. Kad spojimo Supabase/Drive, isti gumb šalje dokument uredniku bez lokalnog storagea.</div></div>
+</section>
+</section>
 </main>
 <footer class="footer"><div class="wrap">© Speleološki odsjek Velebit</div></footer>
 <script>
@@ -80,5 +81,5 @@ function load(){ $('date').value=todayHr(); try{const d=JSON.parse(localStorage.
 ['title','lead','recorder','speleIzleti','iniIzleti','najave','razno'].forEach(id=>$(id).addEventListener('input',render));
 $('previewBtn').onclick=render; $('saveBtn').onclick=saveDraft; $('sendBtn').onclick=send; load();
 </script>
-<script src="assets/sov-inbox.js?v=4.90"></script><script src="assets/sov-foundation-v55822.js" defer></script><script src="assets/sov-shell-v55824.js" defer></script></body>
+<script src="assets/sov-inbox.js?v=4.90"></script><script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script defer="" src="assets/sov-polish-v55826.js"></script></body>
 </html>

@@ -1,146 +1,132 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="hr">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SOV Sync · Ekosustav status v5.58.24</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap" rel="stylesheet">
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>SOV Sync · Ekosustav status v5.58.26</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&amp;display=swap" rel="stylesheet"/>
+<style>
     :root{--bg:#07100d;--card:#0d1a16;--card2:#10221d;--line:rgba(255,255,255,.10);--text:#eef8f2;--muted:#a9bdb4;--lime:#d7f66f;--teal:#83e6c2;--blue:#78d7ff;--red:#ff7a7a;--amber:#ffd36f;--shadow:0 24px 80px rgba(0,0,0,.40)}
     *{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:radial-gradient(circle at top left,rgba(131,230,194,.15),transparent 36%),radial-gradient(circle at 80% 12%,rgba(120,215,255,.12),transparent 30%),var(--bg);color:var(--text)}
     a{color:inherit}.shell{width:min(1180px,calc(100% - 28px));margin:0 auto;padding:24px 0 44px}.top{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:22px}.brand{display:flex;align-items:center;gap:12px;text-decoration:none}.mark{width:46px;height:46px;border-radius:16px;background:linear-gradient(135deg,var(--lime),var(--teal));color:#111;display:grid;place-items:center;font-weight:950;box-shadow:0 14px 40px rgba(215,246,111,.14)}.brand strong{display:block}.brand small{color:var(--muted);font-weight:800}.nav{display:flex;gap:8px;flex-wrap:wrap}.nav a{padding:10px 13px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--line);text-decoration:none;font-weight:900;font-size:13px}.nav a.primary{background:linear-gradient(135deg,var(--lime),var(--teal));color:#111;border:0}.hero{border:1px solid rgba(255,255,255,.12);border-radius:34px;background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.035));box-shadow:var(--shadow);padding:28px;margin-bottom:18px}.eyebrow{display:inline-flex;gap:8px;align-items:center;padding:8px 11px;border-radius:999px;background:rgba(215,246,111,.12);border:1px solid rgba(215,246,111,.25);color:#eaffb3;font-weight:950;font-size:12px;text-transform:uppercase;letter-spacing:.06em}.hero h1{font-size:clamp(34px,5vw,64px);line-height:.95;margin:18px 0 12px}.hero p{color:var(--muted);max-width:820px;font-size:16px;line-height:1.6}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}.btn{border:0;border-radius:999px;padding:12px 15px;font-weight:950;cursor:pointer;background:linear-gradient(135deg,var(--lime),var(--teal));color:#111;text-decoration:none}.btn.secondary{background:rgba(255,255,255,.07);color:var(--text);border:1px solid var(--line)}.btn:disabled{opacity:.55;cursor:not-allowed}
     .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px}.card{border:1px solid var(--line);border-radius:26px;background:rgba(13,26,22,.82);box-shadow:0 18px 60px rgba(0,0,0,.24);padding:18px;min-height:150px}.card.big{grid-column:span 2}.card h2{margin:0 0 10px;font-size:18px}.metric{font-size:34px;font-weight:950;letter-spacing:-.04em}.muted{color:var(--muted);font-size:13px;line-height:1.45}.status{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:950;border:1px solid var(--line);background:rgba(255,255,255,.05)}.dot{width:9px;height:9px;border-radius:999px;background:#8b98a0}.ok .dot{background:var(--teal)}.warn .dot{background:var(--amber)}.bad .dot{background:var(--red)}.split{display:grid;grid-template-columns:1fr 1fr;gap:12px}.line{height:1px;background:var(--line);margin:13px 0}.kv{display:grid;grid-template-columns:160px 1fr;gap:8px;font-size:13px;margin:8px 0}.kv b{color:#dceee6}.kv span{color:var(--muted);overflow-wrap:anywhere}.log{max-height:320px;overflow:auto;background:rgba(0,0,0,.22);border:1px solid var(--line);border-radius:18px;padding:12px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;color:#cfe1da;white-space:pre-wrap}.tiny{font-size:11px;color:var(--muted)}.pill{display:inline-flex;padding:4px 8px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.05);font-size:11px;font-weight:950;color:#ddf7ec}.manual{padding:18px;border-radius:24px;background:rgba(255,255,255,.055);border:1px solid var(--line);line-height:1.55}.manual h3{margin:0 0 8px}.manual code{background:rgba(0,0,0,.28);border:1px solid var(--line);border-radius:8px;padding:2px 5px;color:#eaffb3}.footer{margin-top:18px;color:var(--muted);font-size:12px;text-align:center}.hidden{display:none!important}
     @media(max-width:920px){.grid{grid-template-columns:1fr}.card.big{grid-column:auto}.split{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}.kv{grid-template-columns:1fr}.hero{border-radius:26px}.card{border-radius:22px}}
   </style>
-<link rel="stylesheet" href="assets/sov-foundation-v55822.css"><link rel="stylesheet" href="assets/sov-shell-v55824.css"></head>
+<link href="assets/sov-foundation-v55822.css" rel="stylesheet"/><link href="assets/sov-shell-v55825.css" rel="stylesheet"/><link href="assets/sov-polish-v55826.css" rel="stylesheet"/></head>
 <body>
-  <div class="shell">
-    <header class="top">
-      <a class="brand" href="dashboard.html"><div class="mark">SOV</div><div><strong>SOV Sync</strong><small>ekosustav status · v5.58.24</small></div></a>
-      <nav class="nav"><a href="dashboard.html">Dashboard</a><a href="karta.html">Karta</a><a href="arhivar-dashboard.html">Arhivar</a><a href="news-editor.html">Vijesti CMS</a><a href="role-manager.html">Role</a><a class="primary" href="sync-status.html">SOV Sync</a></nav>
-    </header>
-
-    <section class="hero">
-      <span class="eyebrow">SOV ekosustav · admin kontrolna ploča</span>
-      <h1>Jedno mjesto za provjeru synca.</h1>
-      <p>Ova stranica je usklađena s web buildom v5.58.24. Čita endpointove i Supabase tablice: karta/baza objekata, puni detail objekta, nacrti, izleti, role, novosti CMS, user predaje članaka, arhivarske predaje i Webmaster-only zaštitu. Ne mijenja podatke.</p>
-      <div class="actions">
-        <button class="btn" id="runAllBtn">Provjeri sve</button>
-        <button class="btn secondary" id="runDrawingsBtn">Nacrti</button>
-        <button class="btn secondary" id="runTripsBtn">Izleti</button>
-        <button class="btn secondary" id="runSupabaseBtn">Supabase</button>
-        <button class="btn secondary" id="runNewsBtn">Vijesti</button>
-        <button class="btn secondary" id="runSubmissionsBtn">Predane jame</button>
-        <button class="btn secondary" id="runMapBtn">Karta</button>
-      </div>
-    </section>
-
-    <section class="grid">
-      <article class="card">
-        <div id="overallStatus" class="status"><span class="dot"></span><span>Čeka provjeru</span></div>
-        <h2>Opći status</h2>
-        <div class="metric" id="overallMetric">—</div>
-        <p class="muted" id="overallText">Klikni “Provjeri sve”.</p>
-      </article>
-
-      <article class="card">
-        <div id="drawingsStatus" class="status"><span class="dot"></span><span>Nacrti</span></div>
-        <h2>Drive nacrti index</h2>
-        <div class="metric" id="drawingsCount">—</div>
-        <div class="kv"><b>GS verzija</b><span id="drawingsVersion">—</span></div>
-        <div class="kv"><b>Zadnji index</b><span id="drawingsBuiltAt">—</span></div>
-        <div class="kv"><b>Endpoint</b><span id="drawingsEndpoint">—</span></div>
-      </article>
-
-      <article class="card">
-        <div id="tripsStatus" class="status"><span class="dot"></span><span>Izleti</span></div>
-        <h2>Izleti GS</h2>
-        <div class="metric" id="tripsCount">—</div>
-        <div class="kv"><b>Akcija</b><span id="tripsAction">listTrips</span></div>
-        <div class="kv"><b>Endpoint</b><span id="tripsEndpoint">—</span></div>
-      </article>
-
-      <article class="card">
-        <div id="newsStatus" class="status"><span class="dot"></span><span>Vijesti</span></div>
-        <h2>Vijesti CMS</h2>
-        <div class="metric" id="newsCount">—</div>
-        <div class="kv"><b>Objavljeno</b><span id="newsPublishedCount">—</span></div>
-        <div class="kv"><b>Draft/skriveno</b><span id="newsDraftCount">—</span></div>
-        <div class="kv"><b>Storage</b><span id="newsStorageStatus">sov-news bucket</span></div>
-      </article>
-
-      <article class="card">
-        <div id="submissionsStatus" class="status"><span class="dot"></span><span>Predane jame</span></div>
-        <h2>Arhivarske predaje</h2>
-        <div class="metric" id="submissionsCount">—</div>
-        <div class="kv"><b>Pending / review</b><span id="submissionsPending">—</span></div>
-        <div class="kv"><b>Approved</b><span id="submissionsApproved">—</span></div>
-        <div class="kv"><b>Privitci</b><span id="submissionFilesCount">—</span></div>
-      </article>
-
-
-
-      <article class="card">
-        <div id="mapStatus" class="status"><span class="dot"></span><span>Karta</span></div>
-        <h2>Karta / baza objekata</h2>
-        <div class="metric" id="mapObjectsCount">—</div>
-        <div class="kv"><b>Izvor</b><span id="mapSourceLabel">sov_map_objects_page() / sov_arhivar_worklist</span></div>
-        <div class="kv"><b>Stranica</b><span>karta.html</span></div>
-      </article>
-
-      <article class="card big">
-        <div id="supabaseStatus" class="status"><span class="dot"></span><span>Supabase</span></div>
-        <h2>Supabase cache, role i baza</h2>
-        <div class="split">
-          <div>
-            <div class="kv"><b>Nacrti u Supabaseu</b><span id="sbDrawingsCount">—</span></div>
-            <div class="kv"><b>Verified / auto</b><span id="sbDrawingsAuto">—</span></div>
-            <div class="kv"><b>Possible / partial</b><span id="sbDrawingsPartial">—</span></div>
-            <div class="kv"><b>Objekti staging/live</b><span id="sbObjectsCount">—</span></div>
-          </div>
-          <div>
-            <div class="kv"><b>Profili</b><span id="sbProfilesCount">—</span></div>
-            <div class="kv"><b>Admin</b><span id="sbRoleAdmin">—</span></div>
-            <div class="kv"><b>Editor / Arhivar / Oružar</b><span id="sbRoleStaff">—</span></div>
-            <div class="kv"><b>Trenutna rola</b><span data-user-role>—</span></div>
-          </div>
-        </div>
-        <div class="line"></div>
-        <p class="muted">Read-only provjere. Ako neka tablica vrati <code>n/a</code>, to obično znači da SQL migracija još nije pokrenuta ili RLS ne dopušta admin read.</p>
-      </article>
-
-      <article class="card">
-        <h2>Build verzije</h2>
-        <div class="kv"><b>Web</b><span>v5.58.24 shared shell, mobile touch, role cleanup, karta full detail</span></div>
-        <div class="kv"><b>News CMS SQL</b><span>postojeći sov_news RPC/storage bez nove migracije</span></div>
-        <div class="kv"><b>Arhivar SQL</b><span>postojeći full edit + submissions + workflow provjere</span></div>
-        <div class="kv"><b>Admin APK source</b><span>v1.4.13.7 arhivar submissions</span></div>
-      </article>
-
-      <article class="card big">
-        <h2>Pravilo za buduće buildove</h2>
-        <div class="manual">
-          <h3>sync-status.html je dio builda</h3>
-          <p>Od v5.58.24 ova stranica se ažurira uz svaki relevantan web build: verzija, novi moduli, SQL potrebe i endpointi. Tehnički status ostaje samo Webmasteru.</p>
-          <p>Dashboard preview je samo vizualni filter na dashboardu. Ne mijenja stvarne role i ne daje pristup zaštićenim stranicama.</p>
-        </div>
-      </article>
-
-      <article class="card big">
-        <h2>Detalji zadnje provjere</h2>
-        <div class="log" id="logBox">Čeka provjeru...</div>
-      </article>
-    </section>
-
-    <div class="footer">SOV web v5.58.24 · sync-status.html · webmaster read-only kontrolna ploča</div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="assets/supabase-config.js"></script>
-  <script src="assets/auth.js"></script>
-  <script>
+<div class="shell">
+<header class="top">
+<a class="brand" href="dashboard.html"><div class="mark">SOV</div><div><strong>SOV Sync</strong><small>ekosustav status · v5.58.26</small></div></a>
+<nav class="nav"><a href="dashboard.html">Dashboard</a><a href="karta.html">Karta</a><a href="arhivar-dashboard.html">Arhivar</a><a href="news-editor.html">Vijesti CMS</a><a href="role-manager.html">Role</a><a class="primary" href="sync-status.html">SOV Sync</a></nav>
+</header>
+<section class="hero">
+<span class="eyebrow">SOV ekosustav · admin kontrolna ploča</span>
+<h1>Jedno mjesto za provjeru synca.</h1>
+<p>Ova stranica je usklađena s web buildom v5.58.26. Čita endpointove i Supabase tablice: karta/baza objekata, puni detail objekta, nacrti, izleti, role, novosti CMS, user predaje članaka, arhivarske predaje i Webmaster-only zaštitu. Ne mijenja podatke.</p>
+<div class="actions">
+<button class="btn" id="runAllBtn">Provjeri sve</button>
+<button class="btn secondary" id="runDrawingsBtn">Nacrti</button>
+<button class="btn secondary" id="runTripsBtn">Izleti</button>
+<button class="btn secondary" id="runSupabaseBtn">Supabase</button>
+<button class="btn secondary" id="runNewsBtn">Vijesti</button>
+<button class="btn secondary" id="runSubmissionsBtn">Predane jame</button>
+<button class="btn secondary" id="runMapBtn">Karta</button>
+</div>
+</section>
+<section class="grid">
+<article class="card">
+<div class="status" id="overallStatus"><span class="dot"></span><span>Čeka provjeru</span></div>
+<h2>Opći status</h2>
+<div class="metric" id="overallMetric">—</div>
+<p class="muted" id="overallText">Klikni “Provjeri sve”.</p>
+</article>
+<article class="card">
+<div class="status" id="drawingsStatus"><span class="dot"></span><span>Nacrti</span></div>
+<h2>Drive nacrti index</h2>
+<div class="metric" id="drawingsCount">—</div>
+<div class="kv"><b>GS verzija</b><span id="drawingsVersion">—</span></div>
+<div class="kv"><b>Zadnji index</b><span id="drawingsBuiltAt">—</span></div>
+<div class="kv"><b>Endpoint</b><span id="drawingsEndpoint">—</span></div>
+</article>
+<article class="card">
+<div class="status" id="tripsStatus"><span class="dot"></span><span>Izleti</span></div>
+<h2>Izleti GS</h2>
+<div class="metric" id="tripsCount">—</div>
+<div class="kv"><b>Akcija</b><span id="tripsAction">listTrips</span></div>
+<div class="kv"><b>Endpoint</b><span id="tripsEndpoint">—</span></div>
+</article>
+<article class="card">
+<div class="status" id="newsStatus"><span class="dot"></span><span>Vijesti</span></div>
+<h2>Vijesti CMS</h2>
+<div class="metric" id="newsCount">—</div>
+<div class="kv"><b>Objavljeno</b><span id="newsPublishedCount">—</span></div>
+<div class="kv"><b>Draft/skriveno</b><span id="newsDraftCount">—</span></div>
+<div class="kv"><b>Storage</b><span id="newsStorageStatus">sov-news bucket</span></div>
+</article>
+<article class="card">
+<div class="status" id="submissionsStatus"><span class="dot"></span><span>Predane jame</span></div>
+<h2>Arhivarske predaje</h2>
+<div class="metric" id="submissionsCount">—</div>
+<div class="kv"><b>Pending / review</b><span id="submissionsPending">—</span></div>
+<div class="kv"><b>Approved</b><span id="submissionsApproved">—</span></div>
+<div class="kv"><b>Privitci</b><span id="submissionFilesCount">—</span></div>
+</article>
+<article class="card">
+<div class="status" id="mapStatus"><span class="dot"></span><span>Karta</span></div>
+<h2>Karta / baza objekata</h2>
+<div class="metric" id="mapObjectsCount">—</div>
+<div class="kv"><b>Izvor</b><span id="mapSourceLabel">sov_map_objects_page() / sov_arhivar_worklist</span></div>
+<div class="kv"><b>Stranica</b><span>karta.html</span></div>
+</article>
+<article class="card big">
+<div class="status" id="supabaseStatus"><span class="dot"></span><span>Supabase</span></div>
+<h2>Supabase cache, role i baza</h2>
+<div class="split">
+<div>
+<div class="kv"><b>Nacrti u Supabaseu</b><span id="sbDrawingsCount">—</span></div>
+<div class="kv"><b>Verified / auto</b><span id="sbDrawingsAuto">—</span></div>
+<div class="kv"><b>Possible / partial</b><span id="sbDrawingsPartial">—</span></div>
+<div class="kv"><b>Objekti staging/live</b><span id="sbObjectsCount">—</span></div>
+</div>
+<div>
+<div class="kv"><b>Profili</b><span id="sbProfilesCount">—</span></div>
+<div class="kv"><b>Admin</b><span id="sbRoleAdmin">—</span></div>
+<div class="kv"><b>Editor / Arhivar / Oružar</b><span id="sbRoleStaff">—</span></div>
+<div class="kv"><b>Trenutna rola</b><span data-user-role="">—</span></div>
+</div>
+</div>
+<div class="line"></div>
+<p class="muted">Read-only provjere. Ako neka tablica vrati <code>n/a</code>, to obično znači da SQL migracija još nije pokrenuta ili RLS ne dopušta admin read.</p>
+</article>
+<article class="card">
+<h2>Build verzije</h2>
+<div class="kv"><b>Web</b><span>v5.58.26 shared shell, mobile touch, role cleanup, karta full detail</span></div>
+<div class="kv"><b>News CMS SQL</b><span>postojeći sov_news RPC/storage bez nove migracije</span></div>
+<div class="kv"><b>Arhivar SQL</b><span>postojeći full edit + submissions + workflow provjere</span></div>
+<div class="kv"><b>Admin APK source</b><span>v1.4.13.7 arhivar submissions</span></div>
+</article>
+<article class="card big">
+<h2>Pravilo za buduće buildove</h2>
+<div class="manual">
+<h3>sync-status.html je dio builda</h3>
+<p>Od v5.58.26 ova stranica se ažurira uz svaki relevantan web build: verzija, novi moduli, SQL potrebe i endpointi. Tehnički status ostaje samo Webmasteru.</p>
+<p>Dashboard preview je samo vizualni filter na dashboardu. Ne mijenja stvarne role i ne daje pristup zaštićenim stranicama.</p>
+</div>
+</article>
+<article class="card big">
+<h2>Detalji zadnje provjere</h2>
+<div class="log" id="logBox">Čeka provjeru...</div>
+</article>
+</section>
+<div class="footer">SOV web v5.58.26 · sync-status.html · webmaster read-only kontrolna ploča</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/supabase-config.js"></script>
+<script src="assets/auth.js"></script>
+<script>
     const state = {drawings:false,trips:false,supabase:false,news:false,submissions:false,map:false};
     const $ = (id)=>document.getElementById(id);
     function now(){ return new Date().toLocaleString('hr-HR'); }
@@ -266,5 +252,5 @@
       setTimeout(runAll,500);
     });
   </script>
-<script src="assets/sov-foundation-v55822.js" defer></script><script src="assets/sov-shell-v55824.js" defer></script><script>console.info("SOV sync v5.58.24: foundation refactor active.");</script></body>
+<script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script>console.info("SOV sync v5.58.26: foundation refactor active.");</script><script defer="" src="assets/sov-polish-v55826.js"></script></body>
 </html>
