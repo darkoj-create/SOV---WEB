@@ -1,3 +1,10 @@
+# v5.59.2 — Field Tracking SQL syntax fix
+
+- Popravljen SQL syntax error u `sov_tracking_can_view_trip()` gdje je fallback visibility vrijednost završila kao `''club''` umjesto `'club'`.
+- Dodan novi SQL file `SUPABASE_SOV_FIELD_TRACKING_LITE_v5_59_2_SQL_SYNTAX_FIX.sql`.
+- Web frontend i APK logika nisu mijenjani; ovo je sigurni SQL patch povrh v5.59.1.
+- `sync-status.html`, `VERSION.txt` i `BUILD_VERSION.txt` usklađeni su na v5.59.2.
+
 # v5.58.25 — Codex review + public hamburger fix
 
 - Pregledan Codex v5.58.24 build. Potvrđeno: foundation/shared shell, mobile polish, SQL safety i role cleanup postoje.
@@ -488,3 +495,17 @@ Dodani pravi HTML fajlovi:
 - Dashboard, public i app kartice dobile ujednačeniji radius, shadow, spacing i mobile ponašanje.
 - Dodan back-to-top gumb.
 - Nema novog SQL-a i nema APK promjena.
+
+## v5.59.0 — Field Tracking Lite MVP
+- Dodan web `tracking.html` za zadnju poznatu poziciju članova i trail po izletu.
+- Dodan GPX export za prikazane tracking točke.
+- Dashboard dobio Field Tracking karticu.
+- `sync-status.html` provjerava tracking SQL status.
+- Zahtijeva `SUPABASE_SOV_FIELD_TRACKING_LITE_v5_59_0.sql`.
+
+## v5.59.2 — Field Tracking tereni + modovi
+- Dodan teren/ekipa UX: otvori teren, join code, pridruživanje ekipe.
+- Dodani modovi: Lite auto ping 60–120 s i Tracking ruta/GPX 15–30 s.
+- Web tracking viewer sada primarno čita field events i fallbacka na izlete.
+- Android tracking kartica dobiva izbor moda i intervale koji štede bateriju.
+- Home login ikonica dodatno popravljena da bude klikabilna iznad home sadržaja.
