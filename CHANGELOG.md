@@ -1,3 +1,10 @@
+## v5.59.6 — Trip Assets Manager
+
+- Dodan web manager paketa za teren u `izleti-cloud.html`.
+- Upload/download `.sovpkg`, offline mapa i GPX/KML po izletu.
+- Priprema za checksum logiku da app ne skida ponovno isti paket.
+- Sync status usklađen s paketima za teren.
+
 # v5.59.5 — Tracking simplified team UI
 
 - `tracking.html` redesigned into simple flow: Izlet → Team → Prati na karti.

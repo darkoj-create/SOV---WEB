@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>SOV Sync · Ekosustav status v5.59.5</title>
+<title>SOV Sync · Ekosustav status v5.59.6</title>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&amp;display=swap" rel="stylesheet"/>
@@ -19,13 +19,13 @@
 <body>
 <div class="shell">
 <header class="top">
-<a class="brand" href="dashboard.html"><div class="mark">SOV</div><div><strong>SOV Sync</strong><small>ekosustav status · v5.59.5</small></div></a>
+<a class="brand" href="dashboard.html"><div class="mark">SOV</div><div><strong>SOV Sync</strong><small>ekosustav status · v5.59.6</small></div></a>
 <nav class="nav"><a href="dashboard.html">Dashboard</a><a href="karta.html">Karta</a><a href="arhivar-dashboard.html">Arhivar</a><a href="news-editor.html">Vijesti CMS</a><a href="role-manager.html">Role</a><a class="primary" href="sync-status.html">SOV Sync</a></nav>
 </header>
 <section class="hero">
 <span class="eyebrow">SOV ekosustav · admin kontrolna ploča</span>
 <h1>Jedno mjesto za provjeru synca.</h1>
-<p>Ova stranica je usklađena s web buildom v5.59.5. Čita endpointove i Supabase tablice: karta/baza objekata, puni detail objekta, nacrti, izleti, Field Tracking Lite, role, novosti CMS, user predaje članaka, arhivarske predaje i Webmaster-only zaštitu. Ne mijenja podatke.</p>
+<p>Ova stranica je usklađena s web buildom v5.59.6. Čita endpointove i Supabase tablice: karta/baza objekata, puni detail objekta, nacrti, izleti, Field Tracking Lite, Trip Assets/paketi za teren, role, novosti CMS, user predaje članaka, arhivarske predaje i Webmaster-only zaštitu. Ne mijenja podatke.</p>
 <div class="actions">
 <button class="btn" id="runAllBtn">Provjeri sve</button>
 <button class="btn secondary" id="runDrawingsBtn">Nacrti</button>
@@ -114,7 +114,7 @@
 </article>
 <article class="card">
 <h2>Build verzije</h2>
-<div class="kv"><b>Web</b><span>v5.59.5 Field Tracking Lite + shared shell + mobile polish</span></div>
+<div class="kv"><b>Web</b><span>v5.59.6 Field Tracking Lite + shared shell + mobile polish</span></div>
 <div class="kv"><b>News CMS SQL</b><span>postojeći sov_news RPC/storage bez nove migracije</span></div>
 <div class="kv"><b>Arhivar SQL</b><span>postojeći full edit + submissions + workflow provjere</span></div>
 <div class="kv"><b>Admin APK source</b><span>v1.4.13.7 arhivar submissions</span></div>
@@ -123,7 +123,7 @@
 <h2>Pravilo za buduće buildove</h2>
 <div class="manual">
 <h3>sync-status.html je dio builda</h3>
-<p>Od v5.59.5 ova stranica se ažurira uz svaki relevantan web build: verzija, novi moduli, SQL potrebe i endpointi. Tehnički status ostaje samo Webmasteru.</p>
+<p>Od v5.59.6 ova stranica se ažurira uz svaki relevantan web build: verzija, novi moduli, SQL potrebe i endpointi. Tehnički status ostaje samo Webmasteru.</p>
 <p>Dashboard preview je samo vizualni filter na dashboardu. Ne mijenja stvarne role i ne daje pristup zaštićenim stranicama.</p>
 </div>
 </article>
@@ -132,7 +132,7 @@
 <div class="log" id="logBox">Čeka provjeru...</div>
 </article>
 </section>
-<div class="footer">SOV web v5.59.5 · sync-status.html · webmaster read-only kontrolna ploča</div>
+<div class="footer">SOV web v5.59.6 · sync-status.html · webmaster read-only kontrolna ploča</div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/supabase-config.js"></script>
@@ -242,7 +242,7 @@
       if($('trackingTeamsCount')) $('trackingTeamsCount').textContent=String(d.field_events_active??d.field_events_total??0);
       $('trackingActiveCount').textContent=String(d.sessions_active??0);
       $('trackingPoints24h').textContent=String(d.points_24h??0);
-      setStatus('trackingStatus','ok','Tracking SQL OK');
+      setStatus('trackingStatus','ok','Tracking SQL OK · paketi za teren: sov_trip_assets_active');
       state.tracking=true; log('Field Tracking Lite', d); return {ok:true,data:d};
     }
 
@@ -273,7 +273,7 @@
       $('submissionsCount').textContent=all.ok?all.count:'n/a'; $('submissionsPending').textContent=pending.ok?pending.count:'n/a'; $('submissionsApproved').textContent=approved.ok?approved.count:'n/a'; $('submissionFilesCount').textContent=files.ok?files.count:'n/a';
       const ok=all.ok; setStatus('submissionsStatus',ok?'ok':'bad',ok?'Predane jame OK':'submission tablice nisu dostupne'); state.submissions=ok; const result={all,pending,approved,files}; log('Arhivarske predaje',result); return result;
     }
-    function updateOverall(){ const ok=[state.drawings,state.trips,state.supabase,state.news,state.submissions,state.map,state.tracking].filter(Boolean).length; $('overallMetric').textContent=ok+'/7'; if(ok===7){setStatus('overallStatus','ok','Sve osnovno OK');$('overallText').textContent='Nacrti, izleti, Supabase, vijesti, predane jame, karta i tracking odgovaraju.'} else if(ok>0){setStatus('overallStatus','warn','Djelomično OK');$('overallText').textContent='Neki moduli rade, neke treba provjeriti.'} else {setStatus('overallStatus','bad','Nije OK');$('overallText').textContent='Ni jedan osnovni modul nije potvrđen.'}}
+    function updateOverall(){ const ok=[state.drawings,state.trips,state.supabase,state.news,state.submissions,state.map,state.tracking].filter(Boolean).length; $('overallMetric').textContent=ok+'/7'; if(ok===7){setStatus('overallStatus','ok','Sve osnovno OK');$('overallText').textContent='Nacrti, izleti, Supabase, vijesti, predane jame, karta, tracking i paketi za teren odgovaraju.'} else if(ok>0){setStatus('overallStatus','warn','Djelomično OK');$('overallText').textContent='Neki moduli rade, neke treba provjeriti.'} else {setStatus('overallStatus','bad','Nije OK');$('overallText').textContent='Ni jedan osnovni modul nije potvrđen.'}}
     async function runOne(fn){ try{await fn()}catch(e){log('Greška: '+(e.message||e));} updateOverall(); }
     async function runAll(){ $('logBox').textContent=''; Object.keys(state).forEach(k=>state[k]=false); await runOne(checkDrawings); await runOne(checkTrips); await runOne(checkSupabase); await runOne(checkNews); await runOne(checkSubmissions); await runOne(checkMap); await runOne(checkTracking); updateOverall(); }
     document.addEventListener('DOMContentLoaded',async()=>{
@@ -283,5 +283,5 @@
       setTimeout(runAll,500);
     });
   </script>
-<script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script>console.info("SOV sync v5.59.5: foundation refactor active.");</script><script defer="" src="assets/sov-polish-v55826.js"></script></body>
+<script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script>console.info("SOV sync v5.59.6: foundation refactor active.");</script><script defer="" src="assets/sov-polish-v55826.js"></script></body>
 </html>
