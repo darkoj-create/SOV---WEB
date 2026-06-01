@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1" name="viewport"/>
-<title>SOV Cloud — Dashboard v5.59.0</title>
+<title>SOV Cloud — Dashboard v5.59.10</title>
 <link href="assets/site.css" rel="stylesheet"/>
 <link href="assets/mobile.css" rel="stylesheet"/>
 <link href="assets/sov-premium-ui.css" rel="stylesheet"/>
@@ -17,7 +17,7 @@
     [data-dash-visible].is-preview-hidden,.sov-module.is-preview-hidden,.sov-panel.is-preview-hidden,.sov-section-head.is-preview-hidden{display:none!important}.sov-admin-tools{display:grid;gap:10px;margin-top:14px}.sov-admin-tools a{display:flex;align-items:center;justify-content:space-between;gap:10px;text-decoration:none;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:10px 12px;background:rgba(255,255,255,.045);color:inherit}.sov-admin-tools a:hover{border-color:rgba(215,246,111,.38);transform:translateY(-1px)}.sov-admin-tools small{color:rgba(230,240,235,.62);font-weight:800}.sov-admin-warning{margin-top:12px;color:#ffd7b0;font-size:12px;line-height:1.45}.sov-preview-note{margin-left:auto;color:#b8c9c3;font-size:12px;font-weight:900}.sov-dev-float{display:none!important}
     @media(max-width:940px){.sov-role-preview{width:100%;justify-content:center;border-radius:18px;flex-wrap:wrap}.sov-role-preview .rp-label{display:none}.sov-role-preview button{font-size:11px;padding:7px 8px}.sov-preview-note{width:100%;margin:4px 0 0;text-align:center}}
   </style>
-<link href="assets/sov-foundation-v55822.css" rel="stylesheet"/><link href="assets/sov-shell-v55825.css" rel="stylesheet"/><link href="assets/sov-polish-v55826.css" rel="stylesheet"/></head>
+<link href="assets/sov-foundation-v55822.css" rel="stylesheet"/><link href="assets/sov-shell-v55825.css" rel="stylesheet"/><link href="assets/sov-polish-v55826.css" rel="stylesheet"/><link href="assets/sov-dashboard-clean-v55910.css" rel="stylesheet"/></head>
 <body class="sov-premium dashboard-page">
 <div class="sov-shell">
 <header class="sov-top">
@@ -33,8 +33,11 @@
 <a data-dash-visible="arhivar,admin,webmaster" data-role-archive="" href="arhivar-dashboard.html">Arhivar</a>
 <a class="primary" href="dashboard.html">SOV Cloud</a>
 <span class="sov-chip" data-dash-visible="admin,webmaster,oruzar,arhivar,editor"><span data-dash-name="" data-user-name="">—</span> · <span data-dash-role="" data-user-role="">—</span></span>
+</nav>
+</header>
+<div class="sov-preview-strip" aria-label="Role preview toolbar">
 <div aria-label="Role preview" class="sov-role-preview" id="dashboardRolePreview">
-<span class="rp-label">Preview</span>
+<span class="rp-label">Preview view</span>
 <button data-preview-dashboard-role="webmaster" type="button">Webmaster</button>
 <button data-preview-dashboard-role="admin" type="button">Admin</button>
 <button data-preview-dashboard-role="oruzar" type="button">Oružar</button>
@@ -42,8 +45,7 @@
 <button data-preview-dashboard-role="editor" type="button">Urednik</button>
 <button data-preview-dashboard-role="user" type="button">User</button>
 </div>
-</nav>
-</header>
+</div>
 <main>
 <section class="sov-hero">
 <div class="sov-hero-grid">
@@ -67,7 +69,7 @@
 <div class="sov-mini"><b data-dash-role="">—</b><span>stvarna rola</span></div>
 <div class="sov-mini"><b data-preview-role-label="">—</b><span>preview view</span></div>
 <div class="sov-mini"><b data-auth-status="">—</b><span>status računa</span></div>
-<div class="sov-mini"><b>5.59.0</b><span>web build</span></div>
+<div class="sov-mini"><b>5.59.10</b><span>web build</span></div>
 </div>
 <p class="sov-soft" data-access-summary="" style="margin-top:14px">Učitavam prava...</p>
 </aside>

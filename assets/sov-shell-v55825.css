@@ -99,3 +99,16 @@
     display:none!important;
   }
 }
+
+/* v5.59.10: desktop browsers must not get the floating/sticky shell.
+   Mobile browser/touch keeps sticky shell and drawer. */
+@media (hover:hover) and (pointer:fine){
+  .sov-shell-normalized{position:relative!important;top:auto!important;z-index:20!important}
+  .sov-shell-menu-button{display:none!important}
+  .sov-shell-normalized :is(.sov-nav,.aw-nav,.as-nav,.cm-nav,.nav,.navlinks,.dash-nav,.armory-nav,.om-nav){display:flex!important;overflow-x:auto!important}
+}
+@media (max-width:820px) and (hover:none) and (pointer:coarse){
+  .sov-shell-normalized{position:sticky!important;top:8px!important;z-index:1500!important}
+  .sov-shell-normalized :is(.sov-nav,.aw-nav,.as-nav,.cm-nav,.nav,.navlinks,.dash-nav,.armory-nav,.om-nav){display:none!important}
+  .sov-shell-menu-button{display:inline-flex!important}
+}
