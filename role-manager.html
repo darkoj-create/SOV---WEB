@@ -158,7 +158,7 @@ function renderUsers(){
   document.querySelectorAll('[data-reject]').forEach(btn=>{ btn.onclick=async()=>{ await saveUserStatus(btn.dataset.reject,'rejected'); }; });
 }
 function buildApkJson(){
-  const out={version:'5.58.26',generatedAt:new Date().toISOString(),roles:{}};
+  const out={version:'5.59.8',generatedAt:new Date().toISOString(),roles:{}};
   roles.forEach(r=>{ out.roles[r.role]={label:r.label||r.role,permissions:{}}; PERMISSION_COLUMNS.forEach(([k])=>{ out.roles[r.role].permissions[k]=!!r[k]; }); });
   return out;
 }

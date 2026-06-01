@@ -141,22 +141,41 @@
     const email = (payload.email||'').trim().toLowerCase();
     const password = payload.password || '';
     const full_name = (payload.name||'').trim();
+    const note = payload.note || '';
     if(!email || !password || !full_name) return {ok:false,msg:'Unesi ime, email i lozinku.'};
     const {data,error} = await sb.auth.signUp({
       email,password,
-      options:{data:{full_name, requested_role:'user'}}
+      options:{data:{full_name, requested_role:'user', note}}
     });
     if(error) return {ok:false,msg:error.message};
     if(data.user){
-      await sb.from('profiles').upsert({
-        id:data.user.id,
-        email,
-        full_name,
-        role:'user',
-        status:'pending',
-        note:payload.note || '',
-        created_at:new Date().toISOString()
-      },{onConflict:'id'});
+      // v5.59.8: create/repair public.profiles through SECURITY DEFINER RPC first.
+      // This fixes the case where Auth user exists, but the client-side profile upsert is blocked by RLS / email-confirm session.
+      let synced = false;
+      try{
+        const rpc = await sb.rpc('sov_register_pending_profile',{
+          p_user_id:data.user.id,
+          p_email:email,
+          p_full_name:full_name,
+          p_note:note
+        });
+        if(!rpc.error) synced = true;
+        else console.warn('sov_register_pending_profile unavailable/failed, falling back to direct upsert.', rpc.error);
+      }catch(e){ console.warn('sov_register_pending_profile skipped.', e); }
+      if(!synced){
+        try{
+          const up = await sb.from('profiles').upsert({
+            id:data.user.id,
+            email,
+            full_name,
+            role:'user',
+            status:'pending',
+            note,
+            created_at:new Date().toISOString()
+          },{onConflict:'id'});
+          if(up.error) console.warn('Direct profile upsert failed. SQL trigger/RPC should handle profile sync.', up.error);
+        }catch(e){ console.warn('Direct profile upsert exception. SQL trigger/RPC should handle profile sync.', e); }
+      }
     }
     return {ok:true,msg:'Zahtjev je poslan. Račun čeka admin odobrenje.'};
   }
@@ -208,15 +227,47 @@
 
   async function updateProfile(id, patch){
     const sb = getClient();
+    if(!sb) throw new Error('Supabase nije konfiguriran.');
+    // v5.59.8: admin update goes through RPC first so broken/strict profiles RLS cannot hide or block approvals.
+    try{
+      const rpc = await sb.rpc('sov_admin_update_user_profile',{
+        p_user_id:id,
+        p_role:Object.prototype.hasOwnProperty.call(patch,'role') ? patch.role : null,
+        p_status:Object.prototype.hasOwnProperty.call(patch,'status') ? patch.status : null,
+        p_note:Object.prototype.hasOwnProperty.call(patch,'note') ? patch.note : null
+      });
+      if(!rpc.error) return true;
+      console.warn('sov_admin_update_user_profile unavailable/failed, falling back to direct profiles update.', rpc.error);
+    }catch(e){ console.warn('sov_admin_update_user_profile skipped.', e); }
     const {error} = await sb.from('profiles').update(patch).eq('id',id);
     if(error) throw error;
     return true;
   }
+  function normalizeUserRow(u){
+    return {
+      id:u.id || u.user_id,
+      email:u.email || '',
+      full_name:u.full_name || u.name || u.email || '',
+      role:u.role || 'user',
+      status:u.status || 'pending',
+      note:u.note || '',
+      created_at:u.created_at || u.auth_created_at || null,
+      approved_at:u.approved_at || null,
+      has_profile: u.has_profile !== false
+    };
+  }
   async function loadUsers(){
     const sb = getClient(); if(!sb) return [];
+    // v5.59.8: first try Auth+profiles RPC. It backfills missing profile rows created by signup/RLS edge cases.
+    try{ await sb.rpc('sov_admin_sync_missing_profiles'); }catch(e){ /* older SQL: ignore */ }
+    try{
+      const rpc = await sb.rpc('sov_admin_list_users');
+      if(!rpc.error && Array.isArray(rpc.data)) return rpc.data.map(normalizeUserRow);
+      if(rpc.error) console.warn('sov_admin_list_users unavailable/failed, falling back to profiles table.', rpc.error);
+    }catch(e){ console.warn('sov_admin_list_users skipped.', e); }
     const {data,error} = await sb.from('profiles').select('id,email,full_name,role,status,note,created_at,approved_at').order('created_at',{ascending:false});
     if(error){ console.error(error); return []; }
-    return data || [];
+    return (data || []).map(normalizeUserRow);
   }
   async function approve(id){ return updateProfile(id,{status:'approved',approved_at:new Date().toISOString()}); }
   async function reject(id){ return updateProfile(id,{status:'rejected'}); }

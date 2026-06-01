@@ -1,3 +1,10 @@
+## v5.59.8 — User approval sync fix
+
+- Popravljen slučaj gdje se korisnik registrira u Supabase Auth, ali ne nastane `public.profiles` red pa ga nema ni u Admin approval ni u Role manager listi.
+- Dodan SQL patch `SUPABASE_SOV_USER_APPROVAL_SYNC_v5_59_8.sql` s Auth triggerom, backfillom postojećih Auth-only korisnika i admin RPC-ovima.
+- `assets/auth.js` sada pri registraciji koristi `sov_register_pending_profile`, a admin liste prvo zovu `sov_admin_list_users` / `sov_admin_sync_missing_profiles`.
+- Approval/role update sada ide kroz `sov_admin_update_user_profile` i fallbacka na stari direktni `profiles` update ako SQL patch još nije instaliran.
+
 ## v5.59.6 — Trip Assets Manager
 
 - Dodan web manager paketa za teren u `izleti-cloud.html`.
