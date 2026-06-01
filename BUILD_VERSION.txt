@@ -1,1 +1,1 @@
-sov-web-build-v5.59.9-oruzarstvo-category-cleanup
+sov-web-build-v6.0.1-oruzarstvo-hardboot-wow-sync

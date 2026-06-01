@@ -1,0 +1,30 @@
+{
+  "app": "SOV web",
+  "version": "6.0.1",
+  "versionName": "v6.0.1-oruzarstvo-hardboot-wow-sync",
+  "build": "sov-web-build-v6.0.1-oruzarstvo-hardboot-wow-sync",
+  "createdAt": "2026-06-01T22:20:53Z",
+  "cacheBust": "601",
+  "base": "sov-web-build-v6.0-wow-layer.zip",
+  "mergedFrom": "sov-web-build-v5.59.12-oruzarstvo-hardboot-fix.zip",
+  "requiresSql": false,
+  "sqlAlreadyIncluded": [
+    "SUPABASE_ORUZARSTVO_HEALTH_v5_59_11.sql",
+    "SUPABASE_ORUZARSTVO_CATEGORY_CLEANUP_v5_59_9.sql"
+  ],
+  "changedFiles": [
+    "oruzarstvo.html",
+    "assets/oruzarstvo-supabase.js",
+    "sync-status.html",
+    "data/oruzarstvo-data.json",
+    "BUILD_VERSION.txt",
+    "VERSION.txt",
+    "update.json"
+  ],
+  "notes": [
+    "Oružarstvo hardboot: static JSON renders first; Supabase live refresh runs in background.",
+    "Preserved v6 WOW layer assets and injected them into oruzarstvo.html.",
+    "sync-status.html aligned to v6.0.1 and checks Oružarstvo static JSON plus Supabase health.",
+    "Armory cache key bumped to sov_armory_catalog_cache_v601 to avoid stale loader/cache."
+  ]
+}
