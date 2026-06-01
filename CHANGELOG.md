@@ -1,5 +1,12 @@
 ## v5.59.8 — User approval sync fix
 
+## v5.59.11 — Oružarstvo health + fastload
+
+- `/oruzarstvo.html` prvo prikazuje statički katalog i ne čeka beskonačno Supabase manifest/view.
+- Dodan Oružarstvo health check u `sync-status.html`.
+- Dodan SQL RPC `sov_oruzarstvo_health()` kroz `SUPABASE_ORUZARSTVO_HEALTH_v5_59_11.sql`.
+- Cache key za opremu podignut na `sov_armory_catalog_cache_v55911`.
+
 - Popravljen slučaj gdje se korisnik registrira u Supabase Auth, ali ne nastane `public.profiles` red pa ga nema ni u Admin approval ni u Role manager listi.
 - Dodan SQL patch `SUPABASE_SOV_USER_APPROVAL_SYNC_v5_59_8.sql` s Auth triggerom, backfillom postojećih Auth-only korisnika i admin RPC-ovima.
 - `assets/auth.js` sada pri registraciji koristi `sov_register_pending_profile`, a admin liste prvo zovu `sov_admin_list_users` / `sov_admin_sync_missing_profiles`.

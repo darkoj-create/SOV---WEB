@@ -515,7 +515,7 @@
   }
 
 
-  const ARMORY_CATALOG_CACHE_KEY='sov_armory_catalog_cache_v548';
+  const ARMORY_CATALOG_CACHE_KEY='sov_armory_catalog_cache_v55911';
 
   function catalogRowCount(d){
     if(!d) return 0;
@@ -530,11 +530,27 @@
       localStorage.setItem(ARMORY_CATALOG_CACHE_KEY, JSON.stringify({saved_at:Date.now(), manifest:manifest||null, data}));
     }catch(e){console.warn('armory catalog cache save skipped',e);}
   }
+  async function withDbTimeout(promise, ms, label, fallback){
+    let timer;
+    const timeout = new Promise(resolve => {
+      timer = setTimeout(() => resolve({__timeout:true, data:null, error:{message:(label||'Supabase query')+' timeout after '+ms+'ms'}}), ms);
+    });
+    try{
+      const res = await Promise.race([promise, timeout]);
+      if(res && res.__timeout){ console.warn('SOVArmoryDB '+(label||'query')+' timed out; using fallback.'); return fallback; }
+      return res;
+    }catch(e){
+      console.warn('SOVArmoryDB '+(label||'query')+' failed', e&&e.message?e.message:e);
+      return fallback;
+    }finally{ clearTimeout(timer); }
+  }
+
   async function loadCatalogManifest(){
     if(!configured()) return null;
     try{
       const client=sb();
-      const {data,error}=await client.from('sov_equipment_catalog_manifest').select('*').limit(1);
+      const res=await withDbTimeout(client.from('sov_equipment_catalog_manifest').select('*').limit(1), 2200, 'manifest', {data:null,error:{message:'manifest timeout'}});
+      const data=res && res.data; const error=res && res.error;
       if(error){console.warn('armory manifest unavailable',error.message); return null;}
       return (data&&data[0])||null;
     }catch(e){console.warn('armory manifest failed',e.message||e); return null;}
@@ -559,7 +575,12 @@
       return cached.data;
     }
     async function safe(table, cols='*'){
-      try{const {data,error}=await client.from(table).select(cols).limit(7000); if(error){console.warn('SOVArmoryDB load '+table,error.message); return [];} return data||[];}catch(e){console.warn('SOVArmoryDB load '+table,e.message||e); return [];}
+      try{
+        const res=await withDbTimeout(client.from(table).select(cols).limit(7000), 3800, 'load '+table, {data:[],error:{message:'timeout'}});
+        const data=res && res.data; const error=res && res.error;
+        if(error){console.warn('SOVArmoryDB load '+table,error.message); return [];}
+        return data||[];
+      }catch(e){console.warn('SOVArmoryDB load '+table,e.message||e); return [];}
     }
     const cats=await safe('equipment_categories','*');
     const groupedCatalog=await safe('sov_equipment_app_catalog_grouped','*');
@@ -794,7 +815,10 @@
   // before returning cached data; on large Supabase views that made every page open feel like a full sync.
   // Now UI gets the last valid catalog immediately, while a single background refresh may update the cache.
   (function installFastCacheFirstWrapper(){
-    const CACHE_KEY='sov_armory_catalog_cache_v548';
+    const CACHE_KEY='sov_armory_catalog_cache_v55911';
+    try{
+      ['sov_armory_catalog_cache_v548','sov_armory_catalog_cache_v548_old','sov_armory_catalog_cache'].forEach(k=>localStorage.removeItem(k));
+    }catch(e){}
     const MIN_ROWS=20;
     let inflight=null;
     const originalLoadAllData=window.SOVArmoryDB.loadAllData;
