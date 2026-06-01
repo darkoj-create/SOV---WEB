@@ -88,10 +88,21 @@
 
   function stripDiacritics(s){ return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim(); }
   function canonicalArmoryCategory(raw, text){
-    // v5.45: SQL view is the only canonical armory brain.
-    // Web keeps only a tiny fallback for legacy/static/offline rows.
     const clean=String(raw||'').trim();
-    return clean || 'Ostalo';
+    const x=stripDiacritics(clean);
+    const t=stripDiacritics([clean,text].filter(Boolean).join(' '));
+    const ordinary=/(^| )(aa|aaa|9v|18650|cr123|cr2032)( |$)|baterije?\s+(aa|aaa|9v)|punjac.*(aa|aaa)|mini usb|usb kabel|solarni punjac|powerbank/.test(t);
+    const drill=/(bosch|hilti|makita|gbh|sds|busil|svrd|borer)/.test(t);
+    const drone=/(dron|dji|phantom|mavic|spark|gl300|elisa|propeler|ph4c|ade019|4480mah|5350mah)/.test(t);
+    if(clean==='Užad') return 'Užad i užetna oprema';
+    if(x.includes('busilice i baterije')){ if(drone) return 'Dronovi'; if(ordinary&&!drill) return 'Elektro, rasvjeta i foto'; return 'Bušilice i svrdla'; }
+    if(x.includes('elektro')||x.includes('foto')||x==='rasvjeta') return 'Elektro, rasvjeta i foto';
+    if(x.includes('ostali alat')||x==='ostalo') return 'Alat i radionica';
+    if(drone) return 'Dronovi';
+    if(/kompas|busol|suunto|disto|topodroid|klinomet/.test(t)) return 'Oprema za crtanje';
+    if(ordinary&&!drill) return 'Elektro, rasvjeta i foto';
+    if(drill) return 'Bušilice i svrdla';
+    return clean || 'Ostalo / provjeriti';
   }
 
 
