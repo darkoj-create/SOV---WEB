@@ -56,3 +56,48 @@ Injection is **idempotent** — re-running the injector will not duplicate tags.
 Delete the two `<link>`/`<script>` lines for `sov-wow-v6.*` from any page (or all),
 and delete `assets/sov-wow-v6.css` + `assets/sov-wow-v6.js`. The site returns to
 the exact v5.59.11 state.
+
+---
+
+# v6.0 · CLOUD UPDATE — SOV Cloud member tools
+
+Extends the WOW layer to the member/admin tools with a dedicated, **map-safe**
+stylesheet and engine additions. No data flows, RPCs, auth, or markup changed.
+
+### New file
+- `assets/sov-wow-app-v6.css` — premium layer scoped to `body.sov-cloud-page`.
+- `showcase/sov-cloud-showcase.html` — self-contained demo of oružarstvo + izleti + karta (no backend).
+
+### Injected into (25 cloud pages)
+oružarstvo (+ master/import/inventar/inventura/posudbe/notes), izleti, izleti-cloud,
+kalendar-izleta, karta, arhivar (+ dashboard/predane-jame/izvoz/zahvati),
+pregled-baze, pregled-zapisnika, topodroid (+ import), napisi-clanak,
+speleo-zapisnik, novi-zapisnik, dokumentacija, inventura, and dashboard.
+
+### Functionality check performed (static)
+All app engines syntax-validated with `node --check`, **0 errors**:
+oruzarstvo-supabase, sov-trips-cloud, sov-map-db, arhivar-workbench,
+arhivar-export, speleo-submissions, sov-trip-assets, sov-inbox, auth, supabase-config.
+No TODO/FIXME/HACK markers in the four core tool engines.
+(Live data paths require the Supabase backend and were not exercised.)
+
+### What got the premium treatment
+- **Oružarstvo:** inventory tiles now have status-colored glow (good=lime/teal,
+  warn=gold, danger=red) + big display numbers that **count up** when they scroll
+  in — async-safe, so they animate the moment Supabase fills the value, and skip
+  any tile whose value is text. Tables get sticky glowing headers, zebra rows, and
+  row-hover. Category/item/scope cards get sheen-sweep + lift.
+- **Izleti:** hero glow, segmented control + chips with active gradient, trip cards
+  lift, calendar `calTrip` pills, and a glassy weather forecast card.
+- **Karta:** floating panels (toolbar, legend, search, object popup, preview) become
+  glassmorphism; legend dots glow by status. **The Leaflet canvas (`#map`,
+  `.leaflet-*`) is hard-fenced** — the engine never tags it for reveal and CSS
+  forcibly disables transform/filter/animation on it, so tiles never blur or drift.
+- **Arhivar / baza:** panels, tables, and cards inherit the same glass + reveal vocabulary.
+
+### Safety specific to this update
+- `inMap()` guard in the engine prevents reveal/opacity ever touching map elements.
+- Reveal + count-up are re-applied via debounced MutationObserver on tool containers,
+  so JS-rendered content (tiles, rows, results, drawings) still animates after Supabase load.
+- Tabs keep working: hidden `.tabpane` content reveals only when its tab is shown.
+- Full `prefers-reduced-motion` support; every JS subsystem wrapped in try/catch.

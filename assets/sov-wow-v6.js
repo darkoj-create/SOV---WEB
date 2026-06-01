@@ -63,8 +63,13 @@
     },{threshold:.12,rootMargin:"0px 0px -8% 0px"});
     return io;
   }
+  // MAP FENCE: never reveal/hide anything that is (or lives inside) the Leaflet map.
+  function inMap(el){
+    return !!(el.closest && (el.closest(".mapPane")||el.closest("#map")||el.closest(".leaflet-container")))
+        || el.id==="map";
+  }
   function tag(el,type){
-    if(!el||el.hasAttribute("data-reveal")) return;
+    if(!el||el.hasAttribute("data-reveal")||inMap(el)) return;
     el.setAttribute("data-reveal",type||"");
     if(REDUCED||!("IntersectionObserver" in window)){ el.classList.add("is-in"); return; }
     ensureObserver().observe(el);
@@ -76,7 +81,14 @@
     ".contact-card",".link-card",".quick-inner a",
     ".about-block",".about-feature-grid article",".about-route-grid a",
     ".about-switchboard a",".glass-card",".doc-card",
-    "body.sov-cloud-page .sov-module","body.sov-cloud-page .sov-hero"
+    // ---- SOV Cloud / app tools ----
+    "body.sov-cloud-page .sov-module","body.sov-cloud-page .sov-hero",
+    "body.sov-cloud-page .armory-hero","body.sov-cloud-page .inventory-hero","body.sov-cloud-page .manual-hero",
+    "body.sov-cloud-page .inventory-tile","body.sov-cloud-page .category-card","body.sov-cloud-page .item-card",
+    "body.sov-cloud-page .oruzar-scope-card","body.sov-cloud-page .panel",
+    "body.sov-cloud-page .hero","body.sov-cloud-page .controlPanel","body.sov-cloud-page .calendarWrap",
+    "body.sov-cloud-page .createCard","body.sov-cloud-page .heroStat","body.sov-cloud-page .weatherShell",
+    "body.sov-cloud-page .drawingItem"
   ];
   function applyReveals(scope){
     (scope||document).querySelectorAll(REVEAL_SELECTORS.join(",")).forEach(function(el){ tag(el,""); });
@@ -92,6 +104,42 @@
       });
     });
     mo.observe(root,{childList:true,subtree:true});
+  }
+
+  /* ---------- 4b. SOV Cloud: async-safe count-up + dynamic reveal ---------- */
+  function isInt(t){ return /^\d{1,9}$/.test((t||"").trim()); }
+  function countUp(el){
+    if(el.getAttribute("data-counted")) return;
+    var t=el.textContent.trim();
+    if(!isInt(t)) return;                 // skip text tiles ("Radni pogled" etc.)
+    var target=parseInt(t,10);
+    el.setAttribute("data-counted","1");
+    if(REDUCED||target<=0){ return; }
+    var start=null,dur=1200;
+    function step(ts){ if(!start)start=ts; var p=Math.min(1,(ts-start)/dur),e=1-Math.pow(1-p,3);
+      el.textContent=String(Math.round(target*e)); if(p<1)requestAnimationFrame(step); else el.textContent=String(target); }
+    requestAnimationFrame(step);
+  }
+  function scanCounts(scope){
+    (scope||document).querySelectorAll(".inventory-tile b,.transportStat b").forEach(countUp);
+  }
+  function cloudApp(){
+    if(!body.classList.contains("sov-cloud-page")) return;
+    applyReveals(document);
+    scanCounts(document);
+    if(!("MutationObserver" in window)) return;
+    var roots=[".armory-shell",".inventory-dashboard",".tripList",".results",".drawingList",
+              ".category-grid",".calendar",".layout",".wrap",".sov-shell"];
+    var seen=new Set();
+    roots.forEach(function(sel){
+      document.querySelectorAll(sel).forEach(function(node){
+        if(seen.has(node))return; seen.add(node);
+        var t=null;
+        new MutationObserver(function(){ clearTimeout(t); t=setTimeout(function(){
+          applyReveals(node); scanCounts(node);
+        },80); }).observe(node,{childList:true,subtree:true});
+      });
+    });
   }
 
   /* ---------- 5. magnetic CTAs ---------- */
@@ -174,6 +222,7 @@
     try{ heroStats(); }catch(e){}
     try{ applyReveals(document); }catch(e){}
     try{ watchNews(); }catch(e){}
+    try{ cloudApp(); }catch(e){}
     try{ magnetic(); }catch(e){}
     try{ newsSkeleton(); }catch(e){}
     try{ pageReady(); }catch(e){}
