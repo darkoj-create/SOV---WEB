@@ -515,7 +515,7 @@
   }
 
 
-  const ARMORY_CATALOG_CACHE_KEY='sov_armory_catalog_cache_v55911';
+  const ARMORY_CATALOG_CACHE_KEY='sov_armory_catalog_cache_v55912';
 
   function catalogRowCount(d){
     if(!d) return 0;
@@ -815,7 +815,7 @@
   // before returning cached data; on large Supabase views that made every page open feel like a full sync.
   // Now UI gets the last valid catalog immediately, while a single background refresh may update the cache.
   (function installFastCacheFirstWrapper(){
-    const CACHE_KEY='sov_armory_catalog_cache_v55911';
+    const CACHE_KEY='sov_armory_catalog_cache_v55912';
     try{
       ['sov_armory_catalog_cache_v548','sov_armory_catalog_cache_v548_old','sov_armory_catalog_cache'].forEach(k=>localStorage.removeItem(k));
     }catch(e){}
