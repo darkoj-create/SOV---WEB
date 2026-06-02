@@ -1,30 +1,31 @@
 {
   "app": "SOV web",
-  "version": "6.1.1",
-  "versionName": "v6.1.1-version-helper-hotfix",
-  "build": "sov-web-build-v6.1.1-version-helper-hotfix",
-  "createdAt": "2026-06-02T16:10:00Z",
-  "cacheBust": "611",
-  "base": "sov-web-build-v6.1.0-database-cleanup-phase-1.zip",
+  "version": "6.1.2",
+  "versionName": "v6.1.2-version-helper-safe-dom-fix",
+  "build": "sov-web-build-v6.1.2-version-helper-safe-dom-fix",
+  "createdAt": "2026-06-02T16:12:00Z",
+  "cacheBust": "612",
+  "base": "sov-web-build-v6.1.1-version-helper-hotfix.zip",
   "requiresSql": false,
   "sqlRequired": [],
-  "optionalSql": [
-    "SUPABASE_SOV_DATABASE_CLEANUP_PHASE_1_v6_1_0_HOTFIX_V2.sql",
-    "SUPABASE_SOV_SYSTEM_HEALTH_v6_0_5_HOTFIX_V2.sql"
-  ],
+  "optionalSql": [],
   "changedFiles": [
-    "assets/sov-version.js",
-    "update.json",
-    "VERSION.txt",
+    "BUILD_NOTES_v6.1.2_VERSION_HELPER_SAFE_DOM_FIX.md",
     "BUILD_VERSION.txt",
-    "sync-status.html",
+    "VERSION.txt",
+    "all HTML sov-version cache refs",
+    "assets/sov-version.js",
     "dashboard.html",
-    "all HTML sov-version cache refs"
+    "sync-status.html",
+    "update.json"
   ],
   "releaseType": "version-helper-hotfix",
   "notes": [
     "Fixes stale hardcoded assets/sov-version.js that still reported v6.0.5 inside the v6.1.0 package.",
     "Replaces stale sov-version.js cache query references across HTML files with v6.1.1.",
-    "Keeps v6.1.0 database cleanup changes and does not require new SQL."
+    "Keeps v6.1.0 database cleanup changes and does not require new SQL.",
+    "Hotfix: sov-version.js no longer writes textContent into html/body; fixes white page that only displayed the build number.",
+    "Changed version data attributes to data-sov-build-version on html/body to avoid selector collision with [data-sov-version] labels.",
+    "No SQL changes."
   ]
 }

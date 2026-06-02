@@ -1,21 +1,28 @@
-// SOV Web 6.1.1 — frontend version helper hotfix.
+// SOV Web 6.1.2 — safe frontend version helper.
+// Fix: never writes textContent into <html> or <body>; older v6.1.1 could wipe the page because body.dataset.sovVersion matched [data-sov-version].
 (function(){
   'use strict';
-  const FALLBACK_VERSION='6.1.1';
-  const FALLBACK_CACHE='611';
-  const FALLBACK_BUILD='sov-web-build-v6.1.1-version-helper-hotfix';
-  const FALLBACK_NAME='v6.1.1-version-helper-hotfix';
+  const FALLBACK_VERSION='6.1.2';
+  const FALLBACK_CACHE='612';
+  const FALLBACK_BUILD='sov-web-build-v6.1.2-version-helper-safe-dom-fix';
+  const FALLBACK_NAME='v6.1.2-version-helper-safe-dom-fix';
   window.SOV_BUILD={version:FALLBACK_VERSION, versionName:FALLBACK_NAME, build:FALLBACK_BUILD, cacheBust:FALLBACK_CACHE};
-  function setText(sel, value){
-    try{ document.querySelectorAll(sel).forEach(el=>{ el.textContent=value; }); }catch(e){}
+  function safeSetText(sel, value){
+    try{
+      document.querySelectorAll(sel).forEach(el=>{
+        if(!el || el===document.body || el===document.documentElement) return;
+        // Only small explicit labels should be rewritten, never layout containers.
+        el.textContent=value;
+      });
+    }catch(e){}
   }
   function applyVersion(v, b, n){
     v = v || FALLBACK_VERSION; b = b || FALLBACK_BUILD; n = n || FALLBACK_NAME;
-    try{ document.documentElement.dataset.sovVersion=v; }catch(e){}
-    try{ if(document.body) document.body.dataset.sovVersion=v; }catch(e){}
-    setText('[data-sov-version]', v);
-    setText('[data-sov-build]', b);
-    setText('[data-sov-version-name]', n);
+    try{ document.documentElement.dataset.sovBuildVersion=v; }catch(e){}
+    try{ if(document.body) document.body.dataset.sovBuildVersion=v; }catch(e){}
+    safeSetText('[data-sov-version]', v);
+    safeSetText('[data-sov-build]', b);
+    safeSetText('[data-sov-version-name]', n);
     try{ document.title=document.title.replace(/v\d+\.\d+(?:\.\d+)?/g,'v'+v); }catch(e){}
   }
   async function loadManifest(){
@@ -30,8 +37,8 @@
       const n=m.versionName || FALLBACK_NAME;
       window.SOV_BUILD={version:v, versionName:n, build:b, cacheBust:m.cacheBust || FALLBACK_CACHE};
       applyVersion(v,b,n);
-      setText('[data-sov-manifest-version]', v);
-      setText('[data-sov-manifest-build]', b);
+      safeSetText('[data-sov-manifest-version]', v);
+      safeSetText('[data-sov-manifest-build]', b);
       document.documentElement.dataset.sovVersionContract='ok';
       window.dispatchEvent(new CustomEvent('sov:version', {detail:{ok:true,expected:v,manifest:m}}));
     }catch(err){
