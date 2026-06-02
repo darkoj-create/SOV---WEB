@@ -1,7 +1,7 @@
 (function(){
-const BUILD='6.0.3';
+const BUILD='6.0.5';
 const BUCKET='speleo-submissions';
-const DRAFT_KEY='sov_predaj_novu_jamu_draft_v603';
+const DRAFT_KEY='sov_predaj_novu_jamu_draft_v605';
 const $=s=>document.querySelector(s);
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function toast(msg){let el=document.querySelector('.sf-toast'); if(!el){el=document.createElement('div');el.className='sf-toast';document.body.appendChild(el);} el.textContent=msg; clearTimeout(el._t); el._t=setTimeout(()=>el.remove(),5200);}

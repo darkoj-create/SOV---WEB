@@ -26,7 +26,7 @@
 <section class="hero">
 <div class="heroTop">
 <div>
-<div class="eyebrow">SOV ecosystem v5.58.26</div>
+<div class="eyebrow">SOV ecosystem v6.0.9</div>
 <h1>Role manager · Webmaster</h1>
 <p class="lead">Jedno mjesto za korisnike, role i permissione koje će kasnije čitati unified/admin APK. Ovdje ne diramo SQL bazu objekata — samo <b>profiles</b> i <b>sov_role_permissions</b>.</p>
 </div>
@@ -158,7 +158,7 @@ function renderUsers(){
   document.querySelectorAll('[data-reject]').forEach(btn=>{ btn.onclick=async()=>{ await saveUserStatus(btn.dataset.reject,'rejected'); }; });
 }
 function buildApkJson(){
-  const out={version:'5.59.8',generatedAt:new Date().toISOString(),roles:{}};
+  const out={version:'6.0.9',generatedAt:new Date().toISOString(),roles:{}};
   roles.forEach(r=>{ out.roles[r.role]={label:r.label||r.role,permissions:{}}; PERMISSION_COLUMNS.forEach(([k])=>{ out.roles[r.role].permissions[k]=!!r[k]; }); });
   return out;
 }
@@ -208,5 +208,5 @@ document.addEventListener('DOMContentLoaded', async()=>{
   refreshAll();
 });
 </script>
-<script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script defer="" src="assets/sov-polish-v55826.js"></script></body>
+<script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script defer="" src="assets/sov-polish-v55826.js"></script><script defer src="assets/sov-version.js?v=6.0.9"></script></body>
 </html>

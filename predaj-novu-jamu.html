@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<title>Predaj novu jamu — SOV Cloud v6.0.3</title>
+<title>Predaj novu jamu — SOV Cloud v6.0.9</title>
 <meta name="description" content="SOV Cloud formular za predaju nove jame Arhivaru."/>
 <link href="assets/site.css" rel="stylesheet"/>
 <link href="assets/mobile.css" rel="stylesheet"/>
@@ -15,7 +15,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap" rel="stylesheet"/>
 <link href="assets/sov-wow-v6.css" rel="stylesheet"/>
 <link href="assets/sov-wow-app-v6.css" rel="stylesheet"/>
-<link href="assets/sov-form-v603.css" rel="stylesheet"/>
+<link href="assets/sov-form-v609.css" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/supabase-config.js"></script>
 <script src="assets/auth.js"></script>
@@ -34,7 +34,7 @@
 <main class="sf-shell">
 <section class="sf-hero">
 <div class="sf-hero-main">
-<span class="sf-eyebrow">SOV Cloud · formular v6.0.3</span>
+<span class="sf-eyebrow">SOV Cloud · formular v6.0.9</span>
 <h1>Predaj novu jamu Arhivaru.</h1>
 <p class="sf-lead">Ovo je web formular umjesto rasutih poruka i Google Forma. Predaja ide u <b>Arhivarski inbox</b>, a objekt se tek nakon arhivarskog approvea upisuje u bazu.</p>
 <div class="sf-flow" aria-label="Predajni flow">
@@ -48,6 +48,17 @@
 <p>Naziv objekta, barem jedan opisni blok i koordinate ili KML/GPX. Sve ostalo možeš poslati kao dodatak, a Arhivar označava što fali.</p>
 <div class="sf-badges"><span class="sf-badge ok">spremanje u inbox</span><span class="sf-badge">Excel export</span><span class="sf-badge">privitci</span></div>
 </aside>
+</section>
+
+<section class="sf-draft-tools" aria-label="Lokalni draft i sigurnost predaje">
+  <div><b>Autosave je uključen.</b><br><small id="draftInfo">Promjene se spremaju lokalno u browser, bez diranja baze dok ne klikneš Predaj Arhivaru.</small></div>
+  <div class="sf-actions"><button class="sf-btn" id="downloadDraftBtn" type="button">Skini draft JSON</button></div>
+</section>
+<section class="sf-step-summary" aria-label="Sažetak workflowa">
+  <div class="sf-step-card"><b>1</b> Osnovno <span>naziv, tip, mjesto</span></div>
+  <div class="sf-step-card"><b>2</b> Lokacija <span>WGS/HTRS ili KML/GPX</span></div>
+  <div class="sf-step-card"><b>3</b> Zapisnik <span>pristup, opis, oprema</span></div>
+  <div class="sf-step-card"><b>4</b> Inbox <span>Arhivar pregleda i exporta</span></div>
 </section>
 <div class="sf-grid">
 <aside class="sf-progress" aria-label="Sekcije formulara">
@@ -141,16 +152,18 @@
 <button class="sf-btn warn" id="clearDraftBtn" type="button">Obriši draft</button>
 <a class="sf-btn" href="arhivar-predane-jame.html" data-role-archive>Otvori inbox</a>
 </div>
+<div id="uploadProgress" class="sf-upload-progress"><div class="sf-upload-bar"><span data-progress-bar></span></div><small data-progress-label>Čekam upload...</small></div>
+<div id="successBox" class="sf-status ok" style="display:none"><b>Predaja spremljena.</b> ID: <code id="successId"></code> · <a href="arhivar-predane-jame.html">Otvori Arhivarski inbox</a></div>
 <div id="submitStatus" class="sf-status">Spremno za unos.</div>
 </section>
 </form>
 </div>
-<footer class="sf-footer">SOV web v6.0.3 · predaj-novu-jamu.html</footer>
+<footer class="sf-footer">SOV web v6.0.9 · predaj-novu-jamu.html</footer>
 </main>
-<script src="assets/sov-submission-page-v603.js?v=6.0.3"></script>
+<script src="assets/sov-submission-page-v609.js?v=6.0.9"></script>
 <script defer src="assets/sov-foundation-v55822.js"></script>
 <script defer src="assets/sov-shell-v55825.js"></script>
 <script defer src="assets/sov-polish-v55826.js"></script>
-<script defer src="assets/sov-wow-v6.js?v=6.0.3"></script>
-</body>
+<script defer src="assets/sov-wow-v6.js?v=6.0.9"></script>
+<script defer src="assets/sov-version.js?v=6.0.9"></script></body>
 </html>

@@ -1,5 +1,5 @@
 (function(){
-  const VERSION='5.59.5';
+  const VERSION='6.0.5';
   const $=id=>document.getElementById(id);
   let sb=null,map=null,markerLayer=null,lineLayer=null;
   let fieldEvents=[],sourceTrips=[],latest=[],points=[];

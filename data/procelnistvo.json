@@ -1,7 +1,7 @@
 {
   "source": "SOV pročelništvo.xlsx",
   "sheet": "SOV pročelništvo",
-  "updatedBuild": "6.0.3",
+  "updatedBuild": "6.0.5",
   "roles": [
     {
       "key": "PROČELNIK",
