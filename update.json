@@ -1,31 +1,36 @@
 {
   "app": "SOV web",
-  "version": "6.1.2",
-  "versionName": "v6.1.2-version-helper-safe-dom-fix",
-  "build": "sov-web-build-v6.1.2-version-helper-safe-dom-fix",
-  "createdAt": "2026-06-02T16:12:00Z",
-  "cacheBust": "612",
-  "base": "sov-web-build-v6.1.1-version-helper-hotfix.zip",
+  "version": "6.1.5",
+  "versionName": "v6.1.5-oruzarstvo-taxonomy-cleanup",
+  "build": "sov-web-build-v6.1.5-oruzarstvo-taxonomy-cleanup",
+  "createdAt": "2026-06-02T18:15:00Z",
+  "cacheBust": "615",
+  "base": "sov-web-build-v6.1.4-premium-dashboard-hotfix.zip",
   "requiresSql": false,
   "sqlRequired": [],
-  "optionalSql": [],
-  "changedFiles": [
-    "BUILD_NOTES_v6.1.2_VERSION_HELPER_SAFE_DOM_FIX.md",
-    "BUILD_VERSION.txt",
-    "VERSION.txt",
-    "all HTML sov-version cache refs",
-    "assets/sov-version.js",
-    "dashboard.html",
-    "sync-status.html",
-    "update.json"
+  "optionalSql": [
+    "SUPABASE_ORUZARSTVO_TAXONOMY_CLEANUP_v6_1_5.sql"
   ],
-  "releaseType": "version-helper-hotfix",
+  "changedFiles": [
+    "oruzarstvo.html",
+    "assets/oruzarstvo-taxonomy-v615.js",
+    "assets/oruzarstvo-supabase.js",
+    "data/oruzarstvo-data.json",
+    "data/oruzarstvo-data-v615.json",
+    "data/oruzarstvo-taxonomy-v615.json",
+    "sync-status.html",
+    "update.json",
+    "VERSION.txt",
+    "BUILD_VERSION.txt",
+    "SUPABASE_ORUZARSTVO_TAXONOMY_CLEANUP_v6_1_5.sql",
+    "BUILD_NOTES_v6.1.5_ORUZARSTVO_TAXONOMY_CLEANUP.md"
+  ],
+  "releaseType": "oruzarstvo-taxonomy-cleanup",
   "notes": [
-    "Fixes stale hardcoded assets/sov-version.js that still reported v6.0.5 inside the v6.1.0 package.",
-    "Replaces stale sov-version.js cache query references across HTML files with v6.1.1.",
-    "Keeps v6.1.0 database cleanup changes and does not require new SQL.",
-    "Hotfix: sov-version.js no longer writes textContent into html/body; fixes white page that only displayed the build number.",
-    "Changed version data attributes to data-sov-build-version on html/body to avoid selector collision with [data-sov-version] labels.",
-    "No SQL changes."
+    "Introduces one canonical Oružarstvo taxonomy layer for frontend and static JSON.",
+    "Normalizes local armory data categories/subcategories so ordinary batteries are in Elektro while Bosch/Hilti/Makita batteries stay in Bušilice.",
+    "Adds data/oruzarstvo-taxonomy-v615.json and assets/oruzarstvo-taxonomy-v615.js as the single frontend category source.",
+    "Optional SQL creates the same taxonomy in Supabase and safely applies it only to tables/columns that exist.",
+    "No destructive SQL changes."
   ]
 }

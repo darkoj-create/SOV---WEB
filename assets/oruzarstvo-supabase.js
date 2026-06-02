@@ -126,8 +126,8 @@
     return x;
   }
   function articleMergeKey(row){
-    const cat=canonicalArmoryCategory(row.category_name || row.category || 'Ostalo',[row.name,row.model,row.subcategory,row.internal_note,row.note].join(' '));
-    const sub=String(row.subcategory||'Ostalo').trim() || 'Ostalo';
+    const cat=(window.SOVArmoryTaxonomy?SOVArmoryTaxonomy.category(row):canonicalArmoryCategory(row.category_name || row.category || 'Ostalo',[row.name,row.model,row.subcategory,row.internal_note,row.note].join(' ')));
+    const sub=(window.SOVArmoryTaxonomy?SOVArmoryTaxonomy.subcategory(row):(String(row.subcategory||'Ostalo').trim() || 'Ostalo'));
     const nm=normalizeArticleName(row.name||row.item_name||row.model||'Artikl');
     return stripDiacritics(cat)+'|'+stripDiacritics(sub)+'|'+nm;
   }
@@ -144,8 +144,11 @@
         const first={...row};
         first.legacy_id=stableArticleId(row);
         first.catalog_id=first.legacy_id;
-        first.category_name=canonicalArmoryCategory(row.category_name || row.category || 'Ostalo',[row.name,row.model,row.subcategory,row.internal_note,row.note].join(' '));
+        first.category_name=(window.SOVArmoryTaxonomy?SOVArmoryTaxonomy.category(row):canonicalArmoryCategory(row.category_name || row.category || 'Ostalo',[row.name,row.model,row.subcategory,row.internal_note,row.note].join(' ')));
         first.category=first.category_name;
+        first.subcategory=(window.SOVArmoryTaxonomy?SOVArmoryTaxonomy.subcategory(row):(first.subcategory||row.subcategory||'Ostalo'));
+        first.main_category=first.category_name;
+        first.taxonomy_version='6.1.5';
         first.name=String(row.name||row.item_name||row.model||'Artikl').trim();
         first.quantity=qty===null?0:qty;
         first.loaned=loan===null?0:loan;

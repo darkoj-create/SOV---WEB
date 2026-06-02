@@ -111,5 +111,5 @@ async function markReady(){if(!$('source_id').value)return; $('sandbox_status').
 async function loadEditHistory(){try{const id=$('source_id').value;if(!id)throw new Error('Nema odabranog objekta.');const sb=client();const {data,error}=await sb.from('speleo_objects_staging_edits').select('action,edited_by,note,created_at').eq('source_id',id).order('created_at',{ascending:false}).limit(20);if(error)throw error;log('\nPovijest za '+id+':\n'+(data||[]).map(x=>'- '+x.created_at+' · '+x.action+' · '+(x.edited_by||'')+' · '+(x.note||'')).join('\n'));}catch(e){log('Ne mogu učitati povijest: '+(e.message||e));}}
 loadList();
 </script>
-<script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-admin-safety-v55824.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script defer="" src="assets/sov-polish-v55826.js"></script><script defer src="assets/sov-version.js?v=6.1.2"></script></body>
+<script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-admin-safety-v55824.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script defer="" src="assets/sov-polish-v55826.js"></script><script defer src="assets/sov-version.js?v=6.1.4"></script></body>
 </html>
