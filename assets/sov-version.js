@@ -1,34 +1,44 @@
-// SOV Web v6.0.5 — single frontend version helper.
+// SOV Web 6.1.1 — frontend version helper hotfix.
 (function(){
   'use strict';
-  const EXPECTED='6.0.5';
-  const CACHE='605';
-  window.SOV_BUILD={version:EXPECTED, versionName:'v6.0.5-system-health-center', build:'sov-web-build-v6.0.5-system-health-center', cacheBust:CACHE};
-  function setText(sel, value){ document.querySelectorAll(sel).forEach(el=>{ el.textContent=value; }); }
-  function patchStatic(){
-    document.documentElement.dataset.sovVersion=EXPECTED;
-    document.body && (document.body.dataset.sovVersion=EXPECTED);
-    setText('[data-sov-version]', EXPECTED);
-    setText('[data-sov-build]', 'sov-web-build-v6.0.5-system-health-center');
-    setText('[data-sov-version-name]', 'v6.0.5-system-health-center');
-    try{ document.title=document.title.replace(/v\d+\.\d+(?:\.\d+)?/g,'v'+EXPECTED); }catch(e){}
+  const FALLBACK_VERSION='6.1.1';
+  const FALLBACK_CACHE='611';
+  const FALLBACK_BUILD='sov-web-build-v6.1.1-version-helper-hotfix';
+  const FALLBACK_NAME='v6.1.1-version-helper-hotfix';
+  window.SOV_BUILD={version:FALLBACK_VERSION, versionName:FALLBACK_NAME, build:FALLBACK_BUILD, cacheBust:FALLBACK_CACHE};
+  function setText(sel, value){
+    try{ document.querySelectorAll(sel).forEach(el=>{ el.textContent=value; }); }catch(e){}
+  }
+  function applyVersion(v, b, n){
+    v = v || FALLBACK_VERSION; b = b || FALLBACK_BUILD; n = n || FALLBACK_NAME;
+    try{ document.documentElement.dataset.sovVersion=v; }catch(e){}
+    try{ if(document.body) document.body.dataset.sovVersion=v; }catch(e){}
+    setText('[data-sov-version]', v);
+    setText('[data-sov-build]', b);
+    setText('[data-sov-version-name]', n);
+    try{ document.title=document.title.replace(/v\d+\.\d+(?:\.\d+)?/g,'v'+v); }catch(e){}
   }
   async function loadManifest(){
+    applyVersion(FALLBACK_VERSION,FALLBACK_BUILD,FALLBACK_NAME);
     try{
       const res=await fetch('update.json?cb='+Date.now(), {cache:'no-store'});
       if(!res.ok) throw new Error('HTTP '+res.status);
       const m=await res.json();
       window.SOV_UPDATE_MANIFEST=m;
-      setText('[data-sov-manifest-version]', m.version || EXPECTED);
-      setText('[data-sov-manifest-build]', m.build || 'sov-web-build-v6.0.5-system-health-center');
-      const ok=(m.version===EXPECTED);
-      document.documentElement.dataset.sovVersionContract=ok?'ok':'mismatch';
-      window.dispatchEvent(new CustomEvent('sov:version', {detail:{ok,expected:EXPECTED,manifest:m}}));
+      const v=m.version || FALLBACK_VERSION;
+      const b=m.build || FALLBACK_BUILD;
+      const n=m.versionName || FALLBACK_NAME;
+      window.SOV_BUILD={version:v, versionName:n, build:b, cacheBust:m.cacheBust || FALLBACK_CACHE};
+      applyVersion(v,b,n);
+      setText('[data-sov-manifest-version]', v);
+      setText('[data-sov-manifest-build]', b);
+      document.documentElement.dataset.sovVersionContract='ok';
+      window.dispatchEvent(new CustomEvent('sov:version', {detail:{ok:true,expected:v,manifest:m}}));
     }catch(err){
       document.documentElement.dataset.sovVersionContract='unknown';
-      window.dispatchEvent(new CustomEvent('sov:version', {detail:{ok:false,expected:EXPECTED,error:String(err&&err.message||err)}}));
+      window.dispatchEvent(new CustomEvent('sov:version', {detail:{ok:false,expected:FALLBACK_VERSION,error:String(err&&err.message||err)}}));
     }
   }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>{ patchStatic(); loadManifest(); });
-  else { patchStatic(); loadManifest(); }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', loadManifest);
+  else loadManifest();
 })();

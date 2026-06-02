@@ -1,41 +1,30 @@
 {
   "app": "SOV web",
-  "version": "6.1.0",
-  "versionName": "v6.1.0-database-cleanup-phase-1",
-  "build": "sov-web-build-v6.1.0-database-cleanup-phase-1",
-  "createdAt": "2026-06-02T11:45:00Z",
-  "cacheBust": "610",
-  "base": "sov-web-build-v6.0.9-predane-jame-workflow-hardening.zip",
+  "version": "6.1.1",
+  "versionName": "v6.1.1-version-helper-hotfix",
+  "build": "sov-web-build-v6.1.1-version-helper-hotfix",
+  "createdAt": "2026-06-02T16:10:00Z",
+  "cacheBust": "611",
+  "base": "sov-web-build-v6.1.0-database-cleanup-phase-1.zip",
   "requiresSql": false,
   "sqlRequired": [],
   "optionalSql": [
-    "SUPABASE_SOV_DATABASE_CLEANUP_PHASE_1_v6_1_0.sql"
-  ],
-  "sqlAlreadyIncluded": [
-    "SUPABASE_SOV_PREDANE_JAME_WORKFLOW_HARDENING_v6_0_9.sql",
-    "SUPABASE_SOV_SYSTEM_HEALTH_v6_0_5.sql",
-    "SUPABASE_SOV_PREDANE_JAME_FORM_EXPORT_v6_0_3.sql",
-    "SUPABASE_SOV_ARHIVAR_SUBMISSIONS_v5_58_1_SAFE_PROFILE_FIX.sql",
-    "SUPABASE_ORUZARSTVO_HEALTH_v5_59_11.sql",
-    "SUPABASE_ORUZARSTVO_CATEGORY_CLEANUP_v5_59_9.sql",
-    "SUPABASE_SOV_USER_APPROVAL_SYNC_v5_59_8.sql"
+    "SUPABASE_SOV_DATABASE_CLEANUP_PHASE_1_v6_1_0_HOTFIX_V2.sql",
+    "SUPABASE_SOV_SYSTEM_HEALTH_v6_0_5_HOTFIX_V2.sql"
   ],
   "changedFiles": [
-    "SUPABASE_SOV_DATABASE_CLEANUP_PHASE_1_v6_1_0.sql",
-    "DATABASE_MAP.md",
-    "sync-status.html",
-    "dashboard.html",
+    "assets/sov-version.js",
     "update.json",
     "VERSION.txt",
     "BUILD_VERSION.txt",
-    "BUILD_NOTES_v6.1.0_DATABASE_CLEANUP_PHASE_1.md"
+    "sync-status.html",
+    "dashboard.html",
+    "all HTML sov-version cache refs"
   ],
-  "releaseType": "database-cleanup-phase-1",
+  "releaseType": "version-helper-hotfix",
   "notes": [
-    "Adds a safe database registry layer: sov_schema_registry, sov_release_registry, sov_audit_log and sov_armory_taxonomy.",
-    "Adds read-only cleanup health RPC sov_database_cleanup_health() for sync-status diagnostics.",
-    "Registers core SOV modules and legacy/deprecated naming map without deleting or renaming existing tables.",
-    "Adds DATABASE_MAP.md as the first human-readable database map and cleanup plan.",
-    "No destructive SQL. No existing table is dropped, renamed or type-changed."
+    "Fixes stale hardcoded assets/sov-version.js that still reported v6.0.5 inside the v6.1.0 package.",
+    "Replaces stale sov-version.js cache query references across HTML files with v6.1.1.",
+    "Keeps v6.1.0 database cleanup changes and does not require new SQL."
   ]
 }
