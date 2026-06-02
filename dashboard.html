@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+
+<html lang="hr">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>SOV Cloud — Dashboard v6.1.0</title>
+<link href="assets/site.css" rel="stylesheet"/>
+<link href="assets/mobile.css" rel="stylesheet"/>
+<link href="assets/sov-premium-ui.css" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/supabase-config.js"></script>
+<script src="assets/auth.js"></script>
+<style>
+    .sov-top{position:relative}.sov-role-preview{display:none;align-items:center;gap:6px;padding:5px;border:1px solid rgba(255,255,255,.12);border-radius:999px;background:rgba(4,10,11,.76);backdrop-filter:blur(14px);box-shadow:0 14px 44px rgba(0,0,0,.25)}
+    .sov-role-preview.is-on{display:inline-flex}.sov-role-preview .rp-label{font-size:10px;font-weight:950;text-transform:uppercase;letter-spacing:.08em;color:#b8c9c3;padding:0 4px}.sov-role-preview button{border:0;border-radius:999px;padding:7px 9px;background:transparent;color:#dbe8e2;font-size:12px;font-weight:950;cursor:pointer;white-space:nowrap}.sov-role-preview button.active{background:linear-gradient(135deg,#d7f66f,#83e6c2);color:#10180f;box-shadow:0 8px 24px rgba(215,246,111,.18)}
+    [data-dash-visible].is-preview-hidden,.sov-module.is-preview-hidden,.sov-panel.is-preview-hidden,.sov-section-head.is-preview-hidden{display:none!important}.sov-admin-tools{display:grid;gap:10px;margin-top:14px}.sov-admin-tools a{display:flex;align-items:center;justify-content:space-between;gap:10px;text-decoration:none;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:10px 12px;background:rgba(255,255,255,.045);color:inherit}.sov-admin-tools a:hover{border-color:rgba(215,246,111,.38);transform:translateY(-1px)}.sov-admin-tools small{color:rgba(230,240,235,.62);font-weight:800}.sov-admin-warning{margin-top:12px;color:#ffd7b0;font-size:12px;line-height:1.45}.sov-preview-note{margin-left:auto;color:#b8c9c3;font-size:12px;font-weight:900}.sov-dev-float{display:none!important}
+    @media(max-width:940px){.sov-role-preview{width:100%;justify-content:center;border-radius:18px;flex-wrap:wrap}.sov-role-preview .rp-label{display:none}.sov-role-preview button{font-size:11px;padding:7px 8px}.sov-preview-note{width:100%;margin:4px 0 0;text-align:center}}
+  </style>
+<link href="assets/sov-foundation-v55822.css" rel="stylesheet"/><link href="assets/sov-shell-v55825.css" rel="stylesheet"/><link href="assets/sov-polish-v55826.css" rel="stylesheet"/><link href="assets/sov-dashboard-clean-v55910.css" rel="stylesheet"/><link href="assets/sov-dashboard-clean-v609.css" rel="stylesheet"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap" rel="stylesheet"/><link href="assets/sov-wow-v6.css" rel="stylesheet"/><link href="assets/sov-wow-app-v6.css" rel="stylesheet"/></head>
+<body class="sov-premium dashboard-page">
+<div class="sov-shell">
+<header class="sov-top">
+<a class="sov-brand" href="dashboard.html">
+<div class="sov-mark">SOV</div>
+<div><strong>Speleološki odsjek Velebit</strong><small>SOV Cloud</small></div>
+</a>
+<nav aria-label="Glavna navigacija" class="sov-nav">
+<a href="index.html">Novosti</a>
+<a href="karta.html">Karta</a>
+<a data-dash-visible="user,editor,arhivar,admin,webmaster" href="izleti.html">Izleti</a>
+<a data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster" href="oruzarstvo.html">Oprema</a>
+<a data-dash-visible="arhivar,admin,webmaster" data-role-archive="" href="arhivar-dashboard.html">Arhivar</a>
+<a class="primary" href="dashboard.html">SOV Cloud</a>
+<span class="sov-chip" data-dash-visible="admin,webmaster,oruzar,arhivar,editor"><span data-dash-name="" data-user-name="">—</span> · <span data-dash-role="" data-user-role="">—</span></span>
+</nav>
+</header>
+<div class="sov-preview-strip" aria-label="Role preview toolbar">
+<div aria-label="Role preview" class="sov-role-preview" id="dashboardRolePreview">
+<span class="rp-label">Preview view</span>
+<button data-preview-dashboard-role="webmaster" type="button">Webmaster</button>
+<button data-preview-dashboard-role="admin" type="button">Admin</button>
+<button data-preview-dashboard-role="oruzar" type="button">Oružar</button>
+<button data-preview-dashboard-role="arhivar" type="button">Arhivar</button>
+<button data-preview-dashboard-role="editor" type="button">Urednik</button>
+<button data-preview-dashboard-role="user" type="button">User</button>
+</div>
+</div>
+<main>
+<section class="sov-hero clean-v609">
+<div class="sov-hero-grid">
+<div class="v609-hero-copy">
+<span class="sov-eyebrow">SOV Cloud</span>
+<h1>Jednostavan ulaz u SOV sustav.</h1>
+<p>Najvažnije stvari su odmah gore: karta, izleti, oprema i predaja nove jame. Radni alati se prikazuju samo rolama koje ih stvarno trebaju, a tehnički alati su maknuti iz glavnog pogleda.</p>
+<div class="v609-action-row">
+<a class="sov-btn main" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster" href="karta.html">Otvori kartu →</a>
+<a class="sov-btn" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster" href="predaj-novu-jamu.html">Predaj novu jamu</a>
+<a class="sov-btn" data-dash-visible="user,editor,arhivar,admin,webmaster" href="izleti.html">Izleti</a>
+<a class="sov-btn" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster" href="oruzarstvo.html">Oprema</a>
+</div>
+</div>
+<aside class="v609-status-card">
+<h3>Moja prava</h3>
+<div class="v609-status-list">
+<div class="v609-status-item"><span>Stvarna rola</span><b data-dash-role="">—</b></div>
+<div class="v609-status-item" data-dash-visible="webmaster"><span>Preview view</span><b data-preview-role-label="">—</b></div>
+<div class="v609-status-item"><span>Status računa</span><b data-auth-status="">—</b></div>
+<div class="v609-status-item"><span>Web build</span><b>6.1.0</b></div>
+</div>
+<p class="v609-subtle-note" data-access-summary="">Učitavam prava...</p>
+</aside>
+</div>
+</section>
+
+<div class="v609-zone-head" data-section="personal">
+<div><h2>Moje stvari</h2><p>Član vidi samo ono što treba za normalno korištenje: teren, izlete, opremu i predaje.</p></div>
+<span class="v609-zone-tag">čisto korisničko sučelje</span>
+</div>
+<section aria-label="Moje stvari" class="sov-grid v609-grid-primary">
+<a class="sov-module v609-module" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster" href="karta.html" style="--accent:rgba(120,215,255,.18)">
+<div class="sov-icon">🗺️</div><h3>Karta</h3><p>Objekti, teren i osnovna orijentacija bez arhivarskih alata.</p><div class="sov-module-foot"><span class="sov-soft">Otvori</span></div>
+</a>
+<a class="sov-module v609-module" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster" href="predaj-novu-jamu.html" style="--accent:rgba(131,230,194,.16)">
+<div class="sov-icon">🧭</div><h3>Predaj novu jamu</h3><p>Ispuni zapisnik, dodaj privitke i pošalji arhivaru u inbox.</p><div class="sov-module-foot"><span class="sov-soft">Predaj</span></div>
+</a>
+<a class="sov-module v609-module" data-dash-visible="user,editor,arhivar,admin,webmaster" href="izleti.html" style="--accent:rgba(255,191,107,.18)">
+<div class="sov-icon">⛺</div><h3>Izleti</h3><p>Pregled izleta, prijava, priprema i kasnije arhiva izleta.</p><div class="sov-module-foot"><span class="sov-soft">Otvori</span></div>
+</a>
+<a class="sov-module v609-module" data-dash-visible="user,editor,arhivar,admin,webmaster" href="tracking.html" style="--accent:rgba(131,230,194,.18)">
+<div class="sov-icon">📡</div><h3>Field tracking</h3><p>Lite ping, ruta i zadnje poznate pozicije kad je izlet aktivan.</p><div class="sov-module-foot"><span class="sov-tag">lite</span><span class="sov-soft">Otvori</span></div>
+</a>
+<a class="sov-module v609-module" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster" href="oruzarstvo.html" style="--accent:rgba(255,211,107,.16)">
+<div class="sov-icon">🧰</div><h3>Oprema</h3><p>Pretraži katalog i pošalji zahtjev za posudbu opreme.</p><div class="sov-module-foot"><span class="sov-soft">Pretraži</span></div>
+</a>
+<a class="sov-module v609-module" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster" href="napisi-clanak.html" style="--accent:rgba(102,226,141,.16)">
+<div class="sov-icon">✍️</div><h3>Napiši članak</h3><p>Pošalji tekst i fotografije uredniku kao draft vijesti.</p><div class="sov-module-foot"><span class="sov-soft">Predaj</span></div>
+</a>
+</section>
+
+<div class="v609-zone-head" data-section="internal">
+<div><h2>Rad po ulozi</h2><p>Ovdje su samo operativni alati za tvoju rolu. Admin vidi ljude i operativu; Webmaster vidi tehniku posebno niže.</p></div>
+<span class="v609-zone-tag">Oružar · Arhivar · Urednik · Admin</span>
+</div>
+<section aria-label="Interni moduli" class="sov-grid v609-grid-role">
+<a class="sov-module v609-module" data-dash-visible="oruzar,admin,webmaster" data-role-armory="" href="oruzarstvo.html" style="--accent:rgba(255,191,107,.2)">
+<div class="sov-icon">🛠️</div><h3>Oružarstvo</h3><p>Katalog opreme, zahtjevi, zaduženja, servis i inventura.</p><div class="sov-module-foot"><span class="sov-tag">Oružar</span><span class="sov-soft">Otvori</span></div>
+</a>
+<a class="sov-module v609-module" data-dash-visible="arhivar,admin,webmaster" data-role-archive="" href="arhivar-dashboard.html" style="--accent:rgba(215,246,111,.16)">
+<div class="sov-icon">🗂️</div><h3>Arhivar</h3><p>Uređivanje arhive, objekti, nacrti, zapisnici i exporti.</p><div class="sov-module-foot"><span class="sov-tag">Arhivar</span><span class="sov-soft">Otvori</span></div>
+</a>
+<a class="sov-module v609-module" data-dash-visible="arhivar,admin,webmaster" data-role-archive="" href="arhivar-predane-jame.html" style="--accent:rgba(121,217,255,.18)">
+<div class="sov-icon">📥</div><h3>Predane jame</h3><p>Inbox za nove jame, dopune, privitke i Excel export.</p><div class="sov-module-foot"><span class="sov-tag">Review</span><span class="sov-soft">Pregled</span></div>
+</a>
+<a class="sov-module v609-module" data-dash-visible="arhivar,admin,webmaster" data-role-archive="" href="topodroid-import.html" style="--accent:rgba(131,230,194,.18)">
+<div class="sov-icon">⬆️</div><h3>TopoDroid import</h3><p>Batch upload/export pipeline za nacrte i survey pakete.</p><div class="sov-module-foot"><span class="sov-tag">Arhivar</span><span class="sov-soft">Import</span></div>
+</a>
+<a class="sov-module v609-module" data-dash-visible="editor,admin,webmaster" data-role-editor="" href="news-editor.html" style="--accent:rgba(102,226,141,.17)">
+<div class="sov-icon">📰</div><h3>Urednik vijesti</h3><p>Uredi postojeće vijesti, objavi nove i obradi predane članke.</p><div class="sov-module-foot"><span class="sov-tag">Urednik</span><span class="sov-soft">Uredi</span></div>
+</a>
+<article class="sov-module v609-module" data-dash-visible="admin,webmaster" data-role-admin="" style="--accent:rgba(255,211,107,.16)">
+<div class="sov-icon">🛡️</div><h3>Admin operativa</h3><p>Odobrenja korisnika, role, obavijesti i ulaz u glavne radne module.</p>
+<div class="v609-mini-actions">
+<a href="admin-users.html"><span>Korisnici</span><small>odobrenja i role →</small></a>
+<a href="admin-notifications.html"><span>Obavijesti</span><small>pošalji članovima →</small></a>
+<a href="news-editor.html"><span>Vijesti</span><small>uredi i objavi →</small></a>
+</div>
+<p class="v609-subtle-note">SQL, audit i sync alati nisu u admin operativi.</p>
+</article>
+</section>
+
+<div class="v609-zone-head" data-dash-visible="webmaster" data-role-webmaster="" data-section="system">
+<div><h2>Sustav</h2><p>Tehnički alati postoje, ali nisu više dio glavnog korisničkog iskustva.</p></div>
+<span class="v609-zone-tag">webmaster only</span>
+</div>
+<details class="v609-tech-wrap" data-dash-visible="webmaster" data-role-webmaster="">
+<summary class="v609-tech-summary"><div><b>Prikaži tehničke alate</b><small>Sync status, role manager, audit i SQL alati. Otvori samo kad stvarno održavaš sustav.</small></div><span class="chev">Otvori</span></summary>
+<div class="v609-tech-body">
+<section aria-label="Stanje sustava" class="v609-system-grid">
+<article class="sov-panel">
+<h3>Health i role</h3>
+<div class="v609-mini-actions">
+<a href="sync-status.html"><span>SOV Sync status</span><small>centralni health →</small></a>
+<a href="role-manager.html"><span>Role manager</span><small>permission matrica →</small></a>
+<a href="audit-status.html"><span>Audit i uređaji</span><small>logovi i device health →</small></a>
+</div>
+</article>
+<article class="sov-panel">
+<h3>SQL i baza</h3>
+<div class="v609-mini-actions">
+<a href="speleo-sql-edit-sandbox.html"><span>SQL sandbox</span><small>sigurno uređivanje →</small></a>
+<a href="speleo-sql-go-live.html"><span>SQL Go Live</span><small>promocija baze →</small></a>
+<a href="speleo-sql-safe.html"><span>SQL Safe staging</span><small>staging alati →</small></a>
+<a href="speleo-sql-object-hub.html"><span>Object hub / compare</span><small>spajanje i kontrola →</small></a>
+</div>
+</article>
+<article class="sov-panel">
+<h3>Brzi brojevi</h3>
+<div class="sov-mini-grid">
+<div class="sov-mini"><b data-kpi-users="">—</b><span>profili</span></div>
+<div class="sov-mini"><b data-kpi-drawings="">—</b><span>nacrti metadata</span></div>
+<div class="sov-mini"><b data-kpi-devices="">—</b><span>uređaji</span></div>
+<div class="sov-mini"><b data-kpi-audit="">—</b><span>audit log</span></div>
+</div>
+</article>
+<article class="sov-panel">
+<h3>Build pravila</h3>
+<div class="sov-list">
+<div class="sov-list-item"><div><b>Jedan build broj</b><small>update.json, dashboard, sync-status i cache markeri moraju ostati usklađeni.</small></div><span class="sov-tag">v6.1.0</span></div>
+<div class="sov-list-item"><div><b>Tech nije user UI</b><small>SQL/sync/audit je skriven iza Webmaster details bloka.</small></div><span class="sov-tag">clean</span></div>
+</div>
+</article>
+<article class="sov-panel">
+<h3>Zadnje audit akcije</h3>
+<div class="sov-list" data-recent-audit=""><div class="sov-empty">Učitavam audit...</div></div>
+</article>
+<article class="sov-panel">
+<h3>Uređaji i sync</h3>
+<div class="sov-list" data-device-health=""><div class="sov-empty">Učitavam uređaje...</div></div>
+</article>
+</section>
+</div>
+</details>
+</main>
+</div>
+<script src="assets/sov-dashboard-premium.js?v=5.58.16"></script>
+<script>
+    (function(){
+      const LABELS={webmaster:'Webmaster',admin:'Admin',oruzar:'Oružar',arhivar:'Arhivar',editor:'Urednik',user:'User'};
+      const ALLOWED=['webmaster','admin','oruzar','arhivar','editor','user'];
+      const visibleFor=(el,role)=>String(el.getAttribute('data-dash-visible')||'user,editor,oruzar,arhivar,admin,webmaster').split(',').map(s=>s.trim()).includes(role);
+      function getSaved(){try{return localStorage.getItem('SOV_DASHBOARD_PREVIEW_ROLE')||'webmaster'}catch(e){return 'admin'}}
+      function setSaved(role){try{localStorage.setItem('SOV_DASHBOARD_PREVIEW_ROLE',role)}catch(e){}}
+      function apply(role){
+        if(!ALLOWED.includes(role)) role='webmaster'; setSaved(role);
+        document.querySelectorAll('[data-preview-role-label]').forEach(el=>el.textContent=LABELS[role]||role);
+        document.querySelectorAll('#dashboardRolePreview button[data-preview-dashboard-role]').forEach(btn=>btn.classList.toggle('active',btn.dataset.previewDashboardRole===role));
+        document.querySelectorAll('[data-dash-visible]').forEach(el=>el.classList.toggle('is-preview-hidden',!visibleFor(el,role)));
+        document.querySelectorAll('.sov-section-head[data-section="internal"]').forEach(el=>{
+          const any=Array.from(document.querySelectorAll('.sov-grid[aria-label="Interni moduli"] [data-dash-visible]')).some(card=>visibleFor(card,role));
+          el.classList.toggle('is-preview-hidden',!any);
+        });
+      }
+      document.addEventListener('DOMContentLoaded',async()=>{
+        const box=document.getElementById('dashboardRolePreview'); if(!box) return;
+        let profile=null; try{ if(window.SOVAuth){ await SOVAuth.ready(); profile=await SOVAuth.getProfile(); } }catch(e){}
+        const isWebmaster=!!(profile&&profile.role==='webmaster');
+        if(isWebmaster){ box.classList.add('is-on'); } else { box.classList.remove('is-on'); }
+        box.querySelectorAll('button[data-preview-dashboard-role]').forEach(btn=>btn.addEventListener('click',()=>apply(btn.dataset.previewDashboardRole)));
+        apply(isWebmaster ? getSaved() : (profile&&profile.role)||'user');
+        setTimeout(()=>apply(isWebmaster ? getSaved() : (profile&&profile.role)||'user'),350);
+      });
+    })();
+  </script>
+<script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script defer="" src="assets/sov-polish-v55826.js"></script><script defer src="assets/sov-wow-v6.js?v=6.1.0"></script><script defer src="assets/sov-version.js?v=6.1.0"></script></body>
+</html>
