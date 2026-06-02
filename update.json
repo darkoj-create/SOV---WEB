@@ -1,30 +1,49 @@
 {
   "app": "SOV web",
-  "version": "6.0.1",
-  "versionName": "v6.0.1-oruzarstvo-hardboot-wow-sync",
-  "build": "sov-web-build-v6.0.1-oruzarstvo-hardboot-wow-sync",
-  "createdAt": "2026-06-01T22:20:53Z",
-  "cacheBust": "601",
-  "base": "sov-web-build-v6.0-wow-layer.zip",
-  "mergedFrom": "sov-web-build-v5.59.12-oruzarstvo-hardboot-fix.zip",
+  "version": "6.0.3",
+  "versionName": "v6.0.3-velebiten-submission-form-export",
+  "build": "sov-web-build-v6.0.3-velebiten-submission-form-export",
+  "createdAt": "2026-06-02T05:54:57Z",
+  "cacheBust": "603",
+  "base": "sov-web-build-v6.0.2-procelnistvo-xls-sync.zip",
   "requiresSql": false,
+  "optionalSql": [
+    "SUPABASE_SOV_PREDANE_JAME_FORM_EXPORT_v6_0_3.sql"
+  ],
   "sqlAlreadyIncluded": [
+    "SUPABASE_SOV_ARHIVAR_SUBMISSIONS_v5_58_1_SAFE_PROFILE_FIX.sql",
     "SUPABASE_ORUZARSTVO_HEALTH_v5_59_11.sql",
     "SUPABASE_ORUZARSTVO_CATEGORY_CLEANUP_v5_59_9.sql"
   ],
   "changedFiles": [
+    "velebiten.html",
+    "o-drustvu.html",
+    "predaj-novu-jamu.html",
+    "assets/sov-form-v603.css",
+    "assets/sov-submission-page-v603.js",
+    "assets/arhivar-submissions-review.js",
+    "arhivar-predane-jame.html",
+    "dashboard.html",
+    "karta.html",
+    "sync-status.html",
+    "assets/auth.js",
+    "update.json",
+    "VERSION.txt",
+    "BUILD_VERSION.txt",
     "oruzarstvo.html",
     "assets/oruzarstvo-supabase.js",
-    "sync-status.html",
-    "data/oruzarstvo-data.json",
-    "BUILD_VERSION.txt",
-    "VERSION.txt",
-    "update.json"
+    "procelnistvo.html",
+    "data/procelnistvo.json",
+    "SUPABASE_SOV_PREDANE_JAME_FORM_EXPORT_v6_0_3.sql",
+    "BUILD_NOTES_v6.0.3_VELEBITEN_SUBMISSION_FORM_EXPORT.md"
   ],
   "notes": [
-    "Oružarstvo hardboot: static JSON renders first; Supabase live refresh runs in background.",
-    "Preserved v6 WOW layer assets and injected them into oruzarstvo.html.",
-    "sync-status.html aligned to v6.0.1 and checks Oružarstvo static JSON plus Supabase health.",
-    "Armory cache key bumped to sov_armory_catalog_cache_v601 to avoid stale loader/cache."
+    "Added a modern Velebiten page and connected it inside the O nama section/dropdown.",
+    "Added standalone SOV Cloud predaj-novu-jamu.html form.",
+    "Form saves to speleo_object_submissions and speleo_object_submission_files, so it appears in arhivar-predane-jame.html.",
+    "Arhivar inbox now supports XLSX export for all filtered submissions and a single selected submission, plus existing CSV/XML/ZIP.",
+    "Dashboard and Karta Predaj novu jamu links now open the standalone form instead of the old modal-only flow.",
+    "sync-status, dashboard badge, update.json, VERSION and BUILD_VERSION bumped to v6.0.3.",
+    "Optional SQL is included only as an idempotent safety patch if the Predane jame submission tables/storage are missing."
   ]
 }

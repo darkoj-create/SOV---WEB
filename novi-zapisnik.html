@@ -35,8 +35,8 @@
 <div class="field"><label>Naslov</label><input id="title" value="Zapisnik sastanka"/></div>
 </div>
 <div class="row">
-<div class="field"><label>Tko vodi sastanak?</label><input id="lead" placeholder="npr. Ivona Lišanin"/></div>
-<div class="field"><label>Tko je zapisničar?</label><input id="recorder" placeholder="npr. Tibor Jakrlin"/></div>
+<div class="field"><label>Tko vodi sastanak?</label><input id="lead" placeholder="npr. Ivona Klišanin"/></div>
+<div class="field"><label>Tko je zapisničar?</label><input id="recorder" placeholder="npr. Mia Šepčević"/></div>
 </div>
 <div class="hint">Format je složen prema primjeru zapisnika: naslov, stalne sekcije, pa na kraju “Sastanak vodio” i “Zapisnik vodila”.</div>
 <div class="section-card"><h3>SPELEO IZLETI</h3><div class="field"><textarea id="speleIzleti" placeholder="Unesi speleo izlete, datume, sudionike, objekt i kratki tijek akcije..."></textarea></div></div>
@@ -81,5 +81,5 @@ function load(){ $('date').value=todayHr(); try{const d=JSON.parse(localStorage.
 ['title','lead','recorder','speleIzleti','iniIzleti','najave','razno'].forEach(id=>$(id).addEventListener('input',render));
 $('previewBtn').onclick=render; $('saveBtn').onclick=saveDraft; $('sendBtn').onclick=send; load();
 </script>
-<script src="assets/sov-inbox.js?v=4.90"></script><script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script defer="" src="assets/sov-polish-v55826.js"></script><script defer src="assets/sov-wow-v6.js?v=6.0.1"></script></body>
+<script src="assets/sov-inbox.js?v=4.90"></script><script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script defer="" src="assets/sov-polish-v55826.js"></script><script defer src="assets/sov-wow-v6.js?v=6.0.3"></script></body>
 </html>

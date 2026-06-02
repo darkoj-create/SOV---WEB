@@ -1,1 +1,1 @@
-sov-web-build-v6.0.1-oruzarstvo-hardboot-wow-sync
+sov-web-build-v6.0.3-velebiten-submission-form-export

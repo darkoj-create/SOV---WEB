@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>SOV Sync · Ekosustav status v6.0.1</title>
+<title>SOV Sync · Ekosustav status v6.0.3</title>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&amp;display=swap" rel="stylesheet"/>
@@ -19,13 +19,13 @@
 <body>
 <div class="shell">
 <header class="top">
-<a class="brand" href="dashboard.html"><div class="mark">SOV</div><div><strong>SOV Sync</strong><small>ekosustav status · v6.0.1</small></div></a>
+<a class="brand" href="dashboard.html"><div class="mark">SOV</div><div><strong>SOV Sync</strong><small>ekosustav status · v6.0.3</small></div></a>
 <nav class="nav"><a href="dashboard.html">Dashboard</a><a href="karta.html">Karta</a><a href="arhivar-dashboard.html">Arhivar</a><a href="news-editor.html">Vijesti CMS</a><a href="role-manager.html">Role</a><a class="primary" href="sync-status.html">SOV Sync</a></nav>
 </header>
 <section class="hero">
 <span class="eyebrow">SOV ekosustav · admin kontrolna ploča</span>
 <h1>Jedno mjesto za provjeru synca.</h1>
-<p>Ova stranica je usklađena s web buildom v6.0.1. Čita endpointove i Supabase tablice: karta/baza objekata, puni detail objekta, nacrti, izleti, Oružarstvo, Field Tracking Lite, Trip Assets/paketi za teren, role, novosti CMS, user predaje članaka, arhivarske predaje i Webmaster-only zaštitu. Ne mijenja podatke.</p>
+<p>Ova stranica je usklađena s web buildom v6.0.3. Čita endpointove i Supabase tablice: karta/baza objekata, puni detail objekta, nacrti, izleti, Oružarstvo, Field Tracking Lite, Trip Assets/paketi za teren, role, novosti CMS, user predaje članaka, arhivarske predaje i Webmaster-only zaštitu. Ne mijenja podatke.</p>
 <div class="actions">
 <button class="btn" id="runAllBtn">Provjeri sve</button>
 <button class="btn secondary" id="runDrawingsBtn">Nacrti</button>
@@ -75,6 +75,8 @@
 <div class="kv"><b>Pending / review</b><span id="submissionsPending">—</span></div>
 <div class="kv"><b>Approved</b><span id="submissionsApproved">—</span></div>
 <div class="kv"><b>Privitci</b><span id="submissionFilesCount">—</span></div>
+<div class="kv"><b>Formular</b><span>predaj-novu-jamu.html</span></div>
+<div class="kv"><b>Export</b><span>XLSX / CSV / XML / ZIP</span></div>
 </article>
 <article class="card">
 <div class="status" id="mapStatus"><span class="dot"></span><span>Karta</span></div>
@@ -109,7 +111,7 @@
 <div class="kv"><b>Lokacije</b><span id="armoryLocationsCount">—</span></div>
 <div class="kv"><b>Manifest</b><span id="armoryManifestStatus">—</span></div>
 <div class="kv"><b>Stranice</b><span>oruzarstvo.html · oruzar-master.html</span></div>
-<div class="kv"><b>Loader</b><span id="armoryLoaderStatus">hardboot v6.0.1 · ne čeka Supabase</span></div>
+<div class="kv"><b>Loader</b><span id="armoryLoaderStatus">hardboot v6.0.3 · ne čeka Supabase</span></div>
 </div>
 </div>
 <div class="line"></div>
@@ -138,9 +140,9 @@
 </article>
 <article class="card">
 <h2>Build verzije</h2>
-<div class="kv"><b>Web</b><span>v6.0.1 Oružarstvo health + fast static fallback + sync dashboard</span></div>
+<div class="kv"><b>Web</b><span>v6.0.3 Velebiten + Predaj novu jamu + Excel export + sync dashboard</span></div>
 <div class="kv"><b>News CMS SQL</b><span>postojeći sov_news RPC/storage bez nove migracije</span></div>
-<div class="kv"><b>Arhivar SQL</b><span>postojeći full edit + submissions + workflow provjere</span></div>
+<div class="kv"><b>Arhivar SQL</b><span>submissions + workflow + XLSX export provjere</span></div>
 <div class="kv"><b>Oružarstvo SQL</b><span>SUPABASE_ORUZARSTVO_HEALTH_v5_59_11.sql za health RPC + fallback counts</span></div>
 <div class="kv"><b>Admin APK source</b><span>v1.4.13.7 arhivar submissions</span></div>
 </article>
@@ -148,7 +150,7 @@
 <h2>Pravilo za buduće buildove</h2>
 <div class="manual">
 <h3>sync-status.html je dio builda</h3>
-<p>Od v6.0.1 ova stranica se ažurira uz svaki relevantan web build: verzija, novi moduli, SQL potrebe i endpointi. Tehnički status ostaje samo Webmasteru.</p>
+<p>Od v6.0.3 ova stranica se ažurira uz svaki relevantan web build: verzija, novi moduli, SQL potrebe, forma predaja i endpointi. Tehnički status ostaje samo Webmasteru.</p>
 <p>Dashboard preview je samo vizualni filter na dashboardu. Ne mijenja stvarne role i ne daje pristup zaštićenim stranicama.</p>
 </div>
 </article>
@@ -157,7 +159,7 @@
 <div class="log" id="logBox">Čeka provjeru...</div>
 </article>
 </section>
-<div class="footer">SOV web v6.0.1 · sync-status.html · webmaster read-only kontrolna ploča</div>
+<div class="footer">SOV web v6.0.3 · sync-status.html · webmaster read-only kontrolna ploča</div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/supabase-config.js"></script>
@@ -246,7 +248,7 @@
       setStatus('armoryStatus','warn','Provjeravam Oružarstvo...');
       const staticJson=await checkArmoryStaticJson();
       if($('armoryStaticStatus')) $('armoryStaticStatus').textContent=staticJson.ok?(staticJson.count+' stavki · OK'):(('n/a · '+staticJson.error));
-      if($('armoryLoaderStatus')) $('armoryLoaderStatus').textContent='hardboot v6.0.1 · static first · live background';
+      if($('armoryLoaderStatus')) $('armoryLoaderStatus').textContent='hardboot v6.0.3 · static first · live background';
       const sb=window.SOVAuth&&SOVAuth.getClient&&SOVAuth.getClient();
       if(!sb){ const ok=!!staticJson.ok; setStatus('armoryStatus',ok?'warn':'bad',ok?'Static JSON OK, Supabase off':'Supabase nije konfiguriran'); state.armory=ok; return {ok,error:'no supabase',staticJson}; }
       let rpc=null;
@@ -279,7 +281,7 @@
       $('armoryBaseCounts').textContent=[itemCount+' items', ropeCount+' ropes', pieceCount+' pieces'].join(' / ');
       $('armoryOpenRequests').textContent=reqOpen.ok||rpc?String(openRequests):'n/a · '+reqOpen.error;
       $('armoryLocationsCount').textContent=locs.ok||rpc?String(locationsCount):'n/a · '+locs.error;
-      $('armoryManifestStatus').textContent=(manifest.ok||rpc)?((manifest.ok?manifest.count:rpcTables.manifest)||0)+' row · cache key v6.0.1':'n/a · '+manifest.error;
+      $('armoryManifestStatus').textContent=(manifest.ok||rpc)?((manifest.ok?manifest.count:rpcTables.manifest)||0)+' row · cache key v6.0.3':'n/a · '+manifest.error;
       const ok=(totalCatalog>0 && (grouped.ok || raw.ok || items.ok || rpc)) || !!staticJson.ok;
       $('armoryHealthText').textContent=ok?'Oružarstvo ima čitljiv katalog. /oruzarstvo.html sada hardboot učita lokalni JSON prije Supabasea, pa SQL/RLS više ne može zablokirati prikaz.':'Oružarstvo DB health nije OK. Ako je Static JSON zelen, katalog svejedno radi iz lokalnog JSON-a dok se SQL/RLS ne popravi.';
       setStatus('armoryStatus',ok?'ok':'bad',ok?'Oružarstvo OK':'Oružarstvo DB problem');
@@ -353,12 +355,20 @@
     async function checkSubmissions(){
       setStatus('submissionsStatus','warn','Provjeravam predane jame...');
       const sb=window.SOVAuth&&SOVAuth.getClient&&SOVAuth.getClient(); if(!sb){ setStatus('submissionsStatus','bad','Supabase fali'); throw new Error('Supabase client nije dostupan'); }
+      try{
+        const rpc=await sb.rpc('sov_speleo_submissions_health');
+        if(!rpc.error && rpc.data){
+          const d=rpc.data;
+          $('submissionsCount').textContent=String(d.submissions??0); $('submissionsPending').textContent=String(d.pending??0); $('submissionsApproved').textContent=String(d.approved??0); $('submissionFilesCount').textContent=String(d.files??0);
+          const ok=!!d.ok; setStatus('submissionsStatus',ok?'ok':'warn',ok?'Predane jame OK · form + XLSX':'Predane jame djelomično OK'); state.submissions=ok; log('Arhivarske predaje RPC health',d); return d;
+        }
+      }catch(e){ log('sov_speleo_submissions_health nije dostupan, fallback na table counts',{error:e.message}); }
       const all=await countTable(sb,'speleo_object_submissions');
       const pending=await countTable(sb,'speleo_object_submissions',q=>q.in('status',['submitted','pending','needs_changes','review']));
       const approved=await countTable(sb,'speleo_object_submissions',q=>q.eq('status','approved'));
       const files=await countTable(sb,'speleo_object_submission_files');
       $('submissionsCount').textContent=all.ok?all.count:'n/a'; $('submissionsPending').textContent=pending.ok?pending.count:'n/a'; $('submissionsApproved').textContent=approved.ok?approved.count:'n/a'; $('submissionFilesCount').textContent=files.ok?files.count:'n/a';
-      const ok=all.ok; setStatus('submissionsStatus',ok?'ok':'bad',ok?'Predane jame OK':'submission tablice nisu dostupne'); state.submissions=ok; const result={all,pending,approved,files}; log('Arhivarske predaje',result); return result;
+      const ok=all.ok; setStatus('submissionsStatus',ok?'ok':'bad',ok?'Predane jame OK · table fallback':'submission tablice nisu dostupne'); state.submissions=ok; const result={all,pending,approved,files}; log('Arhivarske predaje fallback',result); return result;
     }
     function updateOverall(){ const ok=[state.drawings,state.trips,state.supabase,state.armory,state.news,state.submissions,state.map,state.tracking].filter(Boolean).length; $('overallMetric').textContent=ok+'/8'; if(ok===8){setStatus('overallStatus','ok','Sve osnovno OK');$('overallText').textContent='Nacrti, izleti, Supabase, Oružarstvo, vijesti, predane jame, karta, tracking i paketi za teren odgovaraju.'} else if(ok>0){setStatus('overallStatus','warn','Djelomično OK');$('overallText').textContent='Neki moduli rade, neke treba provjeriti.'} else {setStatus('overallStatus','bad','Nije OK');$('overallText').textContent='Ni jedan osnovni modul nije potvrđen.'}}
     async function runOne(fn){ try{await fn()}catch(e){log('Greška: '+(e.message||e));} updateOverall(); }
@@ -370,5 +380,5 @@
       setTimeout(runAll,500);
     });
   </script>
-<script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script>console.info("SOV sync v6.0.1: armory hardboot + WOW sync active.");</script><script defer="" src="assets/sov-polish-v55826.js"></script></body>
+<script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script>console.info("SOV sync v6.0.3: Velebiten + Predaj novu jamu + XLSX export active.");</script><script defer="" src="assets/sov-polish-v55826.js"></script></body>
 </html>
