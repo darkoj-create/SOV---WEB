@@ -1,36 +1,29 @@
 {
   "app": "SOV web",
   "version": "6.1.5",
-  "versionName": "v6.1.5-oruzarstvo-taxonomy-cleanup",
-  "build": "sov-web-build-v6.1.5-oruzarstvo-taxonomy-cleanup",
-  "createdAt": "2026-06-02T18:15:00Z",
-  "cacheBust": "615",
-  "base": "sov-web-build-v6.1.4-premium-dashboard-hotfix.zip",
+  "versionName": "6.1.5",
+  "build": "v6.1.5-armory-xls-canonical",
+  "createdAt": "2026-06-02T17:10:00Z",
+  "cacheBust": "614",
+  "base": "sov-web-build-v6.1.3-sync-status-health-hotfix.zip",
   "requiresSql": false,
   "sqlRequired": [],
-  "optionalSql": [
-    "SUPABASE_ORUZARSTVO_TAXONOMY_CLEANUP_v6_1_5.sql"
-  ],
+  "optionalSql": [],
   "changedFiles": [
-    "oruzarstvo.html",
-    "assets/oruzarstvo-taxonomy-v615.js",
-    "assets/oruzarstvo-supabase.js",
-    "data/oruzarstvo-data.json",
-    "data/oruzarstvo-data-v615.json",
-    "data/oruzarstvo-taxonomy-v615.json",
+    "dashboard.html",
+    "assets/sov-dashboard-premium-v614.css",
     "sync-status.html",
+    "assets/sov-version.js",
     "update.json",
     "VERSION.txt",
     "BUILD_VERSION.txt",
-    "SUPABASE_ORUZARSTVO_TAXONOMY_CLEANUP_v6_1_5.sql",
-    "BUILD_NOTES_v6.1.5_ORUZARSTVO_TAXONOMY_CLEANUP.md"
+    "BUILD_NOTES_v6.1.4_PREMIUM_DASHBOARD_HOTFIX.md"
   ],
-  "releaseType": "oruzarstvo-taxonomy-cleanup",
+  "releaseType": "premium-dashboard-hotfix",
   "notes": [
-    "Introduces one canonical Oružarstvo taxonomy layer for frontend and static JSON.",
-    "Normalizes local armory data categories/subcategories so ordinary batteries are in Elektro while Bosch/Hilti/Makita batteries stay in Bušilice.",
-    "Adds data/oruzarstvo-taxonomy-v615.json and assets/oruzarstvo-taxonomy-v615.js as the single frontend category source.",
-    "Optional SQL creates the same taxonomy in Supabase and safely applies it only to tables/columns that exist.",
-    "No destructive SQL changes."
+    "Rebuilds dashboard technical/system section into a premium, readable UI instead of raw/dev-looking inline links.",
+    "Fixes stale dashboard version labels and keeps v6.1.2 safe DOM version helper.",
+    "Updates sync-status version/cache expectation to v6.1.4 / cacheBust 614.",
+    "No SQL changes."
   ]
 }

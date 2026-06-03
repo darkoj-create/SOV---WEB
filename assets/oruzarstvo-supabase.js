@@ -88,21 +88,14 @@
 
   function stripDiacritics(s){ return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim(); }
   function canonicalArmoryCategory(raw, text){
+    // v6.1.5: XLS is the canonical armory taxonomy. Preserve the category exactly
+    // instead of reclassifying it into broader virtual buckets. Search still uses
+    // text tags, but inventory/order screens must match the XLS and SQL seed 1:1.
     const clean=String(raw||'').trim();
-    const x=stripDiacritics(clean);
-    const t=stripDiacritics([clean,text].filter(Boolean).join(' '));
-    const ordinary=/(^| )(aa|aaa|9v|18650|cr123|cr2032)( |$)|baterije?\s+(aa|aaa|9v)|punjac.*(aa|aaa)|mini usb|usb kabel|solarni punjac|powerbank/.test(t);
-    const drill=/(bosch|hilti|makita|gbh|sds|busil|svrd|borer)/.test(t);
-    const drone=/(dron|dji|phantom|mavic|spark|gl300|elisa|propeler|ph4c|ade019|4480mah|5350mah)/.test(t);
-    if(clean==='Užad') return 'Užad i užetna oprema';
-    if(x.includes('busilice i baterije')){ if(drone) return 'Dronovi'; if(ordinary&&!drill) return 'Elektro, rasvjeta i foto'; return 'Bušilice i svrdla'; }
-    if(x.includes('elektro')||x.includes('foto')||x==='rasvjeta') return 'Elektro, rasvjeta i foto';
-    if(x.includes('ostali alat')||x==='ostalo') return 'Alat i radionica';
-    if(drone) return 'Dronovi';
-    if(/kompas|busol|suunto|disto|topodroid|klinomet/.test(t)) return 'Oprema za crtanje';
-    if(ordinary&&!drill) return 'Elektro, rasvjeta i foto';
-    if(drill) return 'Bušilice i svrdla';
-    return clean || 'Ostalo / provjeriti';
+    if(clean) return clean==='Užad' ? 'Užeta' : clean;
+    const t=stripDiacritics(String(text||''));
+    if(/uzad|uze|rope|statik/.test(t)) return 'Užeta';
+    return 'Ostalo';
   }
 
 
@@ -126,8 +119,8 @@
     return x;
   }
   function articleMergeKey(row){
-    const cat=(window.SOVArmoryTaxonomy?SOVArmoryTaxonomy.category(row):canonicalArmoryCategory(row.category_name || row.category || 'Ostalo',[row.name,row.model,row.subcategory,row.internal_note,row.note].join(' ')));
-    const sub=(window.SOVArmoryTaxonomy?SOVArmoryTaxonomy.subcategory(row):(String(row.subcategory||'Ostalo').trim() || 'Ostalo'));
+    const cat=canonicalArmoryCategory(row.category_name || row.category || 'Ostalo',[row.name,row.model,row.subcategory,row.internal_note,row.note].join(' '));
+    const sub=String(row.subcategory||'Ostalo').trim() || 'Ostalo';
     const nm=normalizeArticleName(row.name||row.item_name||row.model||'Artikl');
     return stripDiacritics(cat)+'|'+stripDiacritics(sub)+'|'+nm;
   }
@@ -144,11 +137,8 @@
         const first={...row};
         first.legacy_id=stableArticleId(row);
         first.catalog_id=first.legacy_id;
-        first.category_name=(window.SOVArmoryTaxonomy?SOVArmoryTaxonomy.category(row):canonicalArmoryCategory(row.category_name || row.category || 'Ostalo',[row.name,row.model,row.subcategory,row.internal_note,row.note].join(' ')));
+        first.category_name=canonicalArmoryCategory(row.category_name || row.category || 'Ostalo',[row.name,row.model,row.subcategory,row.internal_note,row.note].join(' '));
         first.category=first.category_name;
-        first.subcategory=(window.SOVArmoryTaxonomy?SOVArmoryTaxonomy.subcategory(row):(first.subcategory||row.subcategory||'Ostalo'));
-        first.main_category=first.category_name;
-        first.taxonomy_version='6.1.5';
         first.name=String(row.name||row.item_name||row.model||'Artikl').trim();
         first.quantity=qty===null?0:qty;
         first.loaned=loan===null?0:loan;
@@ -257,7 +247,7 @@
   const TABLE_COLUMNS={
     equipment_categories:['legacy_id','name','description','type','sort_order','updated_at'],
     equipment_locations:['legacy_id','name','description','type'],
-    equipment_items:['legacy_id','catalog_id','name','category_id','category_name','subcategory','unit','tracking_type','quantity','loaned','available','minimum','status','availability','member_visible','internal_note','source_sheet','item_kind','code_required','physical_code_note','updated_at'],
+    equipment_items:['legacy_id','catalog_id','name','category_id','category_name','subcategory','unit','tracking_type','quantity','loaned','available','minimum','status','availability','member_visible','internal_note','source_sheet','item_kind','code_required','physical_code_note','quantity_label','available_label','last_inventory_date','source_xls_row','xls_category','xls_subcategory','original_quantity_text','updated_at'],
     equipment_pieces:['legacy_id','catalog_legacy_id','equipment_item_id','name','sku','manufacturer','model','purchase_date','location_id','location_name','status','next_service','note','updated_at'],
     equipment_ropes:['legacy_id','sku','name','diameter_mm','length_m','manufacturer','model','standard','production_year','in_use_since','color','supplier','location_name','status','note','item_kind','code_required','updated_at'],
     procurement_plan:['legacy_id','equipment_legacy_id','item_name','quantity','unit_price','total_price','supplier','status','purchase_date','requested_by','note'],
@@ -402,8 +392,36 @@
       c => String(c.name||'').trim().toLowerCase()
     );
     const locs=(data.locations||[]).map((l,idx)=>({legacy_id:String(l.id||idx+1),name:l.name,description:l.description||null,type:l.type||null}));
-    const rawItems=(data.items||[]).map(i=>({legacy_id:i.id,catalog_id:String(i.catalog_id||''),name:i.name,category_name:canonicalArmoryCategory(i.category||i.category_name||null,[i.name,i.model,i.subcategory,i.internal_note].join(' ')),subcategory:i.subcategory||null,unit:i.unit||'kom',tracking_type:i.tracking_type||'po vrsti',quantity:safeQuantity(i.quantity)||0,loaned:safeQuantity(i.loaned)||0,available:safeQuantity(i.available)||0,minimum:i.minimum===''?null:safeQuantity(i.minimum),status:i.status||'aktivno',availability:i.availability||'dostupno',member_visible:i.member_visible!==false,internal_note:i.internal_note||null,source_sheet:i.source_sheet||null,item_kind:i.item_kind||'quantity_article',code_required:false,physical_code_note:i.physical_code_note||'Nema pojedinačnih kodova; vodi se količina po artiklu.'}));
-    const items=mergeQuantityArticles(rawItems);
+    const rawItems=(data.items||[]).map((i,idx)=>({
+      legacy_id:i.id||i.legacy_id||('XLS-'+String(idx+1).padStart(4,'0')),
+      catalog_id:String(i.catalog_id||i.id||i.legacy_id||''),
+      name:i.name,
+      category_name:canonicalArmoryCategory(i.category||i.category_name||i.xls_category||null,[i.name,i.model,i.subcategory,i.internal_note].join(' ')),
+      subcategory:i.subcategory||i.xls_subcategory||'Ostalo',
+      unit:i.unit||'kom',
+      tracking_type:i.tracking_type||'xls_row',
+      quantity:safeQuantity(i.quantity)||0,
+      quantity_label:String(i.quantity_label ?? i.original_quantity_text ?? i.quantity ?? ''),
+      loaned:safeQuantity(i.loaned)||0,
+      available:safeQuantity(i.available)||0,
+      available_label:String(i.available_label ?? i.available ?? ''),
+      minimum:i.minimum===''?null:safeQuantity(i.minimum),
+      status:i.status||(safeQuantity(i.available)>0?'aktivno':'za provjeru'),
+      availability:i.availability||(safeQuantity(i.available)>0?'dostupno':'nedostupno'),
+      member_visible:i.member_visible!==false,
+      internal_note:i.internal_note||null,
+      source_sheet:i.source_sheet||null,
+      item_kind:i.item_kind||'xls_row',
+      code_required:false,
+      physical_code_note:i.physical_code_note||null,
+      last_inventory_date:toDate(i.last_inventory_date),
+      source_xls_row:safeQuantity(i.source_xls_row),
+      xls_category:i.xls_category||i.category||i.category_name||null,
+      xls_subcategory:i.xls_subcategory||i.subcategory||null,
+      original_quantity_text:i.original_quantity_text||String(i.quantity_label ?? i.quantity ?? '')
+    }));
+    // v6.1.5: keep exact XLS rows. No merge by normalized name/category.
+    const items=rawItems;
     const pieces=(data.pieces||[]).map(p=>({legacy_id:p.id,catalog_legacy_id:String(p.catalog_id||''),name:p.name,sku:p.sku||null,manufacturer:p.manufacturer||null,model:p.model||null,purchase_date:toDate(p.purchase_date),location_name:p.location||null,status:p.status||'U društvu',next_service:toDate(p.next_service),note:p.note||null}));
     const ropes=(data.ropes||[]).map(r=>({legacy_id:r.id,sku:normalizedSku(r.sku||r.id),name:r.name,diameter_mm:safeNumber(r.diameter_mm),length_m:safeNumber(r.length_m),manufacturer:r.manufacturer||null,model:r.model||null,standard:r.standard||null,production_year:safeYear(r.year),in_use_since:toDate(r.in_use_since),color:r.color||null,supplier:r.supplier||null,location_name:r.location||null,status:r.status||'U društvu',note:r.note||null,item_kind:'individual_rope',code_required:true}));
     const procurement=(data.procurement||[]).map(p=>({legacy_id:p.id,equipment_legacy_id:String(p.catalog_id||''),item_name:p.name,quantity:safeNumber(p.quantity),unit_price:safeNumber(p.unit_price),total_price:safeNumber(p.total_price),supplier:p.supplier||null,status:p.status||'Zaprimljeno',purchase_date:toDate(p.date),requested_by:p.person||null,note:p.note||null}));
@@ -640,17 +658,40 @@
     const inv=await safe('inventory_sessions','*');
     const proc=await safe('procurement_plan','*');
     out.categories=(cats||[]).map((c,idx)=>({id:c.legacy_id||c.id||String(idx+1),name:canonicalArmoryCategory(c.name,c.description||''),description:c.description||'',type:c.type||'',sort_order:c.sort_order||idx})).filter(c=>c.name);
-    out.items=mergeQuantityArticles((items||[]).map((i,idx)=>({
-      id:i.legacy_id||i.catalog_id||i.id||('DB-ITEM-'+idx), legacy_id:i.legacy_id||i.id, catalog_id:i.catalog_id||i.legacy_id||i.id,
-      name:i.name||i.item_name||'Artikl', category:canonicalArmoryCategory(i.category_name||i.category||'Ostalo',[i.name,i.subcategory,i.internal_note].join(' ')), category_name:canonicalArmoryCategory(i.category_name||i.category||'Ostalo',[i.name,i.subcategory,i.internal_note].join(' ')), subcategory:i.subcategory||'Ostalo',
-      unit:i.unit||'kom', tracking_type:i.tracking_type||'po vrsti', quantity:safeQuantity(i.quantity)||0, quantity_label:String(i.quantity??''),
-      available:safeQuantity(i.available ?? i.quantity ?? 0)||0, available_label:String(i.available ?? i.quantity ?? ''), loaned:safeQuantity(i.loaned)||0,
-      minimum:i.minimum ?? '', status:i.status||'aktivno', availability:i.availability||'dostupno', member_visible:i.member_visible!==false,
-      internal_note:i.internal_note||i.note||'', source_sheet:i.source_sheet||'Supabase', location:i.location_name||i.location||'', location_name:i.location_name||i.location||''
-    })).filter(i=>i.name));
+    out.items=(items||[]).map((i,idx)=>({
+      id:i.legacy_id||i.catalog_id||i.id||('DB-ITEM-'+idx),
+      legacy_id:i.legacy_id||i.id,
+      catalog_id:i.catalog_id||i.legacy_id||i.id,
+      name:i.name||i.item_name||'Artikl',
+      category:canonicalArmoryCategory(i.category_name||i.category||i.xls_category||'Ostalo',[i.name,i.subcategory,i.internal_note].join(' ')),
+      category_name:canonicalArmoryCategory(i.category_name||i.category||i.xls_category||'Ostalo',[i.name,i.subcategory,i.internal_note].join(' ')),
+      subcategory:i.subcategory||i.xls_subcategory||'Ostalo',
+      unit:i.unit||'kom',
+      tracking_type:i.tracking_type||'xls_row',
+      quantity:safeQuantity(i.quantity)||0,
+      quantity_label:i.quantity_label||i.original_quantity_text||String(i.quantity??''),
+      loaned:safeQuantity(i.loaned)||0,
+      available:safeQuantity(i.available ?? i.quantity ?? 0)||0,
+      available_label:i.available_label||String(i.available ?? i.quantity ?? ''),
+      minimum:i.minimum ?? '',
+      status:i.status||'aktivno',
+      availability:i.availability||'dostupno',
+      member_visible:i.member_visible!==false,
+      internal_note:i.internal_note||i.note||'',
+      source_sheet:i.source_sheet||'Supabase',
+      location:i.location_name||i.location||'',
+      location_name:i.location_name||i.location||'',
+      item_kind:i.item_kind||'xls_row',
+      physical_code_note:i.physical_code_note||'',
+      last_inventory_date:i.last_inventory_date||null,
+      source_xls_row:i.source_xls_row||null,
+      xls_category:i.xls_category||null,
+      xls_subcategory:i.xls_subcategory||null,
+      original_quantity_text:i.original_quantity_text||null
+    })).filter(i=>i.name);
     out.ropes=(ropes||[]).map((r,idx)=>({
       id:r.legacy_id||r.sku||r.id||('DB-ROPE-'+idx), legacy_id:r.legacy_id||r.id, sku:r.sku||r.legacy_id||'', name:r.name||r.sku||'Uže',
-      category:'Užad i užetna oprema', category_name:'Užad i užetna oprema', subcategory:r.subcategory||'Užad', quantity:1, available:/posu|vani|otpis|rashod|izgubl/i.test(String(r.status||''))?0:1, loaned:/posu|vani/i.test(String(r.status||''))?1:0,
+      category:'Užeta', category_name:'Užeta', subcategory:r.subcategory||'Užad', quantity:1, available:/posu|vani|otpis|rashod|izgubl/i.test(String(r.status||''))?0:1, loaned:/posu|vani/i.test(String(r.status||''))?1:0,
       diameter_mm:r.diameter_mm, length_m:r.length_m, manufacturer:r.manufacturer||'', model:r.model||'', production_year:r.production_year, in_use_since:r.in_use_since,
       color:r.color||'', location:r.location_name||'', location_name:r.location_name||'', status:r.status||'U društvu', note:r.note||'', member_visible:true
     })).filter(r=>r.name);
@@ -694,6 +735,23 @@
       else { const res=await client.from('equipment_item_locations').insert(payload); if(res.error) throw res.error; }
       return true;
     }catch(e){ console.warn('equipment_item_locations update skipped:', e.message||e); return false; }
+  }
+
+  async function setItemLocationQuantity(client, item, locationType, locationName, quantity){
+    const legacy=String(item.id || item.legacy_id || item.equipment_legacy_id || '').trim() || null;
+    const name=String(item.name || item.item_name || 'Artikl').trim();
+    const next=Math.max(0, safeQuantity(quantity)||0);
+    try{
+      let q=client.from('equipment_item_locations').select('*').eq('item_name',name).eq('location_type',locationType).eq('location_name',locationName).limit(1);
+      if(legacy) q=q.eq('equipment_legacy_id',legacy); else q=q.is('equipment_legacy_id',null);
+      const {data,error}=await q;
+      if(error) throw error;
+      const cur=(data&&data[0])||null;
+      const payload={equipment_legacy_id:legacy,item_name:name,location_type:locationType,location_name:locationName,quantity:next,updated_at:new Date().toISOString()};
+      if(cur&&cur.id){ const res=await client.from('equipment_item_locations').update(payload).eq('id',cur.id); if(res.error) throw res.error; }
+      else { const res=await client.from('equipment_item_locations').insert(payload); if(res.error) throw res.error; }
+      return true;
+    }catch(e){ console.warn('equipment_item_locations set skipped:', e.message||e); return false; }
   }
   async function patchItemCounters(client,item,availableDelta,loanedDelta){
     const legacy=String(item.id || item.equipment_legacy_id || '').trim();
@@ -769,17 +827,24 @@
       loaned:safeQuantity(item.loaned)||0,
       minimum:safeQuantity(item.minimum)||0,
       status:item.status||'aktivno',
-      availability:item.status||'aktivno',
+      availability:item.availability||item.status||'aktivno',
       member_visible:item.member_visible!==false,
       internal_note:item.internal_note||null,
       physical_code_note:item.physical_code_note||null,
+      quantity_label:String(item.quantity_label ?? item.quantity ?? ''),
+      available_label:String(item.available_label ?? item.available ?? ''),
+      last_inventory_date:item.last_inventory_date||null,
+      source_xls_row:safeQuantity(item.source_xls_row),
+      xls_category:item.xls_category||item.category_name||item.category||null,
+      xls_subcategory:item.xls_subcategory||item.subcategory||null,
+      original_quantity_text:item.original_quantity_text||String(item.quantity_label ?? item.quantity ?? ''),
       item_kind:item.item_kind||'quantity_article',
       code_required:false,
       updated_at:new Date().toISOString()
     });
     const {data,error}=await client.from('equipment_items').upsert(payload,{onConflict:'legacy_id'}).select('*').single();
     if(error) throw error;
-    try{ await adjustItemLocation(client,{legacy_id:payload.legacy_id,name:payload.name},'storage',item.location_name||'Oružarstvo',payload.available||0); }catch(e){}
+    try{ await setItemLocationQuantity(client,{legacy_id:payload.legacy_id,name:payload.name},'storage',item.location_name||'Oružarstvo',payload.available||0); }catch(e){}
     return data;
   }
   async function retireSimpleItem(id,name){

@@ -1,11 +1,11 @@
-// SOV Web 6.1.5 — safe frontend version helper.
-// Fix: never writes textContent into <html> or <body>; older v6.1.5 could wipe the page because body.dataset.sovVersion matched [data-sov-version].
+// SOV Web 6.1.4 — safe frontend version helper.
+// Fix: never writes textContent into <html> or <body>; older v6.1.1 could wipe the page because body.dataset.sovVersion matched [data-sov-version].
 (function(){
   'use strict';
-  const FALLBACK_VERSION='6.1.5';
-  const FALLBACK_CACHE='615';
-  const FALLBACK_BUILD='sov-web-build-v6.1.5-oruzarstvo-taxonomy-cleanup';
-  const FALLBACK_NAME='v6.1.5-oruzarstvo-taxonomy-cleanup';
+  const FALLBACK_VERSION='6.1.4';
+  const FALLBACK_CACHE='614';
+  const FALLBACK_BUILD='sov-web-build-v6.1.4-premium-dashboard-hotfix';
+  const FALLBACK_NAME='v6.1.4-premium-dashboard-hotfix';
   window.SOV_BUILD={version:FALLBACK_VERSION, versionName:FALLBACK_NAME, build:FALLBACK_BUILD, cacheBust:FALLBACK_CACHE};
   function safeSetText(sel, value){
     try{

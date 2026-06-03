@@ -17,3 +17,9 @@ textarea.cm-input{min-height:120px;resize:vertical;font-family:inherit}
 /* Undo old global stock hiding for Master inventory cards; user catalog still masks stock elsewhere. */
 body.clean-armory .stock{display:grid!important}
 @media(max-width:1000px){.closed-list{grid-template-columns:1fr}}
+
+
+/* v6.1.5 — XLS canonical inventory polish */
+.item-card.needs-count{border-color:rgba(251,191,36,.45);background:linear-gradient(145deg,rgba(251,191,36,.08),rgba(0,0,0,.16))}
+.item-note{border-top:1px solid var(--line);padding-top:8px;line-height:1.35}
+.cm-mini-stats .danger{border-color:rgba(251,113,133,.35);color:#ffdbe2}
