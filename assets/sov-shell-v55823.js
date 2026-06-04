@@ -3,7 +3,7 @@
   const VERSION='5.58.23';
   const PAGE=(location.pathname.split('/').pop()||'index.html').toLowerCase();
   const APP_PAGES=new Set([
-    'dashboard.html','karta.html','baza.html','izleti.html','izleti-cloud.html','kalendar-izleta.html','oruzarstvo.html','oruzarstvo-import.html','oruzar-master.html','oruzar-master-posudbe.html','oruzar-master-inventar.html','oruzar-master-inventura.html','oruzar-master-notes.html','arhivar-dashboard.html','arhivar.html','arhivar-predane-jame.html','arhivar-izvoz.html','arhivar-zahvati.html','news-editor.html','napisi-clanak.html','admin-users.html','admin-notifications.html','role-manager.html','sync-status.html','audit-status.html','speleo-sql-safe.html','speleo-sql-edit-sandbox.html','speleo-sql-compare.html','speleo-sql-object-hub.html','speleo-sql-promote.html','speleo-sql-go-live.html','topodroid.html','topodroid-import.html','speleo-zapisnik.html','novi-zapisnik.html','pregled-baze.html','pregled-zapisnika.html','dokumentacija.html','zapisnici-skupstine.html'
+    'dashboard.html','karta.html','baza.html','izleti.html','izleti-cloud.html','kalendar-izleta.html','oruzarstvo.html','oruzarstvo-import.html','oruzar-master.html','oruzar-master-posudbe.html','oruzar-master-inventar.html','oruzar-master-inventura.html','oruzar-master-notes.html','arhivar-dashboard.html','arhivar.html','arhivar-predane-jame.html','arhivar-izvoz.html','arhivar-zahvati.html','news-editor.html','napisi-clanak.html','admin-users.html','admin-notifications.html','role-manager.html','sync-status.html','audit-status.html','speleo-sql-safe.html','speleo-sql-edit-sandbox.html','speleo-sql-compare.html','speleo-sql-object-hub.html','speleo-sql-promote.html','speleo-sql-go-live.html','topodroid.html','topodroid-import.html','speleo-zapisnik.html','novi-zapisnik.html','pregled-baze.html','pregled-zapisnika.html','dokumentacija.html','dokumenti.html','zapisnici-skupstine.html'
   ]);
   const ROLE_LABEL={webmaster:'Webmaster',admin:'Admin',oruzar:'Oružar',arhivar:'Arhivar',editor:'Urednik',user:'Član'};
   const LINKS=[
@@ -11,6 +11,7 @@
     {href:'karta.html',label:'Karta',roles:['user','editor','oruzar','arhivar','admin','webmaster'],group:'Osnovno'},
     {href:'izleti.html',label:'Izleti',roles:['user','editor','arhivar','admin','webmaster'],group:'Osnovno'},
     {href:'oruzarstvo.html',label:'Oprema',roles:['user','editor','oruzar','arhivar','admin','webmaster'],group:'Osnovno'},
+    {href:'dokumenti.html',label:'Dokumenti',roles:['user','editor','oruzar','arhivar','admin','webmaster'],group:'Osnovno'},
     {href:'napisi-clanak.html',label:'Napiši članak',roles:['user','editor','oruzar','arhivar','admin','webmaster'],group:'Osnovno'},
     {href:'arhivar-dashboard.html',label:'Arhivar',roles:['arhivar','admin','webmaster'],group:'Arhivar'},
     {href:'arhivar.html',label:'Uređivanje arhive',roles:['arhivar','admin','webmaster'],group:'Arhivar'},

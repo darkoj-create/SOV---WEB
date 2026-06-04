@@ -1,29 +1,38 @@
 {
   "app": "SOV web",
-  "version": "6.1.5",
-  "versionName": "6.1.5",
-  "build": "v6.1.5-armory-xls-canonical",
-  "createdAt": "2026-06-02T17:10:00Z",
-  "cacheBust": "614",
-  "base": "sov-web-build-v6.1.3-sync-status-health-hotfix.zip",
+  "version": "6.1.7",
+  "versionName": "v6.1.7-cloud-documents-hub",
+  "build": "sov-web-build-v6.1.7-cloud-documents-hub",
+  "createdAt": "2026-06-04T07:25:00Z",
+  "cacheBust": "617",
+  "base": "sov-web-build-v6.1.6-armory-db-gate.zip",
   "requiresSql": false,
   "sqlRequired": [],
-  "optionalSql": [],
+  "optionalSql": [
+    "SUPABASE_ORUZARSTVO_XLS_CANONICAL_v6_1_5c_NO_TEMP.sql"
+  ],
   "changedFiles": [
     "dashboard.html",
-    "assets/sov-dashboard-premium-v614.css",
-    "sync-status.html",
+    "dokumenti.html",
+    "assets/auth.js",
+    "assets/sov-shell-v55823.js",
+    "assets/sov-shell-v55824.js",
+    "assets/sov-shell-v55825.js",
+    "novi-zapisnik.html",
+    "pregled-zapisnika.html",
+    "zapisnici-skupstine.html",
+    "speleo-zapisnik.html",
     "assets/sov-version.js",
     "update.json",
     "VERSION.txt",
     "BUILD_VERSION.txt",
-    "BUILD_NOTES_v6.1.4_PREMIUM_DASHBOARD_HOTFIX.md"
+    "BUILD_NOTES_v6.1.7_CLOUD_DOCUMENTS_HUB.md"
   ],
-  "releaseType": "premium-dashboard-hotfix",
+  "releaseType": "cloud-documents-hub",
   "notes": [
-    "Rebuilds dashboard technical/system section into a premium, readable UI instead of raw/dev-looking inline links.",
-    "Fixes stale dashboard version labels and keeps v6.1.2 safe DOM version helper.",
-    "Updates sync-status version/cache expectation to v6.1.4 / cacheBust 614.",
-    "No SQL changes."
+    "Adds a Dokumenti card/icon to the SOV Cloud dashboard.",
+    "Adds new dokumenti.html hub split into Zapisnici sastanaka and Tutoriali sections.",
+    "Registers the new page in auth and shell navigation so it behaves like a normal Cloud app page.",
+    "No database schema changes; armory DB-gate remains unchanged."
   ]
 }

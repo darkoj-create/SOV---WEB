@@ -80,24 +80,44 @@
       }catch(e){console.warn('[armory master v5.48.1] background live catalog failed',e)}
     },250);
   }
-  async function loadData(){
-    if(STATE.data) return STATE.data;
-    let staticData=null, staticRows=0;
-    // v5.48.1: Master must open instantly. Use local JSON immediately, then refresh Supabase/cache in background.
-    staticData=await loadStaticCatalog();
-    staticRows=rowCountFromData(staticData);
-    if(staticRows>0){
-      STATE.data=staticData; STATE.source='static-first · live refresh u pozadini'; STATE.liveRows=0; STATE.staticRows=staticRows; STATE.rows=makeRows(STATE.data);
-      refreshLiveInBackground();
-      return STATE.data;
-    }
+  function dbLoadingHtml(){
+    return `<div class="cm-panel armory-db-loading"><div class="armory-db-pills"><span class="armory-db-pill warn">DB gate v6.1.6</span><span class="armory-db-pill">bez cachea · bez statike</span></div><h2>Čekam da se oružarstvo napuni iz baze…</h2><div class="armory-db-bar" aria-hidden="true"></div><p>Inventar, kategorije i inventura su sakriveni dok Supabase ne vrati stvarni XLS canonical katalog. Nema lokalnog JSON/cache prikaza i nema djelomičnih podataka.</p></div>`;
+  }
+  function injectDbGateCss(){
+    if(document.getElementById('armory-master-db-gate-v616-css'))return;
+    const css=document.createElement('style'); css.id='armory-master-db-gate-v616-css';
+    css.textContent=`.armory-db-loading{border:1px solid rgba(215,246,111,.25)!important;border-radius:26px!important;padding:24px!important;background:linear-gradient(135deg,rgba(215,246,111,.10),rgba(141,216,255,.055))!important;box-shadow:0 18px 60px rgba(0,0,0,.25)!important;display:grid!important;gap:13px!important;color:#eef7f3!important}.armory-db-loading h2{margin:0!important;font-size:24px!important;letter-spacing:-.03em!important}.armory-db-loading p{margin:0!important;color:#b9cbc5!important;line-height:1.55!important}.armory-db-bar{height:11px;border-radius:999px;background:rgba(255,255,255,.10);overflow:hidden;position:relative}.armory-db-bar:before{content:"";position:absolute;inset:0;width:42%;border-radius:999px;background:linear-gradient(90deg,#d7f66f,#7ff0b2,#8dd8ff);animation:armoryDbLoad 1.25s ease-in-out infinite}.armory-db-pills{display:flex;gap:8px;flex-wrap:wrap}.armory-db-pill{border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.055);border-radius:999px;padding:7px 10px;font-size:12px;font-weight:950;color:#dce9e4}.armory-db-pill.warn{border-color:rgba(255,211,107,.3);background:rgba(255,211,107,.1);color:#ffe7a6}@keyframes armoryDbLoad{0%{transform:translateX(-100%)}50%{transform:translateX(70%)}100%{transform:translateX(250%)}}`;
+    document.head.appendChild(css);
+  }
+  function renderDbLoading(){
+    injectDbGateCss();
+    ['masterRoot','inventoryRoot'].forEach(id=>{const el=document.getElementById(id); if(el)el.innerHTML=dbLoadingHtml();});
+  }
+  function scheduleDbRetry(){
+    if(STATE._dbRetryTimer) return;
+    STATE._dbRetryTimer=setTimeout(async()=>{
+      STATE._dbRetryTimer=null;
+      STATE.data=null;
+      await loadData(true);
+      if(STATE.rows && STATE.rows.length){renderMaster(); renderInventory();}
+      else scheduleDbRetry();
+    },4500);
+  }
+  async function loadData(force=false){
+    if(STATE.data && !force) return STATE.data;
+    renderDbLoading();
     try{
       if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.loadAllData){
-        const live=preferRawCatalogForMaster(await SOVArmoryDB.loadAllData());
-        if(applyLiveCatalog(live)) return STATE.data;
+        const live=preferRawCatalogForMaster(await SOVArmoryDB.loadAllData({force:true,strictLive:true}));
+        const liveRows=rowCountFromData(live);
+        if(live && liveRows>=20){
+          STATE.data=live; STATE.source='Supabase live · DB gate v6.1.6'; STATE.liveRows=liveRows; STATE.staticRows=0; STATE.rows=makeRows(STATE.data);
+          return STATE.data;
+        }
       }
-    }catch(e){console.warn('[armory master v5.48.1] Supabase catalog failed',e)}
-    STATE.data={items:[],ropes:[],pieces:[],categories:[]}; STATE.source='empty'; STATE.liveRows=0; STATE.staticRows=0; STATE.rows=[];
+    }catch(e){console.warn('[armory master v6.1.6] strict Supabase catalog failed',e)}
+    STATE.data={items:[],ropes:[],pieces:[],categories:[]}; STATE.source='Čekam Supabase bazu'; STATE.liveRows=0; STATE.staticRows=0; STATE.rows=[];
+    scheduleDbRetry();
     return STATE.data;
   }
   function makeRows(d){
@@ -134,6 +154,7 @@
 
   function renderMaster(){
     const root=document.getElementById('masterRoot'); if(!root)return; renderKpis();
+    if(!STATE.rows || !STATE.rows.length){renderDbLoading(); return;}
     const reqs=STATE.requests||[];
     const requested=reqs.filter(r=>statusKey(r.status)==='requested').length;
     const issued=reqs.filter(r=>['issued','partial_return'].includes(statusKey(r.status))).length;
@@ -143,6 +164,7 @@
 
   function renderInventory(){
     const root=document.getElementById('inventoryRoot'); if(!root)return; renderKpis(); bindSearch(renderInventory);
+    if(!STATE.rows || !STATE.rows.length){renderDbLoading(); return;}
     const cat=STATE.cat, sub=STATE.sub;
     const allRows=filtered();
     const activeRows=allRows.filter(r=>!/(rashod|otpis|deleted|obrisano|arhiva|stari_katalog|neaktiv)/i.test(String(r.status||'')));
@@ -258,7 +280,7 @@
   async function saveNote(ev){ev.preventDefault(); const n={id:'NOTE-'+Date.now(),title:document.getElementById('noteTitle').value||'Bilješka',body:document.getElementById('noteBody').value||'',due_date:document.getElementById('noteDue').value||null,note_type:document.getElementById('noteType').value,priority:document.getElementById('notePriority').value,status:'open',created_at:new Date().toISOString()}; try{ if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.saveArmoryNote){await SOVArmoryDB.saveArmoryNote(n);} }catch(e){console.warn(e)} const l=JSON.parse(localStorage.getItem('sov_armory_notes')||'[]'); l.unshift(n); localStorage.setItem('sov_armory_notes',JSON.stringify(l)); await renderNotes(); toast('Reminder spremljen');}
   async function doneNote(id){try{ if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.doneArmoryNote) await SOVArmoryDB.doneArmoryNote(id);}catch(e){console.warn(e)} const l=JSON.parse(localStorage.getItem('sov_armory_notes')||'[]'); const n=l.find(x=>String(x.id)===String(id)); if(n)n.status='done'; localStorage.setItem('sov_armory_notes',JSON.stringify(l)); await renderNotes(); toast('Označeno obavljeno');}
 
-  async function init(){await loadData(); await loadRequests(); renderKpis(); renderMaster(); renderInventory(); await renderLoans(); await renderNotes();}
+  async function init(){renderDbLoading(); await loadData(); await loadRequests(); renderKpis(); if(STATE.rows&&STATE.rows.length){renderMaster(); renderInventory();} else {renderDbLoading(); scheduleDbRetry();} await renderLoans(); await renderNotes();}
   window.CleanArmory={init,pickCat(c){STATE.cat=c||null;STATE.sub=null;renderInventory()},pickSub(s){STATE.sub=s||null;renderInventory()},renderLoans,setStatus,manualLoan,newItem,editItem,removeItem,exportInventoryXls,exportInventuraXls,openReturn,closeReturn,confirmReturn,closeItemModal,saveItem,renderNotes,saveNote,doneNote,issueLoan};
   document.addEventListener('DOMContentLoaded',init);
 })();

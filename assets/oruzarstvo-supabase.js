@@ -577,20 +577,22 @@
     }catch(e){console.warn('armory manifest failed',e.message||e); return null;}
   }
 
-  async function loadAllData(){
+  async function loadAllData(options){
+    options=options||{};
+    const strictLive=!!options.strictLive;
     if(!configured()) return null;
     const client=sb();
     const out={summary:{source:'Supabase live'},categories:[],items:[],pieces:[],ropes:[],loans:[],inventories:[],inventory_items:[],procurement:[],services:[],disposed:[],lost:[],field:[],locations:[]};
     const manifest=await loadCatalogManifest();
     const cached=readCatalogCache();
-    if(manifest && cached && cached.manifest && cached.manifest.catalog_version===manifest.catalog_version && catalogRowCount(cached.data)>=20){
+    if(!strictLive && manifest && cached && cached.manifest && cached.manifest.catalog_version===manifest.catalog_version && catalogRowCount(cached.data)>=20){
       cached.data.summary=cached.data.summary||{};
       cached.data.summary.source='Supabase cache-first · katalog već ažuran';
       cached.data.summary.catalog_version=manifest.catalog_version;
       cached.data.summary.cache_saved_at=cached.saved_at;
       return cached.data;
     }
-    if(!manifest && cached && catalogRowCount(cached.data)>=20){
+    if(!strictLive && !manifest && cached && catalogRowCount(cached.data)>=20){
       cached.data.summary=cached.data.summary||{};
       cached.data.summary.source='Lokalni cache · manifest nedostupan';
       return cached.data;
@@ -707,9 +709,11 @@
     out.summary.count_items=out.items.length; out.summary.count_ropes=out.ropes.length; out.summary.count_categories=out.categories.length;
     const totalRows = (out.items?.length||0) + (out.ropes?.length||0) + (out.pieces?.length||0);
     if (!totalRows) {
-      console.warn('SOVArmoryDB loadAllData: Supabase returned zero catalog rows, falling back to static JSON/cache.');
-      const cachedAgain=readCatalogCache();
-      if(cachedAgain && catalogRowCount(cachedAgain.data)>=20) return cachedAgain.data;
+      console.warn('SOVArmoryDB loadAllData: Supabase returned zero catalog rows.');
+      if(!strictLive){
+        const cachedAgain=readCatalogCache();
+        if(cachedAgain && catalogRowCount(cachedAgain.data)>=20) return cachedAgain.data;
+      }
       return null;
     }
     if(manifest){ out.summary.catalog_version=manifest.catalog_version; out.summary.raw_row_count=manifest.raw_row_count; out.summary.grouped_row_count=manifest.grouped_row_count; }
@@ -919,6 +923,9 @@
     }
     window.SOVArmoryDB.loadAllData=async function fastCacheFirstLoadAllData(options){
       options=options||{};
+      if(options.strictLive){
+        return originalLoadAllData(Object.assign({}, options, {force:true, strictLive:true}));
+      }
       if(!options.force){
         const cached=readCache();
         if(cached && rowCount(cached.data)>=MIN_ROWS){
