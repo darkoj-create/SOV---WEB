@@ -1,38 +1,32 @@
 {
   "app": "SOV web",
-  "version": "6.1.7",
-  "versionName": "v6.1.7-cloud-documents-hub",
-  "build": "sov-web-build-v6.1.7-cloud-documents-hub",
-  "createdAt": "2026-06-04T07:25:00Z",
-  "cacheBust": "617",
-  "base": "sov-web-build-v6.1.6-armory-db-gate.zip",
+  "version": "6.1.8",
+  "versionName": "v6.1.8-documents-current-minutes-2026",
+  "build": "sov-web-build-v6.1.8-documents-current-minutes-2026",
+  "createdAt": "2026-06-04T08:40:00Z",
+  "cacheBust": "618",
+  "base": "sov-web-build-v6.1.7-cloud-documents-hub.zip",
   "requiresSql": false,
   "sqlRequired": [],
   "optionalSql": [
     "SUPABASE_ORUZARSTVO_XLS_CANONICAL_v6_1_5c_NO_TEMP.sql"
   ],
   "changedFiles": [
-    "dashboard.html",
     "dokumenti.html",
-    "assets/auth.js",
-    "assets/sov-shell-v55823.js",
-    "assets/sov-shell-v55824.js",
-    "assets/sov-shell-v55825.js",
-    "novi-zapisnik.html",
-    "pregled-zapisnika.html",
-    "zapisnici-skupstine.html",
-    "speleo-zapisnik.html",
+    "zapisnici-aktualni-2026.html",
+    "data/zapisnici-2026.json",
+    "assets/documents/zapisnici/2026/*.docx",
     "assets/sov-version.js",
     "update.json",
     "VERSION.txt",
     "BUILD_VERSION.txt",
-    "BUILD_NOTES_v6.1.7_CLOUD_DOCUMENTS_HUB.md"
+    "BUILD_NOTES_v6.1.8_DOCUMENTS_CURRENT_MINUTES_2026.md"
   ],
-  "releaseType": "cloud-documents-hub",
+  "releaseType": "documents-current-minutes-2026",
   "notes": [
-    "Adds a Dokumenti card/icon to the SOV Cloud dashboard.",
-    "Adds new dokumenti.html hub split into Zapisnici sastanaka and Tutoriali sections.",
-    "Registers the new page in auth and shell navigation so it behaves like a normal Cloud app page.",
+    "Adds the first folder under Zapisnici sastanaka: Aktualni zapisnici (2026).",
+    "Integrates 17 uploaded DOCX meeting minutes as static downloadable documents, sorted by month.",
+    "Adds a metadata manifest for future SQL/storage migration.",
     "No database schema changes; armory DB-gate remains unchanged."
   ]
 }
