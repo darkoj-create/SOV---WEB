@@ -53,6 +53,16 @@
     const c=sb(); if(!c) throw new Error('Supabase nije konfiguriran.');
     if(window.SOVAuth && window.SOVAuth.requireApproved) await window.SOVAuth.requireApproved();
 
+    // v6.1.20: robust SECURITY DEFINER feed first. This avoids broken/outdated
+    // views and RLS edge-cases while still requiring a logged-in user.
+    let rpc=await c.rpc('sov_list_trips_feed');
+    if(!rpc.error){
+      const rows=Array.isArray(rpc.data)?rpc.data:[];
+      saveCache(rows);
+      return rows;
+    }
+    console.warn('[SOV trips] RPC feed failed, falling back to mobile feed', rpc.error);
+
     // Preferred feed view, enriched with member/file counts.
     let res=await c.from('sov_trips_mobile_feed').select('*').order('start_date',{ascending:true}).limit(1500);
     if(!res.error){
@@ -112,68 +122,97 @@
     const t=dbErrorText(error);
     return t.includes('column') || t.includes('schema cache') || t.includes('pgrst204') || t.includes('42703');
   }
+  function missingColumnName(error){
+    const raw=String((error&&(error.message||error.details||error.hint||error.code))||'');
+    let m=raw.match(/['"]([a-zA-Z_][a-zA-Z0-9_]*)['"] column/i); if(m) return m[1];
+    m=raw.match(/column\s+[^.]+\.([a-zA-Z_][a-zA-Z0-9_]*)\s+does not exist/i); if(m) return m[1];
+    m=raw.match(/column\s+['"]?([a-zA-Z_][a-zA-Z0-9_]*)['"]?\s+does not exist/i); if(m) return m[1];
+    return '';
+  }
   function legacySafeTripRow(row){
     const safe={...row};
     delete safe.trip_category;
-    if(safe.meta && !safe.meta.trip_category) safe.meta={...safe.meta, trip_category: row.trip_category || 'Izlet'};
+    if(safe.meta) safe.meta={...safe.meta, trip_category: row.trip_category || safe.meta.trip_category || 'Izlet'};
+    return safe;
+  }
+  function withoutNewColumns(row){
+    const safe=legacySafeTripRow(row);
+    delete safe.end_date;
     return safe;
   }
   function minimalTripRow(row){
     return {
       start_date: row.start_date,
-      end_date: row.end_date || row.start_date,
       leader_name: row.leader_name,
       location_name: row.location_name,
       objective: row.objective,
       description: row.description,
       status: row.status || 'planned',
       visibility: row.visibility || 'club',
-      source: row.source || 'web',
-      legacy_external_id: row.legacy_external_id || ('web_'+Date.now()),
       meta: row.meta || {}
     };
+  }
+  async function insertTryingSchemas(c, row){
+    const attempts=[row, legacySafeTripRow(row), withoutNewColumns(row), minimalTripRow(row)];
+    let last=null;
+    for(const attempt0 of attempts){
+      let attempt={...attempt0};
+      for(let i=0;i<5;i++){
+        let res=await c.from('sov_trips').insert(attempt).select('*').maybeSingle();
+        if(!res.error) return res.data || attempt;
+        last=res.error;
+        const miss=missingColumnName(res.error);
+        if(miss && Object.prototype.hasOwnProperty.call(attempt, miss)){ delete attempt[miss]; continue; }
+        res=await c.from('sov_trips').insert(attempt);
+        if(!res.error) return attempt;
+        last=res.error;
+        const miss2=missingColumnName(res.error);
+        if(miss2 && Object.prototype.hasOwnProperty.call(attempt, miss2)){ delete attempt[miss2]; continue; }
+        break;
+      }
+    }
+    throw last || new Error('Spremanje izleta nije uspjelo.');
+  }
+  async function updateTryingSchemas(c, id, row){
+    const attempts=[row, legacySafeTripRow(row), withoutNewColumns(row), minimalTripRow(row)];
+    let last=null;
+    for(const attempt0 of attempts){
+      let attempt={...attempt0};
+      for(let i=0;i<5;i++){
+        let res=await c.from('sov_trips').update(attempt).eq('id',id).select('*').maybeSingle();
+        if(!res.error) return res.data || attempt;
+        last=res.error;
+        const miss=missingColumnName(res.error);
+        if(miss && Object.prototype.hasOwnProperty.call(attempt, miss)){ delete attempt[miss]; continue; }
+        res=await c.from('sov_trips').update(attempt).eq('id',id);
+        if(!res.error) return attempt;
+        last=res.error;
+        const miss2=missingColumnName(res.error);
+        if(miss2 && Object.prototype.hasOwnProperty.call(attempt, miss2)){ delete attempt[miss2]; continue; }
+        break;
+      }
+    }
+    throw last || new Error('Spremanje izleta nije uspjelo.');
   }
   async function createTripFromForm(payload, extra={}){
     const c=sb(); if(!c) throw new Error('Supabase nije konfiguriran.');
     const row=scrub(payloadFromTripForm(payload, extra));
     if(!row.start_date || !row.leader_name || !row.location_name) throw new Error('Upiši barem datum, voditelja i lokaciju.');
 
-    // Full current schema first.
-    let res=await c.from('sov_trips').insert(row).select('*').maybeSingle();
-    if(!res.error) return res.data || row;
-
-    // Compatibility with databases that did not yet get trip_category.
-    if(isColumnError(res.error)){
-      console.warn('[SOV trips] full insert failed, retrying without new columns', res.error);
-      const safe=legacySafeTripRow(row);
-      res=await c.from('sov_trips').insert(safe).select('*').maybeSingle();
-      if(!res.error) return res.data || safe;
-
-      // Last resort: no select after insert, useful when RLS allows insert but
-      // the returning select is restricted. UI refresh will reload the list.
-      console.warn('[SOV trips] insert select failed, retrying insert without return', res.error);
-      res=await c.from('sov_trips').insert(safe);
-      if(!res.error) return safe;
-    }
-
-    throw res.error;
+    // v6.1.20: DB-owned save RPC first. It also repairs old RLS/select issues.
+    const rpc=await c.rpc('sov_save_trip', {p_trip_id:null, p_payload:row});
+    if(!rpc.error) return rpc.data || row;
+    console.warn('[SOV trips] save RPC failed, falling back to direct insert', rpc.error);
+    return await insertTryingSchemas(c, row);
   }
   async function updateTrip(id, patch){
     const c=sb(); if(!c) throw new Error('Supabase nije konfiguriran.');
     const full={...patch, updated_at:new Date().toISOString()};
-    let res=await c.from('sov_trips').update(full).eq('id',id).select('*').maybeSingle();
-    if(!res.error) return res.data || full;
 
-    if(isColumnError(res.error)){
-      console.warn('[SOV trips] full update failed, retrying without new columns', res.error);
-      const safe=legacySafeTripRow(full);
-      res=await c.from('sov_trips').update(safe).eq('id',id).select('*').maybeSingle();
-      if(!res.error) return res.data || safe;
-      res=await c.from('sov_trips').update(safe).eq('id',id);
-      if(!res.error) return safe;
-    }
-
-    throw res.error;
+    const rpc=await c.rpc('sov_save_trip', {p_trip_id:id, p_payload:full});
+    if(!rpc.error) return rpc.data || full;
+    console.warn('[SOV trips] update RPC failed, falling back to direct update', rpc.error);
+    return await updateTryingSchemas(c, id, full);
   }
   async function deleteTrip(id){
     const c=sb(); if(!c) throw new Error('Supabase nije konfiguriran.');
