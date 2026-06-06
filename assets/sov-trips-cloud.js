@@ -102,7 +102,28 @@
   }
   async function deleteTrip(id){
     const c=sb(); if(!c) throw new Error('Supabase nije konfiguriran.');
-    const {error}=await c.from('sov_trips').delete().eq('id',id); if(error) throw error; return true;
+    const tripId=clean(id);
+    if(!tripId) throw new Error('Izlet nema ID.');
+
+    // Preferred path: SECURITY DEFINER RPC that deletes the real DB row and
+    // returns an explicit result. This avoids the silent Supabase/RLS case
+    // where delete() returns no error but deletes 0 rows.
+    const rpc=await c.rpc('sov_delete_trip_admin', {p_trip_id:tripId});
+    if(!rpc.error){
+      const result=rpc.data || {};
+      if(result.deleted === false) throw new Error(result.message || 'Izlet nije obrisan.');
+      saveCache(loadCache().filter(t=>String(t.id)!==tripId));
+      return result;
+    }
+
+    // Backward-compatible fallback if SQL patch was not applied yet.
+    const res=await c.from('sov_trips').delete().eq('id',tripId).select('id');
+    if(res.error) throw res.error;
+    if(!res.data || !res.data.length){
+      throw new Error('Izlet nije obrisan. Provjeri ovlasti ili pokreni SQL patch za brisanje izleta.');
+    }
+    saveCache(loadCache().filter(t=>String(t.id)!==tripId));
+    return {deleted:true, id:tripId, mode:'direct'};
   }
 
   function fileTypeFromName(name){
