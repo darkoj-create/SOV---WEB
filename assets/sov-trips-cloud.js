@@ -16,7 +16,7 @@
     const d=new Date(s); return isNaN(d)?new Date().toISOString().slice(0,10):d.toISOString().slice(0,10);
   }
   function hrDate(v){
-    const iso=isoDate(v); const [y,m,d]=iso.split('-'); return `${d}.${m}.${y}.`;
+    const iso=isoDate(v); const [y,m,d]=iso.split('-'); return `${d}/${m}/${y}`;
   }
   function toLegacy(row, i){
     const meta=row.meta || {};
@@ -64,7 +64,7 @@
     const tripCategory = clean(payload.trip_category || payload.category || payload.event_type || payload.type || payload.goal || 'Izlet');
     meta.trip_category = tripCategory;
     const start=isoDate(payload.date || payload.from || payload.start_date);
-    let end=start;
+    let end=isoDate(payload.endDate || payload.to || payload.end_date || start);
     const range=clean(payload.date).split(/\s+-\s+/);
     if(range.length>1) end=isoDate(range[1]);
     return {

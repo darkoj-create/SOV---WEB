@@ -199,7 +199,7 @@ function calendarIso(v){const d=parseDate(v); return d ? d.toISOString().slice(0
 function calendarMonthStart(d){return new Date(d.getFullYear(), d.getMonth(), 1)}
 function shiftCalendarMonth(delta){visibleCalendarMonth=new Date(visibleCalendarMonth.getFullYear(), visibleCalendarMonth.getMonth()+delta, 1); render();}
 function allCalendarItems(){
-  const tripItems=getFiltered().map(t=>({kind:'trip',date:calendarIso(t.date),endDate:calendarIso((clean(t.date).split(/\s+-\s+/)[1]||clean(t.date))),category:clean(t.trip_category||t.goal||'Izlet'),title:clean(t.location)||clean(t.goal)||'Izlet',subtitle:[clean(t.goal),clean(t.leader)].filter(Boolean).join(' · '),trip:t})).filter(x=>x.date);
+  const tripItems=getFiltered().map(t=>({kind:'trip',date:calendarIso(t.start_date||t.startDate||clean(t.date).split(/\s+-\s+/)[0]||t.date),endDate:calendarIso(t.end_date||t.endDate||clean(t.date).split(/\s+-\s+/)[1]||t.start_date||t.startDate||t.date),category:clean(t.trip_category||t.goal||'Izlet'),title:clean(t.location)||clean(t.goal)||'Izlet',subtitle:[clean(t.goal),clean(t.leader)].filter(Boolean).join(' · '),trip:t})).filter(x=>x.date);
   const eventItems=(calendarEvents||[]).map(e=>({kind:'event',date:new Date(e.start_at||e.startAt||'').toISOString().slice(0,10),endDate:new Date(e.end_at||e.endAt||e.start_at||e.startAt||'').toISOString().slice(0,10),category:clean(e.event_type||e.eventType||'Događaj'),title:clean(e.title)||'Događaj',subtitle:[clean(e.event_type||e.eventType),clean(e.location)].filter(Boolean).join(' · '),event:e})).filter(x=>x.date && x.date!=='Invalid Date');
   return tripItems.concat(eventItems).sort((a,b)=>a.date.localeCompare(b.date)||a.title.localeCompare(b.title));
 }
