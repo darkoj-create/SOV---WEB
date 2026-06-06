@@ -52,10 +52,24 @@
   async function listTrips(){
     const c=sb(); if(!c) throw new Error('Supabase nije konfiguriran.');
     if(window.SOVAuth && window.SOVAuth.requireApproved) await window.SOVAuth.requireApproved();
-    const {data,error}=await c.from('sov_trips_mobile_feed').select('*').order('start_date',{ascending:true}).limit(1500);
-    if(error) throw error;
-    saveCache(data||[]);
-    return data||[];
+
+    // Preferred feed view, enriched with member/file counts.
+    let res=await c.from('sov_trips_mobile_feed').select('*').order('start_date',{ascending:true}).limit(1500);
+    if(!res.error){
+      saveCache(res.data||[]);
+      return res.data||[];
+    }
+    console.warn('[SOV trips] mobile feed failed, falling back to sov_trips', res.error);
+
+    // Fallback: direct table read. This keeps the dashboard alive even if an
+    // older Supabase project has not received the newest feed-view SQL yet.
+    res=await c.from('sov_trips').select('*').order('start_date',{ascending:true}).limit(1500);
+    if(!res.error){
+      saveCache(res.data||[]);
+      return res.data||[];
+    }
+    console.warn('[SOV trips] direct table read failed', res.error);
+    throw res.error;
   }
   function payloadFromTripForm(payload, extra={}){
     const meta={source:'sov_web_v5_56_trip_signup_transport', legacyPayload:payload||{}};
@@ -91,18 +105,75 @@
   function scrub(obj){
     const out={}; Object.entries(obj).forEach(([k,v])=>{ if(Number.isNaN(v)) v=null; out[k]=v; }); return out;
   }
+  function dbErrorText(error){
+    return String((error && (error.message || error.details || error.hint || error.code)) || '').toLowerCase();
+  }
+  function isColumnError(error){
+    const t=dbErrorText(error);
+    return t.includes('column') || t.includes('schema cache') || t.includes('pgrst204') || t.includes('42703');
+  }
+  function legacySafeTripRow(row){
+    const safe={...row};
+    delete safe.trip_category;
+    if(safe.meta && !safe.meta.trip_category) safe.meta={...safe.meta, trip_category: row.trip_category || 'Izlet'};
+    return safe;
+  }
+  function minimalTripRow(row){
+    return {
+      start_date: row.start_date,
+      end_date: row.end_date || row.start_date,
+      leader_name: row.leader_name,
+      location_name: row.location_name,
+      objective: row.objective,
+      description: row.description,
+      status: row.status || 'planned',
+      visibility: row.visibility || 'club',
+      source: row.source || 'web',
+      legacy_external_id: row.legacy_external_id || ('web_'+Date.now()),
+      meta: row.meta || {}
+    };
+  }
   async function createTripFromForm(payload, extra={}){
     const c=sb(); if(!c) throw new Error('Supabase nije konfiguriran.');
     const row=scrub(payloadFromTripForm(payload, extra));
     if(!row.start_date || !row.leader_name || !row.location_name) throw new Error('Upiši barem datum, voditelja i lokaciju.');
-    const {data,error}=await c.from('sov_trips').insert(row).select('*').single();
-    if(error) throw error;
-    return data;
+
+    // Full current schema first.
+    let res=await c.from('sov_trips').insert(row).select('*').maybeSingle();
+    if(!res.error) return res.data || row;
+
+    // Compatibility with databases that did not yet get trip_category.
+    if(isColumnError(res.error)){
+      console.warn('[SOV trips] full insert failed, retrying without new columns', res.error);
+      const safe=legacySafeTripRow(row);
+      res=await c.from('sov_trips').insert(safe).select('*').maybeSingle();
+      if(!res.error) return res.data || safe;
+
+      // Last resort: no select after insert, useful when RLS allows insert but
+      // the returning select is restricted. UI refresh will reload the list.
+      console.warn('[SOV trips] insert select failed, retrying insert without return', res.error);
+      res=await c.from('sov_trips').insert(safe);
+      if(!res.error) return safe;
+    }
+
+    throw res.error;
   }
   async function updateTrip(id, patch){
     const c=sb(); if(!c) throw new Error('Supabase nije konfiguriran.');
-    const {data,error}=await c.from('sov_trips').update({...patch, updated_at:new Date().toISOString()}).eq('id',id).select('*').single();
-    if(error) throw error; return data;
+    const full={...patch, updated_at:new Date().toISOString()};
+    let res=await c.from('sov_trips').update(full).eq('id',id).select('*').maybeSingle();
+    if(!res.error) return res.data || full;
+
+    if(isColumnError(res.error)){
+      console.warn('[SOV trips] full update failed, retrying without new columns', res.error);
+      const safe=legacySafeTripRow(full);
+      res=await c.from('sov_trips').update(safe).eq('id',id).select('*').maybeSingle();
+      if(!res.error) return res.data || safe;
+      res=await c.from('sov_trips').update(safe).eq('id',id);
+      if(!res.error) return safe;
+    }
+
+    throw res.error;
   }
   async function deleteTrip(id){
     const c=sb(); if(!c) throw new Error('Supabase nije konfiguriran.');
