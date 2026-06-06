@@ -41,7 +41,8 @@
       minLon: row.min_lon ?? meta.minLon ?? null,
       maxLon: row.max_lon ?? meta.maxLon ?? null,
       status: row.status || 'planned',
-      visibility: row.visibility || 'club'
+      visibility: row.visibility || 'club',
+      trip_category: row.trip_category || meta.trip_category || meta.category || row.category || row.tripType || row.event_type || row.objective || 'Izlet'
     };
   }
   function loadCache(){
@@ -60,6 +61,8 @@
     const meta={source:'sov_web_v5_56_trip_signup_transport', legacyPayload:payload||{}};
     if(payload.weatherCity) meta.weatherCity=payload.weatherCity;
     if(payload.rasporedUrl) meta.rasporedUrl=payload.rasporedUrl;
+    const tripCategory = clean(payload.trip_category || payload.category || payload.event_type || payload.type || payload.goal || 'Izlet');
+    meta.trip_category = tripCategory;
     const start=isoDate(payload.date || payload.from || payload.start_date);
     let end=start;
     const range=clean(payload.date).split(/\s+-\s+/);
@@ -73,6 +76,7 @@
       description:clean(payload.description),
       status: clean(payload.status) || 'planned',
       visibility: clean(payload.visibility) || 'club',
+      trip_category: tripCategory,
       min_lat: null,
       max_lat: null,
       min_lon: null,
