@@ -152,8 +152,7 @@ create policy "sov documents staff delete"
   on storage.objects for delete
   using (bucket_id = 'sov-documents' and public.sov_documents_is_staff());
 
-create or replace view public.sov_minutes_archive_public
-with (security_invoker = true) as
+create or replace view public.sov_minutes_archive_public as
 select
   id,
   collection,
@@ -186,8 +185,7 @@ select
 from public.sov_document_archive
 where collection = 'zapisnici_sastanaka';
 
-create or replace view public.sov_minutes_archive_year_stats
-with (security_invoker = true) as
+create or replace view public.sov_minutes_archive_year_stats as
 select
   year,
   count(*)::int as count,

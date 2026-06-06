@@ -51,7 +51,7 @@
     if(!sb) { alert('Supabase nije konfiguriran.'); return; }
     if(!queue.length) buildQueue();
     const invalid = queue.filter(x=>!x.year);
-    if(invalid.length){ alert(`${invalid.length} datoteka nema prepoznatu godinu. Preimenuj datoteke ili ih stavi u folder godine, npr. 1968/ ili 2023/.`); return; }
+    if(invalid.length && !confirm(`${invalid.length} datoteka nema prepoznatu godinu. Nastaviti u unsorted?`)) return;
     startBtn.disabled = true; dryBtn.disabled = true; logBox.innerHTML = '';
     const batch = batchInput.value.trim() || `batch-${new Date().toISOString().slice(0,10)}`;
     let done = 0, failed = 0;
