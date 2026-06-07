@@ -49,37 +49,70 @@
     try{return JSON.parse(localStorage.getItem(CACHE_KEY)||'[]')}catch(e){return []}
   }
   function saveCache(rows){try{localStorage.setItem(CACHE_KEY,JSON.stringify(rows||[]))}catch(e){}}
+  function normalizeRpcRows(data){
+    if(!data) return [];
+    if(Array.isArray(data)) return data;
+    if(typeof data === 'string'){
+      try{const parsed=JSON.parse(data); return Array.isArray(parsed)?parsed:[];}catch(e){return []}
+    }
+    if(Array.isArray(data.rows)) return data.rows;
+    if(Array.isArray(data.data)) return data.data;
+    if(Array.isArray(data.sov_list_trips_feed)) return data.sov_list_trips_feed;
+    return [];
+  }
+  function withTimeout(promise, ms, label){
+    let timer;
+    const timeout=new Promise((_,reject)=>{ timer=setTimeout(()=>reject(new Error((label||'Poziv')+' nije odgovorio na vrijeme.')), ms); });
+    return Promise.race([promise, timeout]).finally(()=>clearTimeout(timer));
+  }
   async function listTrips(){
     const c=sb(); if(!c) throw new Error('Supabase nije konfiguriran.');
-    if(window.SOVAuth && window.SOVAuth.requireApproved) await window.SOVAuth.requireApproved();
-
-    // v6.1.20: robust SECURITY DEFINER feed first. This avoids broken/outdated
-    // views and RLS edge-cases while still requiring a logged-in user.
-    let rpc=await c.rpc('sov_list_trips_feed');
-    if(!rpc.error){
-      const rows=Array.isArray(rpc.data)?rpc.data:[];
-      saveCache(rows);
-      return rows;
+    if(window.SOVAuth && window.SOVAuth.requireApproved){
+      await withTimeout(window.SOVAuth.requireApproved(), 8000, 'Provjera prijave');
     }
-    console.warn('[SOV trips] RPC feed failed, falling back to mobile feed', rpc.error);
 
-    // Preferred feed view, enriched with member/file counts.
-    let res=await c.from('sov_trips_mobile_feed').select('*').order('start_date',{ascending:true}).limit(1500);
-    if(!res.error){
-      saveCache(res.data||[]);
-      return res.data||[];
+    // v6.1.23: never let the dashboard stay stuck on loading.
+    // Try DB-owned feed first, but with timeout and tolerant JSON parsing.
+    let lastError=null;
+    try{
+      const rpc=await withTimeout(c.rpc('sov_list_trips_feed'), 12000, 'Baza izleta');
+      if(!rpc.error){
+        const rows=normalizeRpcRows(rpc.data);
+        saveCache(rows);
+        return rows;
+      }
+      lastError=rpc.error;
+      console.warn('[SOV trips] RPC feed failed, falling back', rpc.error);
+    }catch(e){
+      lastError=e;
+      console.warn('[SOV trips] RPC feed timed out/failed, falling back', e);
     }
-    console.warn('[SOV trips] mobile feed failed, falling back to sov_trips', res.error);
 
-    // Fallback: direct table read. This keeps the dashboard alive even if an
-    // older Supabase project has not received the newest feed-view SQL yet.
-    res=await c.from('sov_trips').select('*').order('start_date',{ascending:true}).limit(1500);
-    if(!res.error){
-      saveCache(res.data||[]);
-      return res.data||[];
-    }
-    console.warn('[SOV trips] direct table read failed', res.error);
-    throw res.error;
+    // Direct table fallback: fewer columns first. This survives broken views/RPCs.
+    try{
+      const res=await withTimeout(
+        c.from('sov_trips')
+          .select('id,start_date,end_date,title,leader_name,leader_user_id,location_name,objective,description,status,visibility,trip_category,min_lat,max_lat,min_lon,max_lon,center_lat,center_lon,created_by,updated_by,created_at,updated_at,source,legacy_external_id,meta')
+          .neq('status','archived')
+          .order('start_date',{ascending:true})
+          .limit(1500),
+        12000,
+        'Direktno čitanje izleta'
+      );
+      if(!res.error){ saveCache(res.data||[]); return res.data||[]; }
+      lastError=res.error;
+      console.warn('[SOV trips] direct table failed', res.error);
+    }catch(e){ lastError=e; console.warn('[SOV trips] direct table timed out/failed', e); }
+
+    // Old view fallback last.
+    try{
+      const res=await withTimeout(c.from('sov_trips_mobile_feed').select('*').order('start_date',{ascending:true}).limit(1500), 12000, 'Feed izleta');
+      if(!res.error){ saveCache(res.data||[]); return res.data||[]; }
+      lastError=res.error;
+      console.warn('[SOV trips] mobile feed failed', res.error);
+    }catch(e){ lastError=e; console.warn('[SOV trips] mobile feed timed out/failed', e); }
+
+    throw lastError || new Error('Izleti nisu dostupni.');
   }
   function payloadFromTripForm(payload, extra={}){
     const meta={source:'sov_web_v5_56_trip_signup_transport', legacyPayload:payload||{}};
