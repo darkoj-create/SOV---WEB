@@ -1,5 +1,7 @@
 (function(){
-  const CACHE_KEY='sov_trips_cloud_cache_v5_56';
+  const CACHE_KEY='sov_trips_cloud_cache_v6_1_25';
+  const LEGACY_CACHE_KEYS=['sov_trips_cloud_cache_v5_56'];
+  let listTripsInFlight=null;
   function sb(){
     if(window.SOVAuth && window.SOVAuth.getClient) return window.SOVAuth.getClient();
     if(window.supabase && window.SOV_SUPABASE_URL && window.SOV_SUPABASE_ANON_KEY){
@@ -45,10 +47,29 @@
       trip_category: row.trip_category || meta.trip_category || meta.category || row.category || row.tripType || row.event_type || row.objective || 'Izlet'
     };
   }
-  function loadCache(){
-    try{return JSON.parse(localStorage.getItem(CACHE_KEY)||'[]')}catch(e){return []}
+  function readCacheValue(key){
+    try{
+      const raw=localStorage.getItem(key);
+      if(!raw) return [];
+      const parsed=JSON.parse(raw);
+      if(Array.isArray(parsed)) return parsed;
+      if(parsed && Array.isArray(parsed.rows)) return parsed.rows;
+      if(parsed && Array.isArray(parsed.data)) return parsed.data;
+    }catch(e){}
+    return [];
   }
-  function saveCache(rows){try{localStorage.setItem(CACHE_KEY,JSON.stringify(rows||[]))}catch(e){}}
+  function loadCache(){
+    const fresh=readCacheValue(CACHE_KEY);
+    if(fresh.length) return fresh;
+    for(const key of LEGACY_CACHE_KEYS){
+      const legacy=readCacheValue(key);
+      if(legacy.length) return legacy;
+    }
+    return [];
+  }
+  function saveCache(rows){
+    try{localStorage.setItem(CACHE_KEY,JSON.stringify({savedAt:new Date().toISOString(),rows:rows||[]}))}catch(e){}
+  }
   function normalizeRpcRows(data){
     if(!data) return [];
     if(Array.isArray(data)) return data;
@@ -66,53 +87,58 @@
     return Promise.race([promise, timeout]).finally(()=>clearTimeout(timer));
   }
   async function listTrips(){
-    const c=sb(); if(!c) throw new Error('Supabase nije konfiguriran.');
-    if(window.SOVAuth && window.SOVAuth.requireApproved){
-      await withTimeout(window.SOVAuth.requireApproved(), 8000, 'Provjera prijave');
-    }
-
-    // v6.1.23: never let the dashboard stay stuck on loading.
-    // Try DB-owned feed first, but with timeout and tolerant JSON parsing.
-    let lastError=null;
-    try{
-      const rpc=await withTimeout(c.rpc('sov_list_trips_feed'), 12000, 'Baza izleta');
-      if(!rpc.error){
-        const rows=normalizeRpcRows(rpc.data);
-        saveCache(rows);
-        return rows;
+    if(listTripsInFlight) return listTripsInFlight;
+    listTripsInFlight=(async()=>{
+      const c=sb(); if(!c) throw new Error('Supabase nije konfiguriran.');
+      if(window.SOVAuth && window.SOVAuth.requireApproved){
+        await withTimeout(window.SOVAuth.requireApproved(), 8000, 'Provjera prijave');
       }
-      lastError=rpc.error;
-      console.warn('[SOV trips] RPC feed failed, falling back', rpc.error);
-    }catch(e){
-      lastError=e;
-      console.warn('[SOV trips] RPC feed timed out/failed, falling back', e);
-    }
-
-    // Direct table fallback: fewer columns first. This survives broken views/RPCs.
-    try{
-      const res=await withTimeout(
-        c.from('sov_trips')
-          .select('id,start_date,end_date,title,leader_name,leader_user_id,location_name,objective,description,status,visibility,trip_category,min_lat,max_lat,min_lon,max_lon,center_lat,center_lon,created_by,updated_by,created_at,updated_at,source,legacy_external_id,meta')
-          .neq('status','archived')
-          .order('start_date',{ascending:true})
-          .limit(1500),
-        12000,
-        'Direktno čitanje izleta'
-      );
-      if(!res.error){ saveCache(res.data||[]); return res.data||[]; }
-      lastError=res.error;
-      console.warn('[SOV trips] direct table failed', res.error);
-    }catch(e){ lastError=e; console.warn('[SOV trips] direct table timed out/failed', e); }
-
-    // Old view fallback last.
-    try{
-      const res=await withTimeout(c.from('sov_trips_mobile_feed').select('*').order('start_date',{ascending:true}).limit(1500), 12000, 'Feed izleta');
-      if(!res.error){ saveCache(res.data||[]); return res.data||[]; }
-      lastError=res.error;
-      console.warn('[SOV trips] mobile feed failed', res.error);
-    }catch(e){ lastError=e; console.warn('[SOV trips] mobile feed timed out/failed', e); }
-
-    throw lastError || new Error('Izleti nisu dostupni.');
+      
+      // v6.1.23: never let the dashboard stay stuck on loading.
+      // Try DB-owned feed first, but with timeout and tolerant JSON parsing.
+      let lastError=null;
+      try{
+        const rpc=await withTimeout(c.rpc('sov_list_trips_feed'), 12000, 'Baza izleta');
+        if(!rpc.error){
+          const rows=normalizeRpcRows(rpc.data);
+          saveCache(rows);
+          return rows;
+        }
+        lastError=rpc.error;
+        console.warn('[SOV trips] RPC feed failed, falling back', rpc.error);
+      }catch(e){
+        lastError=e;
+        console.warn('[SOV trips] RPC feed timed out/failed, falling back', e);
+      }
+      
+      // Direct table fallback: fewer columns first. This survives broken views/RPCs.
+      try{
+        const res=await withTimeout(
+          c.from('sov_trips')
+            .select('id,start_date,end_date,title,leader_name,leader_user_id,location_name,objective,description,status,visibility,trip_category,min_lat,max_lat,min_lon,max_lon,center_lat,center_lon,created_by,updated_by,created_at,updated_at,source,legacy_external_id,meta')
+            .neq('status','archived')
+            .order('start_date',{ascending:true})
+            .limit(1500),
+          12000,
+          'Direktno čitanje izleta'
+        );
+        if(!res.error){ saveCache(res.data||[]); return res.data||[]; }
+        lastError=res.error;
+        console.warn('[SOV trips] direct table failed', res.error);
+      }catch(e){ lastError=e; console.warn('[SOV trips] direct table timed out/failed', e); }
+      
+      // Old view fallback last.
+      try{
+        const res=await withTimeout(c.from('sov_trips_mobile_feed').select('*').order('start_date',{ascending:true}).limit(1500), 12000, 'Feed izleta');
+        if(!res.error){ saveCache(res.data||[]); return res.data||[]; }
+        lastError=res.error;
+        console.warn('[SOV trips] mobile feed failed', res.error);
+      }catch(e){ lastError=e; console.warn('[SOV trips] mobile feed timed out/failed', e); }
+      
+      throw lastError || new Error('Izleti nisu dostupni.');
+    })();
+    try{return await listTripsInFlight;}
+    finally{listTripsInFlight=null;}
   }
   function payloadFromTripForm(payload, extra={}){
     const meta={source:'sov_web_v5_56_trip_signup_transport', legacyPayload:payload||{}};
