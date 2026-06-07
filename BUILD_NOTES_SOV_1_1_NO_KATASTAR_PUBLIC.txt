@@ -1,0 +1,18 @@
+SOV v1.1 public cleanup — SOV-only database build
+
+Base:
+sov-v1.1-PUBLIC-RELEASE-search-tolerance-pt6-fix.zip
+
+Changes:
+- Removed pure Katastar-source records from bundled runtime database.
+- Converted records that were SOV+external matched source into normal SOV source records.
+- Search source selector now shows only SOV, Moja baza, and Sve.
+- Removed user-facing Katastar source and status filter UI.
+- Removed user-facing Katastar number/status labels from object details, sharing and KML export text.
+- README/manual visible text updated to avoid Katastar source references.
+- Search cache bumped to v8 so old cached source filters/indexes are not reused.
+- Existing user session with old Katastar source filter is sanitized to ALL on startup.
+
+Notes:
+- Legacy schema field names may still exist internally in Kotlin model classes for backward compatibility with the existing JSON structure.
+- APK is not included/rebuilt in this ZIP; rebuild/sign locally in Android Studio as usual.

@@ -1,0 +1,21 @@
+SOV Admin APK 1.4.4 — Request Form Polish
+
+Base: 1.4.3 armory screens + return flow
+
+Scope:
+- APK only. No SQL changes. No web changes.
+- Focused on Oružarstvo request creation UX.
+
+Changes:
+- Cart no longer opens a full dialog immediately after every tap.
+- Added persistent bottom cart bar while a request is being prepared.
+- User can continue browsing and send all selected items as one multi-item request.
+- Request dialog now prioritizes simple date presets: Danas, 3 dana, Vikend, 7 dana.
+- Manual date entry is hidden behind a "Ručno" toggle and validates YYYY-MM-DD shape.
+- Quantity stays as stepper controls per cart line; no raw quantity text typing.
+- Send button is disabled if dates are not valid ISO-like values.
+- After submit, cart/date state resets to default 3-day loan.
+
+Version:
+- versionCode 900035
+- versionName 1.4.4-request-form-polish

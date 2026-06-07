@@ -1,0 +1,29 @@
+SOV v1.0.166 — Geo/WMS Overlay Flicker Fix
+
+Base:
+- sov-v1.0.166-FULL-hillshade-redraw-cache-fix.zip
+
+Scope:
+- Targeted change only in app/src/main/java/com/darko/speleov1/util/WmsTilesOverlay.kt
+- No WMS URLs changed
+- No disk cache paths changed
+- No base WMS renderer changed
+- No hillshade renderer changed
+- No database/search/field-trip/UI logic changed
+
+Fix summary:
+- Geo/WMS overlay now uses floor zoom selection instead of roundToInt to avoid zoom-level toggling during pinch/animated zoom.
+- The overlay no longer draws z-1 over the full viewport every frame.
+- Parent zoom tile is only drawn as a cropped fallback for a concrete missing tile.
+- Visible missing tiles are queued center-first.
+- Overlay prefetch is reduced from 12 to 6 tiles.
+- Overlay visible executor is reduced from 3 to 2 threads.
+- postInvalidate calls are throttled to avoid redraw storms when multiple overlay tiles finish together.
+
+Expected effect:
+- Less blinking/flicker on Geological Units / transparent WMS overlays.
+- Less repeated redraw while moving or zooming the map.
+- Lower IO contention with base WMS and hillshade layers.
+
+Build note:
+- Source project is patched. APK inside the ZIP, if present, is from the previous package and must be rebuilt in Android Studio.

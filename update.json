@@ -1,37 +1,14 @@
 {
-  "app": "SOV web",
-  "version": "6.1.10",
-  "versionName": "v6.1.10-documents-full-archive-ready",
-  "build": "sov-web-build-v6.1.10-documents-full-archive-ready",
-  "createdAt": "2026-06-04T09:55:00Z",
-  "cacheBust": "6110",
-  "base": "sov-web-build-v6.1.9-documents-archive-2017-2022.zip",
-  "requiresSql": false,
-  "recommendedSql": [
-    "SUPABASE_SOV_DOCUMENTS_ARCHIVE_v6_1_10.sql"
-  ],
-  "optionalSql": [
-    "SUPABASE_ORUZARSTVO_XLS_CANONICAL_v6_1_5c_NO_TEMP.sql"
-  ],
-  "changedFiles": [
-    "dokumenti.html",
-    "zapisnici-cijela-arhiva.html",
-    "zapisnici-import.html",
-    "assets/zapisnici-full-archive.js",
-    "assets/zapisnici-import.js",
-    "data/zapisnici-full-archive-index.json",
-    "SUPABASE_SOV_DOCUMENTS_ARCHIVE_v6_1_10.sql",
-    "assets/auth.js",
-    "assets/sov-version.js",
-    "update.json",
-    "VERSION.txt",
-    "BUILD_VERSION.txt"
-  ],
-  "releaseType": "documents-full-archive-ready",
-  "notes": [
-    "Adds full archive shell for 1960-2026 meeting minutes.",
-    "Uses SQL metadata + Supabase Storage files; does not put future archive files into the web ZIP.",
-    "Falls back to existing static 2017-2022 and 2026 manifests until SQL is populated.",
-    "Adds protected bulk import page for arhivar/admin/webmaster."
-  ]
+  "versionCode": 900086,
+  "versionName": "1.4.16j-tools-calendar-events",
+  "releaseName": "SOV Admin 1.4.16j Tools Calendar Events",
+  "apkFileName": "SOV-ADMIN-1.4.16j.apk",
+  "notes": "Tools Calendar is now an in-app cloud calendar: SOV trips are shown in a mobile month view, trip events open Izleti, and users can add custom calendar events through Supabase sov_calendar_events. Preserves 1.4.16i collapsible trips and previous session/inventory fixes.",
+  "fileName": "sov-admin-v1_4_16j-tools-calendar-events-source.zip",
+  "releaseDate": "2026-06-06",
+  "supabaseUrl": "https://ncomefzkuixyfixisrhi.supabase.co",
+  "roleView": "sov_current_user_permissions",
+  "roleManifestView": "sov_role_manifest",
+  "drawingsWebAppUrl": "https://script.google.com/macros/s/AKfycbx1Hg_s6mAdWgB7p559USC8dAMIhteJQ3RFhFgp8rkqzYEVqMfwZm-lrl2v7UmW8gvSyg/exec",
+  "apkName": "SOV-ADMIN-1.4.16j.apk"
 }

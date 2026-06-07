@@ -1,0 +1,8 @@
+SOV Admin APK 1.4.10 — Trips description option
+
+- Izrada Cloud izleta sada jasno prikazuje polje "Opis izleta".
+- Placeholder opisuje što se upisuje: plan, pristup, logistika i posebne napomene.
+- Dodan mali helper tekst da se opis vidi na webu i u appu, dok su GPX/KML dodaci opcionalni.
+- Koristi postojeće Supabase polje `sov_trips.description`; nema novog SQL-a.
+- VersionCode: 900043
+- VersionName: 1.4.10-trips-description-option
