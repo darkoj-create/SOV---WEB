@@ -1,0 +1,418 @@
+/* v4.79 — mobile friendly armory polish (user + oruzar master) */
+:root{
+  --sov-mobile-glow: 0 18px 52px rgba(0,0,0,.34);
+  --sov-touch: 48px;
+}
+
+/* Shared tap/reading improvements */
+body.armory-body, body.clean-armory{
+  -webkit-text-size-adjust:100%;
+  text-rendering:optimizeLegibility;
+}
+.armory-body button,
+.armory-body .btn,
+.armory-body input,
+.armory-body select,
+.armory-body textarea,
+.clean-armory button,
+.clean-armory .cm-btn,
+.clean-armory input,
+.clean-armory select,
+.clean-armory textarea{
+  font-size:16px;
+}
+.armory-body button,
+.armory-body .btn,
+.clean-armory button,
+.clean-armory .cm-btn,
+.clean-armory .cm-nav a{
+  min-height:var(--sov-touch);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* USER KATALOG: more readable category cards */
+.user-catalog-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:14px;
+  margin-bottom:16px;
+}
+.user-category-grid,
+.cat-grid{
+  align-items:stretch;
+}
+.user-category-card,
+.cat-tile{
+  position:relative;
+  overflow:hidden;
+  isolation:isolate;
+  box-shadow:var(--sov-mobile-glow);
+}
+.user-category-card:before,
+.cat-tile:before{
+  content:"";
+  position:absolute;
+  inset:0 auto 0 0;
+  width:5px;
+  background:linear-gradient(180deg,rgba(215,246,111,.95),rgba(125,211,252,.75));
+  opacity:.9;
+}
+.user-category-card .ico,
+.cat-tile .ico{
+  width:54px;
+  height:54px;
+  border-radius:18px;
+  display:grid!important;
+  place-items:center;
+  background:linear-gradient(135deg,rgba(215,246,111,.16),rgba(125,211,252,.10));
+  border:1px solid rgba(255,255,255,.12);
+  font-size:30px!important;
+}
+.user-category-card b,
+.cat-tile b{
+  letter-spacing:-.025em;
+}
+.user-category-card small,
+.cat-tile small{
+  color:#d2e3dd!important;
+}
+
+/* ORUZAR MASTER: clean mobile header + cards */
+.clean-armory .cm-top{
+  position:sticky;
+  top:0;
+  z-index:30;
+  padding:12px 0;
+  background:linear-gradient(180deg,rgba(6,17,16,.96),rgba(6,17,16,.72));
+  backdrop-filter:blur(18px);
+}
+.clean-armory .cm-brand small{
+  color:#cddfd8;
+}
+.clean-armory .cm-hero{
+  position:relative;
+  overflow:hidden;
+}
+.clean-armory .cm-hero:before{
+  content:"";
+  position:absolute;
+  inset:auto -80px -120px auto;
+  width:260px;
+  height:260px;
+  border-radius:999px;
+  background:radial-gradient(circle,rgba(215,246,111,.13),transparent 68%);
+  pointer-events:none;
+}
+.clean-armory .cm-card,
+.clean-armory .cm-panel,
+.clean-armory .item-card,
+.clean-armory .loan-row{
+  box-shadow:var(--sov-mobile-glow);
+}
+.clean-armory .cm-card .ico{
+  width:58px;
+  height:58px;
+  border-radius:20px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(135deg,rgba(215,246,111,.16),rgba(125,211,252,.10));
+  border:1px solid rgba(255,255,255,.13);
+  font-size:30px;
+}
+.clean-armory .item-card{
+  min-height:auto;
+}
+.clean-armory .cm-tools{
+  align-items:stretch;
+}
+.clean-armory .cm-tools .cm-btn,
+.clean-armory .cm-tools .cm-input{
+  min-height:var(--sov-touch);
+}
+.clean-armory .loan-row-top{
+  align-items:flex-start;
+}
+
+/* Mobile-first overrides */
+@media(max-width:760px){
+  body.clean-armory{
+    padding-bottom:86px;
+  }
+  .armory-shell,
+  .cm-shell{
+    width:min(100% - 20px,680px)!important;
+    padding-top:8px!important;
+  }
+  .armory-top,
+  .cm-top{
+    gap:10px!important;
+  }
+  .armory-brand .mark,
+  .cm-logo{
+    width:42px!important;
+    height:42px!important;
+    border-radius:15px!important;
+    flex:0 0 auto;
+  }
+  .armory-brand strong,
+  .cm-brand strong{
+    font-size:17px!important;
+    line-height:1.1;
+  }
+  .armory-brand small,
+  .cm-brand small{
+    font-size:12px!important;
+    line-height:1.25;
+  }
+
+  /* Ordinary oruzarstvo user view */
+  .armory-hero-inner{
+    padding:18px!important;
+  }
+  .armory-hero h1{
+    font-size:34px!important;
+    letter-spacing:-.045em!important;
+    line-height:1!important;
+  }
+  .armory-hero p{
+    font-size:14px!important;
+    line-height:1.5!important;
+  }
+  .role-card{
+    padding:14px!important;
+    border-radius:20px!important;
+  }
+  .armory-nav{
+    width:100%;
+    display:grid!important;
+    grid-auto-flow:column;
+    grid-auto-columns:max-content;
+    overflow-x:auto;
+    gap:8px!important;
+    padding:2px 0 6px!important;
+    scrollbar-width:none;
+  }
+  .armory-nav::-webkit-scrollbar{display:none;}
+  .armory-nav a,
+  .armory-nav button{
+    min-height:44px;
+    padding:10px 13px!important;
+  }
+  .user-catalog-head{
+    display:grid!important;
+    gap:12px;
+  }
+  .user-catalog-head h2{
+    font-size:22px!important;
+    line-height:1.05;
+  }
+  .user-catalog-head .btn{
+    width:100%;
+  }
+  .user-category-grid,
+  .user-subcat-list,
+  .grid-list,
+  .cat-grid,
+  .item-grid{
+    grid-template-columns:1fr!important;
+    gap:11px!important;
+  }
+  .user-category-card,
+  .user-subcat-card,
+  .cat-tile,
+  .item-card{
+    border-radius:20px!important;
+    min-height:auto!important;
+  }
+  .user-category-card,
+  .cat-tile{
+    display:grid!important;
+    grid-template-columns:64px 1fr;
+    gap:8px 12px!important;
+    align-items:center;
+    padding:14px 14px 14px 18px!important;
+  }
+  .user-category-card .ico,
+  .cat-tile .ico{
+    grid-row:1 / span 3;
+  }
+  .user-category-card b,
+  .cat-tile b{
+    font-size:18px!important;
+  }
+  .user-category-card small,
+  .cat-tile small{
+    margin-top:0!important;
+    font-size:13px!important;
+  }
+  .item-card{
+    padding:14px!important;
+  }
+  .item-card h3{
+    font-size:18px!important;
+  }
+  .actions .btn,
+  .item-card .btn{
+    width:100%;
+  }
+  .drawer{
+    left:10px!important;
+    right:10px!important;
+    bottom:10px!important;
+    width:auto!important;
+    max-height:78vh!important;
+    border-radius:22px!important;
+  }
+
+  /* Oružar Master pages */
+  .clean-armory .cm-top{
+    display:grid!important;
+    grid-template-columns:1fr;
+    margin-bottom:10px!important;
+  }
+  .clean-armory .cm-nav{
+    position:fixed;
+    left:10px;
+    right:10px;
+    bottom:10px;
+    z-index:80;
+    display:grid!important;
+    grid-template-columns:repeat(4,1fr);
+    gap:6px!important;
+    padding:8px!important;
+    border:1px solid rgba(220,255,235,.16);
+    border-radius:24px;
+    background:rgba(6,17,16,.93);
+    backdrop-filter:blur(18px);
+    box-shadow:0 18px 60px rgba(0,0,0,.42);
+    overflow:visible!important;
+  }
+  .clean-armory .cm-nav a,
+  .clean-armory .cm-nav button{
+    width:100%;
+    min-height:48px;
+    padding:8px 6px!important;
+    border-radius:18px!important;
+    font-size:12px!important;
+    line-height:1.1;
+    white-space:normal!important;
+    text-align:center;
+  }
+  .clean-armory .cm-nav a[href="dashboard.html"],
+  .clean-armory .cm-nav a[href="oruzarstvo.html"],
+  .clean-armory .cm-nav a[data-logout],
+  .clean-armory .cm-nav a[href="#"]{
+    display:none!important;
+  }
+  .clean-armory .cm-hero{
+    border-radius:22px!important;
+    padding:17px!important;
+    margin-bottom:12px!important;
+  }
+  .clean-armory .cm-hero h1{
+    font-size:34px!important;
+    line-height:1!important;
+    letter-spacing:-.045em!important;
+  }
+  .clean-armory .cm-hero p{
+    font-size:14px!important;
+    line-height:1.5!important;
+  }
+  .clean-armory .cm-grid{
+    grid-template-columns:1fr!important;
+    gap:11px!important;
+  }
+  .clean-armory .cm-card{
+    min-height:unset!important;
+    display:grid!important;
+    grid-template-columns:68px 1fr;
+    gap:6px 12px!important;
+    padding:15px!important;
+    border-radius:22px!important;
+  }
+  .clean-armory .cm-card .ico{
+    grid-row:1 / span 3;
+  }
+  .clean-armory .cm-card h2{
+    font-size:22px!important;
+  }
+  .clean-armory .cm-card p{
+    font-size:14px!important;
+  }
+  .clean-armory .cm-card span:last-child{
+    margin-top:0!important;
+  }
+  .clean-armory .cm-panel{
+    padding:14px!important;
+    border-radius:22px!important;
+  }
+  .clean-armory .cm-tools{
+    display:grid!important;
+    grid-template-columns:1fr;
+    gap:8px!important;
+  }
+  .clean-armory .cm-input,
+  .clean-armory .cm-select,
+  .clean-armory .cm-btn{
+    width:100%;
+    min-width:0!important;
+  }
+  .clean-armory .cm-breadcrumb{
+    gap:7px!important;
+    overflow-x:auto;
+    flex-wrap:nowrap!important;
+    padding-bottom:4px;
+  }
+  .clean-armory .cm-breadcrumb button,
+  .clean-armory .cm-breadcrumb span{
+    white-space:nowrap;
+  }
+  .clean-armory .loan-grid{
+    grid-template-columns:1fr!important;
+    gap:12px!important;
+  }
+  .clean-armory .loan-row{
+    border-radius:20px!important;
+  }
+  .clean-armory .loan-row-top{
+    display:grid!important;
+    grid-template-columns:1fr;
+  }
+  .clean-armory .loan-row .cm-tools{
+    grid-template-columns:1fr!important;
+  }
+  .clean-armory .cm-form-grid{
+    grid-template-columns:1fr!important;
+  }
+  .clean-armory .debug{
+    font-size:11px!important;
+    padding-bottom:8px;
+  }
+}
+
+@media(max-width:390px){
+  .clean-armory .cm-nav a,
+  .clean-armory .cm-nav button{
+    font-size:11px!important;
+    padding:7px 4px!important;
+  }
+  .clean-armory .cm-hero h1,
+  .armory-hero h1{
+    font-size:30px!important;
+  }
+  .user-category-card,
+  .cat-tile,
+  .clean-armory .cm-card{
+    grid-template-columns:54px 1fr!important;
+  }
+  .user-category-card .ico,
+  .cat-tile .ico,
+  .clean-armory .cm-card .ico{
+    width:48px!important;
+    height:48px!important;
+    font-size:26px!important;
+  }
+}

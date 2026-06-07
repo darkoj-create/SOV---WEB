@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>Pročelništvo — SOV</title>
+<meta content="Aktualno pročelništvo i povijest pročelništva Speleološkog odsjeka Velebit" name="description"/>
+<link href="assets/site.css" rel="stylesheet"/>
+<style>
+.peopleGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin:26px 0 34px}
+.person{border:1px solid var(--line);border-radius:24px;background:rgba(255,255,255,.045);padding:18px;min-height:150px}
+.person .role{color:var(--accent);font-size:12px;font-weight:1000;letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px}
+.person b{display:block;font-size:21px;line-height:1.08;letter-spacing:-.035em}
+.person span{display:block;color:var(--muted);margin-top:8px;line-height:1.4}
+.miniLead{color:#d5dfdf;line-height:1.7;font-size:18px}
+.sourceBox{border:1px solid rgba(215,246,111,.24);border-radius:24px;background:linear-gradient(135deg,rgba(215,246,111,.11),rgba(120,215,255,.05));padding:18px 20px;margin:22px 0;color:#dce8e7;line-height:1.55}
+.sourceBox b{color:var(--accent)}
+.statsStrip{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0 30px}
+.statsStrip div{border:1px solid var(--line);border-radius:18px;background:rgba(0,0,0,.18);padding:14px 16px}
+.statsStrip b{display:block;font-size:28px;color:var(--accent);letter-spacing:-.04em}
+.statsStrip span{color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:.08em;font-weight:800}
+.timeline{position:relative;margin-top:28px}
+.timeline:before{content:"";position:absolute;left:112px;top:0;bottom:0;width:1px;background:linear-gradient(var(--accent),rgba(255,255,255,.06))}
+.entry{display:grid;grid-template-columns:92px 1fr;gap:42px;margin:0 0 18px}
+.year{color:var(--accent);font-weight:1000;letter-spacing:-.025em;font-size:22px;padding-top:18px;text-align:right}
+.entryCard{border:1px solid var(--line);border-radius:24px;background:linear-gradient(180deg,rgba(255,255,255,.062),rgba(255,255,255,.025));padding:20px;position:relative}
+.entryCard:before{content:"";position:absolute;left:-49px;top:24px;width:13px;height:13px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 6px rgba(215,246,111,.12)}
+.roles{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.r{border:1px solid rgba(255,255,255,.075);border-radius:16px;padding:12px;background:rgba(0,0,0,.16);min-width:0}
+.r small{display:block;color:var(--accent);font-weight:1000;text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px;font-size:11px}
+.r b{font-size:16px;line-height:1.25;overflow-wrap:anywhere}
+.r span{display:block;color:var(--muted);font-size:13px;margin-top:6px;line-height:1.35}
+.note,.noData{color:var(--muted);font-size:14px;line-height:1.55;margin-top:12px}
+.noData{grid-column:1/-1;margin:0;border:1px dashed rgba(255,255,255,.12);border-radius:14px;padding:12px;background:rgba(0,0,0,.12)}
+@media(max-width:1100px){.roles{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:900px){.peopleGrid{grid-template-columns:1fr 1fr}.timeline:before{left:18px}.entry{grid-template-columns:1fr;gap:8px;padding-left:42px}.year{text-align:left;padding-top:0}.entryCard:before{left:-31px}.roles{grid-template-columns:1fr 1fr}.statsStrip{grid-template-columns:1fr}}
+@media(max-width:560px){.peopleGrid{grid-template-columns:1fr}.roles{grid-template-columns:1fr}}
+</style>
+<link href="assets/mobile.css" rel="stylesheet"/>
+<link href="assets/sov-foundation-v55822.css" rel="stylesheet"/>
+<link href="assets/sov-shell-v55825.css" rel="stylesheet"/>
+<link href="assets/sov-polish-v55826.css" rel="stylesheet"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap" rel="stylesheet"/>
+<link href="assets/sov-wow-v6.css" rel="stylesheet"/>
+<link href="assets/sov-public-polish-v609.css" rel="stylesheet"/>
+</head>
+<body class="public-polish-v609">
+<header class="top wrap"><a class="brand" href="index.html"><div class="mark">SOV</div><div><strong>Speleološki odsjek Velebit</strong><small>Zagreb</small></div></a><nav class="nav"><a href="index.html">Naslovnica</a><a href="o-drustvu.html">O društvu</a><a href="povijest.html">Povijest</a><a href="velebitaski-duh.html">Velebitaški duh</a><a class="cta" href="login.html">Članska zona</a></nav></header>
+<nav class="public-tabs-v609" aria-label="O nama sekcije"><a href="o-drustvu.html">Pregled</a><a href="procelnistvo.html">Pročelništvo</a><a href="povijest.html">Povijest</a><a href="velebitaski-duh.html">Velebitaški duh</a><a href="velebiten.html">Velebiten</a><a href="pridruzi-nam-se.html">Pridruži nam se</a></nav>
+<main>
+<section class="hero wrap"><div class="heroInner"><div class="eyebrow">O društvu</div><h1>Pročelništvo.</h1><p class="lead">Aktualno vodstvo Odsjeka i povijest funkcija prema ažuriranoj XLS tablici.</p></div></section>
+<article class="article">
+<h1>Aktualno pročelništvo</h1>
+<p class="miniLead">Mandat od 2026. godine.</p>
+<div class="peopleGrid">
+<div class="person"><div class="role">Pročelnik</div><b>Vedran Ferenčak</b><span>vodi rad Odsjeka</span></div>
+<div class="person"><div class="role">Tajnik</div><b>Ivona Klišanin</b><span>administracija i zapisnici</span></div>
+<div class="person"><div class="role">Oružar</div><b>Teo Barić</b><span>oprema i oružarstvo</span></div>
+<div class="person"><div class="role">Arhivar</div><b>Gorana Perić</b><span>arhiva i dokumentacija</span></div>
+<div class="person"><div class="role">Bibliotekar</div><b>Mia Šepčević</b><span>biblioteka i publikacije</span></div>
+</div>
+
+<div class="sourceBox"><b>Izvor podataka:</b> SOV pročelništvo.xlsx · list “SOV pročelništvo”. Stranica je generirana iz tablice za build 6.0.9.</div>
+<div class="statsStrip">
+  <div><b>71</b><span>godina u XLS-u</span></div>
+  <div><b>68</b><span>godina s podacima</span></div>
+  <div><b>1956–2026</b><span>raspon zapisa</span></div>
+</div>
+
+<h2>Prethodno pročelništvo</h2>
+<div class="entryCard" style="margin:12px 0 34px"><div class="roles"><div class="r"><small>Pročelnik</small><b>Barbara Domitrović</b></div>
+<div class="r"><small>Tajnik</small><b>Dora Troha</b></div>
+<div class="r"><small>Oružar</small><b>Mislav Sajko</b></div>
+<div class="r"><small>Arhivar</small><b>Gorana Perić</b></div>
+<div class="r"><small>Bibliotekar</small><b>Edo Vričić</b></div></div><div class="note">Prethodni sastav prema XLS-u za 2024. i 2025.</div></div>
+
+<h2>Povijest pročelništva</h2>
+<p class="miniLead">Svaka godina prikazana je zasebno, bez spajanja mandatnih razdoblja, da ne izgubimo razlike iz izvorne tablice.</p>
+<div class="timeline">
+<section class="entry" data-year="2026">
+  <div class="year">2026</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Vedran Ferenčak</b></div>
+<div class="r"><small>Tajnik</small><b>Ivona Klišanin</b></div>
+<div class="r"><small>Oružar</small><b>Teo Barić</b></div>
+<div class="r"><small>Arhivar</small><b>Gorana Perić</b></div>
+<div class="r"><small>Bibliotekar</small><b>Mia Šepčević</b></div></div>
+    <div class="note">Aktualno pročelništvo prema XLS-u.</div>
+  </div>
+</section>
+<section class="entry" data-year="2025">
+  <div class="year">2025</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Barbara Domitrović</b></div>
+<div class="r"><small>Tajnik</small><b>Dora Troha</b></div>
+<div class="r"><small>Oružar</small><b>Mislav Sajko</b></div>
+<div class="r"><small>Arhivar</small><b>Gorana Perić</b></div>
+<div class="r"><small>Bibliotekar</small><b>Edo Vričić</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="2024">
+  <div class="year">2024</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Barbara Domitrović</b></div>
+<div class="r"><small>Tajnik</small><b>Dora Troha</b></div>
+<div class="r"><small>Oružar</small><b>Mislav Sajko</b></div>
+<div class="r"><small>Arhivar</small><b>Gorana Perić</b></div>
+<div class="r"><small>Bibliotekar</small><b>Edo Vričić</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="2023">
+  <div class="year">2023</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Ana Lipovac</b></div>
+<div class="r"><small>Tajnik</small><b>Barbara Domitrović</b></div>
+<div class="r"><small>Oružar</small><b>Luka Ivančić</b></div>
+<div class="r"><small>Arhivar</small><b>Gorana Perić</b></div>
+<div class="r"><small>Bibliotekar</small><b>Edo Vričić</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="2022">
+  <div class="year">2022</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Ana Lipovac</b></div>
+<div class="r"><small>Tajnik</small><b>Barbara Domitrović</b></div>
+<div class="r"><small>Oružar</small><b>Luka Ivančić</b></div>
+<div class="r"><small>Arhivar</small><b>Gorana Perić</b></div>
+<div class="r"><small>Bibliotekar</small><b>Edo Vričić</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="2021">
+  <div class="year">2021</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Valentina Plemenčić</b></div>
+<div class="r"><small>Tajnik</small><b>Darko Jeras</b></div>
+<div class="r"><small>Oružar</small><b>Luka Ivančić</b></div>
+<div class="r"><small>Arhivar</small><b>Gorana Perić</b></div>
+<div class="r"><small>Bibliotekar</small><b>Marko Ličko</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="2020">
+  <div class="year">2020</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Valentina Plemenčić</b></div>
+<div class="r"><small>Tajnik</small><b>Darko Španja</b></div>
+<div class="r"><small>Oružar</small><b>David Rafael Lipovac / Luka Ivančić</b></div>
+<div class="r"><small>Arhivar</small><b>Gorana Sačer / Marina Grandić</b></div>
+<div class="r"><small>Bibliotekar</small><b>Marko Ličko</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="2019">
+  <div class="year">2019</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Luka Havliček</b></div>
+<div class="r"><small>Tajnik</small><b>Marko Rakovac</b></div>
+<div class="r"><small>Oružar</small><b>Marijan Sutlović</b></div>
+<div class="r"><small>Arhivar</small><b>Marina Grandić</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="2018">
+  <div class="year">2018</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Luka Havliček</b></div>
+<div class="r"><small>Tajnik</small><b>Marko Rakovac</b></div>
+<div class="r"><small>Oružar</small><b>Marijan Sutlović</b></div>
+<div class="r"><small>Arhivar</small><b>Marina Grandić</b></div>
+<div class="r"><small>Bibliotekar</small><b>Stjepan Dubac</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="2017">
+  <div class="year">2017</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Tanja Šinko</b></div>
+<div class="r"><small>Tajnik</small><b>Marina Grandić</b></div>
+<div class="r"><small>Oružar</small><b>Darko Španja</b></div>
+<div class="r"><small>Arhivar</small><b>Anja Žmegač</b></div>
+<div class="r"><small>Bibliotekar</small><b>Anja Žmegač</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="2016">
+  <div class="year">2016</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Marijan Sutlović</b></div>
+<div class="r"><small>Tajnik</small><b>Luka Havliček</b></div>
+<div class="r"><small>Oružar</small><b>Darko Španja</b></div>
+<div class="r"><small>Arhivar</small><b>Tanja Šinko</b></div>
+<div class="r"><small>Bibliotekar</small><b>Stjepan Dubac</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="2015">
+  <div class="year">2015</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Marijan Sutlović</b></div>
+<div class="r"><small>Tajnik</small><b>Luka Havliček</b></div>
+<div class="r"><small>Oružar</small><b>Darko Španja</b></div>
+<div class="r"><small>Arhivar</small><b>Tanja Šinko</b></div>
+<div class="r"><small>Bibliotekar</small><b>Stjepan Dubac</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="2014">
+  <div class="year">2014</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Marko Rakovac</b></div>
+<div class="r"><small>Tajnik</small><b>Luka Havliček</b></div>
+<div class="r"><small>Oružar</small><b>Edo Vričić</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="2013">
+  <div class="year">2013</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Marko Rakovac</b></div>
+<div class="r"><small>Tajnik</small><b>Vinka Dubovečak</b></div>
+<div class="r"><small>Oružar</small><b>Edo Vričić (Mario Mustapić)</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="2012">
+  <div class="year">2012</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Ronald Železnjak</b></div>
+<div class="r"><small>Tajnik</small><b>Marta Malenica</b></div>
+<div class="r"><small>Oružar</small><b>Marko Masnec (Zvonko pomoćnik)</b></div>
+<div class="r"><small>Arhivar</small><b>Dina Kovač</b></div>
+<div class="r"><small>Bibliotekar</small><b>Vedran Ferenčak</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="2011">
+  <div class="year">2011</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Ronald Železnjak</b></div>
+<div class="r"><small>Tajnik</small><b>Marta Malenica</b></div>
+<div class="r"><small>Oružar</small><b>Marko Masnec</b></div>
+<div class="r"><small>Arhivar</small><b>Dina Kovač</b></div>
+<div class="r"><small>Bibliotekar</small><b>Vedran Ferenčak</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="2010">
+  <div class="year">2010</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Matija Čepelak</b></div>
+<div class="r"><small>Tajnik</small><b>Jasna Vidmar</b></div>
+<div class="r"><small>Oružar</small><b>Ronald Železnjak</b></div>
+<div class="r"><small>Arhivar</small><b>Loris Redovniković</b></div>
+<div class="r"><small>Bibliotekar</small><b>Katarina Bradić</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="2009">
+  <div class="year">2009</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Matija Čepelak</b></div>
+<div class="r"><small>Tajnik</small><b>Jasna Vidmar</b></div>
+<div class="r"><small>Oružar</small><b>Ronald Železnjak</b></div>
+<div class="r"><small>Arhivar</small><b>Loris Redovniković</b></div>
+<div class="r"><small>Bibliotekar</small><b>Katarina Bradić</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="2008">
+  <div class="year">2008</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Marinko Malenica</b></div>
+<div class="r"><small>Tajnik</small><b>Leonara Rataj</b></div>
+<div class="r"><small>Oružar</small><b>Luka Mudronja</b></div>
+<div class="r"><small>Arhivar</small><b>Dalibor Paar</b></div>
+<div class="r"><small>Bibliotekar</small><b>Katarina Bradić</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="2007">
+  <div class="year">2007</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Marinko Malenica</b></div>
+<div class="r"><small>Tajnik</small><b>Leonara Rataj</b></div>
+<div class="r"><small>Oružar</small><b>Luka Mudronja</b></div>
+<div class="r"><small>Arhivar</small><b>Dalibor Paar</b></div>
+<div class="r"><small>Bibliotekar</small><b>Jasna Vidmar</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="2006">
+  <div class="year">2006</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Slaven Boban</b></div>
+<div class="r"><small>Tajnik</small><b>Leonara Smirnjak</b></div>
+<div class="r"><small>Oružar</small><b>Marinko Malenica</b></div>
+<div class="r"><small>Arhivar</small><b>Dalibor Paar</b></div>
+<div class="r"><small>Bibliotekar</small><b>Sanja Rukavina</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="2005">
+  <div class="year">2005</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Slaven Boban</b></div>
+<div class="r"><small>Tajnik</small><b>Lovro Čepelak</b></div>
+<div class="r"><small>Oružar</small><b>Marinko Malenica</b></div>
+<div class="r"><small>Arhivar</small><b>Dalibor Paar</b></div>
+<div class="r"><small>Bibliotekar</small><b>Sanja Rukavina</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="2004">
+  <div class="year">2004</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Josip Petričveić</b></div>
+<div class="r"><small>Tajnik</small><b>Lovro Čepelak</b></div>
+<div class="r"><small>Oružar</small><b>Matija Čepelak</b></div>
+<div class="r"><small>Arhivar</small><b>Dalibor Paar</b></div>
+<div class="r"><small>Bibliotekar</small><b>Ana Katalinić</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="2003">
+  <div class="year">2003</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Josip Petričveić</b></div>
+<div class="r"><small>Tajnik</small><b>Ivan Skuliber</b></div>
+<div class="r"><small>Oružar</small><b>Matija Čepelak</b></div>
+<div class="r"><small>Arhivar</small><b>Dalibor Paar</b></div>
+<div class="r"><small>Bibliotekar</small><b>Ana Katalinić</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="2002">
+  <div class="year">2002</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Ana Katarina Sansević</b></div>
+<div class="r"><small>Tajnik</small><b>Ana Katalinić</b></div>
+<div class="r"><small>Oružar</small><b>Filip Filipović</b></div>
+<div class="r"><small>Arhivar</small><b>Darko Bakšić</b></div>
+<div class="r"><small>Bibliotekar</small><b>Irena Jevtov</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="2001">
+  <div class="year">2001</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Ana Katarina Sansević</b></div>
+<div class="r"><small>Tajnik</small><b>Saša</b></div>
+<div class="r"><small>Oružar</small><b>Filip Filipović</b></div>
+<div class="r"><small>Arhivar</small><b>Darko Bakšić</b></div>
+<div class="r"><small>Bibliotekar</small><b>Irena Jevtov</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="2000">
+  <div class="year">2000</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Darko Bakšić</b></div>
+<div class="r"><small>Tajnik</small><b>Dalibor Paar</b></div>
+<div class="r"><small>Oružar</small><b>Dean Bratušek</b></div>
+<div class="r"><small>Arhivar</small><b>Marko Andreis</b></div>
+<div class="r"><small>Bibliotekar</small><b>Tihana Dasović</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="1999">
+  <div class="year">1999</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Darko Bakšić</b></div>
+<div class="r"><small>Tajnik</small><b>Dalibor Paar</b></div>
+<div class="r"><small>Oružar</small><b>Dean Bratušek</b></div>
+<div class="r"><small>Arhivar</small><b>Marko Andreis</b></div>
+<div class="r"><small>Bibliotekar</small><b>Tihana Dasović</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="1998">
+  <div class="year">1998</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Siniša Rešetar</b></div>
+<div class="r"><small>Tajnik</small><b>Mislav Vedriš</b></div>
+<div class="r"><small>Oružar</small><b>Ivica Radić</b></div>
+<div class="r"><small>Arhivar</small><b>Marko Andreis</b></div>
+<div class="r"><small>Bibliotekar</small><b>Tihana Dasović</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="1997">
+  <div class="year">1997</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Siniša Rešetar</b></div>
+<div class="r"><small>Tajnik</small><b>Mislav Vedriš</b></div>
+<div class="r"><small>Oružar</small><b>Ivica Radić</b></div>
+<div class="r"><small>Arhivar</small><b>Marko Andreis</b></div>
+<div class="r"><small>Bibliotekar</small><b>Tihana Dasović</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="1996">
+  <div class="year">1996</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Ana Sutlović</b></div>
+<div class="r"><small>Tajnik</small><b>Tanja Bizjak</b></div>
+<div class="r"><small>Oružar</small><b>Darko Bakšić</b></div>
+<div class="r"><small>Arhivar</small><b>Zoran Stipetić <br>Marko Andreis</b></div>
+<div class="r"><small>Bibliotekar</small><b>Ana Čop</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="1995">
+  <div class="year">1995</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Ana Sutlović</b></div>
+<div class="r"><small>Tajnik</small><b>Tanja Bizjak</b></div>
+<div class="r"><small>Oružar</small><b>Darko Bakšić</b></div>
+<div class="r"><small>Arhivar</small><b>Zoran Stipetić</b></div>
+<div class="r"><small>Bibliotekar</small><b>Ana Čop</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="1994">
+  <div class="year">1994</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Zoran Stipetić</b></div>
+<div class="r"><small>Tajnik</small><b>Ana Predović</b></div>
+<div class="r"><small>Oružar</small><b>Vedran Vračar</b></div>
+<div class="r"><small>Arhivar</small><b>Damir Lacković</b></div>
+<div class="r"><small>Bibliotekar</small><b>Ana Čop</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="1993">
+  <div class="year">1993</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Zoran Stipetić</b></div>
+<div class="r"><small>Tajnik</small><b>Vida Ungar</b></div>
+<div class="r"><small>Oružar</small><b>Darko Troha</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="1992">
+  <div class="year">1992</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Damir Lacković</b></div>
+<div class="r"><small>Tajnik</small><b>Iva Dobrović</b></div>
+<div class="r"><small>Oružar</small><b>Darko Troha</b></div>
+<div class="r"><small>Bibliotekar</small><b>Zoran Stipetić</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="1991">
+  <div class="year">1991</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Damir Lacković</b></div>
+<div class="r"><small>Tajnik</small><b>Dubravko Kavčić</b></div>
+<div class="r"><small>Oružar</small><b>Damir Lacković</b></div>
+<div class="r"><small>Arhivar</small><b>Teo Barišić / Zoran Stipetić</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="1990">
+  <div class="year">1990</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Slaven Dobrović</b></div>
+<div class="r"><small>Tajnik</small><b>Jagoda Munić</b></div>
+<div class="r"><small>Oružar</small><b>Damir Lacković</b></div>
+<div class="r"><small>Bibliotekar</small><b>Ana Sutlović</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="1989">
+  <div class="year">1989</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Slaven Dobrović</b></div>
+<div class="r"><small>Tajnik</small><b>Željka Trubić</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="1988">
+  <div class="year">1988</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Teo Barišić</b></div>
+<div class="r"><small>Tajnik</small><b>Željka Trubić</b></div>
+<div class="r"><small>Oružar</small><b>Zoran Stipetić - Patak</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="1987">
+  <div class="year">1987</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Teo Barišić</b></div>
+<div class="r"><small>Tajnik</small><b>Damir Lacković</b></div>
+<div class="r"><small>Oružar</small><b>Vladimir Matek/Aida Gold</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="1986">
+  <div class="year">1986</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Eduard Kireta</b></div>
+<div class="r"><small>Tajnik</small><b>Ivančica Zovko</b></div>
+<div class="r"><small>Oružar</small><b>Vladimir Matek</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="1985">
+  <div class="year">1985</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Eduard Kireta</b></div>
+<div class="r"><small>Tajnik</small><b>Slaven Dobrović</b></div>
+<div class="r"><small>Oružar</small><b>Vladimir Matek</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="1984">
+  <div class="year">1984</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Čedo Josipović</b></div>
+<div class="r"><small>Tajnik</small><b>Slaven Dobrović</b></div>
+<div class="r"><small>Oružar</small><b>Vladimir Matek</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="1983">
+  <div class="year">1983</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Robert Erhardt</b></div>
+<div class="r"><small>Tajnik</small><b>Ana Sutlović</b></div>
+<div class="r"><small>Oružar</small><b>Čedo Josipović/Draško Ivanović</b></div>
+<div class="r"><small>Arhivar</small><b>ne postoji</b></div>
+<div class="r"><small>Bibliotekar</small><b>ne postoji</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="1982">
+  <div class="year">1982</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Robert Erhardt</b></div>
+<div class="r"><small>Tajnik</small><b>Koraljka Ivanović</b></div>
+<div class="r"><small>Oružar</small><b>Draško Ivanović</b></div>
+<div class="r"><small>Arhivar</small><b>ne postoji</b></div>
+<div class="r"><small>Bibliotekar</small><b>ne postoji</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="1981">
+  <div class="year">1981</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Đuro Sekelj</b></div>
+<div class="r"><small>Tajnik</small><b>Ivica Nemeš</b></div>
+<div class="r"><small>Oružar</small><b>Ivica Nemeš</b></div>
+<div class="r"><small>Arhivar</small><b>ne postoji</b></div>
+<div class="r"><small>Bibliotekar</small><b>ne postoji</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="1980">
+  <div class="year">1980</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Đuro Sekelj</b></div>
+<div class="r"><small>Tajnik</small><b>Robert Erhardt</b></div>
+<div class="r"><small>Arhivar</small><b>Neven Čobanov</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="1979">
+  <div class="year">1979</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Darko Cucančić</b></div>
+<div class="r"><small>Tajnik</small><b>Neven Čobanov</b></div>
+<div class="r"><small>Oružar</small><b>Nikica Rendić</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="1978">
+  <div class="year">1978</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Dalibor Kasač</b></div>
+<div class="r"><small>Tajnik</small><b>Darko Cucančić</b></div>
+<div class="r"><small>Oružar</small><b>Robert Jagodić</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="1977">
+  <div class="year">1977</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Damir Prelovec</b></div>
+<div class="r"><small>Tajnik</small><b>Tatjana Bakran</b></div>
+<div class="r"><small>Oružar</small><b>Robert Jagodić</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="1976">
+  <div class="year">1976</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Damir Prelovec</b></div>
+<div class="r"><small>Tajnik</small><b>Dalibor Kasač</b></div>
+<div class="r"><small>Oružar</small><b>Robert Jagodić</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="1975">
+  <div class="year">1975</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Željko Filipović</b></div>
+<div class="r"><small>Tajnik</small><b>Željko Viljevac</b></div>
+<div class="r"><small>Oružar</small><b>Robert Jagodić</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="1974">
+  <div class="year">1974</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Željko Filipović</b></div>
+<div class="r"><small>Tajnik</small><b>Damir Prelovec</b></div>
+<div class="r"><small>Oružar</small><b>Daniel Burić</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="1973">
+  <div class="year">1973</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Miron Kovačić</b></div>
+<div class="r"><small>Tajnik</small><b>Mladen Juračić</b></div>
+<div class="r"><small>Oružar</small><b>Armand Jurković</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="1972">
+  <div class="year">1972</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Mladen Garašić</b></div>
+<div class="r"><small>Tajnik</small><b>Dubravka Žeželj</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="1971">
+  <div class="year">1971</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Boris Vrbek</b></div>
+<div class="r"><small>Tajnik</small><b>Mladen Garašić</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="1970">
+  <div class="year">1970</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Marijan Čepelak</b></div>
+<div class="r"><small>Tajnik</small><b>Mladen Garašić</b></div>
+<div class="r"><small>Oružar</small><b>Jurica Sekelj - Knor</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="1969">
+  <div class="year">1969</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Marijan Čepelak</b></div>
+<div class="r"><small>Tajnik</small><b>Mladen Garašić</b></div>
+<div class="r"><small>Oružar</small><b>Jurica Sekelj - Knor</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="1968">
+  <div class="year">1968</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Radovan Čepelak</b></div>
+<div class="r"><small>Tajnik</small><b>Dubravko Penović</b></div>
+<div class="r"><small>Oružar</small><b>Rikard Braun</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="1967">
+  <div class="year">1967</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Radovan Čepelak</b></div>
+<div class="r"><small>Tajnik</small><b>Marijan Čepelak</b></div>
+<div class="r"><small>Oružar</small><b>Mario Kirin</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="1966">
+  <div class="year">1966</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Radovan Čepelak</b></div>
+<div class="r"><small>Tajnik</small><b>Marijan Čepelak</b></div>
+<div class="r"><small>Oružar</small><b>Zlatko Rataj</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="1965">
+  <div class="year">1965</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Ivan Filipčić</b></div>
+<div class="r"><small>Tajnik</small><b>Radovan Čepelak</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="1964">
+  <div class="year">1964</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Ivan Filipčić</b></div>
+<div class="r"><small>Tajnik</small><b>Hrvoje Malinar</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="1963">
+  <div class="year">1963</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Ivan Filipčić</b></div>
+<div class="r"><small>Tajnik</small><b>Hrvoje Malinar</b></div>
+<div class="r"><small>Oružar</small><b>Ivan Kruhak</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="1962">
+  <div class="year">1962</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Hrvoje Malinar</b></div>
+<div class="r"><small>Tajnik</small><b>Ivan Filipčić</b></div>
+<div class="r"><small>Oružar</small><b>Ivica Krema</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="1961">
+  <div class="year">1961</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Hrvoje Malinar</b></div>
+<div class="r"><small>Tajnik</small><b>Ivan Filipčić</b></div>
+<div class="r"><small>Oružar</small><b>Mladen Gortan</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="1960">
+  <div class="year">1960</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Hrvoje Malinar</b></div>
+<div class="r"><small>Tajnik</small><b>Ivan Filipčić</b></div>
+<div class="r"><small>Oružar</small><b>funkcija uspostavljena 1961</b></div></div>
+    
+  </div>
+</section>
+<section class="entry" data-year="1959">
+  <div class="year">1959</div>
+  <div class="entryCard">
+    <div class="roles"><div class="noData">Nema upisanih podataka u XLS tablici.</div></div>
+    <div class="note">U izvornoj XLS tablici red postoji, ali uloge nisu upisane.</div>
+  </div>
+</section>
+<section class="entry" data-year="1958">
+  <div class="year">1958</div>
+  <div class="entryCard">
+    <div class="roles"><div class="noData">Nema upisanih podataka u XLS tablici.</div></div>
+    <div class="note">U izvornoj XLS tablici red postoji, ali uloge nisu upisane.</div>
+  </div>
+</section>
+<section class="entry" data-year="1957">
+  <div class="year">1957</div>
+  <div class="entryCard">
+    <div class="roles"><div class="noData">Nema upisanih podataka u XLS tablici.</div></div>
+    <div class="note">U izvornoj XLS tablici red postoji, ali uloge nisu upisane.</div>
+  </div>
+</section>
+<section class="entry" data-year="1956">
+  <div class="year">1956</div>
+  <div class="entryCard">
+    <div class="roles"><div class="r"><small>Pročelnik</small><b>Srećko Božičević</b></div>
+<div class="r"><small>Tajnik</small><b>Nedjeljka Latas</b></div></div>
+    
+  </div>
+</section>
+</div>
+</article>
+</main>
+<footer class="footer"><div class="wrap">© Speleološki odsjek Velebit · 6.0.9</div></footer>
+<script defer src="assets/sov-foundation-v55822.js"></script>
+<script defer src="assets/sov-shell-v55825.js"></script>
+<script defer src="assets/sov-polish-v55826.js"></script>
+<script defer src="assets/sov-wow-v6.js?v=6.1.5"></script>
+<script defer src="assets/sov-version.js?v=6.1.5"></script><script defer src="assets/procelnistvo-polish-v609.js?v=6.0.9"></script></body>
+</html>
