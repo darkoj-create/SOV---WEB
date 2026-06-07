@@ -317,6 +317,56 @@
     return data||[];
   }
 
+
+  async function listTripTeams(tripId){
+    const c=sb(); if(!c) throw new Error('Supabase nije konfiguriran.');
+    const id=clean(tripId); if(!id) return [];
+    let rpc=await c.rpc('sov_list_trip_teams',{p_trip_id:id});
+    if(!rpc.error){
+      const rows=normalizeRpcRows(rpc.data);
+      return rows;
+    }
+    console.warn('[SOV trips] team RPC failed, fallback table', rpc.error);
+    const res=await c.from('sov_trip_teams').select('*').eq('trip_id',id).order('sort_order',{ascending:true}).order('created_at',{ascending:true}).limit(100);
+    if(res.error) throw res.error;
+    return res.data||[];
+  }
+  async function saveTripTeam(tripId, payload){
+    const c=sb(); if(!c) throw new Error('Supabase nije konfiguriran.');
+    const id=clean(tripId); if(!id) throw new Error('Izlet nema ID.');
+    const teamId=clean(payload&&payload.id||'') || null;
+    const body={
+      name: clean(payload&&payload.name) || 'Ekipa',
+      leader_name: clean(payload&&payload.leader_name),
+      members_text: clean(payload&&payload.members_text),
+      note: clean(payload&&payload.note),
+      sort_order: Number(payload&&payload.sort_order||0)||0
+    };
+    let rpc=await c.rpc('sov_save_trip_team',{p_trip_id:id,p_team_id:teamId,p_payload:body});
+    if(!rpc.error) return rpc.data || body;
+    console.warn('[SOV trips] save team RPC failed, fallback table', rpc.error);
+    const row={trip_id:id,...body};
+    if(teamId){
+      const res=await c.from('sov_trip_teams').update(row).eq('id',teamId).select('*').maybeSingle();
+      if(res.error) throw res.error;
+      return res.data||row;
+    }
+    const res=await c.from('sov_trip_teams').insert(row).select('*').maybeSingle();
+    if(res.error) throw res.error;
+    return res.data||row;
+  }
+  async function deleteTripTeam(teamId){
+    const c=sb(); if(!c) throw new Error('Supabase nije konfiguriran.');
+    const id=clean(teamId); if(!id) throw new Error('Ekipa nema ID.');
+    let rpc=await c.rpc('sov_delete_trip_team',{p_team_id:id});
+    if(!rpc.error) return rpc.data || {deleted:true};
+    console.warn('[SOV trips] delete team RPC failed, fallback table', rpc.error);
+    const res=await c.from('sov_trip_teams').delete().eq('id',id).select('id');
+    if(res.error) throw res.error;
+    if(!res.data || !res.data.length) throw new Error('Ekipa nije obrisana.');
+    return {deleted:true,id};
+  }
+
   function normalizeSignupPayload(tripId, p){
     const transportMode=clean(p.transport_mode || p.transportMode || (p.driving?'driver':'needs_ride')) || 'needs_ride';
     const seats=Math.max(0, Number(p.seats_available ?? p.freeSeats ?? p.seats ?? 0)||0);
@@ -362,5 +412,5 @@
     const c=sb(); if(!c) throw new Error('Supabase nije konfiguriran.');
     const {data,error}=await c.from('sov_trips_sync_manifest').select('*').maybeSingle(); if(error) throw error; return data;
   }
-  window.SOVTripsCloud={sb,listTrips,loadCache,saveCache,mapToLegacy:toLegacy,createTripFromForm,updateTrip,deleteTrip,signupTrip,listTripMembers,saveTripSignup,manifest,isoDate,hrDate,uploadTripFile,uploadTripFiles,listTripFiles,fileTypeFromName,announcementText:null};
+  window.SOVTripsCloud={sb,listTrips,loadCache,saveCache,mapToLegacy:toLegacy,createTripFromForm,updateTrip,deleteTrip,signupTrip,listTripMembers,saveTripSignup,listTripTeams,saveTripTeam,deleteTripTeam,manifest,isoDate,hrDate,uploadTripFile,uploadTripFiles,listTripFiles,fileTypeFromName,announcementText:null};
 })();
