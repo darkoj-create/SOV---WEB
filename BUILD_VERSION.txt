@@ -1,1 +1,1 @@
-sov-web-build-v6.1.15-trip-delete-hard-fix
+sov-web-build-v6.1.25-trips-refresh-stability

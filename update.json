@@ -1,11 +1,11 @@
 {
   "app": "SOV web",
-  "version": "6.1.10",
-  "versionName": "v6.1.10-documents-full-archive-ready",
-  "build": "sov-web-build-v6.1.10-documents-full-archive-ready",
+  "version": "6.1.25",
+  "versionName": "v6.1.25-trips-refresh-stability",
+  "build": "sov-web-build-v6.1.25-trips-refresh-stability",
   "createdAt": "2026-06-04T09:55:00Z",
-  "cacheBust": "6110",
-  "base": "sov-web-build-v6.1.9-documents-archive-2017-2022.zip",
+  "cacheBust": "6125",
+  "base": "sov-web-build-v6.1.24-teams-flow.zip",
   "requiresSql": false,
   "recommendedSql": [
     "SUPABASE_SOV_DOCUMENTS_ARCHIVE_v6_1_10.sql"
@@ -14,24 +14,19 @@
     "SUPABASE_ORUZARSTVO_XLS_CANONICAL_v6_1_5c_NO_TEMP.sql"
   ],
   "changedFiles": [
-    "dokumenti.html",
-    "zapisnici-cijela-arhiva.html",
-    "zapisnici-import.html",
-    "assets/zapisnici-full-archive.js",
-    "assets/zapisnici-import.js",
-    "data/zapisnici-full-archive-index.json",
-    "SUPABASE_SOV_DOCUMENTS_ARCHIVE_v6_1_10.sql",
-    "assets/auth.js",
-    "assets/sov-version.js",
+    "izleti-cloud.html",
+    "assets/sov-trips-cloud.js",
+    "kalendar-izleta.html",
     "update.json",
     "VERSION.txt",
     "BUILD_VERSION.txt"
   ],
-  "releaseType": "documents-full-archive-ready",
+  "releaseType": "trips-refresh-stability",
   "notes": [
-    "Adds full archive shell for 1960-2026 meeting minutes.",
-    "Uses SQL metadata + Supabase Storage files; does not put future archive files into the web ZIP.",
-    "Falls back to existing static 2017-2022 and 2026 manifests until SQL is populated.",
-    "Adds protected bulk import page for arhivar/admin/webmaster."
+    "Stabilizes trips dashboard loading and refresh flow.",
+    "Uses one guarded loadTrips flow and one in-flight trips API request.",
+    "Cache is shown only as temporary display; successful database load updates UI and cache.",
+    "Create/edit/delete update local UI immediately and then perform silent reload.",
+    "No SQL changes."
   ]
 }
