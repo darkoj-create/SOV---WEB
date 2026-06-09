@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1" name="viewport"/>
-<title>SOV Cloud — Dashboard v6.1.26</title>
+<title>SOV Cloud — Dashboard v6.1.34</title>
 <link href="assets/site.css" rel="stylesheet"/>
 <link href="assets/mobile.css" rel="stylesheet"/>
 <link href="assets/sov-premium-ui.css" rel="stylesheet"/>
@@ -20,6 +20,25 @@
 /* UI FIX v6.1.29: Oružar direktni panel mobile layout */
 .sov-oruzar-direct-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
 @media(max-width:720px){.sov-oruzar-direct-grid{grid-template-columns:1fr!important}}
+
+
+/* UI FIX v6.1.34: dashboard/user portal top bar must only show Home + Odjava */
+body.dashboard-page header.topbar,
+body.dashboard-page header.top.wrap,
+body.dashboard-page header:not(.sov-top):has(.navlinks-main),
+body.dashboard-page .navlinks-main,
+body.dashboard-page .sov-user-chip,
+body.dashboard-page .user-chip,
+body.dashboard-page .profile-chip {
+  display: none !important;
+}
+body.dashboard-page header.sov-top .sov-nav {
+  margin-left: auto;
+}
+body.dashboard-page header.sov-top .sov-nav a:not([href="dashboard.html"]):not([data-logout]) {
+  display: none !important;
+}
+
 </style>
 <link href="assets/sov-foundation-v55822.css" rel="stylesheet"/><link href="assets/sov-shell-v55825.css" rel="stylesheet"/><link href="assets/sov-polish-v55826.css" rel="stylesheet"/><link href="assets/sov-dashboard-clean-v55910.css" rel="stylesheet"/><link href="assets/sov-dashboard-clean-v609.css" rel="stylesheet"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap" rel="stylesheet"/><link href="assets/sov-wow-v6.css" rel="stylesheet"/><link href="assets/sov-wow-app-v6.css" rel="stylesheet"/><link href="assets/sov-dashboard-premium-v614.css" rel="stylesheet"/></head>
 <body class="sov-premium dashboard-page">
@@ -29,15 +48,10 @@
 <div class="sov-mark">SOV</div>
 <div><strong>Speleološki odsjek Velebit</strong><small>SOV Cloud</small></div>
 </a>
-<nav aria-label="Glavna navigacija" class="sov-nav">
-<a href="index.html">Novosti</a>
-<a href="karta.html">Karta</a>
-<a data-dash-visible="user,editor,arhivar,admin,webmaster" href="izleti.html">Izleti</a>
-<a data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster" href="oruzarstvo.html">Oprema</a>
-<a data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster" href="dokumenti.html">Dokumenti</a>
-<a data-dash-visible="arhivar,admin,webmaster" data-role-archive="" href="arhivar-dashboard.html">Arhivar</a>
-<a class="primary" href="dashboard.html">SOV Cloud</a>
-<span class="sov-chip" data-dash-visible="admin,webmaster,oruzar,arhivar,editor"><span data-dash-name="" data-user-name="">—</span> · <span data-dash-role="" data-user-role="">—</span></span>
+<nav aria-label="Korisnički izbornik" class="sov-nav">
+<!-- UI FIX v6.1.32: korisnički portal gore ima samo povratak na home i odjavu -->
+<a class="primary" href="dashboard.html">Home</a>
+<a data-logout="" href="index.html">Odjava</a>
 </nav>
 </header>
 <div class="sov-preview-strip" aria-label="Role preview toolbar" data-ui-fix="preview-mode-only">
@@ -61,7 +75,7 @@
 <div class="v609-action-row">
 <a class="sov-btn main" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster" href="karta.html">Otvori kartu →</a>
 <a class="sov-btn" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster" href="predaj-novu-jamu.html">Predaj novu jamu</a>
-<a class="sov-btn" data-dash-visible="user,editor,arhivar,admin,webmaster" href="izleti.html">Izleti</a>
+<a class="sov-btn" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster" href="izleti.html">Izleti</a>
 <a class="sov-btn" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster" href="oruzarstvo.html">Oprema</a>
 <a class="sov-btn" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster" href="dokumenti.html">Dokumenti</a>
 </div>
@@ -72,7 +86,7 @@
 <div class="v609-status-item"><span>Stvarna rola</span><b data-dash-role="">—</b></div>
 <div class="v609-status-item" data-dash-visible="webmaster"><span>Preview view</span><b data-preview-role-label="">—</b></div>
 <div class="v609-status-item"><span>Status računa</span><b data-auth-status="">—</b></div>
-<div class="v609-status-item"><span>Web build</span><b data-sov-version="">6.1.26</b></div>
+<div class="v609-status-item"><span>Web build</span><b data-sov-version="">6.1.34</b></div>
 </div>
 <p class="v609-subtle-note" data-access-summary="">Učitavam prava…</p>
 </aside>
@@ -90,10 +104,10 @@
 <a class="sov-module v609-module" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster" href="predaj-novu-jamu.html" style="--accent:rgba(131,230,194,.16)">
 <div class="sov-icon">🧭</div><h3>Predaj novu jamu</h3><p>Ispuni zapisnik, dodaj privitke i pošalji arhivaru u inbox.</p><div class="sov-module-foot"><span class="sov-soft">Predaj</span></div>
 </a>
-<a class="sov-module v609-module" data-dash-visible="user,editor,arhivar,admin,webmaster" href="izleti.html" style="--accent:rgba(255,191,107,.18)">
+<a class="sov-module v609-module" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster" href="izleti.html" style="--accent:rgba(255,191,107,.18)">
 <div class="sov-icon">⛺</div><h3>Izleti</h3><p>Pregled izleta, prijava, priprema i kasnije arhiva izleta.</p><div class="sov-module-foot"><span class="sov-soft">Otvori</span></div>
 </a>
-<a class="sov-module v609-module" data-dash-visible="user,editor,arhivar,admin,webmaster" href="tracking.html" style="--accent:rgba(131,230,194,.18)">
+<a class="sov-module v609-module" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster" href="tracking.html" style="--accent:rgba(131,230,194,.18)">
 <div class="sov-icon">📡</div><h3>Field tracking</h3><p>Lite ping, ruta i zadnje poznate pozicije kad je izlet aktivan.</p><div class="sov-module-foot"><span class="sov-tag">lite</span><span class="sov-soft">Otvori</span></div>
 </a>
 <a class="sov-module v609-module" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster" href="oruzarstvo.html" style="--accent:rgba(255,211,107,.16)">
@@ -176,7 +190,7 @@
 <article class="sov-panel">
 <h3>Build pravila</h3>
 <div class="sov-list">
-<div class="sov-list-item"><div><b>Jedan build broj</b><small>update.json, dashboard, sync-status i cache markeri moraju ostati usklađeni.</small></div><span class="sov-tag">v6.1.26</span></div>
+<div class="sov-list-item"><div><b>Jedan build broj</b><small>update.json, dashboard, sync-status i cache markeri moraju ostati usklađeni.</small></div><span class="sov-tag">v6.1.33</span></div>
 <div class="sov-list-item"><div><b>Tech nije user UI</b><small>SQL/sync/audit je skriven iza Webmaster details bloka.</small></div><span class="sov-tag">clean</span></div>
 </div>
 </article>
@@ -206,7 +220,7 @@
         document.querySelectorAll('[data-preview-role-label]').forEach(el=>el.textContent=LABELS[role]||role);
         document.querySelectorAll('#dashboardRolePreview button[data-preview-dashboard-role]').forEach(btn=>btn.classList.toggle('active',btn.dataset.previewDashboardRole===role));
         document.querySelectorAll('[data-dash-visible]').forEach(el=>el.classList.toggle('is-preview-hidden',!visibleFor(el,role)));
-        document.querySelectorAll('.sov-section-head[data-section="internal"]').forEach(el=>{
+        document.querySelectorAll('.v609-zone-head[data-section="internal"], .sov-section-head[data-section="internal"]').forEach(el=>{
           const any=Array.from(document.querySelectorAll('.sov-grid[aria-label="Interni moduli"] [data-dash-visible]')).some(card=>visibleFor(card,role));
           el.classList.toggle('is-preview-hidden',!any);
         });
@@ -225,7 +239,7 @@
       });
     })();
   </script>
-<script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script defer="" src="assets/sov-polish-v55826.js"></script><script defer src="assets/sov-wow-v6.js?v=6.1.31"></script><script defer src="assets/sov-version.js?v=6.1.31"></script><script>
+<script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script defer="" src="assets/sov-polish-v55826.js"></script><script defer src="assets/sov-wow-v6.js?v=6.1.34"></script><script defer src="assets/sov-version.js?v=6.1.34"></script><script>
 // UI FIX v6.1.27: fallback za slučaj da auth ne odgovori na vrijeme
 setTimeout(function() {
   var el = document.querySelector('[data-access-summary]');
@@ -233,5 +247,34 @@ setTimeout(function() {
     el.textContent = 'Prijavi se za pristup članskim sadržajima.';
   }
 }, 6000);
-</script><script defer src="assets/sov-client-logger.js?v=6.1.31"></script></body>
+</script><script defer src="assets/sov-client-logger.js?v=6.1.33">
+
+      // UI FIX v6.1.34: force user portal top bar to Home + Odjava only, even if shell/public nav is cached/injected
+      function cleanDashboardTopBar(){
+        try{
+          document.querySelectorAll('body.dashboard-page header').forEach(function(header){
+            var isDashboardHeader = header.classList.contains('sov-top');
+            var looksLikePublicNav = header.classList.contains('topbar') || header.querySelector('.navlinks-main');
+            if(!isDashboardHeader && looksLikePublicNav){ header.remove(); }
+          });
+          var header = document.querySelector('body.dashboard-page header.sov-top');
+          if(!header) return;
+          var nav = header.querySelector('nav.sov-nav');
+          if(!nav){
+            nav = document.createElement('nav');
+            nav.className = 'sov-nav';
+            nav.setAttribute('aria-label','Korisnički izbornik');
+            header.appendChild(nav);
+          }
+          nav.innerHTML = '<a class="primary" href="dashboard.html">Home</a><a data-logout="" href="index.html">Odjava</a>';
+          header.querySelectorAll('.sov-chip,.user-chip,.profile-chip,[data-user-name],[data-user-role]').forEach(function(el){
+            if(!el.closest('nav.sov-nav')) el.remove();
+          });
+        }catch(e){}
+      }
+      cleanDashboardTopBar();
+      setTimeout(cleanDashboardTopBar, 150);
+      setTimeout(cleanDashboardTopBar, 700);
+      setTimeout(cleanDashboardTopBar, 1600);
+</script></body>
 </html>

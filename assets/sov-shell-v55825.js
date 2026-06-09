@@ -23,7 +23,7 @@
   const LINKS=[
     {href:'dashboard.html',label:'Dashboard',roles:['user','editor','oruzar','arhivar','admin','webmaster'],group:'Osnovno'},
     {href:'karta.html',label:'Karta',roles:['user','editor','oruzar','arhivar','admin','webmaster'],group:'Osnovno'},
-    {href:'izleti.html',label:'Izleti',roles:['user','editor','arhivar','admin','webmaster'],group:'Osnovno'},
+    {href:'izleti.html',label:'Izleti',roles:['user','editor','oruzar','arhivar','admin','webmaster'],group:'Osnovno'},
     {href:'oruzarstvo.html',label:'Oprema',roles:['user','editor','oruzar','arhivar','admin','webmaster'],group:'Osnovno'},
     {href:'dokumenti.html',label:'Dokumenti',roles:['user','editor','oruzar','arhivar','admin','webmaster'],group:'Osnovno'},
     {href:'napisi-clanak.html',label:'Napiši članak',roles:['user','editor','oruzar','arhivar','admin','webmaster'],group:'Osnovno'},
