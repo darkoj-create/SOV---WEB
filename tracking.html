@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<title>SOV Field Tracking — v6.0.9</title>
+<title>Field Tracking — SOV v6.1.26</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -13,7 +13,7 @@
 <link rel="stylesheet" href="assets/sov-foundation-v55822.css"/>
 <link rel="stylesheet" href="assets/sov-shell-v55825.css"/>
 <link rel="stylesheet" href="assets/sov-polish-v55826.css"/>
-<link rel="stylesheet" href="assets/sov-tracking-lite.css?v=6.0.9"/>
+<link rel="stylesheet" href="assets/sov-tracking-lite.css?v=6.1.26"/>
 </head>
 <body class="sov-tracking-page" data-sov-page="tracking">
 <div class="tracking-app">
@@ -34,25 +34,25 @@
     <div>
       <p class="tracking-eyebrow">SOV Field Tracking Lite</p>
       <h1 id="trackingTitle">Jednostavno prati ekipu na terenu</h1>
-      <p>Odaberi izlet, dodaj ili odaberi team i gledaj zadnje poznate pozicije članova. Android app prvo sprema lokalno, pa šalje kad uhvati signal.</p>
+      <p>Odaberi izlet i team, zatim prati zadnje poznate pozicije članova na karti.</p>
     </div>
-    <div class="tracking-disclaimer">Pomoćni alat — nije službeni/spasilački sustav. Ovisi o GPS-u, bateriji i mobilnoj mreži.</div>
+    <div class="tracking-disclaimer">1. Odaberi izlet · 2. Odaberi team · 3. Prati pozicije na karti</div>
   </section>
 
   <section class="tracking-control-strip" aria-label="Odabir izleta i teama">
     <div class="tracking-step">
       <span class="tracking-step-no">1</span>
-      <label for="tripSelect"><b>Izlet</b><small>odaberi aktivni teren/izlet</small></label>
+      <label for="tripSelect"><b>Izlet</b><small>odaberi izlet</small></label>
       <select id="tripSelect" class="tracking-select" aria-label="Izlet"></select>
     </div>
     <div class="tracking-step">
       <span class="tracking-step-no">2</span>
-      <label for="teamSelect"><b>Team</b><small>jedan team ili svi teamovi</small></label>
+      <label for="teamSelect"><b>Team</b><small>odaberi team</small></label>
       <select id="teamSelect" class="tracking-select" aria-label="Team"></select>
     </div>
     <div class="tracking-step tracking-step-actions">
       <span class="tracking-step-no">3</span>
-      <label><b>Pregled</b><small>marker + trag + last seen</small></label>
+      <label><b>Pregled</b><small>otvori kartu</small></label>
       <button id="watchBtn" class="tracking-btn primary" type="button">Prati na karti</button>
     </div>
   </section>

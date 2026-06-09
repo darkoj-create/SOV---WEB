@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1" name="viewport"/>
-<title>SOV Cloud — Dashboard v6.1.7</title>
+<title>SOV Cloud — Dashboard v6.1.26</title>
 <link href="assets/site.css" rel="stylesheet"/>
 <link href="assets/mobile.css" rel="stylesheet"/>
 <link href="assets/sov-premium-ui.css" rel="stylesheet"/>
@@ -36,7 +36,7 @@
 <span class="sov-chip" data-dash-visible="admin,webmaster,oruzar,arhivar,editor"><span data-dash-name="" data-user-name="">—</span> · <span data-dash-role="" data-user-role="">—</span></span>
 </nav>
 </header>
-<div class="sov-preview-strip" aria-label="Role preview toolbar">
+<div class="sov-preview-strip" aria-label="Role preview toolbar" data-ui-fix="preview-mode-only">
 <div aria-label="Role preview" class="sov-role-preview" id="dashboardRolePreview">
 <span class="rp-label">Preview view</span>
 <button data-preview-dashboard-role="webmaster" type="button">Webmaster</button>
@@ -44,7 +44,7 @@
 <button data-preview-dashboard-role="oruzar" type="button">Oružar</button>
 <button data-preview-dashboard-role="arhivar" type="button">Arhivar</button>
 <button data-preview-dashboard-role="editor" type="button">Urednik</button>
-<button data-preview-dashboard-role="user" type="button">User</button>
+<button data-preview-dashboard-role="user" type="button">Član</button>
 </div>
 </div>
 <main>
@@ -68,9 +68,9 @@
 <div class="v609-status-item"><span>Stvarna rola</span><b data-dash-role="">—</b></div>
 <div class="v609-status-item" data-dash-visible="webmaster"><span>Preview view</span><b data-preview-role-label="">—</b></div>
 <div class="v609-status-item"><span>Status računa</span><b data-auth-status="">—</b></div>
-<div class="v609-status-item"><span>Web build</span><b data-sov-version="">6.1.7</b></div>
+<div class="v609-status-item"><span>Web build</span><b data-sov-version="">6.1.26</b></div>
 </div>
-<p class="v609-subtle-note" data-access-summary="">Učitavam prava...</p>
+<p class="v609-subtle-note" data-access-summary="">Učitavam prava…</p>
 </aside>
 </div>
 </section>
@@ -171,17 +171,17 @@
 <article class="sov-panel">
 <h3>Build pravila</h3>
 <div class="sov-list">
-<div class="sov-list-item"><div><b>Jedan build broj</b><small>update.json, dashboard, sync-status i cache markeri moraju ostati usklađeni.</small></div><span class="sov-tag">v6.1.4</span></div>
+<div class="sov-list-item"><div><b>Jedan build broj</b><small>update.json, dashboard, sync-status i cache markeri moraju ostati usklađeni.</small></div><span class="sov-tag">v6.1.26</span></div>
 <div class="sov-list-item"><div><b>Tech nije user UI</b><small>SQL/sync/audit je skriven iza Webmaster details bloka.</small></div><span class="sov-tag">clean</span></div>
 </div>
 </article>
 <article class="sov-panel">
 <h3>Zadnje audit akcije</h3>
-<div class="sov-list" data-recent-audit=""><div class="sov-empty">Učitavam audit...</div></div>
+<div class="sov-list" data-recent-audit=""><div class="sov-empty">Nema podataka.</div></div>
 </article>
 <article class="sov-panel">
 <h3>Uređaji i sync</h3>
-<div class="sov-list" data-device-health=""><div class="sov-empty">Učitavam uređaje...</div></div>
+<div class="sov-list" data-device-health=""><div class="sov-empty">Nema podataka.</div></div>
 </article>
 </section>
 </div>
@@ -191,7 +191,7 @@
 <script src="assets/sov-dashboard-premium.js?v=5.58.16"></script>
 <script>
     (function(){
-      const LABELS={webmaster:'Webmaster',admin:'Admin',oruzar:'Oružar',arhivar:'Arhivar',editor:'Urednik',user:'User'};
+      const LABELS={webmaster:'Webmaster',admin:'Admin',oruzar:'Oružar',arhivar:'Arhivar',editor:'Urednik',user:'Član'};
       const ALLOWED=['webmaster','admin','oruzar','arhivar','editor','user'];
       const visibleFor=(el,role)=>String(el.getAttribute('data-dash-visible')||'user,editor,oruzar,arhivar,admin,webmaster').split(',').map(s=>s.trim()).includes(role);
       function getSaved(){try{return localStorage.getItem('SOV_DASHBOARD_PREVIEW_ROLE')||'webmaster'}catch(e){return 'admin'}}
@@ -210,12 +210,23 @@
         const box=document.getElementById('dashboardRolePreview'); if(!box) return;
         let profile=null; try{ if(window.SOVAuth){ await SOVAuth.ready(); profile=await SOVAuth.getProfile(); } }catch(e){}
         const isWebmaster=!!(profile&&profile.role==='webmaster');
-        if(isWebmaster){ box.classList.add('is-on'); } else { box.classList.remove('is-on'); }
+        const params=new URLSearchParams(location.search);
+        const previewRequested=params.get('preview')==='1'||localStorage.getItem('SOV_OPEN_PREVIEW_MODE')==='true';
+        if(isWebmaster && previewRequested){ box.classList.add('is-on'); } else { box.classList.remove('is-on'); }
         box.querySelectorAll('button[data-preview-dashboard-role]').forEach(btn=>btn.addEventListener('click',()=>apply(btn.dataset.previewDashboardRole)));
-        apply(isWebmaster ? getSaved() : (profile&&profile.role)||'user');
-        setTimeout(()=>apply(isWebmaster ? getSaved() : (profile&&profile.role)||'user'),350);
+        const effectiveRole=(isWebmaster && previewRequested) ? getSaved() : (profile&&profile.role)||'user';
+        apply(effectiveRole);
+        setTimeout(()=>apply(effectiveRole),350);
       });
     })();
   </script>
-<script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script defer="" src="assets/sov-polish-v55826.js"></script><script defer src="assets/sov-wow-v6.js?v=6.1.7"></script><script defer src="assets/sov-version.js?v=6.1.7"></script></body>
+<script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script defer="" src="assets/sov-polish-v55826.js"></script><script defer src="assets/sov-wow-v6.js?v=6.1.26"></script><script defer src="assets/sov-version.js?v=6.1.26">
+// UI FIX v6.1.27: fallback za slučaj da auth ne odgovori na vrijeme
+setTimeout(function() {
+  var el = document.querySelector('[data-access-summary]');
+  if (el && (el.textContent === 'Učitavam prava…' || el.textContent === 'Učitavam prava...')) {
+    el.textContent = 'Prijavi se za pristup članskim sadržajima.';
+  }
+}, 6000);
+</script></body>
 </html>
