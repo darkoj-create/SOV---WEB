@@ -1,32 +1,28 @@
 {
   "app": "SOV web",
-  "version": "6.1.25",
-  "versionName": "v6.1.25-trips-refresh-stability",
-  "build": "sov-web-build-v6.1.25-trips-refresh-stability",
-  "createdAt": "2026-06-04T09:55:00Z",
-  "cacheBust": "6125",
-  "base": "sov-web-build-v6.1.24-teams-flow.zip",
-  "requiresSql": false,
-  "recommendedSql": [
-    "SUPABASE_SOV_DOCUMENTS_ARCHIVE_v6_1_10.sql"
-  ],
-  "optionalSql": [
-    "SUPABASE_ORUZARSTVO_XLS_CANONICAL_v6_1_5c_NO_TEMP.sql"
+  "version": "6.1.31",
+  "versionName": "v6.1.31-client-error-logs",
+  "build": "sov-web-build-v6.1.31-client-error-logs",
+  "createdAt": "2026-06-09T20:55:00Z",
+  "cacheBust": "6131",
+  "base": "sov-web-build-v6.1.30-oruzar-grid-visual-fix.zip",
+  "requiresSql": true,
+  "requiredSql": [
+    "SUPABASE_SOV_CLIENT_ERROR_LOGS_v6_1_31.sql"
   ],
   "changedFiles": [
-    "izleti-cloud.html",
-    "assets/sov-trips-cloud.js",
-    "kalendar-izleta.html",
+    "assets/sov-client-logger.js",
+    "admin-client-errors.html",
+    "dashboard.html",
+    "*.html logger script include",
     "update.json",
     "VERSION.txt",
     "BUILD_VERSION.txt"
   ],
-  "releaseType": "trips-refresh-stability",
+  "releaseType": "observability-v1",
   "notes": [
-    "Stabilizes trips dashboard loading and refresh flow.",
-    "Uses one guarded loadTrips flow and one in-flight trips API request.",
-    "Cache is shown only as temporary display; successful database load updates UI and cache.",
-    "Create/edit/delete update local UI immediately and then perform silent reload.",
-    "No SQL changes."
+    "Adds SOV client error logging for web JavaScript errors and failed Supabase fetches.",
+    "Adds admin-client-errors.html for admin/webmaster review.",
+    "No business logic changes to trips, armory, archive or auth."
   ]
 }

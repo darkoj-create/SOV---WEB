@@ -152,6 +152,7 @@
 <a href="sync-status.html"><span>SOV Sync status</span><small>centralni health →</small></a>
 <a href="role-manager.html"><span>Role manager</span><small>permission matrica →</small></a>
 <a href="audit-status.html"><span>Audit i uređaji</span><small>logovi i device health →</small></a>
+<a href="admin-client-errors.html"><span>Greške korisnika</span><small>web i APK logovi →</small></a>
 </div>
 </article>
 <article class="sov-panel">
@@ -224,7 +225,7 @@
       });
     })();
   </script>
-<script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script defer="" src="assets/sov-polish-v55826.js"></script><script defer src="assets/sov-wow-v6.js?v=6.1.26"></script><script defer src="assets/sov-version.js?v=6.1.26">
+<script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script defer="" src="assets/sov-polish-v55826.js"></script><script defer src="assets/sov-wow-v6.js?v=6.1.31"></script><script defer src="assets/sov-version.js?v=6.1.31"></script><script>
 // UI FIX v6.1.27: fallback za slučaj da auth ne odgovori na vrijeme
 setTimeout(function() {
   var el = document.querySelector('[data-access-summary]');
@@ -232,5 +233,5 @@ setTimeout(function() {
     el.textContent = 'Prijavi se za pristup članskim sadržajima.';
   }
 }, 6000);
-</script></body>
+</script><script defer src="assets/sov-client-logger.js?v=6.1.31"></script></body>
 </html>

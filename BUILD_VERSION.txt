@@ -1,1 +1,1 @@
-sov-web-build-v6.1.25-trips-refresh-stability
+sov-web-build-v6.1.31-client-error-logs

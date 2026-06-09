@@ -69,5 +69,5 @@ async function auditAction(action,before,after,note){const sb=client();await sb.
 function renderAudit(){const list=audit.length?audit.map(x=>'<div class="card"><h3>'+esc(x.action)+'</h3><span class="pill">'+esc(new Date(x.created_at).toLocaleString('hr-HR'))+'</span><span class="pill">'+esc(x.actor||'—')+'</span>'+kv('Napomena',x.note)+kv('After',x.after_snapshot?JSON.stringify(x.after_snapshot,null,2):'')+'</div>').join(''):'<div class="empty">Još nema audit zapisa za ovaj objekt.</div>';$('tab-audit').innerHTML=list}
 loadObjects();
 </script>
-<script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-admin-safety-v55824.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script defer="" src="assets/sov-polish-v55826.js"></script><script defer src="assets/sov-version.js?v=6.1.5"></script></body>
+<script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-admin-safety-v55824.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script defer="" src="assets/sov-polish-v55826.js"></script><script defer src="assets/sov-version.js?v=6.1.5"></script><script defer src="assets/sov-client-logger.js?v=6.1.31"></script></body>
 </html>
