@@ -28,6 +28,40 @@
   function subcategoryName(row){return norm(row.subcategory||row.raw_subcategory||row.group||row.display_subcategory||'Ostalo')||'Ostalo'}
   function displayName(row,type){return norm(row.display_name||row.name||row.item_name||row.model||row.sku||(type==='rope'?'Uže':'Artikl'))||'Artikl'}
   function qtext(row){return strip([row.search_text,row.display_name,row.name,row.item_name,row.category_name,row.category,row.main_category,row.subcategory,row.sku,row.model,row.manufacturer,row.internal_note,row.note].join(' '))}
+  // UI FIX v6.1.35: tolerantna pretraga za inventuru/inventar (tipfeleri, dijakritika, djelomični naziv)
+  function wordsOf(s){return strip(s).split(/[^a-z0-9]+/).filter(w=>w.length>1)}
+  function levLimited(a,b,limit){
+    a=String(a||''); b=String(b||'');
+    if(a===b)return 0; if(Math.abs(a.length-b.length)>limit)return limit+1;
+    const prev=new Array(b.length+1); const cur=new Array(b.length+1);
+    for(let j=0;j<=b.length;j++)prev[j]=j;
+    for(let i=1;i<=a.length;i++){
+      cur[0]=i; let best=cur[0];
+      for(let j=1;j<=b.length;j++){
+        const cost=a.charCodeAt(i-1)===b.charCodeAt(j-1)?0:1;
+        cur[j]=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+cost);
+        if(cur[j]<best)best=cur[j];
+      }
+      if(best>limit)return limit+1;
+      for(let j=0;j<=b.length;j++)prev[j]=cur[j];
+    }
+    return prev[b.length];
+  }
+  function fuzzyToken(q,w){
+    if(!q||!w)return false;
+    if(w.includes(q)||q.includes(w))return true;
+    if(q.length<3)return false;
+    const limit=q.length<=4?1:(q.length<=8?2:3);
+    if(Math.abs(q.length-w.length)>limit)return false;
+    return levLimited(q,w,limit)<=limit;
+  }
+  function rowMatchesQuery(row,query){
+    const q=strip(query); if(!q)return true;
+    const parts=wordsOf(q); if(!parts.length)return true;
+    const hay=row.search||''; if(hay.includes(q))return true;
+    const words=wordsOf(hay);
+    return parts.every(part=>hay.includes(part)||words.some(w=>fuzzyToken(part,w)));
+  }
   function iconFor(t){t=strip(t); if(t.includes('osobna'))return '🧑‍🚒'; if(t.includes('uzad')||t.includes('uzetna')||t.includes('uze'))return '🪢'; if(t.includes('postav')||t.includes('spit')||t.includes('sidri'))return '⚓'; if(t.includes('crtan')||t.includes('mjer')||t.includes('kompas')||t.includes('busol'))return '📐'; if(t.includes('busil')||t.includes('svrd'))return '🔩'; if(t.includes('elektro')||t.includes('rasvjet')||t.includes('foto'))return '🔦'; if(t.includes('dron'))return '🚁'; if(t.includes('alpin'))return '⛰️'; if(t.includes('med'))return '🧰'; if(t.includes('ronil'))return '🤿'; if(t.includes('logor')||t.includes('kamp'))return '⛺'; if(t.includes('cisto'))return '🧹'; if(t.includes('pros'))return '🔨'; if(t.includes('alat')||t.includes('radion'))return '🧰'; return '📦'}
   function categoryPriority(c){
     const x=strip(c);
@@ -144,13 +178,14 @@
   }
   function filtered(){
     let rows=STATE.rows;
-    if(STATE.query){const q=strip(STATE.query); const parts=q.split(/\s+/).filter(Boolean); rows=rows.filter(r=>r.search.includes(q)||parts.every(p=>r.search.includes(p)));}
+    if(STATE.query){rows=rows.filter(r=>rowMatchesQuery(r,STATE.query));}
     return rows;
   }
   function categories(rows=filtered()){const m=new Map(); rows.forEach(r=>{const c=r.category||'Ostalo'; if(!m.has(c))m.set(c,[]); m.get(c).push(r)}); return [...m.entries()].sort((a,b)=>(categoryPriority(a[0])-categoryPriority(b[0]))||a[0].localeCompare(b[0],'hr'));}
   function subcategories(cat){const m=new Map(); filtered().filter(r=>r.category===cat).forEach(r=>{const s=r.subcategory||'Ostalo'; if(!m.has(s))m.set(s,[]); m.get(s).push(r)}); return [...m.entries()].sort((a,b)=>a[0].localeCompare(b[0],'hr'));}
   function renderKpis(){const el=document.getElementById('cmKpis'); if(el){el.innerHTML=''; el.style.display='none';}}
   function bindSearch(cb){const q=document.getElementById('cmSearch'); if(q){q.value=STATE.query; q.oninput=()=>{STATE.query=q.value; STATE.cat=null; STATE.sub=null; cb();}}}
+  function isInventuraPage(){return document.body && document.body.classList.contains('oruzar-page-inventura')}
 
   function renderMaster(){
     const root=document.getElementById('masterRoot'); if(!root)return; renderKpis();
@@ -169,9 +204,16 @@
     const allRows=filtered();
     const activeRows=allRows.filter(r=>!/(rashod|otpis|deleted|obrisano|arhiva|stari_katalog|neaktiv)/i.test(String(r.status||'')));
     const lowCount=activeRows.filter(r=>r.minimum&&r.av<=r.minimum).length;
-    let title='Inventar opreme', hint='Kreni od kategorije, zatim podkategorije. Pretraga radi po nazivu, modelu, lokaciji i napomeni.';
+    const hasQuery=!!strip(STATE.query);
+    let title='Inventar opreme', hint='Kreni od kategorije, zatim podkategorije. Pretraga trpi tipfelere i radi po nazivu, modelu, lokaciji i napomeni.';
     let html='';
-    if(!cat){
+    if(hasQuery){
+      const rows=activeRows.slice(0,120);
+      title='Rezultati pretrage';
+      hint=`Traženo: “${STATE.query}”. Pretraga trpi tipfelere, bez obzira na kvačice i velika/mala slova.`;
+      html=`<div class="cm-section-head"><div><h2>${esc(title)}</h2><p>${esc(hint)}</p></div><div class="cm-mini-stats"><span>${esc(activeRows.length)} rezultata</span>${activeRows.length>120?`<span>prikazujem prvih 120</span>`:''}</div></div><div class="cm-tools cm-inline-actions"><button class="cm-btn" onclick="CleanArmory.clearSearch()">Očisti pretragu</button></div>${rows.length?`<div class="item-grid item-grid-clean">${rows.map(isInventuraPage()?inventoryCountCard:itemCard).join('')}</div>`:`<div class="empty">Nema rezultata. Probaj kraći pojam, npr. “karab”, “bosch”, “croll”.</div>`}`;
+    }
+    else if(!cat){
       title='Kategorije opreme';
       hint='Čisti operativni pregled inventara za oružara. Količine su vidljive tek na artiklu, da se početni ekran ne zatrpa.';
       html=`<div class="cm-section-head"><div><h2>${esc(title)}</h2><p>${esc(hint)}</p></div><div class="cm-mini-stats"><span>${esc(activeRows.length)} stavki</span>${lowCount?`<span class="danger">${esc(lowCount)} ispod praga</span>`:''}</div></div><div class="cat-grid cat-grid-clean">${categories(activeRows).map(([c,rs])=>`<button class="cat-tile cat-tile-clean" onclick="CleanArmory.pickCat('${esc(c)}')"><span class="ico">${iconFor(c)}</span><b>${esc(c)}</b><small>${esc(rs.length)} stavki · otvori podkategorije</small></button>`).join('')}</div>`;
@@ -185,8 +227,9 @@
     else {
       const rows=activeRows.filter(r=>r.category===cat&&r.subcategory===sub);
       title=sub;
-      hint='Uredi artikl, dodaj novu stavku ili exportaj cijeli inventar iz gornjeg izbornika.';
-      html=`<div class="cm-breadcrumb"><button onclick="CleanArmory.pickCat('')">Sve kategorije</button><button onclick="CleanArmory.pickCat('${esc(cat)}')">${esc(cat)}</button><span>${esc(sub)}</span></div><div class="cm-section-head"><div><h2>${esc(title)}</h2><p>${esc(hint)}</p></div><div class="cm-mini-stats"><span>${esc(rows.length)} artikala</span></div></div><div class="cm-tools cm-inline-actions"><button class="cm-btn primary" onclick="CleanArmory.newItem()">+ Dodaj artikl</button><button class="cm-btn" onclick="CleanArmory.pickSub('')">← Podkategorije</button></div><div class="item-grid item-grid-clean">${rows.map(itemCard).join('')}</div>`;
+      hint=isInventuraPage()?'Upiši stvarni broj i klikni Spremi u bazu za svaku stavku.':'Uredi artikl, dodaj novu stavku ili exportaj cijeli inventar iz gornjeg izbornika.';
+      const actions=isInventuraPage()?`<button class="cm-btn" onclick="CleanArmory.pickSub('')">← Podkategorije</button>`:`<button class="cm-btn primary" onclick="CleanArmory.newItem()">+ Dodaj artikl</button><button class="cm-btn" onclick="CleanArmory.pickSub('')">← Podkategorije</button>`;
+      html=`<div class="cm-breadcrumb"><button onclick="CleanArmory.pickCat('')">Sve kategorije</button><button onclick="CleanArmory.pickCat('${esc(cat)}')">${esc(cat)}</button><span>${esc(sub)}</span></div><div class="cm-section-head"><div><h2>${esc(title)}</h2><p>${esc(hint)}</p></div><div class="cm-mini-stats"><span>${esc(rows.length)} artikala</span></div></div><div class="cm-tools cm-inline-actions">${actions}</div><div class="item-grid item-grid-clean">${rows.map(isInventuraPage()?inventoryCountCard:itemCard).join('')}</div>`;
     }
     root.innerHTML=html||`<div class="empty">Nema artikala za prikaz.</div>`;
   }
@@ -198,6 +241,50 @@
     const statusText=r.needsCount?'prebrojiti':(low?'ispod praga':(r.av>0?'dostupno':'nema dostupno'));
     // UI FIX v6.1.30: ne prikazuj interni XLS/source tekst na karticama opreme
     return `<article class="item-card item-card-clean ${low?'low-stock':''} ${r.needsCount?'needs-count':''}"><div class="item-head"><div><h3>${esc(r.name)}</h3><div class="muted">${esc(r.category)} · ${esc(r.subcategory)}</div></div><span class="badge ${statusClass}">${esc(statusText)}</span></div><div class="badgetray"><span class="badge">${esc(r.location||'bez lokacije')}</span><span class="badge">${esc(r.unit)}</span>${r.lastInventoryDate?`<span class="badge">inventura ${esc(r.lastInventoryDate)}</span>`:''}${r.variants&&r.variants>1?`<span class="badge">${esc(r.variants)} varijanti</span>`:''}${r.minimum?`<span class="badge warn">prag ${esc(r.minimum)}</span>`:''}</div><div class="stock stock-clean"><span><b>${esc(qtyDisplay)}</b><em>ukupno</em></span><span><b>${esc(avDisplay)}</b><em>dostupno</em></span><span><b>${esc(r.loan)}</b><em>vani</em></span></div><div class="cm-tools item-actions"><button class="cm-btn" onclick="CleanArmory.editItem('${esc(r.id)}')">Uredi</button><button class="cm-btn bad" onclick="CleanArmory.removeItem('${esc(r.id)}')">Makni</button></div></article>`;
+  }
+
+  // UI FIX v6.1.36: Web inventura mora odmah spremati stvarni broj u bazu, ne samo prikazati karticu inventara
+  function inventoryCountCard(r){
+    const expected=r.needsCount?(r.qtyLabel||'—'):r.qty;
+    const current=Number.isFinite(Number(r.qty))?r.qty:0;
+    const inputId='invCount_'+String(r.id).replace(/[^a-z0-9_-]/gi,'_');
+    const diffId='invDiff_'+String(r.id).replace(/[^a-z0-9_-]/gi,'_');
+    return `<article class="item-card item-card-clean inventory-count-card" data-id="${esc(r.id)}"><div class="item-head"><div><h3>${esc(r.name)}</h3><div class="muted">${esc(r.category)} · ${esc(r.subcategory)}</div></div><span class="badge ok">inventura</span></div><div class="badgetray"><span class="badge">${esc(r.location||'bez lokacije')}</span><span class="badge">${esc(r.unit)}</span>${r.lastInventoryDate?`<span class="badge">zadnje ${esc(r.lastInventoryDate)}</span>`:''}</div><div class="stock stock-clean inventory-count-stock"><span><b>${esc(expected)}</b><em>u bazi</em></span><span><b>${esc(r.loan)}</b><em>vani</em></span><label class="inventory-count-input"><em>stvarno</em><input class="cm-input" id="${esc(inputId)}" type="number" min="0" step="1" value="${esc(current)}" oninput="CleanArmory.previewInventoryDiff('${esc(r.id)}')"></label></div><div class="muted" id="${esc(diffId)}">Upiši stvarni broj i spremi.</div><div class="cm-tools item-actions"><button class="cm-btn primary" onclick="CleanArmory.saveInventoryCount('${esc(r.id)}')">Spremi u bazu</button></div></article>`;
+  }
+  function inventoryInputId(id){return 'invCount_'+String(id).replace(/[^a-z0-9_-]/gi,'_')}
+  function inventoryDiffId(id){return 'invDiff_'+String(id).replace(/[^a-z0-9_-]/gi,'_')}
+  function previewInventoryDiff(id){
+    const r=getRow(id); const input=document.getElementById(inventoryInputId(id)); const out=document.getElementById(inventoryDiffId(id));
+    if(!r||!input||!out)return; const counted=countInt(input.value,0); const expected=countInt(r.qty,0); const diff=counted-expected;
+    out.textContent=diff===0?'OK — broj se slaže.':(diff>0?`Višak: +${diff}`:`Fali: ${Math.abs(diff)}`);
+    out.style.color=diff===0?'#9fb4ae':(diff>0?'#7cff9b':'#ffb15f');
+  }
+  async function saveInventoryCount(id){
+    const r=getRow(id); if(!r){toast('Ne mogu naći artikl.');return;}
+    const input=document.getElementById(inventoryInputId(id)); if(!input){toast('Ne mogu naći polje za unos.');return;}
+    const counted=countInt(input.value,0); const date=(document.querySelector('input[aria-label="Datum inventure"]')?.value)||new Date().toISOString().slice(0,10);
+    const legacy=(r.raw&&(r.raw.legacy_id||r.raw.catalog_id||r.raw.id))||r.id;
+    const loan=countInt(r.loan,0); const available=Math.max(0,counted-loan);
+    const payload={
+      legacy_id:legacy, catalog_id:(r.raw&&(r.raw.catalog_id||r.raw.legacy_id))||legacy, name:r.name,
+      category_name:r.category||'Ostalo', subcategory:r.subcategory||'Ostalo', quantity:counted, available, loaned:loan,
+      minimum:r.minimum||0, location_name:r.location||'Oružarstvo', status:r.status||'aktivno', availability:r.status||'aktivno',
+      member_visible:true, unit:r.unit||'kom', quantity_label:String(counted), available_label:String(available),
+      last_inventory_date:date, source_xls_row:r.sourceXlsRow||null, xls_category:r.category||null, xls_subcategory:r.subcategory||null,
+      original_quantity_text:String(counted), item_kind:(r.raw&&r.raw.item_kind)||'quantity_article', code_required:false,
+      physical_code_note:(r.raw&&(r.raw.physical_code_note||r.raw.note||r.raw.internal_note))||null
+    };
+    try{
+      if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.upsertSimpleItem){
+        await SOVArmoryDB.upsertSimpleItem(payload);
+      } else { throw new Error('Supabase veza nije dostupna'); }
+      r.qty=counted; r.av=available; r.lastInventoryDate=date; if(r.raw){r.raw.quantity=counted; r.raw.available=available; r.raw.loaned=loan; r.raw.last_inventory_date=date;}
+      previewInventoryDiff(id);
+      toast('Inventura spremljena u bazu');
+    }catch(e){
+      console.warn('[armory inventura v6.1.36] save count failed',e);
+      toast('Spremanje nije uspjelo: '+String(e.message||e).slice(0,90));
+    }
   }
 
 
@@ -281,6 +368,6 @@
   async function doneNote(id){try{ if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.doneArmoryNote) await SOVArmoryDB.doneArmoryNote(id);}catch(e){console.warn(e)} const l=JSON.parse(localStorage.getItem('sov_armory_notes')||'[]'); const n=l.find(x=>String(x.id)===String(id)); if(n)n.status='done'; localStorage.setItem('sov_armory_notes',JSON.stringify(l)); await renderNotes(); toast('Označeno obavljeno');}
 
   async function init(){renderDbLoading(); await loadData(); await loadRequests(); renderKpis(); if(STATE.rows&&STATE.rows.length){renderMaster(); renderInventory();} else {renderDbLoading(); scheduleDbRetry();} await renderLoans(); await renderNotes();}
-  window.CleanArmory={init,pickCat(c){STATE.cat=c||null;STATE.sub=null;renderInventory()},pickSub(s){STATE.sub=s||null;renderInventory()},renderLoans,setStatus,manualLoan,newItem,editItem,removeItem,exportInventoryXls,exportInventuraXls,openReturn,closeReturn,confirmReturn,closeItemModal,saveItem,renderNotes,saveNote,doneNote,issueLoan};
+  window.CleanArmory={init,pickCat(c){STATE.cat=c||null;STATE.sub=null;renderInventory()},pickSub(s){STATE.sub=s||null;renderInventory()},clearSearch(){STATE.query='';STATE.cat=null;STATE.sub=null;const q=document.getElementById('cmSearch'); if(q)q.value=''; renderInventory()},renderLoans,setStatus,manualLoan,newItem,editItem,removeItem,exportInventoryXls,exportInventuraXls,saveInventoryCount,previewInventoryDiff,openReturn,closeReturn,confirmReturn,closeItemModal,saveItem,renderNotes,saveNote,doneNote,issueLoan};
   document.addEventListener('DOMContentLoaded',init);
 })();
