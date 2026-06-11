@@ -23,11 +23,3 @@ body.clean-armory .stock{display:grid!important}
 .item-card.needs-count{border-color:rgba(251,191,36,.45);background:linear-gradient(145deg,rgba(251,191,36,.08),rgba(0,0,0,.16))}
 .item-note{border-top:1px solid var(--line);padding-top:8px;line-height:1.35}
 .cm-mini-stats .danger{border-color:rgba(251,113,133,.35);color:#ffdbe2}
-
-/* UI FIX v6.1.36: inventura count cards with immediate DB save */
-.inventory-count-card .inventory-count-stock{grid-template-columns:repeat(3,minmax(0,1fr));align-items:end}
-.inventory-count-input{display:grid!important;gap:4px!important;margin:0!important;min-width:0!important}
-.inventory-count-input em{font-style:normal!important;font-size:11px!important;color:#9fb4ae!important;text-transform:uppercase!important;font-weight:950!important;letter-spacing:.06em!important}
-.inventory-count-input input{width:100%!important;min-height:42px!important;text-align:center!important;font-size:18px!important;font-weight:950!important;color:#f5fbfa!important}
-.inventory-count-card .item-actions{grid-template-columns:1fr!important}
-@media(max-width:760px){.inventory-count-card .inventory-count-stock{grid-template-columns:1fr!important}.inventory-count-input input{text-align:left!important}}
