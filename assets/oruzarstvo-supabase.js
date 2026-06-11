@@ -881,7 +881,63 @@
     return true;
   }
 
-  window.SOVArmoryDB={configured,upsertSimpleItem,retireSimpleItem,loadArmoryNotes,saveArmoryNote,doneArmoryNote,loadRequests,createRequest,updateRequestStatus,issueRequest,returnRequestItems,importStaticData,loadAllData,loadCatalogManifest,createEquipmentItem,createEquipmentPiece,createEquipmentPieces,createRope,updateEquipmentStatus};
+
+  // v6.1.36 — Klaićeva Build 2: web records legacy returns through SECURITY DEFINER RPC.
+  // This intentionally avoids direct browser writes to equipment_items/equipment_item_locations/equipment_assets.
+  function uuidOrNull(v){
+    const x=String(v||'').trim();
+    return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(x)?x:null;
+  }
+  function clientEvent(prefix){
+    try{return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}-${(window.crypto&&crypto.randomUUID)?crypto.randomUUID():''}`.replace(/-$/,'');}
+    catch(e){return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;}
+  }
+  async function recordLegacyReturn(payload){
+    if(!configured()) throw new Error('Supabase nije konfiguriran.');
+    const client=sb();
+    const p=payload||{};
+    const args={
+      p_item_id: uuidOrNull(p.item_id||p.id),
+      p_equipment_legacy_id: String(p.equipment_legacy_id||p.legacy_id||'').trim()||null,
+      p_item_name: String(p.item_name||p.name||'').trim()||null,
+      p_quantity: Number(p.quantity||p.qty||1),
+      p_to_location_name: String(p.to_location_name||p.location_name||'Oružarstvo Klaićeva').trim()||'Oružarstvo Klaićeva',
+      p_condition_status: String(p.condition_status||p.condition||'ok').trim()||'ok',
+      p_source_name: String(p.source_name||p.source||'Povrat bez otvorene posudbe').trim()||'Povrat bez otvorene posudbe',
+      p_note: String(p.note||'').trim()||null,
+      p_client_event_id: String(p.client_event_id||clientEvent('WEB-LEGACY-RETURN')).trim()
+    };
+    if(!args.p_item_id && !args.p_equipment_legacy_id && !args.p_item_name) throw new Error('Odaberi artikl ili upiši naziv opreme.');
+    if(!Number.isFinite(args.p_quantity)||args.p_quantity<=0) throw new Error('Količina mora biti veća od nule.');
+    const {data,error}=await client.rpc('sov_armory_record_legacy_return',args);
+    if(error) throw error;
+    try{localStorage.removeItem('sov_armory_catalog_cache_v607');}catch(e){}
+    return data;
+  }
+  async function addItemAndLegacyReturn(payload){
+    if(!configured()) throw new Error('Supabase nije konfiguriran.');
+    const client=sb();
+    const p=payload||{};
+    const args={
+      p_item_name: String(p.item_name||p.name||'').trim(),
+      p_category_name: String(p.category_name||p.category||'Za provjeru').trim()||'Za provjeru',
+      p_subcategory: String(p.subcategory||'').trim()||null,
+      p_unit: String(p.unit||'kom').trim()||'kom',
+      p_quantity: Number(p.quantity||p.qty||1),
+      p_condition_status: String(p.condition_status||p.condition||'za_provjeru').trim()||'za_provjeru',
+      p_source_name: String(p.source_name||p.source||'Povrat bez otvorene posudbe').trim()||'Povrat bez otvorene posudbe',
+      p_note: String(p.note||'').trim()||null,
+      p_client_event_id: String(p.client_event_id||clientEvent('WEB-LEGACY-ADD-RETURN')).trim()
+    };
+    if(!args.p_item_name) throw new Error('Naziv opreme je obavezan.');
+    if(!Number.isFinite(args.p_quantity)||args.p_quantity<=0) throw new Error('Količina mora biti veća od nule.');
+    const {data,error}=await client.rpc('sov_armory_add_item_and_legacy_return',args);
+    if(error) throw error;
+    try{localStorage.removeItem('sov_armory_catalog_cache_v607');}catch(e){}
+    return data;
+  }
+
+  window.SOVArmoryDB={configured,upsertSimpleItem,retireSimpleItem,loadArmoryNotes,saveArmoryNote,doneArmoryNote,loadRequests,createRequest,updateRequestStatus,issueRequest,returnRequestItems,importStaticData,loadAllData,loadCatalogManifest,createEquipmentItem,createEquipmentPiece,createEquipmentPieces,createRope,updateEquipmentStatus,recordLegacyReturn,addItemAndLegacyReturn};
 
   // v5.48.1: true cache-first wrapper. The old v5.48 path still asked the manifest view
   // before returning cached data; on large Supabase views that made every page open feel like a full sync.
