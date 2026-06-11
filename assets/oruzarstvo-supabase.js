@@ -820,35 +820,35 @@
   async function upsertSimpleItem(item){
     if(!configured()) return null;
     const client=sb();
-    const payload=sanitizeForTable('equipment_items',{
-      legacy_id:item.legacy_id||item.catalog_id||('ART-'+Date.now()),
-      catalog_id:item.catalog_id||item.legacy_id||null,
-      name:item.name,
-      category_name:item.category_name||item.category||'Ostalo',
-      subcategory:item.subcategory||'Ostalo',
-      quantity:safeQuantity(item.quantity)||0,
-      available:safeQuantity(item.available)||0,
-      loaned:safeQuantity(item.loaned)||0,
-      minimum:safeQuantity(item.minimum)||0,
-      status:item.status||'aktivno',
-      availability:item.availability||item.status||'aktivno',
-      member_visible:item.member_visible!==false,
-      internal_note:item.internal_note||null,
-      physical_code_note:item.physical_code_note||null,
-      quantity_label:String(item.quantity_label ?? item.quantity ?? ''),
-      available_label:String(item.available_label ?? item.available ?? ''),
-      last_inventory_date:item.last_inventory_date||null,
-      source_xls_row:safeQuantity(item.source_xls_row),
-      xls_category:item.xls_category||item.category_name||item.category||null,
-      xls_subcategory:item.xls_subcategory||item.subcategory||null,
-      original_quantity_text:item.original_quantity_text||String(item.quantity_label ?? item.quantity ?? ''),
-      item_kind:item.item_kind||'quantity_article',
-      code_required:false,
-      updated_at:new Date().toISOString()
-    });
-    const {data,error}=await client.from('equipment_items').upsert(payload,{onConflict:'legacy_id'}).select('*').single();
-    if(error) throw error;
-    try{ await setItemLocationQuantity(client,{legacy_id:payload.legacy_id,name:payload.name},'storage',item.location_name||'Oružarstvo',payload.available||0); }catch(e){}
+    const qty=safeQuantity(item.quantity)||0;
+    const av=safeQuantity(item.available);
+    const args={
+      p_legacy_id:String(item.legacy_id||item.catalog_id||('ART-'+Date.now())).replace(/^item:/i,''),
+      p_catalog_id:item.catalog_id||item.legacy_id||null,
+      p_name:String(item.name||'Artikl').trim(),
+      p_category_name:String(item.category_name||item.category||'Ostalo').trim()||'Ostalo',
+      p_subcategory:String(item.subcategory||'Ostalo').trim()||'Ostalo',
+      p_unit:String(item.unit||'kom').trim()||'kom',
+      p_quantity:qty,
+      p_available:av===null?qty:av,
+      p_minimum:safeQuantity(item.minimum)||0,
+      p_location_name:String(item.location_name||item.location||'Oružarstvo Klaićeva').trim()||'Oružarstvo Klaićeva',
+      p_status:String(item.status||'aktivno').trim()||'aktivno',
+      p_availability:String(item.availability||((av===null?qty:av)>0?'dostupno':'nedostupno')).trim(),
+      p_internal_note:item.internal_note||item.note||null,
+      p_physical_code_note:item.physical_code_note||null,
+      p_member_visible:item.member_visible!==false
+    };
+    const {data,error}=await client.rpc('sov_armory_upsert_simple_item',args);
+    if(error){
+      const msg=error.message||String(error);
+      if(/sov_armory_upsert_simple_item|function .* does not exist|Could not find the function/i.test(msg)){
+        throw new Error('Nedostaje SQL Build 4 RPC sov_armory_upsert_simple_item. Pokreni SUPABASE_ORUZARSTVO_V2_1_BUILD4_INVENTORY_EDIT_AND_NAME_CLEANUP.sql pa probaj opet.');
+      }
+      throw error;
+    }
+    clearArmoryCatalogCaches();
+    try{window.dispatchEvent(new CustomEvent('sov-armory-catalog-dirty',{detail:data}));}catch(e){}
     return data;
   }
   async function retireSimpleItem(id,name){

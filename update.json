@@ -1,10 +1,10 @@
 {
   "app": "SOV web",
-  "version": "6.1.31",
-  "versionName": "v6.1.31-client-error-logs",
-  "build": "sov-web-build-v6.1.31-client-error-logs",
+  "version": "6.1.38",
+  "versionName": "v6.1.38-oruzarstvo-inventory-edit-name-cleanup",
+  "build": "sov-web-build-v6.1.38-oruzarstvo-inventory-edit-name-cleanup",
   "createdAt": "2026-06-09T20:55:00Z",
-  "cacheBust": "6131",
+  "cacheBust": "6138",
   "base": "sov-web-build-v6.1.30-oruzar-grid-visual-fix.zip",
   "requiresSql": true,
   "requiredSql": [

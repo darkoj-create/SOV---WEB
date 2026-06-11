@@ -299,7 +299,7 @@
   function closeItemModal(){const m=document.getElementById('itemModal'); if(m)m.remove();}
   async function saveItem(ev,id,isNew){
     ev.preventDefault(); const row=getRow(id)||{}; const legacy=isNew?('ART-'+Date.now()):(row.raw&&row.raw.legacy_id)||id;
-    const payload={legacy_id:legacy,catalog_id:legacy,name:document.getElementById('itemName').value.trim()||'Artikl',category_name:document.getElementById('itemCat').value.trim()||'Ostalo',subcategory:document.getElementById('itemSub').value.trim()||'Ostalo',quantity:countInt(document.getElementById('itemQty').value,0),available:countInt(document.getElementById('itemAv').value,0),loaned:Math.max(0,countInt(document.getElementById('itemQty').value,0)-countInt(document.getElementById('itemAv').value,0)),minimum:countInt(document.getElementById('itemMin').value,0),location_name:document.getElementById('itemLoc').value.trim()||'Oružarstvo',status:document.getElementById('itemStatus').value.trim()||'aktivno',physical_code_note:document.getElementById('itemCode').value.trim()||null,item_kind:'quantity_article',code_required:false,member_visible:true};
+    const payload={legacy_id:cleanLegacyId(legacy),catalog_id:cleanLegacyId(legacy),name:document.getElementById('itemName').value.trim()||'Artikl',category_name:document.getElementById('itemCat').value.trim()||'Ostalo',subcategory:document.getElementById('itemSub').value.trim()||'Ostalo',quantity:countInt(document.getElementById('itemQty').value,0),available:countInt(document.getElementById('itemAv').value,0),loaned:Math.max(0,countInt(document.getElementById('itemQty').value,0)-countInt(document.getElementById('itemAv').value,0)),minimum:countInt(document.getElementById('itemMin').value,0),location_name:document.getElementById('itemLoc').value.trim()||'Oružarstvo',status:document.getElementById('itemStatus').value.trim()||'aktivno',physical_code_note:document.getElementById('itemCode').value.trim()||null,item_kind:'quantity_article',code_required:false,member_visible:true};
     try{ if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.upsertSimpleItem) await SOVArmoryDB.upsertSimpleItem(payload); else throw new Error('no supabase helper'); }
     catch(e){ console.warn('[armory master v5.47.3] save item local fallback',e); const local=JSON.parse(localStorage.getItem('sov_armory_items_override')||'[]'); const i=local.findIndex(x=>String(x.legacy_id)===String(payload.legacy_id)); if(i>=0)local[i]=payload; else local.unshift(payload); localStorage.setItem('sov_armory_items_override',JSON.stringify(local)); }
     closeItemModal(); STATE.data=null; await loadData(); renderInventory(); toast('Artikl spremljen');
@@ -318,6 +318,7 @@
 
 
   function findRowById(id){return (STATE.rows||[]).find(r=>String(r.id)===String(id))||null;}
+  function cleanLegacyId(v){ return String(v||'').replace(/^item:/i,'').trim(); }
   function legacyReturnCss(){
     if(document.getElementById('legacy-return-v6136-css'))return;
     const css=document.createElement('style'); css.id='legacy-return-v6136-css';
@@ -332,7 +333,7 @@
     const sub=r? r.subcategory : (STATE.sub||'');
     const itemName=r? r.name : '';
     const unit=r? r.unit : 'kom';
-    const legacy=r? (r.raw&&(r.raw.legacy_id||r.raw.catalog_id||r.raw.id)||r.id) : '';
+    const legacy=r? cleanLegacyId(r.raw&&(r.raw.legacy_id||r.raw.catalog_id||r.raw.source_id||r.raw.id)||r.id) : '';
     const html=`<div class="cm-modal-backdrop legacy-return-modal" id="legacyReturnModal"><div class="cm-modal"><div class="cm-modal-head"><div><h2>Zaprimanje / povrat bez otvorene posudbe</h2><p class="muted">Za staru loše evidentiranu opremu. Upis ide kroz RPC <b>legacy_return</b>, bez direktnog updatea iz browsera.</p></div><button class="cm-icon-btn" onclick="CleanArmory.closeLegacyReturn()">×</button></div><form class="cm-form" onsubmit="CleanArmory.submitLegacyReturn(event,'${esc(rowId||'')}')"><div class="legacy-return-mode"><label><input type="radio" name="lrMode" value="existing" ${known?'checked':''}> Postojeći artikl iz kataloga</label><label><input type="radio" name="lrMode" value="new" ${known?'':'checked'}> Nova / nejasna oprema, dodaj kao za provjeru</label></div>${known?`<div class="legacy-return-found"><b>${esc(itemName)}</b><div class="muted">${esc(cat)} · ${esc(sub||'Ostalo')} · ${esc(legacy)}</div></div>`:''}<div class="cm-form-grid"><input class="cm-input" id="lrItemName" placeholder="Naziv opreme" value="${esc(itemName)}"><input class="cm-input" id="lrQty" type="number" min="1" step="1" value="1"><select class="cm-input" id="lrCondition"><option value="ok">OK / raspoloživo</option><option value="za_provjeru">Za provjeru</option><option value="damaged">Oštećeno</option></select></div><div class="cm-form-grid"><input class="cm-input" id="lrCategory" placeholder="Kategorija" value="${esc(cat)}"><input class="cm-input" id="lrSubcategory" placeholder="Podkategorija" value="${esc(sub)}"><input class="cm-input" id="lrUnit" placeholder="Jedinica" value="${esc(unit)}"></div><div class="cm-form-grid"><input class="cm-input" id="lrSource" placeholder="Od koga / izvor, opcionalno"><input class="cm-input" id="lrLocation" placeholder="Lokacija" value="Oružarstvo Klaićeva"></div><textarea class="cm-input" id="lrNote" placeholder="Napomena, npr. vraćeno iz stare posudbe, provjeriti stanje..."></textarea><p class="legacy-return-help">Ako odabereš “Za provjeru” ili “Oštećeno”, količina se evidentira kao fizički vraćena, ali ne povećava dostupno stanje za izdavanje.</p><div class="cm-tools"><button class="cm-btn" type="button" onclick="CleanArmory.closeLegacyReturn()">Odustani</button><button class="cm-btn primary" id="lrSubmitBtn">Spremi legacy_return</button></div></form></div></div>`;
     document.body.insertAdjacentHTML('beforeend',html);
   }
@@ -349,6 +350,7 @@
       if(r.raw){
         r.raw.quantity=r.qty; r.raw.total_qty=r.qty;
         r.raw.available=r.av; r.raw.available_qty=r.av;
+        r.raw.quantity_label=String(r.qty); r.raw.available_label=String(r.av);
         r.raw.updated_at=new Date().toISOString();
       }
     }catch(e){console.warn('[legacy_return] optimistic UI update skipped',e);}
@@ -362,7 +364,7 @@
     const qty=Number(document.getElementById('lrQty')?.value||1);
     const payload={
       item_id:r&&(r.raw&&r.raw.id),
-      equipment_legacy_id:r&&(r.raw&&(r.raw.legacy_id||r.raw.catalog_id))||null,
+      equipment_legacy_id:r?cleanLegacyId(r.raw&&(r.raw.legacy_id||r.raw.catalog_id||r.raw.source_id)||r.id):null,
       item_name:document.getElementById('lrItemName')?.value||r?.name||'',
       category_name:document.getElementById('lrCategory')?.value||r?.category||'Za provjeru',
       subcategory:document.getElementById('lrSubcategory')?.value||r?.subcategory||'',
