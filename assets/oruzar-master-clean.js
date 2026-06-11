@@ -336,6 +336,23 @@
     const html=`<div class="cm-modal-backdrop legacy-return-modal" id="legacyReturnModal"><div class="cm-modal"><div class="cm-modal-head"><div><h2>Zaprimanje / povrat bez otvorene posudbe</h2><p class="muted">Za staru loše evidentiranu opremu. Upis ide kroz RPC <b>legacy_return</b>, bez direktnog updatea iz browsera.</p></div><button class="cm-icon-btn" onclick="CleanArmory.closeLegacyReturn()">×</button></div><form class="cm-form" onsubmit="CleanArmory.submitLegacyReturn(event,'${esc(rowId||'')}')"><div class="legacy-return-mode"><label><input type="radio" name="lrMode" value="existing" ${known?'checked':''}> Postojeći artikl iz kataloga</label><label><input type="radio" name="lrMode" value="new" ${known?'':'checked'}> Nova / nejasna oprema, dodaj kao za provjeru</label></div>${known?`<div class="legacy-return-found"><b>${esc(itemName)}</b><div class="muted">${esc(cat)} · ${esc(sub||'Ostalo')} · ${esc(legacy)}</div></div>`:''}<div class="cm-form-grid"><input class="cm-input" id="lrItemName" placeholder="Naziv opreme" value="${esc(itemName)}"><input class="cm-input" id="lrQty" type="number" min="1" step="1" value="1"><select class="cm-input" id="lrCondition"><option value="ok">OK / raspoloživo</option><option value="za_provjeru">Za provjeru</option><option value="damaged">Oštećeno</option></select></div><div class="cm-form-grid"><input class="cm-input" id="lrCategory" placeholder="Kategorija" value="${esc(cat)}"><input class="cm-input" id="lrSubcategory" placeholder="Podkategorija" value="${esc(sub)}"><input class="cm-input" id="lrUnit" placeholder="Jedinica" value="${esc(unit)}"></div><div class="cm-form-grid"><input class="cm-input" id="lrSource" placeholder="Od koga / izvor, opcionalno"><input class="cm-input" id="lrLocation" placeholder="Lokacija" value="Oružarstvo Klaićeva"></div><textarea class="cm-input" id="lrNote" placeholder="Napomena, npr. vraćeno iz stare posudbe, provjeriti stanje..."></textarea><p class="legacy-return-help">Ako odabereš “Za provjeru” ili “Oštećeno”, količina se evidentira kao fizički vraćena, ali ne povećava dostupno stanje za izdavanje.</p><div class="cm-tools"><button class="cm-btn" type="button" onclick="CleanArmory.closeLegacyReturn()">Odustani</button><button class="cm-btn primary" id="lrSubmitBtn">Spremi legacy_return</button></div></form></div></div>`;
     document.body.insertAdjacentHTML('beforeend',html);
   }
+
+  function applyLegacyReturnOptimistic(rowId,res,payload){
+    try{
+      const r=rowId?findRowById(rowId):null;
+      if(!r) return;
+      const q=Number((res&&res.quantity_added) ?? (payload&&payload.quantity) ?? 0)||0;
+      const av=Number((res&&res.available_added) ?? ((String(payload&&payload.condition_status||'ok').toLowerCase()==='ok')?q:0))||0;
+      r.qty=Math.max(0,(Number(r.qty)||0)+q);
+      r.av=Math.max(0,(Number(r.av)||0)+av);
+      r.loan=Math.max(0,(Number(r.qty)||0)-(Number(r.av)||0));
+      if(r.raw){
+        r.raw.quantity=r.qty; r.raw.total_qty=r.qty;
+        r.raw.available=r.av; r.raw.available_qty=r.av;
+        r.raw.updated_at=new Date().toISOString();
+      }
+    }catch(e){console.warn('[legacy_return] optimistic UI update skipped',e);}
+  }
   function closeLegacyReturn(){const m=document.getElementById('legacyReturnModal'); if(m)m.remove();}
   async function submitLegacyReturn(ev,rowId){
     ev.preventDefault();
@@ -366,8 +383,12 @@
       }else{
         res=await SOVArmoryDB.addItemAndLegacyReturn(payload);
       }
+      applyLegacyReturnOptimistic(rowId,res,payload);
       toast((res&&res.duplicate)?'Već spremljeno — nije duplirano.':'Povrat stare opreme spremljen.');
       closeLegacyReturn();
+      try{
+        if(window.SOVArmoryDB&&SOVArmoryDB.loadAllData) await SOVArmoryDB.loadAllData({force:true,strictLive:true});
+      }catch(e){console.warn('[legacy_return] strict refresh skipped',e);}
       STATE.data=null; await loadData(true); renderInventory(); renderMaster();
     }catch(e){
       console.error('[legacy_return] save failed',e);

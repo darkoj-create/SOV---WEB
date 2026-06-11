@@ -892,6 +892,19 @@
     try{return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}-${(window.crypto&&crypto.randomUUID)?crypto.randomUUID():''}`.replace(/-$/,'');}
     catch(e){return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;}
   }
+  function clearArmoryCatalogCaches(){
+    try{
+      [
+        'sov_armory_catalog_cache_v607',
+        'sov_armory_catalog_cache_v606',
+        'sov_armory_catalog_cache_v548',
+        'sov_armory_catalog_cache_v548_old',
+        'sov_armory_catalog_cache',
+        'sov_oruzarstvo_data_cache',
+        'sov_equipment_catalog_cache'
+      ].forEach(k=>localStorage.removeItem(k));
+    }catch(e){}
+  }
   async function recordLegacyReturn(payload){
     if(!configured()) throw new Error('Supabase nije konfiguriran.');
     const client=sb();
@@ -911,7 +924,8 @@
     if(!Number.isFinite(args.p_quantity)||args.p_quantity<=0) throw new Error('Količina mora biti veća od nule.');
     const {data,error}=await client.rpc('sov_armory_record_legacy_return',args);
     if(error) throw error;
-    try{localStorage.removeItem('sov_armory_catalog_cache_v607');}catch(e){}
+    clearArmoryCatalogCaches();
+    try{window.dispatchEvent(new CustomEvent('sov-armory-catalog-dirty',{detail:data}));}catch(e){}
     return data;
   }
   async function addItemAndLegacyReturn(payload){
@@ -933,7 +947,8 @@
     if(!Number.isFinite(args.p_quantity)||args.p_quantity<=0) throw new Error('Količina mora biti veća od nule.');
     const {data,error}=await client.rpc('sov_armory_add_item_and_legacy_return',args);
     if(error) throw error;
-    try{localStorage.removeItem('sov_armory_catalog_cache_v607');}catch(e){}
+    clearArmoryCatalogCaches();
+    try{window.dispatchEvent(new CustomEvent('sov-armory-catalog-dirty',{detail:data}));}catch(e){}
     return data;
   }
 
