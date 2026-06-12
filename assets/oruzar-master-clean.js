@@ -193,7 +193,7 @@
     const requested=reqs.filter(r=>statusKey(r.status)==='requested').length;
     const issued=reqs.filter(r=>['issued','partial_return'].includes(statusKey(r.status))).length;
     const low=STATE.rows.filter(r=>r.minimum&&r.av<=r.minimum).length;
-    root.innerHTML=`<div class="cm-grid"><a class="cm-card" href="oruzar-master-posudbe.html"><span class="ico">↔️</span><h2>Posudba</h2><p><b>${requested}</b> za izdati · <b>${issued}</b> vani. Statusi su isti kao u APK-u: za izdati → izdano → vraćeno / djelomično.</p><span>Otvori →</span></a><button class="cm-card cm-card-button" onclick="CleanArmory.openLegacyReturn()"><span class="ico">📥</span><h2>Povrat stare opreme</h2><p>Za opremu koja se vratila iz stare / loše evidentirane posudbe. Ne traži otvorenu posudbu.</p><span>Zaprimanje →</span></button><a class="cm-card" href="oruzar-master-inventar.html"><span class="ico">📦</span><h2>Inventar</h2><p>Pregled artikala po kategorijama, s brzim uređivanjem i exportom.</p><span>Otvori →</span></a><a class="cm-card" href="oruzar-master-inventura.html"><span class="ico">✅</span><h2>Inventura</h2><p>Brzo brojanje i XLS priprema po kategorijama.</p><span>Otvori →</span></a><a class="cm-card" href="oruzar-master-notes.html"><span class="ico">📝</span><h2>Bilješke</h2><p><b>${low}</b> stavki je ispod praga ili treba pažnju.</p><span>Otvori →</span></a></div>`;
+    root.innerHTML=`<div class="cm-grid"><a class="cm-card" href="oruzar-master-posudbe.html"><span class="ico">↔️</span><h2>Posudba</h2><p><b>${requested}</b> za izdati · <b>${issued}</b> vani. Statusi su isti kao u APK-u: za izdati → izdano → vraćeno / djelomično.</p><span>Otvori →</span></a><a class="cm-card" href="oruzar-master-inventar.html"><span class="ico">📦</span><h2>Inventar</h2><p>Pregled artikala po kategorijama, s brzim uređivanjem i exportom.</p><span>Otvori →</span></a><a class="cm-card" href="oruzar-master-inventura.html"><span class="ico">✅</span><h2>Inventura</h2><p>Brzo brojanje i XLS priprema po kategorijama.</p><span>Otvori →</span></a><a class="cm-card" href="oruzar-master-notes.html"><span class="ico">📝</span><h2>Bilješke</h2><p><b>${low}</b> stavki je ispod praga ili treba pažnju.</p><span>Otvori →</span></a></div>`;
   }
 
   function renderInventory(){
@@ -238,7 +238,7 @@
     const avDisplay=r.needsCount?(r.avLabel||'provjeriti'):r.av;
     const statusText=r.needsCount?'prebrojiti':(low?'ispod praga':(r.av>0?'dostupno':'nema dostupno'));
     // UI FIX v6.1.30: ne prikazuj interni XLS/source tekst na karticama opreme
-    return `<article class="item-card item-card-clean ${low?'low-stock':''} ${r.needsCount?'needs-count':''}"><div class="item-head"><div><h3>${esc(r.name)}</h3><div class="muted">${esc(r.category)} · ${esc(r.subcategory)}</div></div><span class="badge ${statusClass}">${esc(statusText)}</span></div><div class="badgetray"><span class="badge">${esc(r.location||'bez lokacije')}</span><span class="badge">${esc(r.unit)}</span>${r.lastInventoryDate?`<span class="badge">inventura ${esc(r.lastInventoryDate)}</span>`:''}${r.variants&&r.variants>1?`<span class="badge">${esc(r.variants)} varijanti</span>`:''}${r.minimum?`<span class="badge warn">prag ${esc(r.minimum)}</span>`:''}</div><div class="stock stock-clean"><span><b>${esc(qtyDisplay)}</b><em>ukupno</em></span><span><b>${esc(avDisplay)}</b><em>dostupno</em></span><span><b>${esc(r.loan)}</b><em>vani</em></span></div><div class="cm-tools item-actions"><button class="cm-btn primary" onclick="CleanArmory.openLegacyReturn('${esc(r.id)}')">Povrat stare</button><button class="cm-btn" onclick="CleanArmory.editItem('${esc(r.id)}')">Uredi</button><button class="cm-btn bad" onclick="CleanArmory.removeItem('${esc(r.id)}')">Makni</button></div></article>`;
+    return `<article class="item-card item-card-clean ${low?'low-stock':''} ${r.needsCount?'needs-count':''}"><div class="item-head"><div><h3>${esc(r.name)}</h3><div class="muted">${esc(r.category)} · ${esc(r.subcategory)}</div></div><span class="badge ${statusClass}">${esc(statusText)}</span></div><div class="badgetray"><span class="badge">${esc(r.location||'bez lokacije')}</span><span class="badge">${esc(r.unit)}</span>${r.lastInventoryDate?`<span class="badge">inventura ${esc(r.lastInventoryDate)}</span>`:''}${r.variants&&r.variants>1?`<span class="badge">${esc(r.variants)} varijanti</span>`:''}${r.minimum?`<span class="badge warn">prag ${esc(r.minimum)}</span>`:''}</div><div class="stock stock-clean"><span><b>${esc(qtyDisplay)}</b><em>ukupno</em></span><span><b>${esc(avDisplay)}</b><em>dostupno</em></span><span><b>${esc(r.loan)}</b><em>vani</em></span></div><div class="cm-tools item-actions"><button class="cm-btn" onclick="CleanArmory.editItem('${esc(r.id)}')">Uredi</button><button class="cm-btn bad" onclick="CleanArmory.removeItem('${esc(r.id)}')">Makni</button></div></article>`;
   }
 
 
@@ -254,7 +254,7 @@
     const requested=reqs.filter(r=>statusKey(r.status)==='requested');
     const active=reqs.filter(r=>['issued','partial_return'].includes(statusKey(r.status)));
     const done=reqs.filter(r=>['returned','cancelled'].includes(statusKey(r.status))).slice(0,30);
-    root.innerHTML=`<section class="cm-panel cm-loan-summary"><div class="cm-section-head"><div><h2>Posudbe opreme</h2><p>Prvo izdavanje, zatim povrat po artiklu. Bez viška statusa i bez tehničkog debug teksta.</p></div><div class="cm-mini-stats"><span>${esc(requested.length)} za izdati</span><span>${esc(active.length)} vani</span></div></div><div class="cm-tools"><button class="cm-btn" onclick="CleanArmory.renderLoans()">Osvježi</button><button class="cm-btn primary" onclick="CleanArmory.openLegacyReturn()">📥 Povrat stare opreme</button></div></section><section class="cm-panel legacy-return-panel"><h2>📥 Povrat bez otvorene posudbe</h2><p class="muted">Koristi za opremu koja se fizički vratila iz stare / loše evidentirane posudbe. Ne traži osobu u bazi i ne rekonstruira staru posudbu.</p><div class="cm-tools"><button class="cm-btn primary" onclick="CleanArmory.openLegacyReturn()">Zaprimanje stare opreme</button></div></section><div class="loan-grid loan-grid-v546 loan-grid-clean"><section class="cm-panel"><div class="cm-panel-head"><h2>Za izdati</h2><p class="muted">Zahtjevi koji čekaju fizičko izdavanje.</p></div><div class="loan-list">${requested.length?requested.map(r=>requestCard(r,'requested')).join(''):'<div class="empty">Nema novih zahtjeva.</div>'}</div><form class="cm-form manual-loan" onsubmit="CleanArmory.manualLoan(event)"><h3>Ručni unos</h3><div class="cm-form-grid"><input class="cm-input" id="mUser" placeholder="Tko traži"><input class="cm-input" id="mItem" placeholder="Artikl"><input class="cm-input" id="mQty" type="number" min="1" value="1"></div><div class="cm-tools"><input class="cm-input" id="mNote" placeholder="Izlet / napomena"><button class="cm-btn primary">Dodaj</button></div></form></section><section class="cm-panel"><div class="cm-panel-head"><h2>Izdano vani</h2><p class="muted">Aktivne posudbe i djelomični povrati.</p></div><div class="loan-list">${active.length?active.map(r=>requestCard(r,'active')).join(''):'<div class="empty">Ništa trenutno nije vani.</div>'}</div></section></div><section class="cm-panel closed-requests"><div class="cm-panel-head"><h2>Zatvoreno</h2><p class="muted">Zadnji povrati i odbijeni zahtjevi.</p></div><div class="loan-list closed-list">${done.length?done.map(r=>`<div class="loan-row compact"><div class="loan-row-top"><div><b>${esc(r.user||r.member_name||r.requester_name||'Član')}</b><div class="muted">${esc(r.trip||r.note||'Zahtjev')}</div></div><span class="badge ${statusBadge(r.status)}">${esc(statusLabel(r.status))}</span></div><div class="loan-items">${itemPills(r)}</div></div>`).join(''):'<div class="empty">Još nema zatvorenih zahtjeva.</div>'}</div></section>`;
+    root.innerHTML=`<section class="cm-panel cm-loan-summary"><div class="cm-section-head"><div><h2>Posudbe opreme</h2><p>Prvo izdavanje, zatim povrat po artiklu. Bez viška statusa i bez tehničkog debug teksta.</p></div><div class="cm-mini-stats"><span>${esc(requested.length)} za izdati</span><span>${esc(active.length)} vani</span></div></div><div class="cm-tools"><button class="cm-btn" onclick="CleanArmory.renderLoans()">Osvježi</button></div></section><div class="loan-grid loan-grid-v546 loan-grid-clean"><section class="cm-panel"><div class="cm-panel-head"><h2>Za izdati</h2><p class="muted">Zahtjevi koji čekaju fizičko izdavanje.</p></div><div class="loan-list">${requested.length?requested.map(r=>requestCard(r,'requested')).join(''):'<div class="empty">Nema novih zahtjeva.</div>'}</div><form class="cm-form manual-loan" onsubmit="CleanArmory.manualLoan(event)"><h3>Ručni unos</h3><div class="cm-form-grid"><input class="cm-input" id="mUser" placeholder="Tko traži"><input class="cm-input" id="mItem" placeholder="Artikl"><input class="cm-input" id="mQty" type="number" min="1" value="1"></div><div class="cm-tools"><input class="cm-input" id="mNote" placeholder="Izlet / napomena"><button class="cm-btn primary">Dodaj</button></div></form></section><section class="cm-panel"><div class="cm-panel-head"><h2>Izdano vani</h2><p class="muted">Aktivne posudbe i djelomični povrati.</p></div><div class="loan-list">${active.length?active.map(r=>requestCard(r,'active')).join(''):'<div class="empty">Ništa trenutno nije vani.</div>'}</div></section></div><section class="cm-panel closed-requests"><div class="cm-panel-head"><h2>Zatvoreno</h2><p class="muted">Zadnji povrati i odbijeni zahtjevi.</p></div><div class="loan-list closed-list">${done.length?done.map(r=>`<div class="loan-row compact"><div class="loan-row-top"><div><b>${esc(r.user||r.member_name||r.requester_name||'Član')}</b><div class="muted">${esc(r.trip||r.note||'Zahtjev')}</div></div><span class="badge ${statusBadge(r.status)}">${esc(statusLabel(r.status))}</span></div><div class="loan-items">${itemPills(r)}</div></div>`).join(''):'<div class="empty">Još nema zatvorenih zahtjeva.</div>'}</div></section>`;
   }
   async function setStatus(id,status){
     try{ if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.updateRequestStatus) await SOVArmoryDB.updateRequestStatus(id,status); }catch(e){console.warn('[armory master v5.47.3] remote status failed',e); toast('Supabase update nije prošao; spremam lokalno.');}
@@ -299,9 +299,18 @@
   function closeItemModal(){const m=document.getElementById('itemModal'); if(m)m.remove();}
   async function saveItem(ev,id,isNew){
     ev.preventDefault(); const row=getRow(id)||{}; const legacy=isNew?('ART-'+Date.now()):(row.raw&&row.raw.legacy_id)||id;
-    const payload={legacy_id:cleanLegacyId(legacy),catalog_id:cleanLegacyId(legacy),name:document.getElementById('itemName').value.trim()||'Artikl',category_name:document.getElementById('itemCat').value.trim()||'Ostalo',subcategory:document.getElementById('itemSub').value.trim()||'Ostalo',quantity:countInt(document.getElementById('itemQty').value,0),available:countInt(document.getElementById('itemAv').value,0),loaned:Math.max(0,countInt(document.getElementById('itemQty').value,0)-countInt(document.getElementById('itemAv').value,0)),minimum:countInt(document.getElementById('itemMin').value,0),location_name:document.getElementById('itemLoc').value.trim()||'Oružarstvo',status:document.getElementById('itemStatus').value.trim()||'aktivno',physical_code_note:document.getElementById('itemCode').value.trim()||null,item_kind:'quantity_article',code_required:false,member_visible:true};
-    try{ if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.upsertSimpleItem) await SOVArmoryDB.upsertSimpleItem(payload); else throw new Error('no supabase helper'); }
-    catch(e){ console.warn('[armory master v5.47.3] save item local fallback',e); const local=JSON.parse(localStorage.getItem('sov_armory_items_override')||'[]'); const i=local.findIndex(x=>String(x.legacy_id)===String(payload.legacy_id)); if(i>=0)local[i]=payload; else local.unshift(payload); localStorage.setItem('sov_armory_items_override',JSON.stringify(local)); }
+    const payload={legacy_id:legacy,catalog_id:legacy,name:document.getElementById('itemName').value.trim()||'Artikl',category_name:document.getElementById('itemCat').value.trim()||'Ostalo',subcategory:document.getElementById('itemSub').value.trim()||'Ostalo',quantity:countInt(document.getElementById('itemQty').value,0),available:countInt(document.getElementById('itemAv').value,0),loaned:Math.max(0,countInt(document.getElementById('itemQty').value,0)-countInt(document.getElementById('itemAv').value,0)),minimum:countInt(document.getElementById('itemMin').value,0),location_name:document.getElementById('itemLoc').value.trim()||'Oružarstvo',status:document.getElementById('itemStatus').value.trim()||'aktivno',physical_code_note:document.getElementById('itemCode').value.trim()||null,item_kind:'quantity_article',code_required:false,member_visible:true};
+    try{
+      if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()){
+        if(!isNew && SOVArmoryDB.updateInventoryCount){
+          await SOVArmoryDB.updateInventoryCount({legacy_id:legacy,catalog_id:legacy,id,name:payload.name},payload.available,payload.status,'Inventura Klaićeva 2026 — ručni edit');
+        }else if(SOVArmoryDB.upsertSimpleItem){
+          await SOVArmoryDB.upsertSimpleItem(payload);
+        }else throw new Error('no supabase helper');
+        try{localStorage.removeItem('sov_armory_catalog_cache_v607')}catch(_e){}
+      } else throw new Error('no supabase helper');
+    }
+    catch(e){ console.warn('[armory master v6.1.35-save-fix] save item local fallback',e); const local=JSON.parse(localStorage.getItem('sov_armory_items_override')||'[]'); const i=local.findIndex(x=>String(x.legacy_id)===String(payload.legacy_id)); if(i>=0)local[i]=payload; else local.unshift(payload); localStorage.setItem('sov_armory_items_override',JSON.stringify(local)); }
     closeItemModal(); STATE.data=null; await loadData(); renderInventory(); toast('Artikl spremljen');
   }
   function newItem(){openItemModal(null)}
@@ -316,95 +325,12 @@
   async function exportInventoryXls(){await loadData(); const date=new Date().toISOString().slice(0,10); const sheets=rowsByCategory().map(([cat,rows])=>{const header=`<tr><th colspan="9" class="head">Inventar — ${xmlEsc(cat)} — ${xmlEsc(date)}</th></tr><tr><th>Kategorija</th><th>Podkategorija</th><th>Naziv</th><th>Količina</th><th>Jedinica</th><th>Datum evidencije</th><th>Lokacija</th><th>Status</th><th>Napomena / detalji</th></tr>`; const body=rows.sort((a,b)=>(a.subcategory+a.name).localeCompare(b.subcategory+b.name,'hr')).map(r=>`<tr>${xlsCell(r.category)}${xlsCell(r.subcategory)}${xlsCell(r.name)}${xlsCell(r.needsCount?(r.qtyLabel||''):r.qty,'num')}${xlsCell(r.unit)}${xlsCell(r.lastInventoryDate||'')}${xlsCell(r.location||'Oružarstvo')}${xlsCell(r.status||'aktivno')}${xlsCell((r.raw&&(r.raw.physical_code_note||r.raw.note||r.raw.internal_note||r.raw.sku))||'')}</tr>`).join(''); return {name:cat,html:header+body};}); if(!sheets.length){toast('Nema inventara za export.');return;} xlsWorkbook(`SOV_inventar_${date}.xls`,sheets); toast('Inventar exportiran u XLS');}
   async function exportInventuraXls(){await loadData(); const date=(document.querySelector('input[type="date"]')?.value)||new Date().toISOString().slice(0,10); const sheets=rowsByCategory().map(([cat,rows])=>{const header=`<tr><th colspan="10" class="head">Inventura — ${xmlEsc(cat)} — ${xmlEsc(date)}</th></tr><tr><th>Kategorija</th><th>Podkategorija</th><th>Naziv</th><th>Broj u bazi</th><th>Jedinica</th><th>Stvarno prebrojano</th><th>Razlika</th><th>Lokacija</th><th>Za rashod?</th><th>Napomena</th></tr>`; const body=rows.sort((a,b)=>(a.subcategory+a.name).localeCompare(b.subcategory+b.name,'hr')).map(r=>`<tr>${xlsCell(r.category)}${xlsCell(r.subcategory)}${xlsCell(r.name)}${xlsCell(r.needsCount?(r.qtyLabel||''):r.qty,'num')}${xlsCell(r.unit)}${xlsCell('')}${xlsCell('')}${xlsCell(r.location||'Oružarstvo')}${xlsCell('')}${xlsCell(r.needsCount?'prebrojiti':'')}</tr>`).join(''); return {name:cat,html:header+body};}); if(!sheets.length){toast('Nema inventara za inventuru export.');return;} xlsWorkbook(`SOV_inventura_${date}.xls`,sheets); toast('Inventura exportirana u XLS');}
 
-
-  function findRowById(id){return (STATE.rows||[]).find(r=>String(r.id)===String(id))||null;}
-  function cleanLegacyId(v){ return String(v||'').replace(/^item:/i,'').trim(); }
-  function legacyReturnCss(){
-    if(document.getElementById('legacy-return-v6136-css'))return;
-    const css=document.createElement('style'); css.id='legacy-return-v6136-css';
-    css.textContent='.cm-card-button{text-align:left;cursor:pointer;color:inherit;font:inherit}.legacy-return-panel{border:1px solid rgba(124,255,155,.20);background:rgba(124,255,155,.055)}.legacy-return-panel h2{margin:0 0 6px}.legacy-return-found{border:1px solid rgba(255,255,255,.11);background:rgba(255,255,255,.055);border-radius:16px;padding:11px;margin:8px 0}.legacy-return-mode{display:grid;gap:8px}.legacy-return-mode label{display:flex;gap:8px;align-items:center;font-weight:850;color:#dce9e4}.legacy-return-help{font-size:12px;color:#9fb4ae;line-height:1.45}.legacy-return-modal .cm-form-grid{align-items:end}.legacy-return-modal textarea{min-height:84px}';
-    document.head.appendChild(css);
-  }
-  function openLegacyReturn(rowId){
-    legacyReturnCss();
-    const r=rowId?findRowById(rowId):null;
-    const known=!!r;
-    const cat=r? r.category : (STATE.cat||'Za provjeru');
-    const sub=r? r.subcategory : (STATE.sub||'');
-    const itemName=r? r.name : '';
-    const unit=r? r.unit : 'kom';
-    const legacy=r? cleanLegacyId(r.raw&&(r.raw.legacy_id||r.raw.catalog_id||r.raw.source_id||r.raw.id)||r.id) : '';
-    const html=`<div class="cm-modal-backdrop legacy-return-modal" id="legacyReturnModal"><div class="cm-modal"><div class="cm-modal-head"><div><h2>Zaprimanje / povrat bez otvorene posudbe</h2><p class="muted">Za staru loše evidentiranu opremu. Upis ide kroz RPC <b>legacy_return</b>, bez direktnog updatea iz browsera.</p></div><button class="cm-icon-btn" onclick="CleanArmory.closeLegacyReturn()">×</button></div><form class="cm-form" onsubmit="CleanArmory.submitLegacyReturn(event,'${esc(rowId||'')}')"><div class="legacy-return-mode"><label><input type="radio" name="lrMode" value="existing" ${known?'checked':''}> Postojeći artikl iz kataloga</label><label><input type="radio" name="lrMode" value="new" ${known?'':'checked'}> Nova / nejasna oprema, dodaj kao za provjeru</label></div>${known?`<div class="legacy-return-found"><b>${esc(itemName)}</b><div class="muted">${esc(cat)} · ${esc(sub||'Ostalo')} · ${esc(legacy)}</div></div>`:''}<div class="cm-form-grid"><input class="cm-input" id="lrItemName" placeholder="Naziv opreme" value="${esc(itemName)}"><input class="cm-input" id="lrQty" type="number" min="1" step="1" value="1"><select class="cm-input" id="lrCondition"><option value="ok">OK / raspoloživo</option><option value="za_provjeru">Za provjeru</option><option value="damaged">Oštećeno</option></select></div><div class="cm-form-grid"><input class="cm-input" id="lrCategory" placeholder="Kategorija" value="${esc(cat)}"><input class="cm-input" id="lrSubcategory" placeholder="Podkategorija" value="${esc(sub)}"><input class="cm-input" id="lrUnit" placeholder="Jedinica" value="${esc(unit)}"></div><div class="cm-form-grid"><input class="cm-input" id="lrSource" placeholder="Od koga / izvor, opcionalno"><input class="cm-input" id="lrLocation" placeholder="Lokacija" value="Oružarstvo Klaićeva"></div><textarea class="cm-input" id="lrNote" placeholder="Napomena, npr. vraćeno iz stare posudbe, provjeriti stanje..."></textarea><p class="legacy-return-help">Ako odabereš “Za provjeru” ili “Oštećeno”, količina se evidentira kao fizički vraćena, ali ne povećava dostupno stanje za izdavanje.</p><div class="cm-tools"><button class="cm-btn" type="button" onclick="CleanArmory.closeLegacyReturn()">Odustani</button><button class="cm-btn primary" id="lrSubmitBtn">Spremi legacy_return</button></div></form></div></div>`;
-    document.body.insertAdjacentHTML('beforeend',html);
-  }
-
-  function applyLegacyReturnOptimistic(rowId,res,payload){
-    try{
-      const r=rowId?findRowById(rowId):null;
-      if(!r) return;
-      const q=Number((res&&res.quantity_added) ?? (payload&&payload.quantity) ?? 0)||0;
-      const av=Number((res&&res.available_added) ?? ((String(payload&&payload.condition_status||'ok').toLowerCase()==='ok')?q:0))||0;
-      r.qty=Math.max(0,(Number(r.qty)||0)+q);
-      r.av=Math.max(0,(Number(r.av)||0)+av);
-      r.loan=Math.max(0,(Number(r.qty)||0)-(Number(r.av)||0));
-      if(r.raw){
-        r.raw.quantity=r.qty; r.raw.total_qty=r.qty;
-        r.raw.available=r.av; r.raw.available_qty=r.av;
-        r.raw.quantity_label=String(r.qty); r.raw.available_label=String(r.av);
-        r.raw.updated_at=new Date().toISOString();
-      }
-    }catch(e){console.warn('[legacy_return] optimistic UI update skipped',e);}
-  }
-  function closeLegacyReturn(){const m=document.getElementById('legacyReturnModal'); if(m)m.remove();}
-  async function submitLegacyReturn(ev,rowId){
-    ev.preventDefault();
-    const btn=document.getElementById('lrSubmitBtn'); if(btn){btn.disabled=true;btn.textContent='Spremam…';}
-    const r=rowId?findRowById(rowId):null;
-    const mode=(document.querySelector('input[name="lrMode"]:checked')||{}).value||'new';
-    const qty=Number(document.getElementById('lrQty')?.value||1);
-    const payload={
-      item_id:r&&(r.raw&&r.raw.id),
-      equipment_legacy_id:r?cleanLegacyId(r.raw&&(r.raw.legacy_id||r.raw.catalog_id||r.raw.source_id)||r.id):null,
-      item_name:document.getElementById('lrItemName')?.value||r?.name||'',
-      category_name:document.getElementById('lrCategory')?.value||r?.category||'Za provjeru',
-      subcategory:document.getElementById('lrSubcategory')?.value||r?.subcategory||'',
-      unit:document.getElementById('lrUnit')?.value||r?.unit||'kom',
-      quantity:qty,
-      to_location_name:document.getElementById('lrLocation')?.value||'Oružarstvo Klaićeva',
-      condition_status:document.getElementById('lrCondition')?.value||'ok',
-      source_name:document.getElementById('lrSource')?.value||'Povrat bez otvorene posudbe',
-      note:document.getElementById('lrNote')?.value||'',
-      client_event_id:'WEB-LEGACY-RETURN-'+Date.now()+'-'+Math.random().toString(16).slice(2)
-    };
-    try{
-      if(!window.SOVArmoryDB||!SOVArmoryDB.configured||!SOVArmoryDB.configured()) throw new Error('Supabase nije dostupan.');
-      let res;
-      if(mode==='existing' && (payload.item_id||payload.equipment_legacy_id||r)){
-        if(!payload.equipment_legacy_id && r) payload.equipment_legacy_id=String(r.id||'');
-        res=await SOVArmoryDB.recordLegacyReturn(payload);
-      }else{
-        res=await SOVArmoryDB.addItemAndLegacyReturn(payload);
-      }
-      applyLegacyReturnOptimistic(rowId,res,payload);
-      toast((res&&res.duplicate)?'Već spremljeno — nije duplirano.':'Povrat stare opreme spremljen.');
-      closeLegacyReturn();
-      try{
-        if(window.SOVArmoryDB&&SOVArmoryDB.loadAllData) await SOVArmoryDB.loadAllData({force:true,strictLive:true});
-      }catch(e){console.warn('[legacy_return] strict refresh skipped',e);}
-      STATE.data=null; await loadData(true); renderInventory(); renderMaster();
-    }catch(e){
-      console.error('[legacy_return] save failed',e);
-      toast('Spremanje nije uspjelo: '+(e.message||e));
-      if(btn){btn.disabled=false;btn.textContent='Spremi legacy_return';}
-    }
-  }
-
   async function loadNotes(){try{ if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.loadArmoryNotes){const n=await SOVArmoryDB.loadArmoryNotes(); if(Array.isArray(n))return n;} }catch(e){console.warn(e)} try{return JSON.parse(localStorage.getItem('sov_armory_notes')||'[]')}catch(e){return []}}
   async function renderNotes(){const root=document.getElementById('notesRoot'); if(!root)return; const notes=await loadNotes(); const open=notes.filter(n=>!/done|closed|obavljeno/i.test(String(n.status||'open'))); root.innerHTML=`<div class="loan-grid"><section class="cm-panel"><h2>+ Nova bilješka / reminder</h2><form class="cm-form" onsubmit="CleanArmory.saveNote(event)"><input class="cm-input" id="noteTitle" placeholder="Naslov, npr. Nabaviti spitove"><textarea class="cm-input" id="noteBody" placeholder="Detalji / napomena"></textarea><div class="cm-form-grid"><input class="cm-input" id="noteDue" type="date"><select class="cm-input" id="noteType"><option value="todo">Obaviti</option><option value="buy">Nabaviti</option><option value="check">Provjeriti</option></select><select class="cm-input" id="notePriority"><option value="normal">Normalno</option><option value="high">Hitno</option><option value="low">Nisko</option></select></div><button class="cm-btn primary">Spremi reminder</button></form></section><section class="cm-panel"><h2>Bilješke</h2><div class="loan-list">${open.length?open.map(n=>`<div class="loan-row"><div class="loan-row-top"><div><b>${esc(n.title||'Bilješka')}</b><div class="muted">${esc(n.due_date||'bez datuma')} · ${esc(n.note_type||n.type||'todo')} · ${esc(n.priority||'normal')}</div></div><span class="badge ${n.priority==='high'?'bad':'warn'}">${esc(n.status||'open')}</span></div><p>${esc(n.body||n.note||'')}</p><button class="cm-btn primary" onclick="CleanArmory.doneNote('${esc(n.id)}')">Označi obavljeno</button></div>`).join(''):'<div class="empty">Nema otvorenih podsjetnika.</div>'}</div></section></div>`;}
   async function saveNote(ev){ev.preventDefault(); const n={id:'NOTE-'+Date.now(),title:document.getElementById('noteTitle').value||'Bilješka',body:document.getElementById('noteBody').value||'',due_date:document.getElementById('noteDue').value||null,note_type:document.getElementById('noteType').value,priority:document.getElementById('notePriority').value,status:'open',created_at:new Date().toISOString()}; try{ if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.saveArmoryNote){await SOVArmoryDB.saveArmoryNote(n);} }catch(e){console.warn(e)} const l=JSON.parse(localStorage.getItem('sov_armory_notes')||'[]'); l.unshift(n); localStorage.setItem('sov_armory_notes',JSON.stringify(l)); await renderNotes(); toast('Reminder spremljen');}
   async function doneNote(id){try{ if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.doneArmoryNote) await SOVArmoryDB.doneArmoryNote(id);}catch(e){console.warn(e)} const l=JSON.parse(localStorage.getItem('sov_armory_notes')||'[]'); const n=l.find(x=>String(x.id)===String(id)); if(n)n.status='done'; localStorage.setItem('sov_armory_notes',JSON.stringify(l)); await renderNotes(); toast('Označeno obavljeno');}
 
   async function init(){renderDbLoading(); await loadData(); await loadRequests(); renderKpis(); if(STATE.rows&&STATE.rows.length){renderMaster(); renderInventory();} else {renderDbLoading(); scheduleDbRetry();} await renderLoans(); await renderNotes();}
-  window.CleanArmory={init,pickCat(c){STATE.cat=c||null;STATE.sub=null;renderInventory()},pickSub(s){STATE.sub=s||null;renderInventory()},clearSearch(){STATE.query='';STATE.cat=null;STATE.sub=null;const q=document.getElementById('cmSearch'); if(q)q.value=''; renderInventory()},renderLoans,setStatus,manualLoan,newItem,editItem,removeItem,exportInventoryXls,exportInventuraXls,openReturn,closeReturn,confirmReturn,closeItemModal,saveItem,renderNotes,saveNote,doneNote,issueLoan,openLegacyReturn,closeLegacyReturn,submitLegacyReturn};
+  window.CleanArmory={init,pickCat(c){STATE.cat=c||null;STATE.sub=null;renderInventory()},pickSub(s){STATE.sub=s||null;renderInventory()},clearSearch(){STATE.query='';STATE.cat=null;STATE.sub=null;const q=document.getElementById('cmSearch'); if(q)q.value=''; renderInventory()},renderLoans,setStatus,manualLoan,newItem,editItem,removeItem,exportInventoryXls,exportInventuraXls,openReturn,closeReturn,confirmReturn,closeItemModal,saveItem,renderNotes,saveNote,doneNote,issueLoan};
   document.addEventListener('DOMContentLoaded',init);
 })();

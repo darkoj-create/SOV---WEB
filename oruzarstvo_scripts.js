@@ -272,3 +272,63 @@ document.addEventListener('DOMContentLoaded',init);
   const oldRenderFull=window.renderFullInventory;
   if(oldRenderFull){window.renderFullInventory=function(){oldRenderFull(); const el=document.getElementById('fullinventory'); if(el){el.insertAdjacentHTML('afterbegin','<div class="simplified-note">Pojednostavljeno: kod/SKU je obavezan samo za užad. Ostalo je količinski artikl po vrsti/modelu.</div>');}}}
 })();
+
+
+/* v6.1.35-save-fix — Inventura must persist to Supabase, not only local browser state.
+   Policy decision: old catalog remains the main catalog. Manual inventory count means current count in Klaićeva.
+   SQL RPC keeps existing loan counters, so total quantity becomes available_in_klaiceva + loaned when loaned exists. */
+(function(){
+  function invToast(msg){ try{ toast(msg); }catch(e){ console.log(msg); } }
+  function asCount(val){ return Math.max(0, Number(String(val||'0').replace(',','.')) || 0); }
+  async function persistInventory(found, count, status){
+    if(!found) throw new Error('Nisam našao opremu');
+    if(DB_LIVE && window.SOVArmoryDB && typeof SOVArmoryDB.updateInventoryCount==='function'){
+      await SOVArmoryDB.updateInventoryCount(found, count, status || found.status || 'aktivno', 'Inventura Klaićeva 2026 — ručna korekcija');
+      try{ localStorage.removeItem('sov_armory_catalog_cache_v607'); }catch(e){}
+    }
+  }
+  window.updateInventoryAvailable = async function(id,val){
+    if(!canArmory()) return invToast('Samo admin/oružar');
+    const found=manualFindEquipment(id);
+    if(!found) return invToast('Nisam našao opremu: '+id);
+    const next=asCount(val);
+    const oldAv=found.available;
+    const oldQty=found.quantity;
+    const oldAvailability=found.availability;
+    found.available=next;
+    found.quantity=Math.max(next, Number(found.loaned||0)+next);
+    found.available_label=String(next);
+    found.quantity_label=String(found.quantity);
+    found.availability=next>0?'dostupno':'nedostupno';
+    found.last_inventory_date=new Date().toISOString().slice(0,10);
+    renderKpis();
+    try{
+      await persistInventory(found,next,found.status||'aktivno');
+      invToast('Spremljeno u bazu: '+(found.name||id)+' = '+next);
+      if(window.renderFullInventory) renderFullInventory();
+      if(window.renderStocktake) renderStocktake();
+    }catch(e){
+      found.available=oldAv; found.quantity=oldQty; found.availability=oldAvailability;
+      console.error(e);
+      invToast('Spremanje nije uspjelo: '+(e.message||e));
+      renderKpis();
+    }
+  };
+  window.markInventoryStatus = async function(id,status){
+    if(!canArmory()) return invToast('Samo admin/oružar');
+    const found=manualFindEquipment(id);
+    if(!found) return invToast('Nisam našao opremu');
+    const oldStatus=found.status, oldAvailability=found.availability, oldAv=found.available;
+    found.status=status;
+    if(/otpis|rashod|izgublj/i.test(status)){found.available=0;found.availability='nedostupno'}
+    try{
+      await persistInventory(found, asCount(found.available), status);
+      renderAllMasterViews();
+      invToast('Status spremljen u bazu');
+    }catch(e){
+      found.status=oldStatus; found.availability=oldAvailability; found.available=oldAv;
+      console.error(e);
+      invToast('Spremanje statusa nije uspjelo: '+(e.message||e));
+    }
+  };
+})();

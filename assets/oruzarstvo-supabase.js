@@ -820,35 +820,35 @@
   async function upsertSimpleItem(item){
     if(!configured()) return null;
     const client=sb();
-    const qty=safeQuantity(item.quantity)||0;
-    const av=safeQuantity(item.available);
-    const args={
-      p_legacy_id:String(item.legacy_id||item.catalog_id||('ART-'+Date.now())).replace(/^item:/i,''),
-      p_catalog_id:item.catalog_id||item.legacy_id||null,
-      p_name:String(item.name||'Artikl').trim(),
-      p_category_name:String(item.category_name||item.category||'Ostalo').trim()||'Ostalo',
-      p_subcategory:String(item.subcategory||'Ostalo').trim()||'Ostalo',
-      p_unit:String(item.unit||'kom').trim()||'kom',
-      p_quantity:qty,
-      p_available:av===null?qty:av,
-      p_minimum:safeQuantity(item.minimum)||0,
-      p_location_name:String(item.location_name||item.location||'Oružarstvo Klaićeva').trim()||'Oružarstvo Klaićeva',
-      p_status:String(item.status||'aktivno').trim()||'aktivno',
-      p_availability:String(item.availability||((av===null?qty:av)>0?'dostupno':'nedostupno')).trim(),
-      p_internal_note:item.internal_note||item.note||null,
-      p_physical_code_note:item.physical_code_note||null,
-      p_member_visible:item.member_visible!==false
-    };
-    const {data,error}=await client.rpc('sov_armory_upsert_simple_item',args);
-    if(error){
-      const msg=error.message||String(error);
-      if(/sov_armory_upsert_simple_item|function .* does not exist|Could not find the function/i.test(msg)){
-        throw new Error('Nedostaje SQL Build 4 RPC sov_armory_upsert_simple_item. Pokreni SUPABASE_ORUZARSTVO_V2_1_BUILD4_INVENTORY_EDIT_AND_NAME_CLEANUP.sql pa probaj opet.');
-      }
-      throw error;
-    }
-    clearArmoryCatalogCaches();
-    try{window.dispatchEvent(new CustomEvent('sov-armory-catalog-dirty',{detail:data}));}catch(e){}
+    const payload=sanitizeForTable('equipment_items',{
+      legacy_id:item.legacy_id||item.catalog_id||('ART-'+Date.now()),
+      catalog_id:item.catalog_id||item.legacy_id||null,
+      name:item.name,
+      category_name:item.category_name||item.category||'Ostalo',
+      subcategory:item.subcategory||'Ostalo',
+      quantity:safeQuantity(item.quantity)||0,
+      available:safeQuantity(item.available)||0,
+      loaned:safeQuantity(item.loaned)||0,
+      minimum:safeQuantity(item.minimum)||0,
+      status:item.status||'aktivno',
+      availability:item.availability||item.status||'aktivno',
+      member_visible:item.member_visible!==false,
+      internal_note:item.internal_note||null,
+      physical_code_note:item.physical_code_note||null,
+      quantity_label:String(item.quantity_label ?? item.quantity ?? ''),
+      available_label:String(item.available_label ?? item.available ?? ''),
+      last_inventory_date:item.last_inventory_date||null,
+      source_xls_row:safeQuantity(item.source_xls_row),
+      xls_category:item.xls_category||item.category_name||item.category||null,
+      xls_subcategory:item.xls_subcategory||item.subcategory||null,
+      original_quantity_text:item.original_quantity_text||String(item.quantity_label ?? item.quantity ?? ''),
+      item_kind:item.item_kind||'quantity_article',
+      code_required:false,
+      updated_at:new Date().toISOString()
+    });
+    const {data,error}=await client.from('equipment_items').upsert(payload,{onConflict:'legacy_id'}).select('*').single();
+    if(error) throw error;
+    try{ await setItemLocationQuantity(client,{legacy_id:payload.legacy_id,name:payload.name},'storage',item.location_name||'Oružarstvo',payload.available||0); }catch(e){}
     return data;
   }
   async function retireSimpleItem(id,name){
@@ -881,78 +881,45 @@
     return true;
   }
 
-
-  // v6.1.36 — Klaićeva Build 2: web records legacy returns through SECURITY DEFINER RPC.
-  // This intentionally avoids direct browser writes to equipment_items/equipment_item_locations/equipment_assets.
-  function uuidOrNull(v){
-    const x=String(v||'').trim();
-    return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(x)?x:null;
-  }
-  function clientEvent(prefix){
-    try{return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}-${(window.crypto&&crypto.randomUUID)?crypto.randomUUID():''}`.replace(/-$/,'');}
-    catch(e){return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;}
-  }
-  function clearArmoryCatalogCaches(){
+  async function updateInventoryCount(item, count, status, note){
+    const client=await requireArmory();
+    const next=Math.max(0, safeQuantity(count)||0);
+    const id=String((item&& (item.legacy_id||item.id||item.catalog_id||item.sku)) || '').trim();
+    const name=String((item&& (item.name||item.item_name)) || '').trim();
+    const st=status || (next>0?'aktivno':'za provjeru');
+    // Preferred safe path: SECURITY DEFINER RPC supplied in SQL patch v6.1.35-save-fix.
     try{
-      [
-        'sov_armory_catalog_cache_v607',
-        'sov_armory_catalog_cache_v606',
-        'sov_armory_catalog_cache_v548',
-        'sov_armory_catalog_cache_v548_old',
-        'sov_armory_catalog_cache',
-        'sov_oruzarstvo_data_cache',
-        'sov_equipment_catalog_cache'
-      ].forEach(k=>localStorage.removeItem(k));
-    }catch(e){}
-  }
-  async function recordLegacyReturn(payload){
-    if(!configured()) throw new Error('Supabase nije konfiguriran.');
-    const client=sb();
-    const p=payload||{};
-    const args={
-      p_item_id: uuidOrNull(p.item_id||p.id),
-      p_equipment_legacy_id: String(p.equipment_legacy_id||p.legacy_id||'').trim()||null,
-      p_item_name: String(p.item_name||p.name||'').trim()||null,
-      p_quantity: Number(p.quantity||p.qty||1),
-      p_to_location_name: String(p.to_location_name||p.location_name||'Oružarstvo Klaićeva').trim()||'Oružarstvo Klaićeva',
-      p_condition_status: String(p.condition_status||p.condition||'ok').trim()||'ok',
-      p_source_name: String(p.source_name||p.source||'Povrat bez otvorene posudbe').trim()||'Povrat bez otvorene posudbe',
-      p_note: String(p.note||'').trim()||null,
-      p_client_event_id: String(p.client_event_id||clientEvent('WEB-LEGACY-RETURN')).trim()
+      const res=await client.rpc('sov_armory_save_inventory_count',{
+        p_identifier:id || name,
+        p_item_name:name || null,
+        p_available:next,
+        p_status:st,
+        p_note:note || null
+      });
+      if(!res.error) return res.data || true;
+      console.warn('sov_armory_save_inventory_count rpc failed, falling back:', res.error.message);
+    }catch(e){ console.warn('sov_armory_save_inventory_count rpc unavailable, falling back:', e.message||e); }
+
+    // Fallback for databases where RLS allows direct oružar/admin update.
+    const patch={
+      available:next,
+      quantity_label:String(next),
+      available_label:String(next),
+      status:st,
+      availability:next>0?'dostupno':'nedostupno',
+      last_inventory_date:new Date().toISOString().slice(0,10),
+      updated_at:new Date().toISOString()
     };
-    if(!args.p_item_id && !args.p_equipment_legacy_id && !args.p_item_name) throw new Error('Odaberi artikl ili upiši naziv opreme.');
-    if(!Number.isFinite(args.p_quantity)||args.p_quantity<=0) throw new Error('Količina mora biti veća od nule.');
-    const {data,error}=await client.rpc('sov_armory_record_legacy_return',args);
+    if(note) patch.internal_note=note;
+    let q=client.from('equipment_items').update(patch);
+    if(id) q=q.or(`legacy_id.eq.${id},catalog_id.eq.${id},id.eq.${id}`); else q=q.eq('name',name);
+    const {data,error}=await q.select('id,legacy_id,name,quantity,available,loaned,status').limit(10);
     if(error) throw error;
-    clearArmoryCatalogCaches();
-    try{window.dispatchEvent(new CustomEvent('sov-armory-catalog-dirty',{detail:data}));}catch(e){}
-    return data;
-  }
-  async function addItemAndLegacyReturn(payload){
-    if(!configured()) throw new Error('Supabase nije konfiguriran.');
-    const client=sb();
-    const p=payload||{};
-    const args={
-      p_item_name: String(p.item_name||p.name||'').trim(),
-      p_category_name: String(p.category_name||p.category||'Za provjeru').trim()||'Za provjeru',
-      p_subcategory: String(p.subcategory||'').trim()||null,
-      p_unit: String(p.unit||'kom').trim()||'kom',
-      p_quantity: Number(p.quantity||p.qty||1),
-      p_condition_status: String(p.condition_status||p.condition||'za_provjeru').trim()||'za_provjeru',
-      p_source_name: String(p.source_name||p.source||'Povrat bez otvorene posudbe').trim()||'Povrat bez otvorene posudbe',
-      p_note: String(p.note||'').trim()||null,
-      p_client_event_id: String(p.client_event_id||clientEvent('WEB-LEGACY-ADD-RETURN')).trim()
-    };
-    if(!args.p_item_name) throw new Error('Naziv opreme je obavezan.');
-    if(!Number.isFinite(args.p_quantity)||args.p_quantity<=0) throw new Error('Količina mora biti veća od nule.');
-    const {data,error}=await client.rpc('sov_armory_add_item_and_legacy_return',args);
-    if(error) throw error;
-    clearArmoryCatalogCaches();
-    try{window.dispatchEvent(new CustomEvent('sov-armory-catalog-dirty',{detail:data}));}catch(e){}
+    if(!data || !data.length) throw new Error('Nisam našao artikl za spremanje: '+(id||name));
     return data;
   }
 
-  window.SOVArmoryDB={configured,upsertSimpleItem,retireSimpleItem,loadArmoryNotes,saveArmoryNote,doneArmoryNote,loadRequests,createRequest,updateRequestStatus,issueRequest,returnRequestItems,importStaticData,loadAllData,loadCatalogManifest,createEquipmentItem,createEquipmentPiece,createEquipmentPieces,createRope,updateEquipmentStatus,recordLegacyReturn,addItemAndLegacyReturn};
+  window.SOVArmoryDB={configured,upsertSimpleItem,retireSimpleItem,loadArmoryNotes,saveArmoryNote,doneArmoryNote,loadRequests,createRequest,updateRequestStatus,issueRequest,returnRequestItems,importStaticData,loadAllData,loadCatalogManifest,createEquipmentItem,createEquipmentPiece,createEquipmentPieces,createRope,updateEquipmentStatus,updateInventoryCount};
 
   // v5.48.1: true cache-first wrapper. The old v5.48 path still asked the manifest view
   // before returning cached data; on large Supabase views that made every page open feel like a full sync.
