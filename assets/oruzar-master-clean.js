@@ -317,7 +317,29 @@
     const payload={legacy_id:legacy,catalog_id:legacy,name:document.getElementById('itemName').value.trim()||'Artikl',category_name:document.getElementById('itemCat').value.trim()||'Ostalo',subcategory:document.getElementById('itemSub').value.trim()||'Ostalo',quantity:countInt(document.getElementById('itemQty').value,0),available:countInt(document.getElementById('itemAv').value,0),loaned:Math.max(0,countInt(document.getElementById('itemQty').value,0)-countInt(document.getElementById('itemAv').value,0)),minimum:countInt(document.getElementById('itemMin').value,0),location_name:document.getElementById('itemLoc').value.trim()||'Oružarstvo',status:document.getElementById('itemStatus').value.trim()||'aktivno',physical_code_note:document.getElementById('itemCode').value.trim()||null,item_kind:'quantity_article',code_required:false,member_visible:true};
     try{
       if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()){
-        if(!isNew && SOVArmoryDB.updateInventoryCount){
+        if(!isNew && SOVArmoryDB.updateEquipmentItemFull){
+          // v6.1.36: persist the FULL edit (qty, naziv, kategorija, podkategorija, lokacija, prag, dostupno, status),
+          // not just the inventura count. Keyed by the row's real id so NULL-legacy_id imports still match.
+          await SOVArmoryDB.updateEquipmentItemFull(
+            {id:id,legacy_id:(row.raw&&row.raw.legacy_id)||null,catalog_id:(row.raw&&row.raw.catalog_id)||null,name:payload.name},
+            {
+              name:payload.name,
+              category_name:payload.category_name,
+              subcategory:payload.subcategory,
+              quantity:payload.quantity,
+              available:payload.available,
+              loaned:payload.loaned,
+              minimum:payload.minimum,
+              location_name:payload.location_name,
+              status:payload.status,
+              availability:(payload.available>0?'dostupno':'nedostupno'),
+              physical_code_note:payload.physical_code_note,
+              quantity_label:String(payload.quantity),
+              available_label:String(payload.available),
+              last_inventory_date:new Date().toISOString().slice(0,10)
+            }
+          );
+        }else if(!isNew && SOVArmoryDB.updateInventoryCount){
           await SOVArmoryDB.updateInventoryCount({legacy_id:legacy,catalog_id:legacy,id,name:payload.name},payload.available,payload.status,'Inventura Klaićeva 2026 — ručni edit');
         }else if(SOVArmoryDB.upsertSimpleItem){
           await SOVArmoryDB.upsertSimpleItem(payload);

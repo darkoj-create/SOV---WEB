@@ -919,7 +919,41 @@
     return data;
   }
 
-  window.SOVArmoryDB={configured,upsertSimpleItem,retireSimpleItem,loadArmoryNotes,saveArmoryNote,doneArmoryNote,loadRequests,createRequest,updateRequestStatus,issueRequest,returnRequestItems,importStaticData,loadAllData,loadCatalogManifest,createEquipmentItem,createEquipmentPiece,createEquipmentPieces,createRope,updateEquipmentStatus,updateInventoryCount};
+  // v6.1.36: full catalog-item update. The old edit modal routed every existing-item save
+  // through updateInventoryCount(), which only persisted available/status/labels and silently
+  // dropped quantity, name, category, subcategory, location and minimum. This writes the full
+  // editable field set, keyed by id/legacy_id/catalog_id (so it matches rows imported with a
+  // NULL legacy_id), and busts the local catalog cache so the next load reflects the edit.
+  async function updateEquipmentItemFull(keys, fields){
+    if(!configured()) throw new Error('Supabase nije konfiguriran.');
+    const client=sb();
+    keys=keys||{}; fields=fields||{};
+    const id=keys.id||keys.legacy_id||keys.catalog_id||null;
+    const name=keys.name||null;
+    const patch={};
+    ['name','category_name','subcategory','unit','quantity','available','loaned','minimum',
+     'status','availability','location_name','physical_code_note','internal_note','member_visible',
+     'quantity_label','available_label','last_inventory_date'].forEach(function(k){
+      if(fields[k]!==undefined && fields[k]!==null) patch[k]=fields[k];
+    });
+    if(fields.category_name!==undefined && fields.category_name!==null){
+      patch.category_name=canonicalArmoryCategory(fields.category_name,[fields.name,fields.subcategory,fields.internal_note].join(' '));
+      patch.xls_category=patch.category_name;
+    }
+    if(fields.subcategory!==undefined) patch.xls_subcategory=fields.subcategory;
+    patch.updated_at=new Date().toISOString();
+    let q=client.from('equipment_items').update(patch);
+    if(id) q=q.or('legacy_id.eq.'+id+',catalog_id.eq.'+id+',id.eq.'+id);
+    else if(name) q=q.eq('name',name);
+    else throw new Error('Nema ključa za spremanje artikla.');
+    const {data,error}=await q.select('id,legacy_id,name,quantity,available,category_name,subcategory,location_name,status').limit(10);
+    if(error) throw error;
+    if(!data || !data.length) throw new Error('Nisam našao artikl za spremanje: '+(id||name));
+    try{['sov_armory_catalog_cache_v607','sov_armory_catalog_cache_v606','sov_armory_catalog_cache_v548','sov_armory_catalog_cache_v548_old','sov_armory_catalog_cache'].forEach(function(k){localStorage.removeItem(k);});}catch(_e){}
+    return data;
+  }
+
+  window.SOVArmoryDB={configured,upsertSimpleItem,retireSimpleItem,loadArmoryNotes,saveArmoryNote,doneArmoryNote,loadRequests,createRequest,updateRequestStatus,issueRequest,returnRequestItems,importStaticData,loadAllData,loadCatalogManifest,createEquipmentItem,createEquipmentPiece,createEquipmentPieces,createRope,updateEquipmentStatus,updateInventoryCount,updateEquipmentItemFull};
 
   // v5.48.1: true cache-first wrapper. The old v5.48 path still asked the manifest view
   // before returning cached data; on large Supabase views that made every page open feel like a full sync.
