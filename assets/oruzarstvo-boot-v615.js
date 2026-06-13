@@ -3,7 +3,7 @@
    Static JSON/cache are deliberately not displayed during DB seed/import. */
 (function(){
   'use strict';
-  const BUILD='6.1.6-db-gate';
+  const BUILD='6.1.35-smartcat-webfix';
   const MIN_ROWS=20;
   const LIVE_TIMEOUT=65000;
   const RETRY_MS=4500;
@@ -37,8 +37,8 @@
       id:r.app_id||r.id||r.catalog_group_key||('APP-'+i),
       catalog_id:r.catalog_group_key||r.app_id||r.id||('APP-'+i),
       name:r.display_name||r.name||r.item_name||'Artikl',
-      category:r.main_category||r.category_name||r.category||'Ostalo',
-      category_name:r.main_category||r.category_name||r.category||'Ostalo',
+      category:r.category_name||r.main_category||r.category||'Ostalo',
+      category_name:r.category_name||r.main_category||r.category||'Ostalo',
       subcategory:r.subcategory||r.group_name||'Ostalo',
       quantity:Number(r.total_quantity??r.total_qty??r.quantity??0)||0,
       available:Number(r.available_quantity??r.available_qty??r.available??r.total_quantity??r.total_qty??r.quantity??0)||0,
@@ -50,7 +50,7 @@
   }
   function idOf(r){return String(r.id||r.legacy_id||r.catalog_id||r.sku||r.name||Math.random()).replace(/'/g,'');}
   function nameOf(r){return r.display_name||r.name||r.item_name||r.model||'Artikl';}
-  function catOf(r){return r.main_category||r.category_name||r.category||'Ostalo';}
+  function catOf(r){return r.category_name||r.main_category||r.category||r.xls_category||'Ostalo';}
   function subOf(r){return r.subcategory||r.group_name||r.type||'Ostalo';}
   function visible(r){return r.member_visible!==false && !/rashod|otpis|izgublj|obris/i.test(String(r.status||''));}
   function available(r){return Number(r.available)>0;}
@@ -58,12 +58,27 @@
   function rows(){
     const d=window.DATA||{};
     const items=(Array.isArray(d.items)?d.items:[]).map(x=>({...x,item_type:x.item_type||'item'}));
-    const ropes=(Array.isArray(d.ropes)?d.ropes:[]).map(r=>({...r,id:'ROPE-'+(r.id||r.legacy_id||r.sku||r.name),item_type:'rope',name:r.name||('Uže '+(r.sku||'')),category:r.category||r.category_name||'Užeta',category_name:r.category_name||r.category||'Užeta',subcategory:r.subcategory||'Užad',available:/društvu|drustvu|aktiv|dostup/i.test(String(r.status||''))?1:0,unit:'kom'}));
+    const ropes=(Array.isArray(d.ropes)?d.ropes:[]).map(r=>({...r,id:'ROPE-'+(r.id||r.legacy_id||r.sku||r.name),item_type:'rope',name:r.name||('Uže '+(r.sku||'')),category:r.category_name||r.category||'Užad',category_name:r.category_name||r.category||'Užad',subcategory:r.subcategory||'Užad',available:/društvu|drustvu|aktiv|dostup/i.test(String(r.status||''))?1:0,unit:'kom'}));
     const pieces=(Array.isArray(d.pieces)?d.pieces:[]).map(p=>({...p,id:'PIECE-'+(p.id||p.legacy_id||p.sku||p.name),item_type:'piece',name:p.name||p.model||p.sku||'Komad opreme',category:p.category||p.category_name||'Inventarna oprema',category_name:p.category_name||p.category||'Inventarna oprema',subcategory:p.subcategory||p.location_name||'Pojedinačno',available:/društvu|drustvu|aktiv|dostup/i.test(String(p.status||''))?1:0,unit:'kom'}));
     return [...items,...ropes,...pieces];
   }
-  function categoryMeta(c){const x=plain(c); if(x.includes('uze'))return ['🪢','Užeta']; if(x.includes('osob'))return ['🧗','Osobna oprema']; if(x.includes('postavlj'))return ['🪛','Oprema za postavljanje']; if(x.includes('prosir'))return ['⛏️','Oprema za proširivanje']; if(x.includes('elektro')||x.includes('foto')||x.includes('rasv'))return ['💡','Elektro i foto oprema']; if(x.includes('crtan')||x.includes('mjeren')||x.includes('kompas')||x.includes('busol'))return ['🧭','Oprema za crtanje']; if(x.includes('dron'))return ['🚁','Dronovi i dodaci']; if(x.includes('alat'))return ['🧰','Ostali alat']; return ['📦','Oprema'];}
-  function sortCats(a){const order=['Osobna oprema','Oprema za postavljanje','Čisto podzemlje','Oprema za crtanje','Oprema za proširivanje','Elektro i foto oprema','Alpinistička oprema','Ronilačka oprema','Ostali alat','Užeta','Oprema za logor','Medicinska oprema','Ostalo']; return a.sort((x,y)=>(order.indexOf(x)<0?99:order.indexOf(x))-(order.indexOf(y)<0?99:order.indexOf(y))||String(x).localeCompare(String(y),'hr'));}
+  function categoryMeta(c){
+    const x=plain(c);
+    if(x.includes('srt')||x.includes('osobni'))return ['🧗','Osobni SRT komplet'];
+    if(x.includes('uzad')||x.includes('uze'))return ['🪢','Užad'];
+    if(x.includes('sidrist')||x.includes('opremanj')||x.includes('spit')||x.includes('fix')||x.includes('ploc'))return ['⚓','Sidrišta i opremanje'];
+    if(x.includes('spas')||x.includes('cisto')||x.includes('paw')||x.includes('kolot')||x.includes('nosil'))return ['🛟','Spašavanje i Čisto podzemlje'];
+    if(x.includes('prosir')||x.includes('busil')||x.includes('svrd')||x.includes('regul'))return ['⛏️','Proširivanje i regulirana oprema'];
+    if(x.includes('mjer')||x.includes('crtan')||x.includes('dokument')||x.includes('topofil')||x.includes('kompas')||x.includes('busol'))return ['📐','Mjerenje, crtanje i dokumentacija'];
+    if(x.includes('rasvjet')||x.includes('elektr')||x.includes('komunik')||x.includes('foto')||x.includes('dron'))return ['🔦','Rasvjeta, elektronika i komunikacija'];
+    if(x.includes('logor')||x.includes('ekspedic')||x.includes('kuhinj')||x.includes('kamp'))return ['⛺','Logor, ekspedicija i kuhinja'];
+    if(x.includes('medic')||x.includes('prva pomoc'))return ['🧰','Medicinska oprema'];
+    if(x.includes('alpin')||x.includes('penjac'))return ['⛰️','Alpinistička i penjačka oprema'];
+    if(x.includes('ronil'))return ['🤿','Ronilačka oprema'];
+    if(x.includes('alat')||x.includes('odrzav')||x.includes('radion'))return ['🧰','Alat i održavanje'];
+    return ['📦','Oprema'];
+  }
+  function sortCats(a){const order=['Osobni SRT komplet','Užad','Sidrišta i opremanje','Tehničko spašavanje i Čisto podzemlje','Proširivanje i regulirana oprema','Mjerenje, crtanje i dokumentacija','Rasvjeta, elektronika i komunikacija','Logor, ekspedicija i kuhinja','Medicinska oprema','Alpinistička i penjačka oprema','Ronilačka oprema','Alat i održavanje','Ostalo']; return [...a].sort((x,y)=>(order.indexOf(x)<0?99:order.indexOf(x))-(order.indexOf(y)<0?99:order.indexOf(y))||String(x).localeCompare(String(y),'hr'));}
   function currentItems(){const q=plain($('q')?.value||''); const cat=$('cat')?.value||activeCat; const av=$('avail')?.value||''; return rows().filter(visible).filter(r=>!q||rowText(r).includes(q)).filter(r=>!cat||catOf(r)===cat).filter(r=>!activeSub||subOf(r)===activeSub).filter(r=>!av||(av==='dostupno'?available(r):(av==='nedostupno'?!available(r):true)));}
   function setMiniStatus(kind,msg){const el=$('armoryBootStatus')||document.querySelector('[data-armory-boot-status]'); if(el)el.textContent=msg; const line=$('v607StatusText'); if(line)line.textContent=msg;}
   function renderLoading(message, detail){

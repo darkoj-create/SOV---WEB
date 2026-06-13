@@ -92,9 +92,9 @@
     // instead of reclassifying it into broader virtual buckets. Search still uses
     // text tags, but inventory/order screens must match the XLS and SQL seed 1:1.
     const clean=String(raw||'').trim();
-    if(clean) return clean==='Užad' ? 'Užeta' : clean;
+    if(clean) return clean==='Užeta' ? 'Užad' : clean;
     const t=stripDiacritics(String(text||''));
-    if(/uzad|uze|rope|statik/.test(t)) return 'Užeta';
+    if(/uzad|uze|rope|statik/.test(t)) return 'Užad';
     return 'Ostalo';
   }
 
@@ -396,7 +396,7 @@
       legacy_id:i.id||i.legacy_id||('XLS-'+String(idx+1).padStart(4,'0')),
       catalog_id:String(i.catalog_id||i.id||i.legacy_id||''),
       name:i.name,
-      category_name:canonicalArmoryCategory(i.category||i.category_name||i.xls_category||null,[i.name,i.model,i.subcategory,i.internal_note].join(' ')),
+      category_name:canonicalArmoryCategory(i.category_name||i.category||i.xls_category||null,[i.name,i.model,i.subcategory,i.internal_note].join(' ')),
       subcategory:i.subcategory||i.xls_subcategory||'Ostalo',
       unit:i.unit||'kom',
       tracking_type:i.tracking_type||'xls_row',
@@ -611,7 +611,7 @@
     if(groupedCatalog && groupedCatalog.length){
       out.summary.source='Supabase canonical grouped catalog v5.45';
       out.categories=[...new Map(groupedCatalog.map((g,idx)=>{
-        const name=g.main_category||g.category||g.category_name||'Ostalo';
+        const name=g.category_name||g.main_category||g.category||'Ostalo';
         return [name,{id:'cat-'+idx,name,description:'Canonical grouped catalog',type:'canonical',sort_order:g.priority||idx}];
       })).values()];
       out.items=groupedCatalog.map((g,idx)=>({
@@ -619,8 +619,8 @@
         legacy_id:g.source_id||g.app_id||('GROUP-'+idx),
         catalog_id:g.catalog_group_key||g.source_id||g.app_id||('GROUP-'+idx),
         name:g.display_name||g.name||'Artikl',
-        category:g.main_category||g.category||g.category_name||'Ostalo',
-        category_name:g.main_category||g.category||g.category_name||'Ostalo',
+        category:g.category_name||g.main_category||g.category||'Ostalo',
+        category_name:g.category_name||g.main_category||g.category||'Ostalo',
         subcategory:g.subcategory||g.raw_subcategory||'Ostalo',
         unit:g.unit||'kom',
         tracking_type:'grouped_catalog',
@@ -693,7 +693,7 @@
     })).filter(i=>i.name);
     out.ropes=(ropes||[]).map((r,idx)=>({
       id:r.legacy_id||r.sku||r.id||('DB-ROPE-'+idx), legacy_id:r.legacy_id||r.id, sku:r.sku||r.legacy_id||'', name:r.name||r.sku||'Uže',
-      category:'Užeta', category_name:'Užeta', subcategory:r.subcategory||'Užad', quantity:1, available:/posu|vani|otpis|rashod|izgubl/i.test(String(r.status||''))?0:1, loaned:/posu|vani/i.test(String(r.status||''))?1:0,
+      category:'Užad', category_name:'Užad', subcategory:r.subcategory||'Užad', quantity:1, available:/posu|vani|otpis|rashod|izgubl/i.test(String(r.status||''))?0:1, loaned:/posu|vani/i.test(String(r.status||''))?1:0,
       diameter_mm:r.diameter_mm, length_m:r.length_m, manufacturer:r.manufacturer||'', model:r.model||'', production_year:r.production_year, in_use_since:r.in_use_since,
       color:r.color||'', location:r.location_name||'', location_name:r.location_name||'', status:r.status||'U društvu', note:r.note||'', member_visible:true
     })).filter(r=>r.name);

@@ -22,8 +22,8 @@
   function statusBadge(s){const k=statusKey(s); if(k==='issued'||k==='returned') return 'ok'; if(k==='requested'||k==='partial_return') return 'warn'; return 'bad'}
   function toast(m){let t=document.getElementById('cmToast'); if(!t){t=document.createElement('div');t.id='cmToast';t.className='cm-toast';document.body.appendChild(t)} t.textContent=m;t.classList.add('show');clearTimeout(t._to);t._to=setTimeout(()=>t.classList.remove('show'),2300)}
   function categoryName(row,type){
-    const raw=norm(row.xls_category||row.raw_category||row.main_category||row.category_name||row.category||(type==='rope'?'Užeta':'Ostalo'))||'Ostalo';
-    return raw==='Užad' ? 'Užeta' : raw;
+    const raw=norm(row.category_name||row.main_category||row.category||row.xls_category||row.raw_category||(type==='rope'?'Užad':'Ostalo'))||'Ostalo';
+    return raw==='Užeta' ? 'Užad' : raw;
   }
   function subcategoryName(row){return norm(row.subcategory||row.raw_subcategory||row.group||row.display_subcategory||'Ostalo')||'Ostalo'}
   function displayName(row,type){return norm(row.display_name||row.name||row.item_name||row.model||row.sku||(type==='rope'?'Uže':'Artikl'))||'Artikl'}
@@ -62,13 +62,28 @@
     const words=wordsOf(hay);
     return parts.every(part=>hay.includes(part)||words.some(w=>fuzzyToken(part,w)));
   }
-  function iconFor(t){t=strip(t); if(t.includes('osobna'))return '🧑‍🚒'; if(t.includes('uzad')||t.includes('uzetna')||t.includes('uze'))return '🪢'; if(t.includes('postav')||t.includes('spit')||t.includes('sidri'))return '⚓'; if(t.includes('crtan')||t.includes('mjer')||t.includes('kompas')||t.includes('busol'))return '📐'; if(t.includes('busil')||t.includes('svrd'))return '🔩'; if(t.includes('elektro')||t.includes('rasvjet')||t.includes('foto'))return '🔦'; if(t.includes('dron'))return '🚁'; if(t.includes('alpin'))return '⛰️'; if(t.includes('med'))return '🧰'; if(t.includes('ronil'))return '🤿'; if(t.includes('logor')||t.includes('kamp'))return '⛺'; if(t.includes('cisto'))return '🧹'; if(t.includes('pros'))return '🔨'; if(t.includes('alat')||t.includes('radion'))return '🧰'; return '📦'}
+  function iconFor(t){
+    t=strip(t);
+    if(t.includes('srt')||t.includes('osobni'))return '🧗';
+    if(t.includes('uzad')||t.includes('uze')||t.includes('rope'))return '🪢';
+    if(t.includes('sidrist')||t.includes('sidri')||t.includes('opremanj')||t.includes('spit')||t.includes('fix')||t.includes('ploc'))return '⚓';
+    if(t.includes('spas')||t.includes('cisto')||t.includes('paw')||t.includes('kolot')||t.includes('nosil'))return '🛟';
+    if(t.includes('prosir')||t.includes('busil')||t.includes('svrd')||t.includes('regul'))return '⛏️';
+    if(t.includes('mjer')||t.includes('crtan')||t.includes('dokument')||t.includes('topofil')||t.includes('kompas')||t.includes('busol'))return '📐';
+    if(t.includes('rasvjet')||t.includes('elektr')||t.includes('komunik')||t.includes('foto')||t.includes('dron'))return '🔦';
+    if(t.includes('logor')||t.includes('ekspedic')||t.includes('kuhinj')||t.includes('kamp'))return '⛺';
+    if(t.includes('medic')||t.includes('prva pomoc'))return '🧰';
+    if(t.includes('alpin')||t.includes('penjac'))return '⛰️';
+    if(t.includes('ronil'))return '🤿';
+    if(t.includes('alat')||t.includes('odrzav')||t.includes('radion'))return '🧰';
+    return '📦'
+  }
   function categoryPriority(c){
     const x=strip(c);
-    const order=['osobna oprema','oprema za postavljanje','cisto podzemlje','oprema za crtanje','oprema za prosirivanje','elektro i foto oprema','alpinisticka oprema','ronilacka oprema','ostali alat','uzeta','oprema za logor','medicinska oprema','ostalo'];
+    const order=['osobni srt komplet','uzad','sidrista i opremanje','tehnicko spasavanje i cisto podzemlje','prosirivanje i regulirana oprema','mjerenje crtanje i dokumentacija','rasvjeta elektronika i komunikacija','logor ekspedicija i kuhinja','medicinska oprema','alpinisticka i penjacka oprema','ronilacka oprema','alat i odrzavanje','ostalo'];
     const exact=order.indexOf(x);
     if(exact>=0) return exact;
-    const i=order.findIndex(k=>x.includes(k)); return i<0?999:i;
+    const i=order.findIndex(k=>x.includes(k)||k.includes(x)); return i<0?999:i;
   }
 
 
