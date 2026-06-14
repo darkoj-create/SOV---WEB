@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>Dokumenti — SOV v6.1.26</title>
+<link href="assets/site.css" rel="stylesheet"/>
+<link href="assets/mobile.css" rel="stylesheet"/>
+<link href="assets/sov-foundation-v55822.css" rel="stylesheet"/>
+<link href="assets/sov-shell-v55825.css" rel="stylesheet"/>
+<link href="assets/sov-polish-v55826.css" rel="stylesheet"/>
+<link href="assets/sov-wow-v6.css" rel="stylesheet"/>
+<link href="assets/sov-wow-app-v6.css" rel="stylesheet"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/supabase-config.js"></script>
+<script src="assets/auth.js"></script>
+<style>
+  :root{--lime:#d7f66f;--cyan:#78d7ff;--amber:#ffbf6b;--ink:#f4f7f6;--muted:#aebfbd;--stroke:rgba(255,255,255,.13);--panel:rgba(255,255,255,.055)}
+  body{background:radial-gradient(circle at 18% 0,rgba(120,215,255,.16),transparent 34%),radial-gradient(circle at 90% 12%,rgba(215,246,111,.11),transparent 30%),#05090b;color:var(--ink)}
+  .docs-shell{width:min(1180px,calc(100% - 34px));margin:0 auto;padding:42px 0 82px}
+  .docs-hero{position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.14);border-radius:36px;background:linear-gradient(135deg,rgba(255,255,255,.09),rgba(255,255,255,.035));box-shadow:0 30px 90px rgba(0,0,0,.34);padding:34px;margin:34px 0 22px}
+  .docs-hero:after{content:"";position:absolute;right:-80px;top:-90px;width:260px;height:260px;border-radius:999px;background:rgba(215,246,111,.11);filter:blur(2px)}
+  .docs-eyebrow{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(215,246,111,.28);background:rgba(215,246,111,.09);color:#e9ffd0;border-radius:999px;padding:8px 12px;font-size:12px;font-weight:1000;text-transform:uppercase;letter-spacing:.08em}
+  .docs-hero h1{position:relative;z-index:1;font-size:clamp(48px,8vw,98px);line-height:.88;letter-spacing:-.075em;margin:18px 0 14px}
+  .docs-hero p{position:relative;z-index:1;max-width:760px;color:#bed0ce;font-size:18px;line-height:1.62;margin:0}
+  .docs-quick{position:relative;z-index:1;display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}.docs-btn{display:inline-flex;align-items:center;gap:9px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.07);color:#f5fffb;text-decoration:none;border-radius:999px;padding:12px 15px;font-weight:1000}.docs-btn.primary{background:linear-gradient(135deg,var(--lime),#83e6c2);color:#11180f;border:0;box-shadow:0 18px 42px rgba(215,246,111,.16)}
+  .docs-section-head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin:28px 0 14px}.docs-section-head h2{margin:0;font-size:clamp(28px,4vw,48px);letter-spacing:-.055em}.docs-section-head p{margin:5px 0 0;color:#aebfbd;line-height:1.5}.docs-section-head span{border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:8px 11px;color:#c6d4d2;font-size:12px;font-weight:900;white-space:nowrap;background:rgba(255,255,255,.04)}
+  .docs-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.doc-card{position:relative;min-height:210px;display:flex;flex-direction:column;gap:12px;overflow:hidden;border:1px solid var(--stroke);border-radius:28px;padding:22px;background:linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.035));box-shadow:0 22px 70px rgba(0,0,0,.24);color:inherit;text-decoration:none}.doc-card:before{content:"";position:absolute;right:-45px;bottom:-75px;width:180px;height:180px;border-radius:999px;background:var(--accent,rgba(120,215,255,.12))}.doc-card:hover{transform:translateY(-2px);border-color:rgba(215,246,111,.35);background:linear-gradient(145deg,rgba(255,255,255,.1),rgba(255,255,255,.045))}.doc-icon{width:54px;height:54px;border-radius:19px;display:grid;place-items:center;background:var(--accent,rgba(120,215,255,.12));border:1px solid rgba(255,255,255,.12);font-size:24px}.doc-card h3{font-size:25px;letter-spacing:-.04em;margin:4px 0 0}.doc-card p{color:#adbbbb;line-height:1.55;margin:0;flex:1}.doc-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:8px}.doc-tag{border:1px solid rgba(215,246,111,.28);background:rgba(215,246,111,.09);color:#e9ffd0;border-radius:999px;padding:6px 9px;font-size:11px;font-weight:1000}.doc-soft{color:#dce8e5;font-size:12px;font-weight:1000}.doc-disabled{cursor:not-allowed;opacity:.72}.doc-disabled:hover{transform:none;border-color:var(--stroke)}
+  .docs-note{margin-top:28px;border:1px dashed rgba(255,255,255,.18);border-radius:24px;padding:18px 20px;color:#b9c8c6;background:rgba(255,255,255,.035);line-height:1.55}
+  @media(max-width:980px){.docs-grid{grid-template-columns:1fr 1fr}.docs-section-head{align-items:flex-start;flex-direction:column}.docs-hero{padding:26px}}
+  @media(max-width:640px){.docs-shell{width:min(100% - 22px,1180px);padding-top:24px}.docs-grid{grid-template-columns:1fr}.docs-hero h1{font-size:52px}.doc-card{min-height:180px}}
+</style>
+</head>
+<body class="sov-premium docs-page">
+<div class="docs-shell">
+<header class="sov-top">
+<a class="sov-brand" href="dashboard.html"><div class="sov-mark">SOV</div><div><strong>Dokumenti</strong><small>SOV Cloud</small></div></a>
+<nav class="sov-nav"><a href="dashboard.html">SOV Cloud</a><a href="karta.html">Karta</a><a href="oruzarstvo.html">Oprema</a><a class="primary" href="dokumenti.html">Dokumenti</a></nav>
+</header>
+<main>
+<section class="docs-hero">
+<span class="docs-eyebrow">📄 Dokument centar</span>
+<h1>Zapisnici i upute.</h1>
+<p>Jedan čisti ulaz za zapisnike, arhivu i osnovne upute za članove.</p>
+<div class="docs-quick">
+<a class="docs-btn primary" href="#zapisnici-sastanaka">Zapisnici sastanaka ↓</a>
+<a class="docs-btn" href="#tutoriali">Tutoriali ↓</a>
+</div>
+</section>
+<section id="zapisnici-sastanaka" aria-label="Zapisnici sastanaka">
+<div class="docs-section-head"><div><h2>Zapisnici sastanaka</h2><p>Pregled, izrada i službena arhiva zapisnika.</p></div><span>operativni dokumenti</span></div>
+<div class="docs-grid">
+<a class="doc-card" href="zapisnici-cijela-arhiva.html" style="--accent:rgba(215,246,111,.18)"><div class="doc-icon">🗃️</div><h3>Cijela arhiva zapisnika (1960–2026)</h3><p>Pregled zapisnika kroz godine, s aktualnim i arhivskim mapama na jednom mjestu.</p><div class="doc-foot"><span class="doc-tag">arhiva</span><span class="doc-soft">Otvori arhivu →</span></div></a>
+<a class="doc-card" href="zapisnici-aktualni-2026.html" style="--accent:rgba(215,246,111,.15)"><div class="doc-icon">📁</div><h3>Aktualni zapisnici (2026)</h3><p>Prva uredna mapa za aktualne zapisnike sastanaka. Uključuje 17 DOCX zapisnika iz 2026., sortirano po mjesecima.</p><div class="doc-foot"><span class="doc-tag">2026 · aktualno</span><span class="doc-soft">Otvori mapu →</span></div></a>
+<a class="doc-card" href="zapisnici-arhiva-2017-2022.html" style="--accent:rgba(120,215,255,.14)"><div class="doc-icon">🗄️</div><h3>Arhiva zapisnika (2017–2022)</h3><p>Uredna arhivska mapa iz uploadanog paketa: 271 dokument, redovni zapisnici i prateći dokumenti po godinama i mjesecima.</p><div class="doc-foot"><span class="doc-tag">2017–2022 · arhiva</span><span class="doc-soft">Otvori mapu →</span></div></a>
+<a class="doc-card" href="pregled-zapisnika.html" style="--accent:rgba(120,215,255,.14)"><div class="doc-icon">▤</div><h3>Pregled zapisnika</h3><p>Opći pregled redovnih zapisnika sastanaka Odsjeka, spreman za daljnje povezivanje sa starom arhivom.</p><div class="doc-foot"><span class="doc-tag">sastanci</span><span class="doc-soft">Otvori →</span></div></a>
+<a class="doc-card" href="novi-zapisnik.html" style="--accent:rgba(215,246,111,.14)"><div class="doc-icon">✍️</div><h3>Novi zapisnik</h3><p>Editor za unos novog zapisnika s osnovnim podacima, tekstom i kasnijim izvozom.</p><div class="doc-foot"><span class="doc-tag">unos</span><span class="doc-soft">Napravi →</span></div></a>
+<a class="doc-card" href="zapisnici-skupstine.html" style="--accent:rgba(255,191,107,.14)"><div class="doc-icon">◇</div><h3>Zapisnici skupštine</h3><p>Odvojena arhiva skupština, odluka i formalnih zaključaka društva.</p><div class="doc-foot"><span class="doc-tag">skupštine</span><span class="doc-soft">Arhiva →</span></div></a>
+</div>
+</section>
+<section id="tutoriali" aria-label="Tutoriali">
+<div class="docs-section-head"><div><h2>Tutoriali</h2><p>Kratke upute za članove i operativne role. Za sada su grupirane kao ulazi, bez miješanja s inventarom ili arhivarom.</p></div><span>upute i trening</span></div>
+<div class="docs-grid">
+<a class="doc-card" href="dokumentacija.html#upute" style="--accent:rgba(131,230,194,.14)"><div class="doc-icon">☰</div><h3>SOV Cloud osnove</h3><p>Osnovne upute za korištenje Cloud stranica, dokumentacije i internih alata.</p><div class="doc-foot"><span class="doc-tag">osnove</span><span class="doc-soft">Otvori →</span></div></a>
+<a class="doc-card" href="topodroid.html" style="--accent:rgba(120,215,255,.14)"><div class="doc-icon">🧭</div><h3>TopoDroid i nacrti</h3><p>Upute i radni ulaz za nacrte, TopoDroid exporte i povezivanje s objektima.</p><div class="doc-foot"><span class="doc-tag">arhiva</span><span class="doc-soft">Otvori →</span></div></a>
+<a class="doc-card" href="videos.html" style="--accent:rgba(255,191,107,.14)"><div class="doc-icon">▶️</div><h3>Video tutoriali</h3><p>Mjesto za kratke video upute i demonstracije rada u SOV sustavu.</p><div class="doc-foot"><span class="doc-tag">video</span><span class="doc-soft">Otvori →</span></div></a>
+<div class="docs-note" style="grid-column:1/-1;margin-top:0">Tutoriali su u pripremi.</div>
+</div>
+</section>
+<div class="docs-note">Dokument centar okuplja zapisnike, arhivu i upute za članove.</div>
+</main>
+</div>
+<script defer src="assets/sov-foundation-v55822.js"></script>
+<script defer src="assets/sov-shell-v55825.js"></script>
+<script defer src="assets/sov-polish-v55826.js"></script>
+<script defer src="assets/sov-wow-v6.js?v=6.1.26"></script>
+<script defer src="assets/sov-version.js?v=6.1.26"></script>
+<script defer src="assets/sov-client-logger.js?v=6.1.31"></script></body>
+</html>

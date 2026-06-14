@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="hr"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Inventura — Oružar Master</title><link href="assets/site.css" rel="stylesheet"/><link href="assets/oruzar-master-clean.css?v=6.1.30" rel="stylesheet"/><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="assets/supabase-config.js"></script><script src="assets/auth.js"></script><script src="assets/oruzarstvo-supabase.js?v=6.1.39a-naming"></script><link href="assets/armory-mobile-polish.css?v=6.1.5" rel="stylesheet"/>
+<style id="oruzar-master-v5-58-18-clean-mobile">
+/* v5.58.26 — clean master workspace + mobile browser polish */
+.cm-brand small{font-size:12px!important;color:#9fb3ad!important}.cm-hero .eyebrow{display:none!important}.cm-hero{padding:28px!important;border-radius:28px!important;background:linear-gradient(135deg,rgba(255,255,255,.075),rgba(255,255,255,.035))!important}.cm-hero h1{letter-spacing:-.055em!important}.cm-hero p{max-width:760px!important;color:#c7d7d1!important}/* UI FIX v6.1.28: KPI sekcija ostaje vidljiva ako je popunjena */.cm-kpis:empty{display:none!important}.cm-nav a[href="oruzar-master-notes.html"]{display:none!important}
+@media(max-width:900px){.cm-shell{width:calc(100% - 18px)!important}.cm-top{position:sticky;top:0;z-index:30;background:rgba(7,17,15,.92);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.08);padding:10px 0!important;display:grid!important;gap:10px!important}.cm-nav{display:flex!important;gap:7px!important;overflow-x:auto!important;white-space:nowrap!important;padding-bottom:4px}.cm-nav a{flex:0 0 auto!important;padding:9px 11px!important;border-radius:999px!important}.cm-hero{padding:18px!important;border-radius:22px!important}.cm-hero h1{font-size:clamp(28px,9vw,42px)!important}.cm-panel,.v461-panel,.v457-panel{border-radius:22px!important;padding:14px!important}.cm-tools,.v461-actions,.v457-actions{display:grid!important;grid-template-columns:1fr!important}.cm-tools input,.cm-tools button,.cm-btn,.btn{min-height:42px!important}.v461-grid,.v459-category-grid,.v457-home-grid,.v461-items{grid-template-columns:1fr!important}.table-wrap{overflow:auto!important}}
+</style>
+<link href="assets/oruzar-master-ops-v55818.css?v=6.1.30" rel="stylesheet"/><link href="assets/sov-foundation-v55822.css" rel="stylesheet"/><link href="assets/sov-shell-v55825.css" rel="stylesheet"/><link href="assets/sov-polish-v55826.css" rel="stylesheet"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap" rel="stylesheet"/><link href="assets/sov-wow-v6.css" rel="stylesheet"/><link href="assets/sov-wow-app-v6.css" rel="stylesheet"/></head><body class="clean-armory oruzar-page-inventura"><div class="cm-shell"><header class="cm-top"><a class="cm-brand" href="oruzar-master.html"><span class="cm-logo">✅</span><span><strong>Inventura</strong><small>Jednostavan operativni ekran za prebrojavanje po kategorijama i export XLS inventure.</small></span></a><nav class="cm-nav"><a href="dashboard.html">Dashboard</a><a href="izleti.html">Izleti</a><a href="karta.html">Karta</a><a href="oruzar-master.html">Pregled</a><a href="oruzar-master-inventar.html">Inventar</a><a class="active" href="oruzar-master-inventura.html">Inventura</a><a href="oruzar-master-posudbe.html">Posudba</a></nav></header><section class="cm-hero"><div class="eyebrow">Oružar Master</div><h1>Inventura opreme</h1><p>Prođi popis, označi svaki pronađeni artikl i na kraju spremi Excel izvještaj.</p></section><!-- UI FIX v6.1.29: Inventura - jasna uputa i bolji layout -->
+<section class="cm-panel">
+
+  <!-- Korak po korak uputa — uvijek vidljiva -->
+  <div style="border:1px solid rgba(124,255,155,.22);background:rgba(124,255,155,.06);border-radius:20px;padding:16px;margin-bottom:16px;">
+    <div style="font-size:12px;font-weight:950;color:#7cff9b;text-transform:uppercase;letter-spacing:.10em;margin-bottom:10px;">Kako raditi inventuru</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+      <div style="border:1px solid rgba(255,255,255,.10);border-radius:14px;padding:11px;background:rgba(0,0,0,.18);">
+        <div style="font-size:18px;font-weight:1000;color:#7cff9b;">1.</div>
+        <div style="font-size:13px;font-weight:900;margin-top:4px;">Odaberi datum i kategoriju</div>
+        <div style="font-size:12px;color:#9fb4ae;margin-top:4px;line-height:1.4;">Upiši datum danas i odaberi kojom opremom počinješ.</div>
+      </div>
+      <div style="border:1px solid rgba(255,255,255,.10);border-radius:14px;padding:11px;background:rgba(0,0,0,.18);">
+        <div style="font-size:18px;font-weight:1000;color:#7cff9b;">2.</div>
+        <div style="font-size:13px;font-weight:900;margin-top:4px;">Prođi svaku stavku</div>
+        <div style="font-size:12px;color:#9fb4ae;margin-top:4px;line-height:1.4;">Upiši koliko ima. Klikni OK za svaki pronađeni artikl.</div>
+      </div>
+      <div style="border:1px solid rgba(255,255,255,.10);border-radius:14px;padding:11px;background:rgba(0,0,0,.18);">
+        <div style="font-size:18px;font-weight:1000;color:#7cff9b;">3.</div>
+        <div style="font-size:13px;font-weight:900;margin-top:4px;">Spremi rezultat</div>
+        <div style="font-size:12px;color:#9fb4ae;margin-top:4px;line-height:1.4;">Na kraju klikni "Spremi inventuru u Excel" i arhiviraj datoteku.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Kontrole — s labelama -->
+  <div class="cm-tools" style="margin-bottom:14px;">
+    <!-- UI FIX v6.1.35: Inventura dobiva tolerantnu pretragu -->
+    <div style="display:grid;gap:4px;">
+      <label style="font-size:11px;font-weight:950;color:#9fb4ae;text-transform:uppercase;letter-spacing:.08em;">Pretraga opreme</label>
+      <input class="cm-input" id="cmSearch" placeholder="Tipfelere OK: karbiner, busilica, bosch, baterj..." aria-label="Pretraga opreme za inventuru" autocomplete="off"/>
+    </div>
+    <div style="display:grid;gap:4px;">
+      <label style="font-size:11px;font-weight:950;color:#9fb4ae;text-transform:uppercase;letter-spacing:.08em;">Datum inventure</label>
+      <input class="cm-input" type="date" value="" aria-label="Datum inventure"/>
+    </div>
+    <div style="display:grid;gap:4px;">
+      <label style="font-size:11px;font-weight:950;color:#9fb4ae;text-transform:uppercase;letter-spacing:.08em;">Napomena (opcionalno)</label>
+      <input class="cm-input" placeholder="npr. Godišnja inventura 2026, polica A" aria-label="Napomena inventure"/>
+    </div>
+    <button class="cm-btn primary" onclick="document.getElementById('inventoryRoot').scrollIntoView({behavior:'smooth'})">
+      ↓ Vidi popis opreme
+    </button>
+    <button class="cm-btn" onclick="CleanArmory.exportInventuraXls()">
+      ⬇️ Spremi inventuru u Excel
+    </button>
+  </div>
+
+  <!-- KPIs (JS ih popunjava) -->
+  <div class="cm-kpis" id="cmKpis"></div>
+
+  <!-- Separator -->
+  <hr style="border:0;border-top:1px solid rgba(255,255,255,.10);margin:14px 0;"/>
+  <div style="font-size:12px;color:#9fb4ae;font-weight:850;margin-bottom:10px;">
+    ↓ Odaberi kategoriju i kreni brojem
+  </div>
+
+  <!-- Inventory content — puni JS -->
+  <div id="inventoryRoot">
+    <div style="border:1px dashed rgba(255,255,255,.16);border-radius:18px;padding:24px;text-align:center;color:#9fb4ae;">
+      Učitavam popis opreme…
+    </div>
+  </div>
+
+</section></div><script src="assets/oruzar-master-clean.js?v=6.1.39a-naming"></script><script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script defer="" src="assets/sov-polish-v55826.js"></script><script defer src="assets/sov-wow-v6.js?v=6.1.6"></script><script defer src="assets/sov-version.js?v=6.1.6"></script><script defer src="assets/sov-client-logger.js?v=6.1.31"></script></body></html>
