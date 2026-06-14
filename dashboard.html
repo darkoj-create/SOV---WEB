@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1" name="viewport"/>
-<title>SOV Cloud — Dashboard v6.1.42</title>
+<title>SOV Cloud — Dashboard v6.1.42a</title>
 <link href="assets/site.css" rel="stylesheet"/>
 <link href="assets/mobile.css" rel="stylesheet"/>
 <link href="assets/sov-premium-ui.css" rel="stylesheet"/>
@@ -76,7 +76,7 @@ body.dashboard-page header.sov-top .sov-nav a:not([href="dashboard.html"]):not([
 <a class="sov-btn main" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster" href="karta.html">Otvori kartu →</a>
 <a class="sov-btn" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster" href="predaj-novu-jamu.html">Predaj novu jamu</a>
 <a class="sov-btn" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster" href="izleti.html">Izleti</a>
-<a class="sov-btn" data-dash-visible="oruzar,admin,webmaster" data-dash-ability="armory" href="oruzarstvo.html">Oprema</a>
+<a class="sov-btn" data-dash-visible="oruzar,admin,webmaster" data-dash-ability="armory" hidden href="oruzarstvo.html">Oprema</a>
 <a class="sov-btn" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster" href="dokumenti.html">Dokumenti</a>
 </div>
 </div>
@@ -86,7 +86,7 @@ body.dashboard-page header.sov-top .sov-nav a:not([href="dashboard.html"]):not([
 <div class="v609-status-item"><span>Stvarna rola</span><b data-dash-role="">—</b></div>
 <div class="v609-status-item" data-dash-visible="webmaster"><span>Preview view</span><b data-preview-role-label="">—</b></div>
 <div class="v609-status-item"><span>Status računa</span><b data-auth-status="">—</b></div>
-<div class="v609-status-item"><span>Web build</span><b data-sov-version="">6.1.42</b></div>
+<div class="v609-status-item"><span>Web build</span><b data-sov-version="">6.1.42a</b></div>
 </div>
 <p class="v609-subtle-note" data-access-summary="">Učitavam prava…</p>
 </aside>
@@ -107,10 +107,10 @@ body.dashboard-page header.sov-top .sov-nav a:not([href="dashboard.html"]):not([
 <a class="sov-module v609-module" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster" href="izleti.html" style="--accent:rgba(255,191,107,.18)">
 <div class="sov-icon">⛺</div><h3>Izleti</h3><p>Pregled izleta, prijava, priprema i kasnije arhiva izleta.</p><div class="sov-module-foot"><span class="sov-soft">Otvori</span></div>
 </a>
-<a class="sov-module v609-module" data-dash-visible="editor,arhivar,admin,webmaster" data-dash-ability="trips" href="tracking.html" style="--accent:rgba(131,230,194,.18)">
+<a class="sov-module v609-module" data-dash-visible="editor,arhivar,admin,webmaster" data-dash-ability="trips" hidden href="tracking.html" style="--accent:rgba(131,230,194,.18)">
 <div class="sov-icon">📡</div><h3>Field tracking</h3><p>Lite ping, ruta i zadnje poznate pozicije kad je izlet aktivan.</p><div class="sov-module-foot"><span class="sov-tag">lite</span><span class="sov-soft">Otvori</span></div>
 </a>
-<a class="sov-module v609-module" data-dash-visible="oruzar,admin,webmaster" data-dash-ability="armory" href="oruzarstvo.html" style="--accent:rgba(255,211,107,.16)">
+<a class="sov-module v609-module" data-dash-visible="oruzar,admin,webmaster" data-dash-ability="armory" hidden href="oruzarstvo.html" style="--accent:rgba(255,211,107,.16)">
 <div class="sov-icon">🧰</div><h3>Oprema</h3><p>Pretraži katalog i pošalji zahtjev za posudbu opreme.</p><div class="sov-module-foot"><span class="sov-soft">Pretraži</span></div>
 </a>
 <a class="sov-module v609-module" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster" href="dokumenti.html" style="--accent:rgba(121,217,255,.16)">
@@ -121,27 +121,27 @@ body.dashboard-page header.sov-top .sov-nav a:not([href="dashboard.html"]):not([
 </a>
 </section>
 
-<div class="v609-zone-head" data-section="internal">
+<div class="v609-zone-head" data-section="internal" data-dash-visible="oruzar,arhivar,editor,admin,webmaster" hidden>
 <div><h2>Rad po ulozi</h2><p>Ovdje su samo operativni alati za tvoju rolu. Admin vidi ljude i operativu; Webmaster vidi tehniku posebno niže.</p></div>
 <span class="v609-zone-tag">Oružar · Arhivar · Urednik · Admin</span>
 </div>
-<section aria-label="Interni moduli" class="sov-grid v609-grid-role">
-<a class="sov-module v609-module" data-dash-visible="oruzar,admin,webmaster" data-dash-ability="armory" data-role-armory="" href="oruzar-master.html" style="--accent:rgba(255,191,107,.2)">
+<section aria-label="Interni moduli" class="sov-grid v609-grid-role" data-dash-visible="oruzar,arhivar,editor,admin,webmaster" hidden>
+<a class="sov-module v609-module" data-dash-visible="oruzar,admin,webmaster" data-dash-ability="armory" data-role-armory="" hidden href="oruzar-master.html" style="--accent:rgba(255,191,107,.2)">
 <div class="sov-icon">🛠️</div><h3>Oružarstvo</h3><p>Katalog opreme, zahtjevi, zaduženja, servis i inventura.</p><div class="sov-module-foot"><span class="sov-tag">Oružar</span><span class="sov-soft">Otvori</span></div>
 </a>
-<a class="sov-module v609-module" data-dash-visible="arhivar,admin,webmaster" data-dash-ability="archive" data-role-archive="" href="arhivar-dashboard.html" style="--accent:rgba(215,246,111,.16)">
+<a class="sov-module v609-module" data-dash-visible="arhivar,admin,webmaster" data-dash-ability="archive" data-role-archive="" hidden href="arhivar-dashboard.html" style="--accent:rgba(215,246,111,.16)">
 <div class="sov-icon">🗂️</div><h3>Arhivar</h3><p>Uređivanje arhive, objekti, nacrti, zapisnici i exporti.</p><div class="sov-module-foot"><span class="sov-tag">Arhivar</span><span class="sov-soft">Otvori</span></div>
 </a>
-<a class="sov-module v609-module" data-dash-visible="arhivar,admin,webmaster" data-dash-ability="archive" data-role-archive="" href="arhivar-predane-jame.html" style="--accent:rgba(121,217,255,.18)">
+<a class="sov-module v609-module" data-dash-visible="arhivar,admin,webmaster" data-dash-ability="archive" data-role-archive="" hidden href="arhivar-predane-jame.html" style="--accent:rgba(121,217,255,.18)">
 <div class="sov-icon">📥</div><h3>Predane jame</h3><p>Inbox za nove jame, dopune, privitke i Excel export.</p><div class="sov-module-foot"><span class="sov-tag">Review</span><span class="sov-soft">Pregled</span></div>
 </a>
-<a class="sov-module v609-module" data-dash-visible="arhivar,admin,webmaster" data-dash-ability="archive" data-role-archive="" href="topodroid-import.html" style="--accent:rgba(131,230,194,.18)">
+<a class="sov-module v609-module" data-dash-visible="arhivar,admin,webmaster" data-dash-ability="archive" data-role-archive="" hidden href="topodroid-import.html" style="--accent:rgba(131,230,194,.18)">
 <div class="sov-icon">⬆️</div><h3>TopoDroid import</h3><p>Batch upload/export pipeline za nacrte i survey pakete.</p><div class="sov-module-foot"><span class="sov-tag">Arhivar</span><span class="sov-soft">Import</span></div>
 </a>
-<a class="sov-module v609-module" data-dash-visible="editor,admin,webmaster" data-dash-ability="editor" data-role-editor="" href="news-editor.html" style="--accent:rgba(102,226,141,.17)">
+<a class="sov-module v609-module" data-dash-visible="editor,admin,webmaster" data-dash-ability="editor" data-role-editor="" hidden href="news-editor.html" style="--accent:rgba(102,226,141,.17)">
 <div class="sov-icon">📰</div><h3>Urednik vijesti</h3><p>Uredi postojeće vijesti, objavi nove i obradi predane članke.</p><div class="sov-module-foot"><span class="sov-tag">Urednik</span><span class="sov-soft">Uredi</span></div>
 </a>
-<article class="sov-module v609-module" data-dash-visible="admin,webmaster" data-dash-ability="admin" data-role-admin="" style="--accent:rgba(255,211,107,.16)">
+<article class="sov-module v609-module" data-dash-visible="admin,webmaster" data-dash-ability="admin" data-role-admin="" hidden style="--accent:rgba(255,211,107,.16)">
 <div class="sov-icon">🛡️</div><h3>Admin operativa</h3><p>Odobrenja korisnika, role, obavijesti i ulaz u glavne radne module.</p>
 <div class="v609-mini-actions">
 <a href="admin-users.html"><span>Korisnici</span><small>odobrenja i role →</small></a>
@@ -152,11 +152,11 @@ body.dashboard-page header.sov-top .sov-nav a:not([href="dashboard.html"]):not([
 </article>
 </section>
 
-<div class="v609-zone-head" data-dash-visible="webmaster" data-dash-ability="webmaster" data-role-webmaster="" data-section="system">
+<div class="v609-zone-head" data-dash-visible="webmaster" data-dash-ability="webmaster" data-role-webmaster="" data-section="system" hidden>
 <div><h2>Sustav</h2><p>Tehnički alati postoje, ali nisu više dio glavnog korisničkog iskustva.</p></div>
 <span class="v609-zone-tag">webmaster only</span>
 </div>
-<details class="v609-tech-wrap" data-dash-visible="webmaster" data-dash-ability="webmaster" data-role-webmaster="">
+<details class="v609-tech-wrap" data-dash-visible="webmaster" data-dash-ability="webmaster" data-role-webmaster="" hidden>
 <summary class="v609-tech-summary"><div><b>Prikaži tehničke alate</b><small>Sync status, role manager, audit i SQL alati. Otvori samo kad stvarno održavaš sustav.</small></div><span class="chev">Otvori</span></summary>
 <div class="v609-tech-body">
 <section aria-label="Stanje sustava" class="v609-system-grid">
@@ -243,9 +243,14 @@ body.dashboard-page header.sov-top .sov-nav a:not([href="dashboard.html"]):not([
         const perms=permsFor(role,profile);
         document.querySelectorAll('[data-preview-role-label]').forEach(el=>el.textContent=LABELS[role]||role);
         document.querySelectorAll('#dashboardRolePreview button[data-preview-dashboard-role]').forEach(btn=>btn.classList.toggle('active',btn.dataset.previewDashboardRole===role));
-        document.querySelectorAll('[data-dash-visible]').forEach(el=>el.classList.toggle('is-preview-hidden',!visibleFor(el,role,perms)));
-        document.querySelectorAll('.v609-zone-head[data-section="internal"], .sov-section-head[data-section="internal"]').forEach(el=>{
+        document.querySelectorAll('[data-dash-visible]').forEach(el=>{
+          const ok=visibleFor(el,role,perms);
+          el.hidden=!ok;
+          el.classList.toggle('is-preview-hidden',!ok);
+        });
+        document.querySelectorAll('.v609-zone-head[data-section="internal"], .sov-section-head[data-section="internal"], .sov-grid[aria-label="Interni moduli"]').forEach(el=>{
           const any=Array.from(document.querySelectorAll('.sov-grid[aria-label="Interni moduli"] [data-dash-visible]')).some(card=>visibleFor(card,role,perms));
+          el.hidden=!any;
           el.classList.toggle('is-preview-hidden',!any);
         });
         const roleEl=document.querySelector('[data-dash-role]');
@@ -273,7 +278,7 @@ body.dashboard-page header.sov-top .sov-nav a:not([href="dashboard.html"]):not([
       });
     })();
   </script>
-<script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script defer="" src="assets/sov-polish-v55826.js"></script><script defer src="assets/sov-wow-v6.js?v=6.1.42"></script><script defer src="assets/sov-version.js?v=6.1.42"></script><script>
+<script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script defer="" src="assets/sov-polish-v55826.js"></script><script defer src="assets/sov-wow-v6.js?v=6.1.42a"></script><script defer src="assets/sov-version.js?v=6.1.42a"></script><script>
 // UI FIX v6.1.27: fallback za slučaj da auth ne odgovori na vrijeme
 setTimeout(function() {
   var el = document.querySelector('[data-access-summary]');

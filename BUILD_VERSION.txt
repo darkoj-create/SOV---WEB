@@ -1,1 +1,1 @@
-sov-web-build-v6.1.42-role-aware-ui
+sov-web-build-v6.1.42a-dashboard-hard-role-hide

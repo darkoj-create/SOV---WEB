@@ -1,10 +1,10 @@
 {
   "app": "SOV web",
-  "version": "6.1.42",
-  "versionName": "v6.1.42-role-aware-ui",
-  "build": "sov-web-build-v6.1.42-role-aware-ui",
-  "createdAt": "2026-06-14T22:30:00Z",
-  "cacheBust": "6142-role-ui",
+  "version": "6.1.42a",
+  "versionName": "v6.1.42a-dashboard-hard-role-hide",
+  "build": "sov-web-build-v6.1.42a-dashboard-hard-role-hide",
+  "createdAt": "2026-06-14T23:10:00Z",
+  "cacheBust": "6142a-hard-role-hide",
   "base": "sov-web-build-v6.1.38-oruzarstvo-inventory-edit-name-cleanup.zip",
   "requiresSql": false,
   "requiredSql": [],
@@ -15,9 +15,9 @@
     "VERSION.txt",
     "BUILD_VERSION.txt"
   ],
-  "releaseType": "role-aware-ui-hotfix",
+  "releaseType": "dashboard-hard-role-hide-hotfix",
   "notes": [
-    "Dashboard now hides modules that the active role cannot open.",
+    "Dashboard privileged modules are hidden in the initial HTML and only shown after the active role is confirmed.",
     "Common shell navigation hides armory, archive, editor, admin and webmaster links from unauthorized roles.",
     "No SQL changes are required for this build."
   ]
