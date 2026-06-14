@@ -135,17 +135,39 @@
   }
   async function currentUser(){ return await getProfile(); }
 
+  function authBaseUrl(){
+    try{
+      const basePath = location.pathname.replace(/[^\/]*$/, '');
+      return location.origin + basePath;
+    }catch(e){ return location.origin + '/'; }
+  }
+  function authRedirectUrl(page){
+    return authBaseUrl() + (page || 'login.html');
+  }
+  function validatePasswordPair(password, confirm){
+    if(!password) return 'Unesi lozinku.';
+    if(String(password).length < 8) return 'Lozinka mora imati barem 8 znakova.';
+    if(confirm !== undefined && password !== confirm) return 'Lozinke se ne poklapaju.';
+    return '';
+  }
+
   async function register(payload){
     const sb = getClient();
     if(!sb) return {ok:false,msg:'Supabase još nije konfiguriran. Upisi URL i anon key u assets/supabase-config.js.'};
     const email = (payload.email||'').trim().toLowerCase();
     const password = payload.password || '';
+    const passwordConfirm = payload.passwordConfirm;
     const full_name = (payload.name||'').trim();
     const note = payload.note || '';
     if(!email || !password || !full_name) return {ok:false,msg:'Unesi ime, email i lozinku.'};
+    const passMsg = validatePasswordPair(password, passwordConfirm);
+    if(passMsg) return {ok:false,msg:passMsg};
     const {data,error} = await sb.auth.signUp({
       email,password,
-      options:{data:{full_name, requested_role:'user', note}}
+      options:{
+        data:{full_name, requested_role:'user', note},
+        emailRedirectTo: authRedirectUrl('login.html')
+      }
     });
     if(error) return {ok:false,msg:error.message};
     if(data.user){
@@ -194,6 +216,31 @@
     }
     return {ok:true,user:profile};
   }
+
+  async function requestPasswordReset(email){
+    const sb = getClient();
+    if(!sb) return {ok:false,msg:'Supabase nije konfiguriran. Upisi URL i anon key u assets/supabase-config.js.'};
+    const cleanEmail = (email||'').trim().toLowerCase();
+    if(!cleanEmail) return {ok:false,msg:'Unesi email adresu.'};
+    const {error} = await sb.auth.resetPasswordForEmail(cleanEmail,{redirectTo:authRedirectUrl('reset-password.html')});
+    if(error) return {ok:false,msg:error.message || 'Slanje reset linka nije uspjelo.'};
+    return {ok:true,msg:'Ako taj email postoji u sustavu, poslan je link za reset lozinke.'};
+  }
+
+  async function updatePassword(password, passwordConfirm){
+    const sb = getClient();
+    if(!sb) return {ok:false,msg:'Supabase nije konfiguriran. Upisi URL i anon key u assets/supabase-config.js.'};
+    const passMsg = validatePasswordPair(password, passwordConfirm);
+    if(passMsg) return {ok:false,msg:passMsg};
+    const {data} = await sb.auth.getSession();
+    if(!data || !data.session) return {ok:false,msg:'Reset link nije aktivan ili je istekao. Zatraži novi link.'};
+    const {error} = await sb.auth.updateUser({password});
+    if(error) return {ok:false,msg:error.message || 'Promjena lozinke nije uspjela.'};
+    profileCache = null; permissionCache = null;
+    try{ await sb.auth.signOut(); }catch(e){}
+    return {ok:true,msg:'Lozinka je promijenjena. Sada se možeš prijaviti novom lozinkom.'};
+  }
+
   async function logout(){ const sb=getClient(); if(sb) await sb.auth.signOut(); profileCache=null; permissionCache=null; try{localStorage.removeItem('SOV_OPEN_PREVIEW_MODE');}catch(e){} location.href='index.html'; }
 
   async function can(ability){
@@ -365,5 +412,5 @@
     document.addEventListener('DOMContentLoaded', async()=>{ await autoProtect(); resolve(true); });
   });
 
-  window.SOVAuth = {isConfigured,getClient,getSession,getProfile,currentUser,register,login,logout,can,requireApproved,requireAdmin,requireWebmaster,requireEditor,requireArmory,requireArchive,loadUsers,approve,reject,setRole,loadCurrentPermissions,renderUserBadge,statusText,roleText,ready:()=>readyPromise};
+  window.SOVAuth = {isConfigured,getClient,getSession,getProfile,currentUser,register,login,requestPasswordReset,updatePassword,logout,can,requireApproved,requireAdmin,requireWebmaster,requireEditor,requireArmory,requireArchive,loadUsers,approve,reject,setRole,loadCurrentPermissions,renderUserBadge,statusText,roleText,ready:()=>readyPromise};
 })();

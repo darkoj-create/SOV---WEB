@@ -1070,6 +1070,26 @@
   async function loadCatalogSnapshot(snapshotId){
     if(!configured() || !snapshotId) return null;
     const client=sb();
+
+    // v6.1.39g: use SECURITY DEFINER RPC first. Direct browser reads from
+    // equipment_catalog_snapshot_items can be blocked by RLS, which created
+    // empty old/combined Excel tabs even though the snapshot existed.
+    try{
+      const rpc=await client.rpc('sov_armory_get_catalog_snapshot',{p_snapshot_id:snapshotId});
+      if(!rpc.error && rpc.data){
+        const d=rpc.data;
+        const items=Array.isArray(d.items)?d.items:(Array.isArray(d.raw_app_catalog)?d.raw_app_catalog:[]);
+        if(items.length){
+          d.items=items;
+          d.raw_app_catalog=Array.isArray(d.raw_app_catalog)&&d.raw_app_catalog.length?d.raw_app_catalog:items;
+          d.ropes=Array.isArray(d.ropes)?d.ropes:[];
+          d.pieces=Array.isArray(d.pieces)?d.pieces:[];
+          return d;
+        }
+      }
+      if(rpc.error) console.warn('snapshot RPC failed, falling back to direct select', rpc.error.message);
+    }catch(e){ console.warn('snapshot RPC exception, falling back to direct select', e); }
+
     const snapRes=await client.from('equipment_catalog_snapshots').select('*').eq('id',snapshotId).maybeSingle();
     if(snapRes.error) throw snapRes.error;
     const snap=snapRes.data;
