@@ -496,7 +496,46 @@
   function safeSheetName(name){let x=String(name||'Kategorija').replace(/[\\\/?*\[\]:]/g,' ').replace(/\s+/g,' ').trim(); if(!x)x='Kategorija'; return x.slice(0,31)}
   function xmlEsc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));}
   function xlsCell(v,cls=''){return `<td class="${cls}">${xmlEsc(v)}</td>`;}
-  function xlsWorkbook(filename,sheets){const names=sheets.map(s=>safeSheetName(s.name)); const tabs=names.map(n=>`<x:ExcelWorksheet><x:Name>${xmlEsc(n)}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet>`).join(''); const body=sheets.map((sheet,idx)=>`<div style="mso-element:worksheet" id="${xmlEsc(names[idx])}"><table>${sheet.html}</table></div>`).join('\n'); const html=`<!doctype html><html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets>${tabs}</x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--><style>table{border-collapse:collapse;font-family:Arial,sans-serif;font-size:12px}td,th{border:1px solid #999;padding:6px;mso-number-format:"\\@"}th{background:#d9ead3;font-weight:bold}.num{mso-number-format:"0"}.head{background:#073b32;color:#fff;font-size:16px;font-weight:bold}</style></head><body>${body}</body></html>`; const blob=new Blob([html],{type:'application/vnd.ms-excel;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=filename; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();},1500);}
+  function xlsWorkbook(filename,sheets){
+    // v6.1.39i: stop exporting fake multi-tab HTML .xls.  Some Excel/Google Sheets imports
+    // show only the first sheet or flatten the workbook.  SpreadsheetML 2003 is still a
+    // simple client-side format, but it creates real Worksheet nodes/tabs.
+    const rowsFromHtml=(html)=>{
+      const holder=document.createElement('div');
+      holder.innerHTML=`<table>${html||''}</table>`;
+      return Array.from(holder.querySelectorAll('tr')).map(tr=>Array.from(tr.children).map(cell=>({
+        text:(cell.textContent||'').replace(/\s+/g,' ').trim(),
+        th:String(cell.tagName||'').toLowerCase()==='th',
+        cls:String(cell.getAttribute('class')||''),
+        colspan:Math.max(1,parseInt(cell.getAttribute('colspan')||'1',10)||1)
+      })));
+    };
+    const cellType=(text,cls)=>{
+      const raw=String(text??'').trim();
+      if(/\bnum\b/.test(String(cls||'')) && raw!=='' && /^-?\d+(?:[.,]\d+)?$/.test(raw)){
+        return {type:'Number', value:raw.replace(',','.')};
+      }
+      return {type:'String', value:raw};
+    };
+    const styleFor=(cell,rowIdx)=>cell.cls.includes('head')?'sTitle':cell.th?'sHeader':(/\bnum\b/.test(cell.cls)?'sNumber':'sText');
+    const xmlRows=(rows)=>rows.map((row,rowIdx)=>`<Row>${row.map(cell=>{
+      const data=cellType(cell.text,cell.cls);
+      const merge=cell.colspan>1?` ss:MergeAcross="${cell.colspan-1}"`:'';
+      return `<Cell ss:StyleID="${styleFor(cell,rowIdx)}"${merge}><Data ss:Type="${data.type}">${xmlEsc(data.value)}</Data></Cell>`;
+    }).join('')}</Row>`).join('');
+    const worksheets=(sheets||[]).map(sheet=>{
+      const name=safeSheetName(sheet.name);
+      return `<Worksheet ss:Name="${xmlEsc(name)}"><Table>${xmlRows(rowsFromHtml(sheet.html))}</Table><WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel"><DisplayGridlines/></WorksheetOptions></Worksheet>`;
+    }).join('');
+    const xml=`<?xml version="1.0" encoding="UTF-8"?><?mso-application progid="Excel.Sheet"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" xmlns:html="http://www.w3.org/TR/REC-html40"><DocumentProperties xmlns="urn:schemas-microsoft-com:office:office"><Author>SOV</Author><LastAuthor>SOV</LastAuthor><Created>${new Date().toISOString()}</Created></DocumentProperties><Styles><Style ss:ID="Default" ss:Name="Normal"><Alignment ss:Vertical="Top"/><Font ss:FontName="Arial" ss:Size="10"/></Style><Style ss:ID="sText"><Alignment ss:Vertical="Top" ss:WrapText="1"/><Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#999999"/><Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#999999"/><Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#999999"/><Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#999999"/></Borders></Style><Style ss:ID="sNumber"><Alignment ss:Vertical="Top"/><NumberFormat ss:Format="0"/><Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#999999"/><Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#999999"/><Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#999999"/><Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#999999"/></Borders></Style><Style ss:ID="sHeader"><Font ss:FontName="Arial" ss:Size="10" ss:Bold="1"/><Interior ss:Color="#D9EAD3" ss:Pattern="Solid"/><Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#777777"/><Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#777777"/><Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#777777"/><Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#777777"/></Borders></Style><Style ss:ID="sTitle"><Font ss:FontName="Arial" ss:Size="14" ss:Bold="1" ss:Color="#FFFFFF"/><Interior ss:Color="#073B32" ss:Pattern="Solid"/><Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#073B32"/><Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#073B32"/><Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#073B32"/><Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#073B32"/></Borders></Style></Styles>${worksheets}</Workbook>`;
+    const blob=new Blob([xml],{type:'application/vnd.ms-excel;charset=utf-8'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download=filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();},1500);
+  }
   function rowsByCategory(){const m=new Map(); STATE.rows.filter(r=>r.name&&!/rashod|otpis|deleted|obrisano|arhiva|stari_katalog|neaktiv/i.test(String(r.status||''))).forEach(r=>{const c=r.category||'Ostalo'; if(!m.has(c))m.set(c,[]); m.get(c).push(r);}); return [...m.entries()].sort((a,b)=>(categoryPriority(a[0])-categoryPriority(b[0]))||a[0].localeCompare(b[0],'hr'));}
 
   // v6.1.39e: Excel export contains three worksheet tabs:

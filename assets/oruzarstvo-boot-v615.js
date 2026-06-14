@@ -3,7 +3,7 @@
    Static JSON/cache are deliberately not displayed during DB seed/import. */
 (function(){
   'use strict';
-  const BUILD='6.1.39b-user-category-naming';
+  const BUILD='6.1.39h-user-catalog-rows-fix';
   const MIN_ROWS=20;
   const LIVE_TIMEOUT=65000;
   const RETRY_MS=4500;
@@ -46,6 +46,33 @@
       member_visible:r.member_visible!==false, internal_note:r.note||r.internal_note||''
     }));
     out.summary={...(d.summary||{}),source:activeSource};
+    return out;
+  }
+  function rows(){
+    const d=window.DATA||{};
+    const lists=[d.items,d.ropes,d.pieces];
+    const out=[];
+    lists.forEach(list=>{
+      if(!Array.isArray(list))return;
+      list.forEach((r,i)=>{
+        if(!r||typeof r!=='object')return;
+        const q=Number(r.quantity??r.total_quantity??r.total_qty??1)||0;
+        const av=Number(r.available??r.available_quantity??r.available_qty??q)||0;
+        out.push({
+          ...r,
+          id:r.id||r.legacy_id||r.catalog_id||r.sku||('row-'+out.length+'-'+i),
+          name:r.display_name||r.name||r.item_name||r.model||r.sku||'Artikl',
+          category:r.category||r.category_name||r.main_category||r.xls_category||'Ostalo',
+          category_name:r.category_name||r.category||r.main_category||r.xls_category||'Ostalo',
+          subcategory:r.subcategory||r.subcategory_name||r.group_name||r.xls_subcategory||'Ostalo',
+          quantity:q,
+          available:av,
+          unit:r.unit||'kom',
+          status:r.status||r.availability||'aktivno',
+          member_visible:r.member_visible!==false
+        });
+      });
+    });
     return out;
   }
   function idOf(r){return String(r.id||r.legacy_id||r.catalog_id||r.sku||r.name||Math.random()).replace(/'/g,'');}
