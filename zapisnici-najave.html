@@ -17,7 +17,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 <script src="assets/supabase-config.js"></script>
-<script src="assets/auth.js?v=6.1.40a-announcement-parser"></script>
+<script src="assets/auth.js?v=6.1.40b-announcement-dedupe"></script>
 <style>
 :root{--lime:#d7f66f;--cyan:#78d7ff;--amber:#ffbf6b;--ink:#f4f7f6;--muted:#aebfbd;--stroke:rgba(255,255,255,.13);--panel:rgba(255,255,255,.055)}
 body{background:radial-gradient(circle at 18% 0,rgba(120,215,255,.16),transparent 34%),radial-gradient(circle at 90% 12%,rgba(215,246,111,.11),transparent 30%),#05090b;color:var(--ink)}
@@ -44,13 +44,13 @@ body{background:radial-gradient(circle at 18% 0,rgba(120,215,255,.16),transparen
 <div id="minutesList" class="minutes-list"><div class="empty">Učitavam...</div></div>
 </aside>
 <section class="panel">
-<div class="tabs"><button class="tab active" data-filter="all" type="button">Sve</button><button class="tab" data-filter="novo" type="button">Novo</button><button class="tab" data-filter="treba_provjeru" type="button">Treba provjeru</button><button class="tab" data-filter="odobreno" type="button">Odobreno</button><button class="tab" data-filter="odbijeno" type="button">Odbijeno</button></div>
+<div class="tabs"><button class="tab active" data-filter="all" type="button">Sve</button><button class="tab" data-filter="novo" type="button">Novo</button><button class="tab" data-filter="treba_provjeru" type="button">Treba provjeru</button><button class="tab" data-filter="possible_duplicate" type="button">Mogući duplikati</button><button class="tab" data-filter="odobreno" type="button">Odobreno</button><button class="tab" data-filter="duplikat" type="button">Duplikati</button><button class="tab" data-filter="odbijeno" type="button">Odbijeno</button></div>
 <div id="annList" class="ann-list"><div class="empty">Učitavam najave...</div></div>
 </section>
 </section>
 </main>
 </div>
-<script defer src="assets/zapisnici-najave.js?v=6.1.40a-announcement-parser"></script>
+<script defer src="assets/zapisnici-najave.js?v=6.1.40b-announcement-dedupe"></script>
 <script defer src="assets/sov-version.js?v=6.1.40"></script>
 <script defer src="assets/sov-client-logger.js?v=6.1.40"></script>
 </body>

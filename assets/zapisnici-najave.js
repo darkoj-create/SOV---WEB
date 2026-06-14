@@ -326,8 +326,13 @@
       await sb.from('trip_announcements_staging').delete().eq('meeting_minutes_id', existing.id).neq('status','odobreno');
       const rows = p.announcements.map(a=>({meeting_minutes_id:existing.id, document_id:docId, source_document_title:p.title, source_meeting_date:p.meetingDate, raw_text:a.raw_text, title:a.title, location_name:a.location_name, start_date:a.start_date, end_date:a.end_date, leader_name:a.leader_name || null, trip_category:a.trip_category, description:a.description, confidence:a.confidence, status:a.status, meta:a.meta || {}}));
       if(rows.length){
-        const insA = await sb.from('trip_announcements_staging').insert(rows);
+        const insA = await sb.from('trip_announcements_staging').insert(rows).select('id');
         if(insA.error) throw insA.error;
+        const inserted = insA.data || [];
+        for(const r of inserted){
+          try{ await sb.rpc('sov_recompute_trip_announcement_dedupe',{p_announcement_id:r.id}); }
+          catch(e){ console.warn('dedupe recompute failed', e); }
+        }
       }
       setStatus(`Spremljeno: <strong>${esc(p.title)}</strong><br/>Najava u stagingu: <strong>${rows.length}</strong>`, 'ok');
       await loadAll();
@@ -341,10 +346,23 @@
   function statusPill(st){
     if(st==='odobreno') return 'good'; if(st==='treba_provjeru') return 'warn'; if(st==='odbijeno'||st==='duplikat') return 'bad'; return '';
   }
+  function dedupePanel(a){
+    if(!a || a.preview) return '';
+    const st = a.dedupe_status || 'new';
+    if(st === 'possible_duplicate'){
+      const score = a.duplicate_score ? Math.round(Number(a.duplicate_score))+'%' : '—';
+      return `<div class="status bad" style="margin-top:10px"><strong>Mogući duplikat</strong><br/>${esc(a.duplicate_reason||'Ova najava sliči postojećoj najavi ili izletu.')}<div class="meta"><span class="pill bad">Sličnost ${esc(score)}</span>${a.matched_announcement_id?'<span class="pill">spojivo sa staging najavom</span>':''}${a.matched_trip_id?'<span class="pill">sliči već objavljenom izletu</span>':''}</div></div>`;
+    }
+    if(st === 'confirmed_duplicate' || a.status === 'duplikat'){
+      return `<div class="status bad" style="margin-top:10px"><strong>Duplikat</strong><br/>Ova najava je označena kao duplikat i neće se pretvarati u novi izlet.</div>`;
+    }
+    if(st === 'forced_new') return `<div class="status ok" style="margin-top:10px"><strong>Ipak nova najava</strong><br/>Ručno označeno da nije duplikat.</div>`;
+    return '';
+  }
   function renderAnnouncements(list){
-    const data = list || state.announcements.filter(a=>currentFilter==='all' || a.status===currentFilter);
+    const data = list || state.announcements.filter(a=>currentFilter==='all' || a.status===currentFilter || (currentFilter==='possible_duplicate' && a.dedupe_status==='possible_duplicate'));
     if(!data.length){ els.anns.innerHTML='<div class="empty">Nema najava za ovaj filter.</div>'; return; }
-    els.anns.innerHTML = data.map(a=>`<article class="ann-card" data-id="${esc(a.id)}"><div class="ann-head"><div><h3>${esc(a.title)}</h3><div class="meta"><span class="pill good">${fmtDate(a.start_date)}${a.end_date&&a.end_date!==a.start_date?' – '+fmtDate(a.end_date):''}</span><span class="pill ${statusPill(a.status)}">${esc(a.status)}</span><span class="pill">${esc(a.trip_category)}</span><span class="pill">${Math.round(Number(a.confidence||0)*100)}%</span></div></div></div><div class="ann-grid"><div class="field"><label>Naziv</label><input data-field="title" value="${esc(a.title)}" ${a.preview?'disabled':''}/></div><div class="field"><label>Lokacija</label><input data-field="location_name" value="${esc(a.location_name||'')}" ${a.preview?'disabled':''}/></div><div class="field"><label>Voditelj</label><input data-field="leader_name" value="${esc(a.leader_name||'')}" ${a.preview?'disabled':''}/></div><div class="field"><label>Od</label><input data-field="start_date" type="date" value="${esc(a.start_date||'')}" ${a.preview?'disabled':''}/></div><div class="field"><label>Do</label><input data-field="end_date" type="date" value="${esc(a.end_date||'')}" ${a.preview?'disabled':''}/></div><div class="field"><label>Kategorija</label><select data-field="trip_category" ${a.preview?'disabled':''}>${['izlet','vježba','seminar','ekspedicija','predavanje','akcija'].map(x=>`<option value="${x}" ${a.trip_category===x?'selected':''}>${x}</option>`).join('')}</select></div></div><div class="field"><label>Opis</label><textarea data-field="description" ${a.preview?'disabled':''}>${esc(a.description||'')}</textarea></div><div class="raw">${esc(a.raw_text)}</div>${a.preview?'':`<div class="ann-actions"><button type="button" data-action="save">Spremi izmjene</button><button class="primary" type="button" data-action="approve">Odobri i stvori izlet</button><button type="button" data-action="review">Treba provjeru</button><button type="button" data-action="reject">Odbij</button><button type="button" data-action="dup">Duplikat</button></div>`}</article>`).join('');
+    els.anns.innerHTML = data.map(a=>`<article class="ann-card" data-id="${esc(a.id)}"><div class="ann-head"><div><h3>${esc(a.title)}</h3><div class="meta"><span class="pill good">${fmtDate(a.start_date)}${a.end_date&&a.end_date!==a.start_date?' – '+fmtDate(a.end_date):''}</span><span class="pill ${statusPill(a.status)}">${esc(a.status)}</span><span class="pill">${esc(a.trip_category)}</span><span class="pill">${Math.round(Number(a.confidence||0)*100)}%</span>${a.dedupe_status&&a.dedupe_status!=='new'?`<span class="pill ${a.dedupe_status==='possible_duplicate'?'bad':'warn'}">${esc(a.dedupe_status)}</span>`:''}</div></div></div>${dedupePanel(a)}<div class="ann-grid"><div class="field"><label>Naziv</label><input data-field="title" value="${esc(a.title)}" ${a.preview?'disabled':''}/></div><div class="field"><label>Lokacija</label><input data-field="location_name" value="${esc(a.location_name||'')}" ${a.preview?'disabled':''}/></div><div class="field"><label>Voditelj</label><input data-field="leader_name" value="${esc(a.leader_name||'')}" ${a.preview?'disabled':''}/></div><div class="field"><label>Od</label><input data-field="start_date" type="date" value="${esc(a.start_date||'')}" ${a.preview?'disabled':''}/></div><div class="field"><label>Do</label><input data-field="end_date" type="date" value="${esc(a.end_date||'')}" ${a.preview?'disabled':''}/></div><div class="field"><label>Kategorija</label><select data-field="trip_category" ${a.preview?'disabled':''}>${['izlet','vježba','seminar','ekspedicija','predavanje','akcija'].map(x=>`<option value="${x}" ${a.trip_category===x?'selected':''}>${x}</option>`).join('')}</select></div></div><div class="field"><label>Opis</label><textarea data-field="description" ${a.preview?'disabled':''}>${esc(a.description||'')}</textarea></div><div class="raw">${esc(a.raw_text)}</div>${a.preview?'':`<div class="ann-actions"><button type="button" data-action="save">Spremi izmjene</button><button class="primary" type="button" data-action="approve" ${a.status==='duplikat'||a.dedupe_status==='confirmed_duplicate'?'disabled':''}>Odobri i stvori izlet</button>${a.dedupe_status==='possible_duplicate'?`<button type="button" data-action="force-new">Ipak novi izlet</button><button type="button" data-action="mark-dup">Spoji / označi duplikat</button>`:''}<button type="button" data-action="review">Treba provjeru</button><button type="button" data-action="reject">Odbij</button><button type="button" data-action="dup">Duplikat</button></div>`}</article>`).join('');
   }
   async function loadAll(){
     await SOVAuth.ready();
@@ -367,14 +385,28 @@
       if(res.error) alert(res.error.message || res.error); else await loadAll();
       return;
     }
+    if(action==='mark-dup' || action==='dup'){
+      if(!confirm('Označiti ovu najavu kao duplikat/spojiti je s pronađenom najavom?')) return;
+      const res = await sb.rpc('sov_mark_trip_announcement_duplicate',{p_announcement_id:id,p_canonical_announcement_id:null,p_reason:'Ručno označeno kroz web UI'});
+      if(res.error) alert(res.error.message || res.error); else await loadAll();
+      return;
+    }
+    if(action==='force-new'){
+      const res = await sb.rpc('sov_force_trip_announcement_new',{p_announcement_id:id});
+      if(res.error) alert(res.error.message || res.error); else await loadAll();
+      return;
+    }
     const patch = {updated_at:new Date().toISOString()};
     if(action==='save'){
       card.querySelectorAll('[data-field]').forEach(el=>{ patch[el.dataset.field] = el.value || null; });
     }else if(action==='review') patch.status='treba_provjeru';
     else if(action==='reject'){ patch.status='odbijeno'; patch.rejected_at=new Date().toISOString(); }
-    else if(action==='dup') patch.status='duplikat';
     const res = await sb.from('trip_announcements_staging').update(patch).eq('id',id);
-    if(res.error) alert(res.error.message || res.error); else await loadAll();
+    if(res.error) alert(res.error.message || res.error);
+    else {
+      if(action==='save') await sb.rpc('sov_recompute_trip_announcement_dedupe',{p_announcement_id:id}).catch(console.warn);
+      await loadAll();
+    }
   }
   document.addEventListener('click', e=>{
     const tab = e.target.closest('.tab');
