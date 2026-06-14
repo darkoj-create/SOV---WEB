@@ -649,6 +649,11 @@
       out.ropes=[];
       out.pieces=[];
       out.raw_app_catalog=rawAppCatalog||[];
+      // v6.1.37: grouped branch must also carry the location list for the master location picker/filter
+      try{
+        const locs0=await safe('equipment_locations','*');
+        out.locations=(locs0||[]).map(function(l){return {id:l.id,legacy_id:l.legacy_id||null,name:l.name,description:l.description||'',type:l.type||''};}).filter(function(l){return l.name;});
+      }catch(_e){ out.locations=out.locations||[]; }
       out.summary.count_items=out.items.length;
       out.summary.count_ropes=0;
       out.summary.count_pieces=0;
@@ -968,6 +973,14 @@
       patch.xls_category=patch.category_name;
     }
     if(fields.subcategory!==undefined) patch.xls_subcategory=fields.subcategory;
+    // v6.1.37: keep location_id in sync with the chosen location_name (for correct filtering/grouping)
+    if(fields.location_name!==undefined && fields.location_name!==null && String(fields.location_name).trim()!==''){
+      try{
+        const ln=String(fields.location_name).trim();
+        const lr=await client.from('equipment_locations').select('id').ilike('name',ln).limit(1);
+        if(lr && lr.data && lr.data.length) patch.location_id=lr.data[0].id;
+      }catch(_e){}
+    }
     patch.updated_at=new Date().toISOString();
     let q=client.from('equipment_items').update(patch);
     const orFilter=armoryItemOrFilter([keys.id,keys.legacy_id,keys.catalog_id]);
@@ -981,7 +994,33 @@
     return data;
   }
 
-  window.SOVArmoryDB={configured,upsertSimpleItem,retireSimpleItem,loadArmoryNotes,saveArmoryNote,doneArmoryNote,loadRequests,createRequest,updateRequestStatus,issueRequest,returnRequestItems,importStaticData,loadAllData,loadCatalogManifest,createEquipmentItem,createEquipmentPiece,createEquipmentPieces,createRope,updateEquipmentStatus,updateInventoryCount,updateEquipmentItemFull};
+  // v6.1.37: location management — list + create (equipment_locations has open RLS).
+  async function loadLocations(){
+    if(!configured()) return [];
+    try{
+      const client=sb();
+      const res=await withDbTimeout(client.from('equipment_locations').select('*').order('name'), 2500, 'locations', {data:[],error:null});
+      const data=res && res.data;
+      return (data||[]).map(function(l){return {id:l.id,legacy_id:l.legacy_id||null,name:l.name,description:l.description||'',type:l.type||''};}).filter(function(l){return l.name;});
+    }catch(e){ console.warn('loadLocations failed', e&&e.message?e.message:e); return []; }
+  }
+  async function createLocation(name, type){
+    if(!configured()) throw new Error('Supabase nije konfiguriran.');
+    const client=sb();
+    const nm=String(name||'').trim();
+    if(!nm) throw new Error('Naziv lokacije je prazan.');
+    // de-dupe case-insensitively
+    try{
+      const ex=await client.from('equipment_locations').select('id,name,type').ilike('name',nm).limit(1);
+      if(ex && ex.data && ex.data.length) return ex.data[0];
+    }catch(_e){}
+    const {data,error}=await client.from('equipment_locations').insert({name:nm,type:type||'storage'}).select('*').single();
+    if(error) throw error;
+    try{['sov_armory_catalog_cache_v607','sov_armory_catalog_cache_v606','sov_armory_catalog_cache_v548','sov_armory_catalog_cache_v548_old','sov_armory_catalog_cache'].forEach(function(k){localStorage.removeItem(k);});}catch(_e){}
+    return data;
+  }
+
+  window.SOVArmoryDB={configured,upsertSimpleItem,retireSimpleItem,loadArmoryNotes,saveArmoryNote,doneArmoryNote,loadRequests,createRequest,updateRequestStatus,issueRequest,returnRequestItems,importStaticData,loadAllData,loadCatalogManifest,createEquipmentItem,createEquipmentPiece,createEquipmentPieces,createRope,updateEquipmentStatus,updateInventoryCount,updateEquipmentItemFull,loadLocations,createLocation};
 
   // v5.48.1: true cache-first wrapper. The old v5.48 path still asked the manifest view
   // before returning cached data; on large Supabase views that made every page open feel like a full sync.
