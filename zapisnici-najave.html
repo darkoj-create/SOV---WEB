@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Zapisnici → Najave — SOV v6.1.40</title>
+<title>Zapisnici → Najave — SOV v6.1.41</title>
 <link href="assets/site.css" rel="stylesheet"/>
 <link href="assets/mobile.css" rel="stylesheet"/>
 <link href="assets/sov-foundation-v55822.css" rel="stylesheet"/>
@@ -17,7 +17,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 <script src="assets/supabase-config.js"></script>
-<script src="assets/auth.js?v=6.1.40b-announcement-dedupe"></script>
+<script src="assets/auth.js?v=6.1.41-gmail-minutes"></script>
 <style>
 :root{--lime:#d7f66f;--cyan:#78d7ff;--amber:#ffbf6b;--ink:#f4f7f6;--muted:#aebfbd;--stroke:rgba(255,255,255,.13);--panel:rgba(255,255,255,.055)}
 body{background:radial-gradient(circle at 18% 0,rgba(120,215,255,.16),transparent 34%),radial-gradient(circle at 90% 12%,rgba(215,246,111,.11),transparent 30%),#05090b;color:var(--ink)}
@@ -35,23 +35,28 @@ body{background:radial-gradient(circle at 18% 0,rgba(120,215,255,.16),transparen
 <section class="grid">
 <aside class="panel">
 <h2>Uvoz zapisnika</h2>
-<p class="muted">Za sada ručni upload. Kad ovo stabilno radi na stvarnim zapisnicima, sljedeći korak je Gmail auto-import.</p>
+<p class="muted">Ručni upload ostaje za test, a Gmail auto-import radi preko Apps Scripta i labela <strong>SOV/Zapisnici za obradu</strong>.</p>
 <div class="field"><label>DOCX zapisnik</label><input id="docxFile" type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"/></div>
 <div class="field"><label>Izvor</label><select id="sourceMode"><option value="manual_upload">Ručni upload</option><option value="gmail_manual">Gmail / ručno skinuto</option></select></div>
 <div class="hero-actions"><button id="parseBtn" class="primary" type="button">Arhiviraj i izvuci najave</button><button id="previewBtn" type="button">Samo preview</button></div>
 <div id="importStatus" class="status">Odaberi DOCX zapisnik.</div>
+
+<h2 style="margin-top:22px">Gmail automatika</h2>
+<p class="muted">Apps Script čita labelu <strong>SOV/Zapisnici za obradu</strong>, arhivira DOCX zapisnik i nakon uspjeha prebacuje mail u <strong>SOV/Zapisnici obrađeno</strong>.</p>
+<div class="status ok"><strong>Status:</strong> backend ingest je aktivan. Za uključivanje kopiraj Apps Script iz build paketa i postavi trigger svakih 15 min.</div>
+<div id="gmailLog" class="minutes-list" style="margin-top:10px"><div class="empty">Učitavam Gmail log...</div></div>
 <h2 style="margin-top:22px">Arhiva zapisnika</h2>
 <div id="minutesList" class="minutes-list"><div class="empty">Učitavam...</div></div>
 </aside>
 <section class="panel">
-<div class="tabs"><button class="tab active" data-filter="all" type="button">Sve</button><button class="tab" data-filter="novo" type="button">Novo</button><button class="tab" data-filter="treba_provjeru" type="button">Treba provjeru</button><button class="tab" data-filter="possible_duplicate" type="button">Mogući duplikati</button><button class="tab" data-filter="odobreno" type="button">Odobreno</button><button class="tab" data-filter="duplikat" type="button">Duplikati</button><button class="tab" data-filter="odbijeno" type="button">Odbijeno</button></div>
+<div class="tabs"><button class="tab active" data-filter="all" type="button">Sve</button><button class="tab" data-filter="novo" type="button">Novo</button><button class="tab" data-filter="treba_provjeru" type="button">Treba provjeru</button><button class="tab" data-filter="odobreno" type="button">Odobreno</button><button class="tab" data-filter="odbijeno" type="button">Odbijeno</button></div>
 <div id="annList" class="ann-list"><div class="empty">Učitavam najave...</div></div>
 </section>
 </section>
 </main>
 </div>
-<script defer src="assets/zapisnici-najave.js?v=6.1.40b-announcement-dedupe"></script>
-<script defer src="assets/sov-version.js?v=6.1.40"></script>
-<script defer src="assets/sov-client-logger.js?v=6.1.40"></script>
+<script defer src="assets/zapisnici-najave.js?v=6.1.41-gmail-minutes"></script>
+<script defer src="assets/sov-version.js?v=6.1.41"></script>
+<script defer src="assets/sov-client-logger.js?v=6.1.41"></script>
 </body>
 </html>

@@ -8,10 +8,11 @@
     refresh: document.getElementById('refreshBtn'),
     status: document.getElementById('importStatus'),
     minutes: document.getElementById('minutesList'),
-    anns: document.getElementById('annList')
+    anns: document.getElementById('annList'),
+    gmailLog: document.getElementById('gmailLog')
   };
   let currentFilter = 'all';
-  let state = {minutes:[], announcements:[], preview:null};
+  let state = {minutes:[], announcements:[], gmailLog:[], preview:null};
   const monthByName = {'sijecanj':1,'siječanj':1,'veljaca':2,'veljača':2,'ozujak':3,'ožujak':3,'travanj':4,'svibanj':5,'lipanj':6,'srpanj':7,'kolovoz':8,'rujan':9,'listopad':10,'studeni':11,'prosinac':12};
   function esc(v){return String(v==null?'':v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
   function slug(s){return String(s||'zapisnik').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9.]+/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'').slice(0,120)||'zapisnik';}
@@ -343,6 +344,13 @@
     if(!state.minutes.length){ els.minutes.innerHTML='<div class="empty">Još nema zapisnika u novoj arhivi.</div>'; return; }
     els.minutes.innerHTML = state.minutes.map(m=>`<div class="minute-card"><strong>${esc(m.title)}</strong><div class="meta"><span class="pill good">${fmtDate(m.meeting_date)}</span><span class="pill">${esc(m.status)}</span><span class="pill">${esc(m.original_filename||'DOCX')}</span></div>${m.meeting_leader||m.minutes_taker?`<div class="muted" style="margin-top:8px">Vodio/la: ${esc(m.meeting_leader||'—')} · zapisnik: ${esc(m.minutes_taker||'—')}</div>`:''}</div>`).join('');
   }
+
+  function renderGmailLog(){
+    if(!els.gmailLog) return;
+    const logs = state.gmailLog || [];
+    if(!logs.length){ els.gmailLog.innerHTML='<div class="empty">Nema Gmail uvoza u logu.</div>'; return; }
+    els.gmailLog.innerHTML = logs.map(l=>`<div class="minute-card"><strong>${esc(l.attachment_name||l.subject||'Gmail zapisnik')}</strong><div class="meta"><span class="pill ${l.status==='imported'?'good':(String(l.status||'').includes('duplicate')?'warn':'')}">${esc(l.status||'received')}</span><span class="pill">${esc((l.created_at||'').slice(0,16).replace('T',' '))}</span></div><div class="muted" style="margin-top:8px">${esc(l.subject||'')}<br/>${esc(l.from_email||'')} ${l.message?'· '+esc(l.message):''}</div></div>`).join('');
+  }
   function statusPill(st){
     if(st==='odobreno') return 'good'; if(st==='treba_provjeru') return 'warn'; if(st==='odbijeno'||st==='duplikat') return 'bad'; return '';
   }
@@ -374,7 +382,10 @@
     const anns = await sb.from('trip_announcements_staging').select('*').order('start_date',{ascending:true}).order('created_at',{ascending:false}).limit(200);
     state.announcements = anns.data || [];
     if(anns.error) console.warn(anns.error);
-    renderMinutes(); renderAnnouncements();
+    const gl = await sb.from('sov_gmail_minutes_import_log').select('*').order('created_at',{ascending:false}).limit(20);
+    state.gmailLog = gl.data || [];
+    if(gl.error) console.warn(gl.error);
+    renderMinutes(); renderGmailLog(); renderAnnouncements();
   }
   async function updateAnnouncement(card, action){
     const sb = SOVAuth.getClient();
