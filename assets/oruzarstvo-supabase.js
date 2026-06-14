@@ -92,9 +92,9 @@
     // instead of reclassifying it into broader virtual buckets. Search still uses
     // text tags, but inventory/order screens must match the XLS and SQL seed 1:1.
     const clean=String(raw||'').trim();
-    if(clean) return clean==='Užeta' ? 'Užad' : clean;
+    if(clean) return clean==='Užad' ? 'Užeta' : clean;
     const t=stripDiacritics(String(text||''));
-    if(/uzad|uze|rope|statik/.test(t)) return 'Užad';
+    if(/uzad|uze|rope|statik/.test(t)) return 'Užeta';
     return 'Ostalo';
   }
 
@@ -188,7 +188,7 @@
   async function loadRequests(){
     if(!configured()) return null;
     const client=sb();
-    const {data:reqs,error}=await client.from('equipment_requests').select('*').eq('armory_hidden',false).order('created_at',{ascending:false});
+    const {data:reqs,error}=await client.from('equipment_requests').select('*').order('created_at',{ascending:false});
     if(error){ console.warn('Oružarstvo requests Supabase fallback:',error.message); return null; }
     const ids=(reqs||[]).map(r=>r.id);
     let items=[];
@@ -245,7 +245,7 @@
     return true;
   }
   const TABLE_COLUMNS={
-    equipment_categories:['legacy_id','name','description','type','sort_order','icon','note','display_name','short_name','search_terms','updated_at'],
+    equipment_categories:['legacy_id','name','description','type','sort_order','updated_at'],
     equipment_locations:['legacy_id','name','description','type'],
     equipment_items:['legacy_id','catalog_id','name','category_id','category_name','subcategory','unit','tracking_type','quantity','loaned','available','minimum','status','availability','member_visible','internal_note','source_sheet','item_kind','code_required','physical_code_note','quantity_label','available_label','last_inventory_date','source_xls_row','xls_category','xls_subcategory','original_quantity_text','updated_at'],
     equipment_pieces:['legacy_id','catalog_legacy_id','equipment_item_id','name','sku','manufacturer','model','purchase_date','location_id','location_name','status','next_service','note','updated_at'],
@@ -396,7 +396,7 @@
       legacy_id:i.id||i.legacy_id||('XLS-'+String(idx+1).padStart(4,'0')),
       catalog_id:String(i.catalog_id||i.id||i.legacy_id||''),
       name:i.name,
-      category_name:canonicalArmoryCategory(i.category_name||i.category||i.xls_category||null,[i.name,i.model,i.subcategory,i.internal_note].join(' ')),
+      category_name:canonicalArmoryCategory(i.category||i.category_name||i.xls_category||null,[i.name,i.model,i.subcategory,i.internal_note].join(' ')),
       subcategory:i.subcategory||i.xls_subcategory||'Ostalo',
       unit:i.unit||'kom',
       tracking_type:i.tracking_type||'xls_row',
@@ -528,13 +528,8 @@
     if(table==='equipment_items') patch.availability='nedostupno';
     if(note) patch.note=note;
     let q=client.from(table).update(patch);
-    const bareId=String(id||'').replace(/^[A-Za-z]+:/,'').trim();
-    const isUuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(bareId);
-    const ors=[];
-    if(isUuid) ors.push('id.eq.'+bareId);
-    ors.push('legacy_id.eq.'+bareId);
-    if(kind==='rope') ors.push('sku.eq.'+bareId);
-    q=q.or(ors.join(','));
+    if(kind==='rope') q=q.or(`id.eq.${id},sku.eq.${id},legacy_id.eq.${id}`);
+    else q=q.or(`id.eq.${id},legacy_id.eq.${id}`);
     const {error}=await q;
     if(error) throw error;
     return true;
@@ -587,7 +582,7 @@
     const strictLive=!!options.strictLive;
     if(!configured()) return null;
     const client=sb();
-    const out={summary:{source:'Supabase live'},categories:[],subcategory_meta:[],items:[],pieces:[],ropes:[],loans:[],inventories:[],inventory_items:[],procurement:[],services:[],disposed:[],lost:[],field:[],locations:[]};
+    const out={summary:{source:'Supabase live'},categories:[],items:[],pieces:[],ropes:[],loans:[],inventories:[],inventory_items:[],procurement:[],services:[],disposed:[],lost:[],field:[],locations:[]};
     const manifest=await loadCatalogManifest();
     const cached=readCatalogCache();
     if(!strictLive && manifest && cached && cached.manifest && cached.manifest.catalog_version===manifest.catalog_version && catalogRowCount(cached.data)>=20){
@@ -611,40 +606,21 @@
       }catch(e){console.warn('SOVArmoryDB load '+table,e.message||e); return [];}
     }
     const cats=await safe('equipment_categories','*');
-    const subcatMeta=await safe('equipment_subcategory_meta','*');
-    out.subcategory_meta=(subcatMeta||[]).map(s=>({id:s.id,category_name:s.category_name,subcategory_name:s.subcategory_name,display_name:s.display_name,short_name:s.short_name||'',search_terms:s.search_terms||'',note:s.note||'',icon:s.icon||''}));
     const groupedCatalog=await safe('sov_equipment_app_catalog_grouped','*');
     const rawAppCatalog=await safe('sov_equipment_app_catalog','*');
     if(groupedCatalog && groupedCatalog.length){
       out.summary.source='Supabase canonical grouped catalog v5.45';
-      const catMeta=new Map((cats||[]).map((c,idx)=>{
-        const name=canonicalArmoryCategory(c.name||'Ostalo',c.description||'');
-        return [String(name).trim().toLowerCase(),{
-          id:c.id||c.legacy_id||('cat-db-'+idx),
-          name,
-          description:c.description||'',
-          type:c.type||'canonical',
-          sort_order:c.sort_order||idx,
-          icon:c.icon||'',
-          note:c.note||'',
-          display_name:c.display_name||'',
-          short_name:c.short_name||'',
-          search_terms:c.search_terms||''
-        }];
-      }));
       out.categories=[...new Map(groupedCatalog.map((g,idx)=>{
-        const name=g.category_name||g.main_category||g.category||'Ostalo';
-        const key=String(name).trim().toLowerCase();
-        const meta=catMeta.get(key)||{};
-        return [name,{id:meta.id||('cat-'+idx),name,description:meta.description||'Canonical grouped catalog',type:meta.type||'canonical',sort_order:meta.sort_order||g.priority||idx,icon:meta.icon||'',note:meta.note||'',display_name:meta.display_name||'',short_name:meta.short_name||'',search_terms:meta.search_terms||''}];
+        const name=g.main_category||g.category||g.category_name||'Ostalo';
+        return [name,{id:'cat-'+idx,name,description:'Canonical grouped catalog',type:'canonical',sort_order:g.priority||idx}];
       })).values()];
       out.items=groupedCatalog.map((g,idx)=>({
         id:g.app_id||g.source_id||('GROUP-'+idx),
         legacy_id:g.source_id||g.app_id||('GROUP-'+idx),
         catalog_id:g.catalog_group_key||g.source_id||g.app_id||('GROUP-'+idx),
         name:g.display_name||g.name||'Artikl',
-        category:g.category_name||g.main_category||g.category||'Ostalo',
-        category_name:g.category_name||g.main_category||g.category||'Ostalo',
+        category:g.main_category||g.category||g.category_name||'Ostalo',
+        category_name:g.main_category||g.category||g.category_name||'Ostalo',
         subcategory:g.subcategory||g.raw_subcategory||'Ostalo',
         unit:g.unit||'kom',
         tracking_type:'grouped_catalog',
@@ -668,11 +644,6 @@
       out.ropes=[];
       out.pieces=[];
       out.raw_app_catalog=rawAppCatalog||[];
-      // v6.1.37: grouped branch must also carry the location list for the master location picker/filter
-      try{
-        const locs0=await safe('equipment_locations','*');
-        out.locations=(locs0||[]).map(function(l){return {id:l.id,legacy_id:l.legacy_id||null,name:l.name,description:l.description||'',type:l.type||''};}).filter(function(l){return l.name;});
-      }catch(_e){ out.locations=out.locations||[]; }
       out.summary.count_items=out.items.length;
       out.summary.count_ropes=0;
       out.summary.count_pieces=0;
@@ -688,7 +659,7 @@
     const loans=await safe('equipment_loans','*');
     const inv=await safe('inventory_sessions','*');
     const proc=await safe('procurement_plan','*');
-    out.categories=(cats||[]).map((c,idx)=>({id:c.legacy_id||c.id||String(idx+1),name:canonicalArmoryCategory(c.name,c.description||''),description:c.description||'',type:c.type||'',sort_order:c.sort_order||idx,icon:c.icon||'',note:c.note||'',display_name:c.display_name||'',short_name:c.short_name||'',search_terms:c.search_terms||''})).filter(c=>c.name);
+    out.categories=(cats||[]).map((c,idx)=>({id:c.legacy_id||c.id||String(idx+1),name:canonicalArmoryCategory(c.name,c.description||''),description:c.description||'',type:c.type||'',sort_order:c.sort_order||idx})).filter(c=>c.name);
     out.items=(items||[]).map((i,idx)=>({
       id:i.legacy_id||i.catalog_id||i.id||('DB-ITEM-'+idx),
       legacy_id:i.legacy_id||i.id,
@@ -722,7 +693,7 @@
     })).filter(i=>i.name);
     out.ropes=(ropes||[]).map((r,idx)=>({
       id:r.legacy_id||r.sku||r.id||('DB-ROPE-'+idx), legacy_id:r.legacy_id||r.id, sku:r.sku||r.legacy_id||'', name:r.name||r.sku||'Uže',
-      category:'Užad', category_name:'Užad', subcategory:r.subcategory||'Užad', quantity:1, available:/posu|vani|otpis|rashod|izgubl/i.test(String(r.status||''))?0:1, loaned:/posu|vani/i.test(String(r.status||''))?1:0,
+      category:'Užeta', category_name:'Užeta', subcategory:r.subcategory||'Užad', quantity:1, available:/posu|vani|otpis|rashod|izgubl/i.test(String(r.status||''))?0:1, loaned:/posu|vani/i.test(String(r.status||''))?1:0,
       diameter_mm:r.diameter_mm, length_m:r.length_m, manufacturer:r.manufacturer||'', model:r.model||'', production_year:r.production_year, in_use_since:r.in_use_since,
       color:r.color||'', location:r.location_name||'', location_name:r.location_name||'', status:r.status||'U društvu', note:r.note||'', member_visible:true
     })).filter(r=>r.name);
@@ -849,35 +820,35 @@
   async function upsertSimpleItem(item){
     if(!configured()) return null;
     const client=sb();
-    const payload=sanitizeForTable('equipment_items',{
-      legacy_id:item.legacy_id||item.catalog_id||('ART-'+Date.now()),
-      catalog_id:item.catalog_id||item.legacy_id||null,
-      name:item.name,
-      category_name:item.category_name||item.category||'Ostalo',
-      subcategory:item.subcategory||'Ostalo',
-      quantity:safeQuantity(item.quantity)||0,
-      available:safeQuantity(item.available)||0,
-      loaned:safeQuantity(item.loaned)||0,
-      minimum:safeQuantity(item.minimum)||0,
-      status:item.status||'aktivno',
-      availability:item.availability||item.status||'aktivno',
-      member_visible:item.member_visible!==false,
-      internal_note:item.internal_note||null,
-      physical_code_note:item.physical_code_note||null,
-      quantity_label:String(item.quantity_label ?? item.quantity ?? ''),
-      available_label:String(item.available_label ?? item.available ?? ''),
-      last_inventory_date:item.last_inventory_date||null,
-      source_xls_row:safeQuantity(item.source_xls_row),
-      xls_category:item.xls_category||item.category_name||item.category||null,
-      xls_subcategory:item.xls_subcategory||item.subcategory||null,
-      original_quantity_text:item.original_quantity_text||String(item.quantity_label ?? item.quantity ?? ''),
-      item_kind:item.item_kind||'quantity_article',
-      code_required:false,
-      updated_at:new Date().toISOString()
-    });
-    const {data,error}=await client.from('equipment_items').upsert(payload,{onConflict:'legacy_id'}).select('*').single();
-    if(error) throw error;
-    try{ await setItemLocationQuantity(client,{legacy_id:payload.legacy_id,name:payload.name},'storage',item.location_name||'Oružarstvo',payload.available||0); }catch(e){}
+    const qty=safeQuantity(item.quantity)||0;
+    const av=safeQuantity(item.available);
+    const args={
+      p_legacy_id:String(item.legacy_id||item.catalog_id||('ART-'+Date.now())).replace(/^item:/i,''),
+      p_catalog_id:item.catalog_id||item.legacy_id||null,
+      p_name:String(item.name||'Artikl').trim(),
+      p_category_name:String(item.category_name||item.category||'Ostalo').trim()||'Ostalo',
+      p_subcategory:String(item.subcategory||'Ostalo').trim()||'Ostalo',
+      p_unit:String(item.unit||'kom').trim()||'kom',
+      p_quantity:qty,
+      p_available:av===null?qty:av,
+      p_minimum:safeQuantity(item.minimum)||0,
+      p_location_name:String(item.location_name||item.location||'Oružarstvo Klaićeva').trim()||'Oružarstvo Klaićeva',
+      p_status:String(item.status||'aktivno').trim()||'aktivno',
+      p_availability:String(item.availability||((av===null?qty:av)>0?'dostupno':'nedostupno')).trim(),
+      p_internal_note:item.internal_note||item.note||null,
+      p_physical_code_note:item.physical_code_note||null,
+      p_member_visible:item.member_visible!==false
+    };
+    const {data,error}=await client.rpc('sov_armory_upsert_simple_item',args);
+    if(error){
+      const msg=error.message||String(error);
+      if(/sov_armory_upsert_simple_item|function .* does not exist|Could not find the function/i.test(msg)){
+        throw new Error('Nedostaje SQL Build 4 RPC sov_armory_upsert_simple_item. Pokreni SUPABASE_ORUZARSTVO_V2_1_BUILD4_INVENTORY_EDIT_AND_NAME_CLEANUP.sql pa probaj opet.');
+      }
+      throw error;
+    }
+    clearArmoryCatalogCaches();
+    try{window.dispatchEvent(new CustomEvent('sov-armory-catalog-dirty',{detail:data}));}catch(e){}
     return data;
   }
   async function retireSimpleItem(id,name){
@@ -910,236 +881,78 @@
     return true;
   }
 
-  async function updateInventoryCount(item, count, status, note){
-    const client=await requireArmory();
-    const next=Math.max(0, safeQuantity(count)||0);
-    const id=String((item&& (item.legacy_id||item.id||item.catalog_id||item.sku)) || '').replace(/^[A-Za-z]+:/,'').trim();
-    const name=String((item&& (item.name||item.item_name)) || '').trim();
-    const st=status || (next>0?'aktivno':'za provjeru');
-    // Preferred safe path: SECURITY DEFINER RPC supplied in SQL patch v6.1.35-save-fix.
-    try{
-      const res=await client.rpc('sov_armory_save_inventory_count',{
-        p_identifier:id || name,
-        p_item_name:name || null,
-        p_available:next,
-        p_status:st,
-        p_note:note || null
-      });
-      if(!res.error) return res.data || true;
-      console.warn('sov_armory_save_inventory_count rpc failed, falling back:', res.error.message);
-    }catch(e){ console.warn('sov_armory_save_inventory_count rpc unavailable, falling back:', e.message||e); }
 
-    // Fallback for databases where RLS allows direct oružar/admin update.
-    const patch={
-      available:next,
-      quantity_label:String(next),
-      available_label:String(next),
-      status:st,
-      availability:next>0?'dostupno':'nedostupno',
-      last_inventory_date:new Date().toISOString().slice(0,10),
-      updated_at:new Date().toISOString()
+  // v6.1.36 — Klaićeva Build 2: web records legacy returns through SECURITY DEFINER RPC.
+  // This intentionally avoids direct browser writes to equipment_items/equipment_item_locations/equipment_assets.
+  function uuidOrNull(v){
+    const x=String(v||'').trim();
+    return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(x)?x:null;
+  }
+  function clientEvent(prefix){
+    try{return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}-${(window.crypto&&crypto.randomUUID)?crypto.randomUUID():''}`.replace(/-$/,'');}
+    catch(e){return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;}
+  }
+  function clearArmoryCatalogCaches(){
+    try{
+      [
+        'sov_armory_catalog_cache_v607',
+        'sov_armory_catalog_cache_v606',
+        'sov_armory_catalog_cache_v548',
+        'sov_armory_catalog_cache_v548_old',
+        'sov_armory_catalog_cache',
+        'sov_oruzarstvo_data_cache',
+        'sov_equipment_catalog_cache'
+      ].forEach(k=>localStorage.removeItem(k));
+    }catch(e){}
+  }
+  async function recordLegacyReturn(payload){
+    if(!configured()) throw new Error('Supabase nije konfiguriran.');
+    const client=sb();
+    const p=payload||{};
+    const args={
+      p_item_id: uuidOrNull(p.item_id||p.id),
+      p_equipment_legacy_id: String(p.equipment_legacy_id||p.legacy_id||'').trim()||null,
+      p_item_name: String(p.item_name||p.name||'').trim()||null,
+      p_quantity: Number(p.quantity||p.qty||1),
+      p_to_location_name: String(p.to_location_name||p.location_name||'Oružarstvo Klaićeva').trim()||'Oružarstvo Klaićeva',
+      p_condition_status: String(p.condition_status||p.condition||'ok').trim()||'ok',
+      p_source_name: String(p.source_name||p.source||'Povrat bez otvorene posudbe').trim()||'Povrat bez otvorene posudbe',
+      p_note: String(p.note||'').trim()||null,
+      p_client_event_id: String(p.client_event_id||clientEvent('WEB-LEGACY-RETURN')).trim()
     };
-    if(note) patch.internal_note=note;
-    let q=client.from('equipment_items').update(patch);
-    const orFilter=armoryItemOrFilter([id]);
-    if(orFilter) q=q.or(orFilter); else q=q.eq('name',name);
-    const {data,error}=await q.select('id,legacy_id,name,quantity,available,loaned,status').limit(10);
+    if(!args.p_item_id && !args.p_equipment_legacy_id && !args.p_item_name) throw new Error('Odaberi artikl ili upiši naziv opreme.');
+    if(!Number.isFinite(args.p_quantity)||args.p_quantity<=0) throw new Error('Količina mora biti veća od nule.');
+    const {data,error}=await client.rpc('sov_armory_record_legacy_return',args);
     if(error) throw error;
-    if(!data || !data.length) throw new Error('Nisam našao artikl za spremanje: '+(id||name));
+    clearArmoryCatalogCaches();
+    try{window.dispatchEvent(new CustomEvent('sov-armory-catalog-dirty',{detail:data}));}catch(e){}
     return data;
   }
-
-  // v6.1.36b: build a safe PostgREST OR filter for equipment_items.
-  // Display rows key items as "item:<uuid>" / "rope:<uuid>" / "piece:<uuid>", so the raw value
-  // is NOT a valid uuid. We strip the type prefix, match text columns (legacy_id/catalog_id)
-  // for every candidate, and only add the uuid column (id) when the value is actually a uuid.
-  function armoryItemOrFilter(rawKeys){
-    const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-    const vals=[];
-    (Array.isArray(rawKeys)?rawKeys:[rawKeys]).forEach(function(v){
-      if(v===undefined||v===null||v==='') return;
-      const bare=String(v).replace(/^[A-Za-z]+:/,'').trim();
-      if(bare) vals.push(bare);
-    });
-    const ors=[];
-    Array.from(new Set(vals)).forEach(function(v){
-      ors.push('legacy_id.eq.'+v);
-      ors.push('catalog_id.eq.'+v);
-      if(UUID.test(v)) ors.push('id.eq.'+v);
-    });
-    return ors.join(',');
-  }
-
-  // v6.1.36: full catalog-item update. The old edit modal routed every existing-item save
-  // through updateInventoryCount(), which only persisted available/status/labels and silently
-  // dropped quantity, name, category, subcategory, location and minimum. This writes the full
-  // editable field set, keyed by id/legacy_id/catalog_id (so it matches rows imported with a
-  // NULL legacy_id), and busts the local catalog cache so the next load reflects the edit.
-  async function updateEquipmentItemFull(keys, fields){
+  async function addItemAndLegacyReturn(payload){
     if(!configured()) throw new Error('Supabase nije konfiguriran.');
     const client=sb();
-    keys=keys||{}; fields=fields||{};
-    const id=keys.id||keys.legacy_id||keys.catalog_id||null;
-    const name=keys.name||null;
-    const patch={};
-    ['name','category_name','subcategory','unit','quantity','available','loaned','minimum',
-     'status','availability','location_name','physical_code_note','internal_note','member_visible',
-     'quantity_label','available_label','last_inventory_date'].forEach(function(k){
-      if(fields[k]!==undefined && fields[k]!==null) patch[k]=fields[k];
-    });
-    if(fields.category_name!==undefined && fields.category_name!==null){
-      patch.category_name=canonicalArmoryCategory(fields.category_name,[fields.name,fields.subcategory,fields.internal_note].join(' '));
-      patch.xls_category=patch.category_name;
-    }
-    if(fields.subcategory!==undefined) patch.xls_subcategory=fields.subcategory;
-    // v6.1.37: keep location_id in sync with the chosen location_name (for correct filtering/grouping)
-    if(fields.location_name!==undefined && fields.location_name!==null && String(fields.location_name).trim()!==''){
-      try{
-        const ln=String(fields.location_name).trim();
-        const lr=await client.from('equipment_locations').select('id').ilike('name',ln).limit(1);
-        if(lr && lr.data && lr.data.length) patch.location_id=lr.data[0].id;
-      }catch(_e){}
-    }
-    patch.updated_at=new Date().toISOString();
-    let q=client.from('equipment_items').update(patch);
-    const orFilter=armoryItemOrFilter([keys.id,keys.legacy_id,keys.catalog_id]);
-    if(orFilter) q=q.or(orFilter);
-    else if(name) q=q.eq('name',name);
-    else throw new Error('Nema ključa za spremanje artikla.');
-    const {data,error}=await q.select('id,legacy_id,name,quantity,available,category_name,subcategory,location_name,status').limit(10);
-    if(error) throw error;
-    if(!data || !data.length) throw new Error('Nisam našao artikl za spremanje: '+(id||name));
-    try{['sov_armory_catalog_cache_v607','sov_armory_catalog_cache_v606','sov_armory_catalog_cache_v548','sov_armory_catalog_cache_v548_old','sov_armory_catalog_cache'].forEach(function(k){localStorage.removeItem(k);});}catch(_e){}
-    return data;
-  }
-
-  // v6.1.37: location management — list + create (equipment_locations has open RLS).
-  async function loadLocations(){
-    if(!configured()) return [];
-    try{
-      const client=sb();
-      const res=await withDbTimeout(client.from('equipment_locations').select('*').order('name'), 2500, 'locations', {data:[],error:null});
-      const data=res && res.data;
-      return (data||[]).map(function(l){return {id:l.id,legacy_id:l.legacy_id||null,name:l.name,description:l.description||'',type:l.type||''};}).filter(function(l){return l.name;});
-    }catch(e){ console.warn('loadLocations failed', e&&e.message?e.message:e); return []; }
-  }
-  async function createLocation(name, type){
-    if(!configured()) throw new Error('Supabase nije konfiguriran.');
-    const client=sb();
-    const nm=String(name||'').trim();
-    if(!nm) throw new Error('Naziv lokacije je prazan.');
-    // de-dupe case-insensitively
-    try{
-      const ex=await client.from('equipment_locations').select('id,name,type').ilike('name',nm).limit(1);
-      if(ex && ex.data && ex.data.length) return ex.data[0];
-    }catch(_e){}
-    const {data,error}=await client.from('equipment_locations').insert({name:nm,type:type||'storage'}).select('*').single();
-    if(error) throw error;
-    try{['sov_armory_catalog_cache_v607','sov_armory_catalog_cache_v606','sov_armory_catalog_cache_v548','sov_armory_catalog_cache_v548_old','sov_armory_catalog_cache'].forEach(function(k){localStorage.removeItem(k);});}catch(_e){}
-    return data;
-  }
-
-  // v6.1.38: persistent category icon + note used by Inventar and Inventura category headers.
-  async function updateCategoryMeta(name, icon, note){
-    if(!configured()) throw new Error('Supabase nije konfiguriran.');
-    const client=sb();
-    const nm=String(name||'').trim();
-    if(!nm) throw new Error('Naziv kategorije je prazan.');
-    const payload={name:nm,icon:String(icon||'').trim()||null,note:String(note||'').trim()||null,updated_at:new Date().toISOString()};
-    const {data,error}=await client
-      .from('equipment_categories')
-      .upsert(payload,{onConflict:'name'})
-      .select('*')
-      .single();
-    if(error) throw error;
-    try{['sov_armory_catalog_cache_v607','sov_armory_catalog_cache_v606','sov_armory_catalog_cache_v548','sov_armory_catalog_cache_v548_old','sov_armory_catalog_cache'].forEach(function(k){localStorage.removeItem(k);});}catch(_e){}
-    return data;
-  }
-
-
-
-  // v6.1.39c: catalog snapshots / old-base selector + clean loan view helpers
-  async function loadCatalogSnapshots(){
-    if(!configured()) return [];
-    const client=sb();
-    const {data,error}=await client.from('equipment_catalog_snapshots').select('*').order('created_at',{ascending:false}).limit(50);
-    if(error){ console.warn('armory snapshots unavailable', error.message); return []; }
-    return data||[];
-  }
-
-  async function loadCatalogSnapshot(snapshotId){
-    if(!configured() || !snapshotId) return null;
-    const client=sb();
-
-    // v6.1.39g: use SECURITY DEFINER RPC first. Direct browser reads from
-    // equipment_catalog_snapshot_items can be blocked by RLS, which created
-    // empty old/combined Excel tabs even though the snapshot existed.
-    try{
-      const rpc=await client.rpc('sov_armory_get_catalog_snapshot',{p_snapshot_id:snapshotId});
-      if(!rpc.error && rpc.data){
-        const d=rpc.data;
-        const items=Array.isArray(d.items)?d.items:(Array.isArray(d.raw_app_catalog)?d.raw_app_catalog:[]);
-        if(items.length){
-          d.items=items;
-          d.raw_app_catalog=Array.isArray(d.raw_app_catalog)&&d.raw_app_catalog.length?d.raw_app_catalog:items;
-          d.ropes=Array.isArray(d.ropes)?d.ropes:[];
-          d.pieces=Array.isArray(d.pieces)?d.pieces:[];
-          return d;
-        }
-      }
-      if(rpc.error) console.warn('snapshot RPC failed, falling back to direct select', rpc.error.message);
-    }catch(e){ console.warn('snapshot RPC exception, falling back to direct select', e); }
-
-    const snapRes=await client.from('equipment_catalog_snapshots').select('*').eq('id',snapshotId).maybeSingle();
-    if(snapRes.error) throw snapRes.error;
-    const snap=snapRes.data;
-    if(!snap) return null;
-    const itemRes=await client.from('equipment_catalog_snapshot_items').select('item_data,source_xls_row,item_id').eq('snapshot_id',snapshotId).limit(10000);
-    if(itemRes.error) throw itemRes.error;
-    const catsRes=await client.from('equipment_categories').select('*').limit(1000);
-    const subRes=await client.from('equipment_subcategory_meta').select('*').limit(2000);
-    const locRes=await client.from('equipment_locations').select('*').limit(1000);
-    const cats=(catsRes.data||[]).map((c,idx)=>({
-      id:c.id||c.legacy_id||('cat-db-'+idx),
-      name:c.name||'Ostalo', description:c.description||'', type:c.type||'canonical', sort_order:c.sort_order||idx,
-      icon:c.icon||'', note:c.note||'', display_name:c.display_name||'', short_name:c.short_name||'', search_terms:c.search_terms||''
-    }));
-    const items=(itemRes.data||[]).map((x,idx)=>{
-      const r=x.item_data||{};
-      return Object.assign({}, r, {
-        id:r.id||x.item_id||('SNAP-'+idx),
-        legacy_id:r.legacy_id||r.id||String(x.item_id||('SNAP-'+idx)),
-        catalog_id:r.catalog_id||r.legacy_id||r.id||String(x.item_id||('SNAP-'+idx)),
-        source_xls_row:r.source_xls_row||x.source_xls_row||null
-      });
-    });
-    return {
-      summary:{source:'Snapshot · '+(snap.name||'stara baza'), snapshot_id:snap.id, snapshot_name:snap.name, created_at:snap.created_at},
-      categories:cats,
-      subcategory_meta:(subRes.data||[]).map(s=>({id:s.id,category_name:s.category_name,subcategory_name:s.subcategory_name,display_name:s.display_name,short_name:s.short_name||'',search_terms:s.search_terms||'',note:s.note||'',icon:s.icon||''})),
-      locations:(locRes.data||[]).map(l=>({id:l.id,legacy_id:l.legacy_id||null,name:l.name,description:l.description||'',type:l.type||''})).filter(l=>l.name),
-      items, raw_app_catalog:items,
-      ropes:[],pieces:[],loans:[],inventories:[],inventory_items:[],procurement:[],services:[],disposed:[],lost:[],field:[]
+    const p=payload||{};
+    const args={
+      p_item_name: String(p.item_name||p.name||'').trim(),
+      p_category_name: String(p.category_name||p.category||'Za provjeru').trim()||'Za provjeru',
+      p_subcategory: String(p.subcategory||'').trim()||null,
+      p_unit: String(p.unit||'kom').trim()||'kom',
+      p_quantity: Number(p.quantity||p.qty||1),
+      p_condition_status: String(p.condition_status||p.condition||'za_provjeru').trim()||'za_provjeru',
+      p_source_name: String(p.source_name||p.source||'Povrat bez otvorene posudbe').trim()||'Povrat bez otvorene posudbe',
+      p_note: String(p.note||'').trim()||null,
+      p_client_event_id: String(p.client_event_id||clientEvent('WEB-LEGACY-ADD-RETURN')).trim()
     };
-  }
-
-  async function createCatalogSnapshot(name, description){
-    await requireArmory();
-    const client=sb();
-    const {data,error}=await client.rpc('sov_armory_create_catalog_snapshot',{p_name:name||'Snapshot oružarstva',p_description:description||null,p_source:'web-v6.1.39c'});
+    if(!args.p_item_name) throw new Error('Naziv opreme je obavezan.');
+    if(!Number.isFinite(args.p_quantity)||args.p_quantity<=0) throw new Error('Količina mora biti veća od nule.');
+    const {data,error}=await client.rpc('sov_armory_add_item_and_legacy_return',args);
     if(error) throw error;
-    try{ localStorage.removeItem(ARMORY_CATALOG_CACHE_KEY); }catch(_e){}
+    clearArmoryCatalogCaches();
+    try{window.dispatchEvent(new CustomEvent('sov-armory-catalog-dirty',{detail:data}));}catch(e){}
     return data;
   }
 
-  async function hideRequestFromArmory(id){
-    await requireArmory();
-    const client=sb();
-    const {error}=await client.from('equipment_requests').update({armory_hidden:true, armory_hidden_at:new Date().toISOString(), armory_hidden_reason:'Oružar maknuo iz aktivnog viewa', updated_at:new Date().toISOString()}).eq('id',id);
-    if(error) throw error;
-    return true;
-  }
-  window.SOVArmoryDB={configured,upsertSimpleItem,retireSimpleItem,loadArmoryNotes,saveArmoryNote,doneArmoryNote,loadRequests,createRequest,updateRequestStatus,issueRequest,returnRequestItems,importStaticData,loadAllData,loadCatalogManifest,createEquipmentItem,createEquipmentPiece,createEquipmentPieces,createRope,updateEquipmentStatus,updateInventoryCount,updateEquipmentItemFull,loadLocations,createLocation,updateCategoryMeta,loadCatalogSnapshots,loadCatalogSnapshot,createCatalogSnapshot,hideRequestFromArmory};
+  window.SOVArmoryDB={configured,upsertSimpleItem,retireSimpleItem,loadArmoryNotes,saveArmoryNote,doneArmoryNote,loadRequests,createRequest,updateRequestStatus,issueRequest,returnRequestItems,importStaticData,loadAllData,loadCatalogManifest,createEquipmentItem,createEquipmentPiece,createEquipmentPieces,createRope,updateEquipmentStatus,recordLegacyReturn,addItemAndLegacyReturn};
 
   // v5.48.1: true cache-first wrapper. The old v5.48 path still asked the manifest view
   // before returning cached data; on large Supabase views that made every page open feel like a full sync.

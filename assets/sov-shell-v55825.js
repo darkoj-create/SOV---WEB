@@ -1,6 +1,6 @@
 
 (function(){
-  const VERSION='5.58.25';
+  const VERSION='5.58.27';
   const PAGE=(location.pathname.split('/').pop()||'index.html').toLowerCase();
   const APP_PAGES=new Set([
     'dashboard.html','karta.html','baza.html','izleti.html','izleti-cloud.html','kalendar-izleta.html','oruzarstvo.html','oruzarstvo-import.html','oruzar-master.html','oruzar-master-posudbe.html','oruzar-master-inventar.html','oruzar-master-inventura.html','oruzar-master-notes.html','arhivar-dashboard.html','arhivar.html','arhivar-predane-jame.html','arhivar-izvoz.html','arhivar-zahvati.html','news-editor.html','napisi-clanak.html','admin-users.html','admin-notifications.html','role-manager.html','sync-status.html','audit-status.html','speleo-sql-safe.html','speleo-sql-edit-sandbox.html','speleo-sql-compare.html','speleo-sql-object-hub.html','speleo-sql-promote.html','speleo-sql-go-live.html','topodroid.html','topodroid-import.html','speleo-zapisnik.html','novi-zapisnik.html','pregled-baze.html','pregled-zapisnika.html','dokumentacija.html','dokumenti.html','zapisnici-skupstine.html'
@@ -24,7 +24,7 @@
     {href:'dashboard.html',label:'Dashboard',roles:['user','editor','oruzar','arhivar','admin','webmaster'],group:'Osnovno'},
     {href:'karta.html',label:'Karta',roles:['user','editor','oruzar','arhivar','admin','webmaster'],group:'Osnovno'},
     {href:'izleti.html',label:'Izleti',roles:['user','editor','oruzar','arhivar','admin','webmaster'],group:'Osnovno'},
-    {href:'oruzarstvo.html',label:'Oprema',roles:['user','editor','oruzar','arhivar','admin','webmaster'],group:'Osnovno'},
+    {href:'oruzarstvo.html',label:'Oprema',roles:['oruzar','admin','webmaster'],group:'Oružar'},
     {href:'dokumenti.html',label:'Dokumenti',roles:['user','editor','oruzar','arhivar','admin','webmaster'],group:'Osnovno'},
     {href:'napisi-clanak.html',label:'Napiši članak',roles:['user','editor','oruzar','arhivar','admin','webmaster'],group:'Osnovno'},
     {href:'arhivar-dashboard.html',label:'Arhivar',roles:['arhivar','admin','webmaster'],group:'Arhivar'},
@@ -122,6 +122,9 @@
     // This is a UX guard, not security. Real access is still handled by page/RLS/auth.
     document.querySelectorAll('[data-role-webmaster],a[href*="speleo-sql"],a[href="sync-status.html"],a[href="audit-status.html"],a[href="role-manager.html"]').forEach(el=>{ if(role!=='webmaster') el.classList.add('sov-shell-hidden-for-role'); });
     if(!['webmaster','admin'].includes(role)) document.querySelectorAll('a[href="admin-users.html"],a[href="admin-notifications.html"]').forEach(el=>el.classList.add('sov-shell-hidden-for-role'));
+    if(!['webmaster','admin','oruzar'].includes(role)) document.querySelectorAll('a[href="oruzarstvo.html"],a[href="oruzarstvo-import.html"],a[href^="oruzar-master"]').forEach(el=>el.classList.add('sov-shell-hidden-for-role'));
+    if(!['webmaster','admin','arhivar'].includes(role)) document.querySelectorAll('a[href^="arhivar"],a[href="topodroid.html"],a[href="topodroid-import.html"]').forEach(el=>el.classList.add('sov-shell-hidden-for-role'));
+    if(!['webmaster','admin','editor'].includes(role)) document.querySelectorAll('a[href="news-editor.html"]').forEach(el=>el.classList.add('sov-shell-hidden-for-role'));
   }
   function bindGlobalMenu(){
     if(window.__SOV_SHELL_GLOBAL_MENU_BOUND__) return;

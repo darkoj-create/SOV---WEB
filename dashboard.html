@@ -4,17 +4,17 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1" name="viewport"/>
-<title>SOV Cloud — Dashboard v6.1.34</title>
+<title>SOV Cloud — Dashboard v6.1.42</title>
 <link href="assets/site.css" rel="stylesheet"/>
 <link href="assets/mobile.css" rel="stylesheet"/>
 <link href="assets/sov-premium-ui.css" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/supabase-config.js"></script>
-<script src="assets/auth.js?v=6.1.39g-xls-snapshot-rpc"></script>
+<script src="assets/auth.js"></script>
 <style>
     .sov-top{position:relative}.sov-role-preview{display:none;align-items:center;gap:6px;padding:5px;border:1px solid rgba(255,255,255,.12);border-radius:999px;background:rgba(4,10,11,.76);backdrop-filter:blur(14px);box-shadow:0 14px 44px rgba(0,0,0,.25)}
     .sov-role-preview.is-on{display:inline-flex}.sov-role-preview .rp-label{font-size:10px;font-weight:950;text-transform:uppercase;letter-spacing:.08em;color:#b8c9c3;padding:0 4px}.sov-role-preview button{border:0;border-radius:999px;padding:7px 9px;background:transparent;color:#dbe8e2;font-size:12px;font-weight:950;cursor:pointer;white-space:nowrap}.sov-role-preview button.active{background:linear-gradient(135deg,#d7f66f,#83e6c2);color:#10180f;box-shadow:0 8px 24px rgba(215,246,111,.18)}
-    [data-dash-visible].is-preview-hidden,.sov-module.is-preview-hidden,.sov-panel.is-preview-hidden,.sov-section-head.is-preview-hidden{display:none!important}.sov-admin-tools{display:grid;gap:10px;margin-top:14px}.sov-admin-tools a{display:flex;align-items:center;justify-content:space-between;gap:10px;text-decoration:none;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:10px 12px;background:rgba(255,255,255,.045);color:inherit}.sov-admin-tools a:hover{border-color:rgba(215,246,111,.38);transform:translateY(-1px)}.sov-admin-tools small{color:rgba(230,240,235,.62);font-weight:800}.sov-admin-warning{margin-top:12px;color:#ffd7b0;font-size:12px;line-height:1.45}.sov-preview-note{margin-left:auto;color:#b8c9c3;font-size:12px;font-weight:900}.sov-dev-float{display:none!important}
+    [data-dash-visible].is-preview-hidden,.sov-module.is-preview-hidden,.sov-panel.is-preview-hidden,.sov-section-head.is-preview-hidden{display:none!important}body:not(.role-ui-ready) [data-dash-visible]{display:none!important}.sov-admin-tools{display:grid;gap:10px;margin-top:14px}.sov-admin-tools a{display:flex;align-items:center;justify-content:space-between;gap:10px;text-decoration:none;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:10px 12px;background:rgba(255,255,255,.045);color:inherit}.sov-admin-tools a:hover{border-color:rgba(215,246,111,.38);transform:translateY(-1px)}.sov-admin-tools small{color:rgba(230,240,235,.62);font-weight:800}.sov-admin-warning{margin-top:12px;color:#ffd7b0;font-size:12px;line-height:1.45}.sov-preview-note{margin-left:auto;color:#b8c9c3;font-size:12px;font-weight:900}.sov-dev-float{display:none!important}
     @media(max-width:940px){.sov-role-preview{width:100%;justify-content:center;border-radius:18px;flex-wrap:wrap}.sov-role-preview .rp-label{display:none}.sov-role-preview button{font-size:11px;padding:7px 8px}.sov-preview-note{width:100%;margin:4px 0 0;text-align:center}}
   
 /* UI FIX v6.1.29: Oružar direktni panel mobile layout */
@@ -76,7 +76,7 @@ body.dashboard-page header.sov-top .sov-nav a:not([href="dashboard.html"]):not([
 <a class="sov-btn main" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster" href="karta.html">Otvori kartu →</a>
 <a class="sov-btn" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster" href="predaj-novu-jamu.html">Predaj novu jamu</a>
 <a class="sov-btn" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster" href="izleti.html">Izleti</a>
-<a class="sov-btn" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster" href="oruzarstvo.html">Oprema</a>
+<a class="sov-btn" data-dash-visible="oruzar,admin,webmaster" data-dash-ability="armory" href="oruzarstvo.html">Oprema</a>
 <a class="sov-btn" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster" href="dokumenti.html">Dokumenti</a>
 </div>
 </div>
@@ -86,7 +86,7 @@ body.dashboard-page header.sov-top .sov-nav a:not([href="dashboard.html"]):not([
 <div class="v609-status-item"><span>Stvarna rola</span><b data-dash-role="">—</b></div>
 <div class="v609-status-item" data-dash-visible="webmaster"><span>Preview view</span><b data-preview-role-label="">—</b></div>
 <div class="v609-status-item"><span>Status računa</span><b data-auth-status="">—</b></div>
-<div class="v609-status-item"><span>Web build</span><b data-sov-version="">6.1.34</b></div>
+<div class="v609-status-item"><span>Web build</span><b data-sov-version="">6.1.42</b></div>
 </div>
 <p class="v609-subtle-note" data-access-summary="">Učitavam prava…</p>
 </aside>
@@ -107,10 +107,10 @@ body.dashboard-page header.sov-top .sov-nav a:not([href="dashboard.html"]):not([
 <a class="sov-module v609-module" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster" href="izleti.html" style="--accent:rgba(255,191,107,.18)">
 <div class="sov-icon">⛺</div><h3>Izleti</h3><p>Pregled izleta, prijava, priprema i kasnije arhiva izleta.</p><div class="sov-module-foot"><span class="sov-soft">Otvori</span></div>
 </a>
-<a class="sov-module v609-module" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster" href="tracking.html" style="--accent:rgba(131,230,194,.18)">
+<a class="sov-module v609-module" data-dash-visible="editor,arhivar,admin,webmaster" data-dash-ability="trips" href="tracking.html" style="--accent:rgba(131,230,194,.18)">
 <div class="sov-icon">📡</div><h3>Field tracking</h3><p>Lite ping, ruta i zadnje poznate pozicije kad je izlet aktivan.</p><div class="sov-module-foot"><span class="sov-tag">lite</span><span class="sov-soft">Otvori</span></div>
 </a>
-<a class="sov-module v609-module" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster" href="oruzarstvo.html" style="--accent:rgba(255,211,107,.16)">
+<a class="sov-module v609-module" data-dash-visible="oruzar,admin,webmaster" data-dash-ability="armory" href="oruzarstvo.html" style="--accent:rgba(255,211,107,.16)">
 <div class="sov-icon">🧰</div><h3>Oprema</h3><p>Pretraži katalog i pošalji zahtjev za posudbu opreme.</p><div class="sov-module-foot"><span class="sov-soft">Pretraži</span></div>
 </a>
 <a class="sov-module v609-module" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster" href="dokumenti.html" style="--accent:rgba(121,217,255,.16)">
@@ -126,22 +126,22 @@ body.dashboard-page header.sov-top .sov-nav a:not([href="dashboard.html"]):not([
 <span class="v609-zone-tag">Oružar · Arhivar · Urednik · Admin</span>
 </div>
 <section aria-label="Interni moduli" class="sov-grid v609-grid-role">
-<a class="sov-module v609-module" data-dash-visible="oruzar,admin,webmaster" data-role-armory="" href="oruzarstvo.html" style="--accent:rgba(255,191,107,.2)">
+<a class="sov-module v609-module" data-dash-visible="oruzar,admin,webmaster" data-dash-ability="armory" data-role-armory="" href="oruzar-master.html" style="--accent:rgba(255,191,107,.2)">
 <div class="sov-icon">🛠️</div><h3>Oružarstvo</h3><p>Katalog opreme, zahtjevi, zaduženja, servis i inventura.</p><div class="sov-module-foot"><span class="sov-tag">Oružar</span><span class="sov-soft">Otvori</span></div>
 </a>
-<a class="sov-module v609-module" data-dash-visible="arhivar,admin,webmaster" data-role-archive="" href="arhivar-dashboard.html" style="--accent:rgba(215,246,111,.16)">
+<a class="sov-module v609-module" data-dash-visible="arhivar,admin,webmaster" data-dash-ability="archive" data-role-archive="" href="arhivar-dashboard.html" style="--accent:rgba(215,246,111,.16)">
 <div class="sov-icon">🗂️</div><h3>Arhivar</h3><p>Uređivanje arhive, objekti, nacrti, zapisnici i exporti.</p><div class="sov-module-foot"><span class="sov-tag">Arhivar</span><span class="sov-soft">Otvori</span></div>
 </a>
-<a class="sov-module v609-module" data-dash-visible="arhivar,admin,webmaster" data-role-archive="" href="arhivar-predane-jame.html" style="--accent:rgba(121,217,255,.18)">
+<a class="sov-module v609-module" data-dash-visible="arhivar,admin,webmaster" data-dash-ability="archive" data-role-archive="" href="arhivar-predane-jame.html" style="--accent:rgba(121,217,255,.18)">
 <div class="sov-icon">📥</div><h3>Predane jame</h3><p>Inbox za nove jame, dopune, privitke i Excel export.</p><div class="sov-module-foot"><span class="sov-tag">Review</span><span class="sov-soft">Pregled</span></div>
 </a>
-<a class="sov-module v609-module" data-dash-visible="arhivar,admin,webmaster" data-role-archive="" href="topodroid-import.html" style="--accent:rgba(131,230,194,.18)">
+<a class="sov-module v609-module" data-dash-visible="arhivar,admin,webmaster" data-dash-ability="archive" data-role-archive="" href="topodroid-import.html" style="--accent:rgba(131,230,194,.18)">
 <div class="sov-icon">⬆️</div><h3>TopoDroid import</h3><p>Batch upload/export pipeline za nacrte i survey pakete.</p><div class="sov-module-foot"><span class="sov-tag">Arhivar</span><span class="sov-soft">Import</span></div>
 </a>
-<a class="sov-module v609-module" data-dash-visible="editor,admin,webmaster" data-role-editor="" href="news-editor.html" style="--accent:rgba(102,226,141,.17)">
+<a class="sov-module v609-module" data-dash-visible="editor,admin,webmaster" data-dash-ability="editor" data-role-editor="" href="news-editor.html" style="--accent:rgba(102,226,141,.17)">
 <div class="sov-icon">📰</div><h3>Urednik vijesti</h3><p>Uredi postojeće vijesti, objavi nove i obradi predane članke.</p><div class="sov-module-foot"><span class="sov-tag">Urednik</span><span class="sov-soft">Uredi</span></div>
 </a>
-<article class="sov-module v609-module" data-dash-visible="admin,webmaster" data-role-admin="" style="--accent:rgba(255,211,107,.16)">
+<article class="sov-module v609-module" data-dash-visible="admin,webmaster" data-dash-ability="admin" data-role-admin="" style="--accent:rgba(255,211,107,.16)">
 <div class="sov-icon">🛡️</div><h3>Admin operativa</h3><p>Odobrenja korisnika, role, obavijesti i ulaz u glavne radne module.</p>
 <div class="v609-mini-actions">
 <a href="admin-users.html"><span>Korisnici</span><small>odobrenja i role →</small></a>
@@ -152,11 +152,11 @@ body.dashboard-page header.sov-top .sov-nav a:not([href="dashboard.html"]):not([
 </article>
 </section>
 
-<div class="v609-zone-head" data-dash-visible="webmaster" data-role-webmaster="" data-section="system">
+<div class="v609-zone-head" data-dash-visible="webmaster" data-dash-ability="webmaster" data-role-webmaster="" data-section="system">
 <div><h2>Sustav</h2><p>Tehnički alati postoje, ali nisu više dio glavnog korisničkog iskustva.</p></div>
 <span class="v609-zone-tag">webmaster only</span>
 </div>
-<details class="v609-tech-wrap" data-dash-visible="webmaster" data-role-webmaster="">
+<details class="v609-tech-wrap" data-dash-visible="webmaster" data-dash-ability="webmaster" data-role-webmaster="">
 <summary class="v609-tech-summary"><div><b>Prikaži tehničke alate</b><small>Sync status, role manager, audit i SQL alati. Otvori samo kad stvarno održavaš sustav.</small></div><span class="chev">Otvori</span></summary>
 <div class="v609-tech-body">
 <section aria-label="Stanje sustava" class="v609-system-grid">
@@ -212,18 +212,52 @@ body.dashboard-page header.sov-top .sov-nav a:not([href="dashboard.html"]):not([
     (function(){
       const LABELS={webmaster:'Webmaster',admin:'Admin',oruzar:'Oružar',arhivar:'Arhivar',editor:'Urednik',user:'Član'};
       const ALLOWED=['webmaster','admin','oruzar','arhivar','editor','user'];
-      const visibleFor=(el,role)=>String(el.getAttribute('data-dash-visible')||'user,editor,oruzar,arhivar,admin,webmaster').split(',').map(s=>s.trim()).includes(role);
+      const ROLE_PERMS={
+        webmaster:{admin:true,webmaster:true,editor:true,armory:true,archive:true,trips:true,drawings:true,sov_base:true},
+        admin:{admin:true,webmaster:false,editor:true,armory:true,archive:true,trips:true,drawings:true,sov_base:true},
+        editor:{admin:false,webmaster:false,editor:true,armory:false,archive:false,trips:true,drawings:true,sov_base:true},
+        arhivar:{admin:false,webmaster:false,editor:false,armory:false,archive:true,trips:true,drawings:true,sov_base:true},
+        oruzar:{admin:false,webmaster:false,editor:false,armory:true,archive:false,trips:false,drawings:true,sov_base:true},
+        user:{admin:false,webmaster:false,editor:false,armory:false,archive:false,trips:false,drawings:true,sov_base:true}
+      };
+      const ABILITY_TO_PERMISSION={admin:'can_manage_users',webmaster:'can_use_sql_tools',editor:'can_edit_news',armory:'can_manage_equipment',archive:'can_verify_drawings',trips:'can_manage_trips',drawings:'can_upload_drawings',sov_base:'can_view_sov_base'};
+      function roleList(el){return String(el.getAttribute('data-dash-visible')||'user,editor,oruzar,arhivar,admin,webmaster').split(',').map(s=>s.trim()).filter(Boolean)}
+      function permsFor(role,profile){
+        const base=Object.assign({},ROLE_PERMS[role]||ROLE_PERMS.user);
+        const live=(profile&&profile.permissions)||{};
+        Object.keys(ABILITY_TO_PERMISSION).forEach(ability=>{
+          const key=ABILITY_TO_PERMISSION[ability];
+          if(Object.prototype.hasOwnProperty.call(live,key)) base[ability]=!!live[key];
+        });
+        return base;
+      }
+      function visibleFor(el,role,perms){
+        if(!roleList(el).includes(role)) return false;
+        const ability=String(el.getAttribute('data-dash-ability')||'').trim();
+        return !ability || !!(perms&&perms[ability]);
+      }
       function getSaved(){try{return localStorage.getItem('SOV_DASHBOARD_PREVIEW_ROLE')||'webmaster'}catch(e){return 'admin'}}
       function setSaved(role){try{localStorage.setItem('SOV_DASHBOARD_PREVIEW_ROLE',role)}catch(e){}}
-      function apply(role){
+      function apply(role,profile){
         if(!ALLOWED.includes(role)) role='webmaster'; setSaved(role);
+        const perms=permsFor(role,profile);
         document.querySelectorAll('[data-preview-role-label]').forEach(el=>el.textContent=LABELS[role]||role);
         document.querySelectorAll('#dashboardRolePreview button[data-preview-dashboard-role]').forEach(btn=>btn.classList.toggle('active',btn.dataset.previewDashboardRole===role));
-        document.querySelectorAll('[data-dash-visible]').forEach(el=>el.classList.toggle('is-preview-hidden',!visibleFor(el,role)));
+        document.querySelectorAll('[data-dash-visible]').forEach(el=>el.classList.toggle('is-preview-hidden',!visibleFor(el,role,perms)));
         document.querySelectorAll('.v609-zone-head[data-section="internal"], .sov-section-head[data-section="internal"]').forEach(el=>{
-          const any=Array.from(document.querySelectorAll('.sov-grid[aria-label="Interni moduli"] [data-dash-visible]')).some(card=>visibleFor(card,role));
+          const any=Array.from(document.querySelectorAll('.sov-grid[aria-label="Interni moduli"] [data-dash-visible]')).some(card=>visibleFor(card,role,perms));
           el.classList.toggle('is-preview-hidden',!any);
         });
+        const roleEl=document.querySelector('[data-dash-role]');
+        if(roleEl) roleEl.textContent=LABELS[(profile&&profile.role)||role]||((profile&&profile.role)||role);
+        const statusEl=document.querySelector('[data-auth-status]');
+        if(statusEl) statusEl.textContent=(profile&&profile.status==='approved')?'odobren':((profile&&profile.status)||'—');
+        const summary=document.querySelector('[data-access-summary]');
+        if(summary){
+          const shown=Array.from(document.querySelectorAll('.v609-grid-primary [data-dash-visible]')).filter(el=>!el.classList.contains('is-preview-hidden')).map(el=>el.querySelector('h3')&&el.querySelector('h3').textContent).filter(Boolean);
+          summary.textContent=shown.length?'Dostupno: '+shown.join(', ')+'.':'Nema dostupnih korisničkih modula za ovu rolu.';
+        }
+        document.body.classList.add('role-ui-ready');
       }
       document.addEventListener('DOMContentLoaded',async()=>{
         const box=document.getElementById('dashboardRolePreview'); if(!box) return;
@@ -232,14 +266,14 @@ body.dashboard-page header.sov-top .sov-nav a:not([href="dashboard.html"]):not([
         const params=new URLSearchParams(location.search);
         const previewRequested=params.get('preview')==='1'||localStorage.getItem('SOV_OPEN_PREVIEW_MODE')==='true';
         if(isWebmaster && previewRequested){ box.classList.add('is-on'); } else { box.classList.remove('is-on'); }
-        box.querySelectorAll('button[data-preview-dashboard-role]').forEach(btn=>btn.addEventListener('click',()=>apply(btn.dataset.previewDashboardRole)));
+        box.querySelectorAll('button[data-preview-dashboard-role]').forEach(btn=>btn.addEventListener('click',()=>apply(btn.dataset.previewDashboardRole,null)));
         const effectiveRole=(isWebmaster && previewRequested) ? getSaved() : (profile&&profile.role)||'user';
-        apply(effectiveRole);
-        setTimeout(()=>apply(effectiveRole),350);
+        apply(effectiveRole,profile);
+        setTimeout(()=>apply(effectiveRole,profile),350);
       });
     })();
   </script>
-<script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script defer="" src="assets/sov-polish-v55826.js"></script><script defer src="assets/sov-wow-v6.js?v=6.1.34"></script><script defer src="assets/sov-version.js?v=6.1.34"></script><script>
+<script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script defer="" src="assets/sov-polish-v55826.js"></script><script defer src="assets/sov-wow-v6.js?v=6.1.42"></script><script defer src="assets/sov-version.js?v=6.1.42"></script><script>
 // UI FIX v6.1.27: fallback za slučaj da auth ne odgovori na vrijeme
 setTimeout(function() {
   var el = document.querySelector('[data-access-summary]');
