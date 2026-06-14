@@ -1,28 +1,24 @@
 {
   "app": "SOV web",
-  "version": "6.1.31",
-  "versionName": "v6.1.31-client-error-logs",
-  "build": "sov-web-build-v6.1.31-client-error-logs",
-  "createdAt": "2026-06-09T20:55:00Z",
-  "cacheBust": "6131",
-  "base": "sov-web-build-v6.1.30-oruzar-grid-visual-fix.zip",
-  "requiresSql": true,
-  "requiredSql": [
-    "SUPABASE_SOV_CLIENT_ERROR_LOGS_v6_1_31.sql"
-  ],
+  "version": "6.1.42",
+  "versionName": "v6.1.42-role-aware-ui",
+  "build": "sov-web-build-v6.1.42-role-aware-ui",
+  "createdAt": "2026-06-14T22:30:00Z",
+  "cacheBust": "6142-role-ui",
+  "base": "sov-web-build-v6.1.38-oruzarstvo-inventory-edit-name-cleanup.zip",
+  "requiresSql": false,
+  "requiredSql": [],
   "changedFiles": [
-    "assets/sov-client-logger.js",
-    "admin-client-errors.html",
     "dashboard.html",
-    "*.html logger script include",
+    "assets/sov-shell-v55825.js",
     "update.json",
     "VERSION.txt",
     "BUILD_VERSION.txt"
   ],
-  "releaseType": "observability-v1",
+  "releaseType": "role-aware-ui-hotfix",
   "notes": [
-    "Adds SOV client error logging for web JavaScript errors and failed Supabase fetches.",
-    "Adds admin-client-errors.html for admin/webmaster review.",
-    "No business logic changes to trips, armory, archive or auth."
+    "Dashboard now hides modules that the active role cannot open.",
+    "Common shell navigation hides armory, archive, editor, admin and webmaster links from unauthorized roles.",
+    "No SQL changes are required for this build."
   ]
 }
