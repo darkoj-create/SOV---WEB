@@ -528,8 +528,13 @@
     if(table==='equipment_items') patch.availability='nedostupno';
     if(note) patch.note=note;
     let q=client.from(table).update(patch);
-    if(kind==='rope') q=q.or(`id.eq.${id},sku.eq.${id},legacy_id.eq.${id}`);
-    else q=q.or(`id.eq.${id},legacy_id.eq.${id}`);
+    const bareId=String(id||'').replace(/^[A-Za-z]+:/,'').trim();
+    const isUuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(bareId);
+    const ors=[];
+    if(isUuid) ors.push('id.eq.'+bareId);
+    ors.push('legacy_id.eq.'+bareId);
+    if(kind==='rope') ors.push('sku.eq.'+bareId);
+    q=q.or(ors.join(','));
     const {error}=await q;
     if(error) throw error;
     return true;
@@ -884,7 +889,7 @@
   async function updateInventoryCount(item, count, status, note){
     const client=await requireArmory();
     const next=Math.max(0, safeQuantity(count)||0);
-    const id=String((item&& (item.legacy_id||item.id||item.catalog_id||item.sku)) || '').trim();
+    const id=String((item&& (item.legacy_id||item.id||item.catalog_id||item.sku)) || '').replace(/^[A-Za-z]+:/,'').trim();
     const name=String((item&& (item.name||item.item_name)) || '').trim();
     const st=status || (next>0?'aktivno':'za provjeru');
     // Preferred safe path: SECURITY DEFINER RPC supplied in SQL patch v6.1.35-save-fix.
@@ -912,11 +917,33 @@
     };
     if(note) patch.internal_note=note;
     let q=client.from('equipment_items').update(patch);
-    if(id) q=q.or(`legacy_id.eq.${id},catalog_id.eq.${id},id.eq.${id}`); else q=q.eq('name',name);
+    const orFilter=armoryItemOrFilter([id]);
+    if(orFilter) q=q.or(orFilter); else q=q.eq('name',name);
     const {data,error}=await q.select('id,legacy_id,name,quantity,available,loaned,status').limit(10);
     if(error) throw error;
     if(!data || !data.length) throw new Error('Nisam našao artikl za spremanje: '+(id||name));
     return data;
+  }
+
+  // v6.1.36b: build a safe PostgREST OR filter for equipment_items.
+  // Display rows key items as "item:<uuid>" / "rope:<uuid>" / "piece:<uuid>", so the raw value
+  // is NOT a valid uuid. We strip the type prefix, match text columns (legacy_id/catalog_id)
+  // for every candidate, and only add the uuid column (id) when the value is actually a uuid.
+  function armoryItemOrFilter(rawKeys){
+    const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const vals=[];
+    (Array.isArray(rawKeys)?rawKeys:[rawKeys]).forEach(function(v){
+      if(v===undefined||v===null||v==='') return;
+      const bare=String(v).replace(/^[A-Za-z]+:/,'').trim();
+      if(bare) vals.push(bare);
+    });
+    const ors=[];
+    Array.from(new Set(vals)).forEach(function(v){
+      ors.push('legacy_id.eq.'+v);
+      ors.push('catalog_id.eq.'+v);
+      if(UUID.test(v)) ors.push('id.eq.'+v);
+    });
+    return ors.join(',');
   }
 
   // v6.1.36: full catalog-item update. The old edit modal routed every existing-item save
@@ -943,7 +970,8 @@
     if(fields.subcategory!==undefined) patch.xls_subcategory=fields.subcategory;
     patch.updated_at=new Date().toISOString();
     let q=client.from('equipment_items').update(patch);
-    if(id) q=q.or('legacy_id.eq.'+id+',catalog_id.eq.'+id+',id.eq.'+id);
+    const orFilter=armoryItemOrFilter([keys.id,keys.legacy_id,keys.catalog_id]);
+    if(orFilter) q=q.or(orFilter);
     else if(name) q=q.eq('name',name);
     else throw new Error('Nema ključa za spremanje artikla.');
     const {data,error}=await q.select('id,legacy_id,name,quantity,available,category_name,subcategory,location_name,status').limit(10);
