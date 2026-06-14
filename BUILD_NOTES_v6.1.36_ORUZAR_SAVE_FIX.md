@@ -35,3 +35,11 @@ druge funkcije (retire, loan linking, upsert) nisu mogle adresirati.
 `equipment_categories` i dalje sadrži ~49 starih kategorija s duplikatima ("Užad"/"Užeta",
 "Alpinistička oprema"/"...penjačka..."). Sada ih ništa ne koristi (artikli su na 12 čistih).
 Opcionalni cleanup zaseban.
+
+## v6.1.36b — UUID prefix fix (follow-up)
+Console je pokazao: `invalid input syntax for type uuid: "item:36108372-..."` (PATCH 400, 22P02).
+Prikazni redovi koriste ključ "item:<uuid>" / "rope:<uuid>" / "piece:<uuid>", što nije validan uuid.
+Fix: `armoryItemOrFilter()` skida tip-prefiks, na `id` (uuid kolona) ide samo ako je vrijednost
+pravi uuid, a `legacy_id`/`catalog_id` (text) hvataju sve kandidate. Primijenjeno na
+updateEquipmentItemFull, updateInventoryCount (RPC identifier + fallback) i updateEquipmentStatus.
+Cache token: ?v=6.1.36b-uuid-fix.
