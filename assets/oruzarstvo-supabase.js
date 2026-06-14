@@ -188,7 +188,7 @@
   async function loadRequests(){
     if(!configured()) return null;
     const client=sb();
-    const {data:reqs,error}=await client.from('equipment_requests').select('*').order('created_at',{ascending:false});
+    const {data:reqs,error}=await client.from('equipment_requests').select('*').eq('armory_hidden',false).order('created_at',{ascending:false});
     if(error){ console.warn('Oružarstvo requests Supabase fallback:',error.message); return null; }
     const ids=(reqs||[]).map(r=>r.id);
     let items=[];
@@ -1056,7 +1056,70 @@
     return data;
   }
 
-  window.SOVArmoryDB={configured,upsertSimpleItem,retireSimpleItem,loadArmoryNotes,saveArmoryNote,doneArmoryNote,loadRequests,createRequest,updateRequestStatus,issueRequest,returnRequestItems,importStaticData,loadAllData,loadCatalogManifest,createEquipmentItem,createEquipmentPiece,createEquipmentPieces,createRope,updateEquipmentStatus,updateInventoryCount,updateEquipmentItemFull,loadLocations,createLocation,updateCategoryMeta};
+
+
+  // v6.1.39c: catalog snapshots / old-base selector + clean loan view helpers
+  async function loadCatalogSnapshots(){
+    if(!configured()) return [];
+    const client=sb();
+    const {data,error}=await client.from('equipment_catalog_snapshots').select('*').order('created_at',{ascending:false}).limit(50);
+    if(error){ console.warn('armory snapshots unavailable', error.message); return []; }
+    return data||[];
+  }
+
+  async function loadCatalogSnapshot(snapshotId){
+    if(!configured() || !snapshotId) return null;
+    const client=sb();
+    const snapRes=await client.from('equipment_catalog_snapshots').select('*').eq('id',snapshotId).maybeSingle();
+    if(snapRes.error) throw snapRes.error;
+    const snap=snapRes.data;
+    if(!snap) return null;
+    const itemRes=await client.from('equipment_catalog_snapshot_items').select('item_data,source_xls_row,item_id').eq('snapshot_id',snapshotId).limit(10000);
+    if(itemRes.error) throw itemRes.error;
+    const catsRes=await client.from('equipment_categories').select('*').limit(1000);
+    const subRes=await client.from('equipment_subcategory_meta').select('*').limit(2000);
+    const locRes=await client.from('equipment_locations').select('*').limit(1000);
+    const cats=(catsRes.data||[]).map((c,idx)=>({
+      id:c.id||c.legacy_id||('cat-db-'+idx),
+      name:c.name||'Ostalo', description:c.description||'', type:c.type||'canonical', sort_order:c.sort_order||idx,
+      icon:c.icon||'', note:c.note||'', display_name:c.display_name||'', short_name:c.short_name||'', search_terms:c.search_terms||''
+    }));
+    const items=(itemRes.data||[]).map((x,idx)=>{
+      const r=x.item_data||{};
+      return Object.assign({}, r, {
+        id:r.id||x.item_id||('SNAP-'+idx),
+        legacy_id:r.legacy_id||r.id||String(x.item_id||('SNAP-'+idx)),
+        catalog_id:r.catalog_id||r.legacy_id||r.id||String(x.item_id||('SNAP-'+idx)),
+        source_xls_row:r.source_xls_row||x.source_xls_row||null
+      });
+    });
+    return {
+      summary:{source:'Snapshot · '+(snap.name||'stara baza'), snapshot_id:snap.id, snapshot_name:snap.name, created_at:snap.created_at},
+      categories:cats,
+      subcategory_meta:(subRes.data||[]).map(s=>({id:s.id,category_name:s.category_name,subcategory_name:s.subcategory_name,display_name:s.display_name,short_name:s.short_name||'',search_terms:s.search_terms||'',note:s.note||'',icon:s.icon||''})),
+      locations:(locRes.data||[]).map(l=>({id:l.id,legacy_id:l.legacy_id||null,name:l.name,description:l.description||'',type:l.type||''})).filter(l=>l.name),
+      items, raw_app_catalog:items,
+      ropes:[],pieces:[],loans:[],inventories:[],inventory_items:[],procurement:[],services:[],disposed:[],lost:[],field:[]
+    };
+  }
+
+  async function createCatalogSnapshot(name, description){
+    await requireArmory();
+    const client=sb();
+    const {data,error}=await client.rpc('sov_armory_create_catalog_snapshot',{p_name:name||'Snapshot oružarstva',p_description:description||null,p_source:'web-v6.1.39c'});
+    if(error) throw error;
+    try{ localStorage.removeItem(ARMORY_CATALOG_CACHE_KEY); }catch(_e){}
+    return data;
+  }
+
+  async function hideRequestFromArmory(id){
+    await requireArmory();
+    const client=sb();
+    const {error}=await client.from('equipment_requests').update({armory_hidden:true, armory_hidden_at:new Date().toISOString(), armory_hidden_reason:'Oružar maknuo iz aktivnog viewa', updated_at:new Date().toISOString()}).eq('id',id);
+    if(error) throw error;
+    return true;
+  }
+  window.SOVArmoryDB={configured,upsertSimpleItem,retireSimpleItem,loadArmoryNotes,saveArmoryNote,doneArmoryNote,loadRequests,createRequest,updateRequestStatus,issueRequest,returnRequestItems,importStaticData,loadAllData,loadCatalogManifest,createEquipmentItem,createEquipmentPiece,createEquipmentPieces,createRope,updateEquipmentStatus,updateInventoryCount,updateEquipmentItemFull,loadLocations,createLocation,updateCategoryMeta,loadCatalogSnapshots,loadCatalogSnapshot,createCatalogSnapshot,hideRequestFromArmory};
 
   // v5.48.1: true cache-first wrapper. The old v5.48 path still asked the manifest view
   // before returning cached data; on large Supabase views that made every page open feel like a full sync.
