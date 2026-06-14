@@ -523,8 +523,22 @@
       const merge=cell.colspan>1?` ss:MergeAcross="${cell.colspan-1}"`:'';
       return `<Cell ss:StyleID="${styleFor(cell,rowIdx)}"${merge}><Data ss:Type="${data.type}">${xmlEsc(data.value)}</Data></Cell>`;
     }).join('')}</Row>`).join('');
+    // v6.1.39k: worksheet names must be unique or Excel refuses to open the
+    // workbook. With one tab per snapshot, date-based default snapshot names
+    // collide easily, so dedupe defensively (… (2), … (3)).
+    const usedNames=new Set();
+    const uniqueSheetName=(raw)=>{
+      const base=safeSheetName(raw); let name=base; let n=2;
+      while(usedNames.has(name.toLowerCase())){
+        const suffix=' ('+n+')';
+        name=safeSheetName(base.slice(0,Math.max(1,31-suffix.length))+suffix);
+        n++;
+      }
+      usedNames.add(name.toLowerCase());
+      return name;
+    };
     const worksheets=(sheets||[]).map(sheet=>{
-      const name=safeSheetName(sheet.name);
+      const name=uniqueSheetName(sheet.name);
       return `<Worksheet ss:Name="${xmlEsc(name)}"><Table>${xmlRows(rowsFromHtml(sheet.html))}</Table><WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel"><DisplayGridlines/></WorksheetOptions></Worksheet>`;
     }).join('');
     const xml=`<?xml version="1.0" encoding="UTF-8"?><?mso-application progid="Excel.Sheet"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" xmlns:html="http://www.w3.org/TR/REC-html40"><DocumentProperties xmlns="urn:schemas-microsoft-com:office:office"><Author>SOV</Author><LastAuthor>SOV</LastAuthor><Created>${new Date().toISOString()}</Created></DocumentProperties><Styles><Style ss:ID="Default" ss:Name="Normal"><Alignment ss:Vertical="Top"/><Font ss:FontName="Arial" ss:Size="10"/></Style><Style ss:ID="sText"><Alignment ss:Vertical="Top" ss:WrapText="1"/><Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#999999"/><Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#999999"/><Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#999999"/><Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#999999"/></Borders></Style><Style ss:ID="sNumber"><Alignment ss:Vertical="Top"/><NumberFormat ss:Format="0"/><Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#999999"/><Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#999999"/><Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#999999"/><Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#999999"/></Borders></Style><Style ss:ID="sHeader"><Font ss:FontName="Arial" ss:Size="10" ss:Bold="1"/><Interior ss:Color="#D9EAD3" ss:Pattern="Solid"/><Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#777777"/><Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#777777"/><Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#777777"/><Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#777777"/></Borders></Style><Style ss:ID="sTitle"><Font ss:FontName="Arial" ss:Size="14" ss:Bold="1" ss:Color="#FFFFFF"/><Interior ss:Color="#073B32" ss:Pattern="Solid"/><Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#073B32"/><Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#073B32"/><Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#073B32"/><Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#073B32"/></Borders></Style></Styles>${worksheets}</Workbook>`;
@@ -557,7 +571,12 @@
       || snaps[0]
       || null;
   }
-  async function loadExportPair(){
+  // v6.1.39k: load live + EVERY snapshot so the export can render one tab per
+  // snapshot plus a combined view. Snapshots are loaded sequentially on purpose:
+  // activeExportRowsFromData() temporarily mutates STATE.data, so concurrent
+  // (Promise.all) loading would corrupt rows. We load all raw data here, then
+  // build rows synchronously in the exporters below.
+  async function loadExportSnapshots(){
     await loadData(true);
     await loadSnapshots();
     let live=STATE.liveData||null;
@@ -566,26 +585,37 @@
         const fresh=preferRawCatalogForMaster(await SOVArmoryDB.loadAllData({force:true,strictLive:true}));
         if(fresh&&rowCountFromData(fresh)>=20) live=fresh;
       }
-    }catch(e){console.warn('[armory v6.1.39e] live export load failed',e)}
+    }catch(e){console.warn('[armory v6.1.39k] live export load failed',e)}
     if(!live || rowCountFromData(live)<20) live=(currentCatalogMode()==='live'?STATE.data:STATE.liveData)||STATE.data;
-    const oldMeta=oldBaseSnapshotMeta();
-    let oldData=null;
-    if(oldMeta&&window.SOVArmoryDB&&SOVArmoryDB.loadCatalogSnapshot){
-      try{ oldData=preferRawCatalogForMaster(await SOVArmoryDB.loadCatalogSnapshot(oldMeta.id)); }
-      catch(e){console.warn('[armory v6.1.39e] old snapshot export load failed',e);}
+
+    const snaps=(STATE.snapshots||[]).slice(); // loadCatalogSnapshots() returns newest-first
+    const loaded=[];
+    if(window.SOVArmoryDB&&SOVArmoryDB.loadCatalogSnapshot){
+      for(const meta of snaps){
+        if(!meta||!meta.id) continue;
+        try{
+          const data=preferRawCatalogForMaster(await SOVArmoryDB.loadCatalogSnapshot(meta.id));
+          if(data && rowCountFromData(data)>0) loaded.push({meta,data});
+          else console.warn('[armory v6.1.39k] snapshot empty, skipping tab',meta.id,meta.name);
+        }catch(e){console.warn('[armory v6.1.39k] snapshot export load failed',meta.id,e);}
+      }
     }
-    return {liveData:live, oldData, oldMeta};
+    return {liveData:live, snapshots:loaded};
   }
+  function snapshotShortName(meta){ const d=(meta&&meta.created_at||'').slice(0,10); return `${(meta&&meta.name)||'Snapshot'}${d?(' ('+d+')'):''}`; }
+  function snapshotSubtitle(meta,count){ const d=(meta&&meta.created_at||'').slice(0,10); return `${(meta&&meta.name)||'Snapshot'}${d?(' · '+d):''} · ${count} stavki${meta&&meta.description?(' · '+meta.description):''}`; }
   function sortExportRows(rows){return (rows||[]).slice().sort((a,b)=>(categoryPriority(a.category)-categoryPriority(b.category))||displayCategoryName(a.category).localeCompare(displayCategoryName(b.category),'hr')||displaySubcategoryName(a.category,a.subcategory).localeCompare(displaySubcategoryName(b.category,b.subcategory),'hr')||a.name.localeCompare(b.name,'hr'));}
   function qtyForSort(r){
     const raw=(r&&r.needsCount)?(r.qtyLabel||r.avLabel||r.qty||r.av):(r&&r.qty);
     const n=Number(String(raw??0).replace(',','.').replace(/[^0-9.\-]/g,''));
     return Number.isFinite(n)?n:0;
   }
-  function combinedExportRows(liveRows,oldRows){
-    const live=(liveRows||[]).map(r=>({...r,_base:'Aktualna baza'}));
-    const old=(oldRows||[]).map(r=>({...r,_base:'Stara baza'}));
-    return live.concat(old).sort((a,b)=>(qtyForSort(b)-qtyForSort(a))||displayCategoryName(a.category).localeCompare(displayCategoryName(b.category),'hr')||displaySubcategoryName(a.category,a.subcategory).localeCompare(displaySubcategoryName(b.category,b.subcategory),'hr')||a.name.localeCompare(b.name,'hr')||String(a._base).localeCompare(String(b._base),'hr'));
+  // v6.1.39k: combined view across N sources. Each group carries its own label
+  // (live or a snapshot name+date) which lands in the "Baza / snapshot" column.
+  function combinedExportGroups(groups){
+    const all=[];
+    (groups||[]).forEach(g=>{ (g.rows||[]).forEach(r=>all.push(Object.assign({},r,{_base:g.label}))); });
+    return all.sort((a,b)=>(qtyForSort(b)-qtyForSort(a))||displayCategoryName(a.category).localeCompare(displayCategoryName(b.category),'hr')||displaySubcategoryName(a.category,a.subcategory).localeCompare(displaySubcategoryName(b.category,b.subcategory),'hr')||a.name.localeCompare(b.name,'hr')||String(a._base).localeCompare(String(b._base),'hr'));
   }
   function xlsInventorySheet(title, subtitle, rows, date){
     const header=`<tr><th colspan="10" class="head">${xmlEsc(title)} — ${xmlEsc(date)}</th></tr><tr><th colspan="10">${xmlEsc(subtitle||'')}</th></tr><tr><th>Kategorija</th><th>Podkategorija</th><th>Naziv</th><th>Količina</th><th>Dostupno</th><th>Jedinica</th><th>Datum evidencije</th><th>Lokacija</th><th>Status</th><th>Napomena / detalji</th></tr>`;
@@ -593,7 +623,7 @@
     return header+(body||`<tr><td colspan="10">Nema podataka za ovaj tab.</td></tr>`);
   }
   function xlsInventoryCombinedSheet(title, subtitle, rows, date){
-    const header=`<tr><th colspan="11" class="head">${xmlEsc(title)} — ${xmlEsc(date)}</th></tr><tr><th colspan="11">${xmlEsc(subtitle||'')}</th></tr><tr><th>Baza</th><th>Kategorija</th><th>Podkategorija</th><th>Naziv</th><th>Količina</th><th>Dostupno</th><th>Jedinica</th><th>Datum evidencije</th><th>Lokacija</th><th>Status</th><th>Napomena / detalji</th></tr>`;
+    const header=`<tr><th colspan="11" class="head">${xmlEsc(title)} — ${xmlEsc(date)}</th></tr><tr><th colspan="11">${xmlEsc(subtitle||'')}</th></tr><tr><th>Baza / snapshot</th><th>Kategorija</th><th>Podkategorija</th><th>Naziv</th><th>Količina</th><th>Dostupno</th><th>Jedinica</th><th>Datum evidencije</th><th>Lokacija</th><th>Status</th><th>Napomena / detalji</th></tr>`;
     const body=(rows||[]).map(r=>`<tr>${xlsCell(r._base||'')}${xlsCell(displayCategoryName(r.category))}${xlsCell(displaySubcategoryName(r.category,r.subcategory))}${xlsCell(r.name)}${xlsCell(r.needsCount?(r.qtyLabel||''):r.qty,'num')}${xlsCell(r.needsCount?(r.avLabel||''):r.av,'num')}${xlsCell(r.unit)}${xlsCell(r.lastInventoryDate||'')}${xlsCell(r.location||'Oružarstvo - Klaićeva')}${xlsCell(r.status||'aktivno')}${xlsCell((r.raw&&(r.raw.physical_code_note||r.raw.note||r.raw.internal_note||r.raw.sku))||'')}</tr>`).join('');
     return header+(body||`<tr><td colspan="11">Nema podataka za ovaj tab.</td></tr>`);
   }
@@ -603,41 +633,39 @@
     return header+(body||`<tr><td colspan="11">Nema podataka za ovaj tab.</td></tr>`);
   }
   function xlsInventuraCombinedSheet(title, subtitle, rows, date){
-    const header=`<tr><th colspan="12" class="head">${xmlEsc(title)} — ${xmlEsc(date)}</th></tr><tr><th colspan="12">${xmlEsc(subtitle||'')}</th></tr><tr><th>Baza</th><th>Kategorija</th><th>Podkategorija</th><th>Naziv</th><th>Broj u bazi</th><th>Dostupno</th><th>Jedinica</th><th>Stvarno prebrojano</th><th>Razlika</th><th>Lokacija</th><th>Za rashod?</th><th>Napomena</th></tr>`;
+    const header=`<tr><th colspan="12" class="head">${xmlEsc(title)} — ${xmlEsc(date)}</th></tr><tr><th colspan="12">${xmlEsc(subtitle||'')}</th></tr><tr><th>Baza / snapshot</th><th>Kategorija</th><th>Podkategorija</th><th>Naziv</th><th>Broj u bazi</th><th>Dostupno</th><th>Jedinica</th><th>Stvarno prebrojano</th><th>Razlika</th><th>Lokacija</th><th>Za rashod?</th><th>Napomena</th></tr>`;
     const body=(rows||[]).map(r=>`<tr>${xlsCell(r._base||'')}${xlsCell(displayCategoryName(r.category))}${xlsCell(displaySubcategoryName(r.category,r.subcategory))}${xlsCell(r.name)}${xlsCell(r.needsCount?(r.qtyLabel||''):r.qty,'num')}${xlsCell(r.needsCount?(r.avLabel||''):r.av,'num')}${xlsCell(r.unit)}${xlsCell('')}${xlsCell('')}${xlsCell(r.location||'Oružarstvo - Klaićeva')}${xlsCell('')}${xlsCell(r.needsCount?'prebrojiti':'')}</tr>`).join('');
     return header+(body||`<tr><td colspan="12">Nema podataka za ovaj tab.</td></tr>`);
   }
   async function exportInventoryXls(){
     const date=new Date().toISOString().slice(0,10);
-    const pair=await loadExportPair();
-    const liveRows=activeExportRowsFromData(pair.liveData);
-    const oldRows=pair.oldData?activeExportRowsFromData(pair.oldData):[];
-    if(!liveRows.length&&!oldRows.length){toast('Nema inventara za export.');return;}
-    const oldLabel=pair.oldMeta?`${pair.oldMeta.name||'Stara baza'} · ${(pair.oldMeta.created_at||'').slice(0,10)} · ${pair.oldMeta.item_count||oldRows.length} stavki`:'Nema starog snapshot-a — prvo spremi snapshot baze';
-    const combined=combinedExportRows(liveRows,oldRows);
-    const sheets=[
-      {name:'Aktualna baza',html:xlsInventorySheet('Inventar — aktualna baza',`Live stanje iz Supabasea · ${liveRows.length} stavki`,liveRows,date)},
-      {name:'Stara baza',html:xlsInventorySheet('Inventar — stara baza',oldLabel,oldRows,date)},
-      {name:'Kombinirano',html:xlsInventoryCombinedSheet('Inventar — kombinirano',`Aktualna + stara baza · ${combined.length} redaka · sortirano po najvećoj količini`,combined,date)}
-    ];
-    xlsWorkbook(`SOV_inventar_aktualna_stara_kombinirano_${date}.xls`,sheets);
-    toast('Inventar exportiran: aktualna + stara + kombinirano');
+    const bundle=await loadExportSnapshots();
+    const liveRows=activeExportRowsFromData(bundle.liveData);
+    const snapGroups=bundle.snapshots.map(s=>({meta:s.meta,label:snapshotShortName(s.meta),rows:activeExportRowsFromData(s.data)}));
+    if(!liveRows.length && !snapGroups.some(g=>g.rows.length)){toast('Nema inventara za export.');return;}
+    const sheets=[{name:'Aktualna baza',html:xlsInventorySheet('Inventar — aktualna baza',`Live stanje iz Supabasea · ${liveRows.length} stavki`,liveRows,date)}];
+    snapGroups.forEach(g=>{
+      sheets.push({name:(g.meta.name||'Snapshot'),html:xlsInventorySheet('Inventar — '+(g.meta.name||'snapshot'),snapshotSubtitle(g.meta,g.rows.length),g.rows,date)});
+    });
+    const combined=combinedExportGroups([{label:'Aktualna baza',rows:liveRows}].concat(snapGroups));
+    sheets.push({name:'Kombinirano',html:xlsInventoryCombinedSheet('Inventar — kombinirano',`Aktualna baza + ${snapGroups.length} snapshot(a) · ${combined.length} redaka · sortirano po najvećoj količini`,combined,date)});
+    xlsWorkbook(`SOV_inventar_snapshoti_${date}.xls`,sheets);
+    toast(`Inventar exportiran: aktualna + ${snapGroups.length} snapshot + kombinirano`);
   }
   async function exportInventuraXls(){
     const date=(document.querySelector('input[type="date"]')?.value)||new Date().toISOString().slice(0,10);
-    const pair=await loadExportPair();
-    const liveRows=activeExportRowsFromData(pair.liveData);
-    const oldRows=pair.oldData?activeExportRowsFromData(pair.oldData):[];
-    if(!liveRows.length&&!oldRows.length){toast('Nema inventara za inventuru export.');return;}
-    const oldLabel=pair.oldMeta?`${pair.oldMeta.name||'Stara baza'} · ${(pair.oldMeta.created_at||'').slice(0,10)} · ${pair.oldMeta.item_count||oldRows.length} stavki`:'Nema starog snapshot-a — prvo spremi snapshot baze';
-    const combined=combinedExportRows(liveRows,oldRows);
-    const sheets=[
-      {name:'Aktualna baza',html:xlsInventuraSheet('Inventura — aktualna baza',`Live stanje iz Supabasea · ${liveRows.length} stavki`,liveRows,date)},
-      {name:'Stara baza',html:xlsInventuraSheet('Inventura — stara baza',oldLabel,oldRows,date)},
-      {name:'Kombinirano',html:xlsInventuraCombinedSheet('Inventura — kombinirano',`Aktualna + stara baza · ${combined.length} redaka · sortirano po najvećoj količini`,combined,date)}
-    ];
-    xlsWorkbook(`SOV_inventura_aktualna_stara_kombinirano_${date}.xls`,sheets);
-    toast('Inventura exportirana: aktualna + stara + kombinirano');
+    const bundle=await loadExportSnapshots();
+    const liveRows=activeExportRowsFromData(bundle.liveData);
+    const snapGroups=bundle.snapshots.map(s=>({meta:s.meta,label:snapshotShortName(s.meta),rows:activeExportRowsFromData(s.data)}));
+    if(!liveRows.length && !snapGroups.some(g=>g.rows.length)){toast('Nema inventara za inventuru export.');return;}
+    const sheets=[{name:'Aktualna baza',html:xlsInventuraSheet('Inventura — aktualna baza',`Live stanje iz Supabasea · ${liveRows.length} stavki`,liveRows,date)}];
+    snapGroups.forEach(g=>{
+      sheets.push({name:(g.meta.name||'Snapshot'),html:xlsInventuraSheet('Inventura — '+(g.meta.name||'snapshot'),snapshotSubtitle(g.meta,g.rows.length),g.rows,date)});
+    });
+    const combined=combinedExportGroups([{label:'Aktualna baza',rows:liveRows}].concat(snapGroups));
+    sheets.push({name:'Kombinirano',html:xlsInventuraCombinedSheet('Inventura — kombinirano',`Aktualna baza + ${snapGroups.length} snapshot(a) · ${combined.length} redaka · sortirano po najvećoj količini`,combined,date)});
+    xlsWorkbook(`SOV_inventura_snapshoti_${date}.xls`,sheets);
+    toast(`Inventura exportirana: aktualna + ${snapGroups.length} snapshot + kombinirano`);
   }
 
   async function loadNotes(){try{ if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.loadArmoryNotes){const n=await SOVArmoryDB.loadArmoryNotes(); if(Array.isArray(n))return n;} }catch(e){console.warn(e)} try{return JSON.parse(localStorage.getItem('sov_armory_notes')||'[]')}catch(e){return []}}

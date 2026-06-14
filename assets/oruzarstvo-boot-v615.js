@@ -3,7 +3,7 @@
    Static JSON/cache are deliberately not displayed during DB seed/import. */
 (function(){
   'use strict';
-  const BUILD='6.1.39h-user-catalog-rows-fix';
+  const BUILD='6.1.39j-user-loan-packages';
   const MIN_ROWS=20;
   const LIVE_TIMEOUT=65000;
   const RETRY_MS=4500;
@@ -208,5 +208,132 @@
     back(){if(loading)return; if(activeSub)activeSub=''; else {activeCat=''; const sel=$('cat'); if(sel)sel.value='';} renderCatalog();},
     add(id){if(loading)return; try{if(typeof addToCart==='function')return addToCart(id);}catch(e){} const item=rows().find(r=>idOf(r)===id); if(!item)return; try{window.CART=window.CART||[]; CART=window.CART||[]; CART.push({id:idOf(item),name:nameOf(item),quantity:1,type:item.item_type||'item'}); if(typeof renderRequest==='function')renderRequest(); $('drawer')?.classList.add('open');}catch(e){console.warn(e);}}
   };
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(boot,20)); else setTimeout(boot,20);
+
+
+  /* v6.1.39j — meaningful user loan packages + non-auto-send cart flow */
+  function packToast(msg){try{toast(msg)}catch(e){try{toastMsg(msg)}catch(_){console.log(msg)}}}
+  function rowKey(r){return String(idOf(r)||r.id||r.catalog_id||r.legacy_id||r.sku||r.name||'').trim();}
+  function rowPackageText(r){return plain([nameOf(r), catOf(r), displayCat(catOf(r)), subOf(r), displaySub(catOf(r),subOf(r)), r.search_terms, r.internal_note, r.note, r.manufacturer, r.model, r.sku].filter(Boolean).join(' '));}
+  function availableRows(){return rows().filter(visible).filter(available);}
+  function bestMatch(list, used, tests){
+    const arr=list.filter(r=>!used.has(rowKey(r))).map(r=>{
+      const t=rowPackageText(r);
+      let score=0;
+      tests.forEach((test,idx)=>{ if(test(t,r)) score += (tests.length-idx)*10; });
+      score += Math.min(5, Number(r.available)||0);
+      return {r,score};
+    }).filter(x=>x.score>0).sort((a,b)=>b.score-a.score || nameOf(a.r).localeCompare(nameOf(b.r),'hr'));
+    return arr[0]?.r || null;
+  }
+  function addCartRow(row, note){
+    const id=rowKey(row); if(!id)return false;
+    let added=false;
+    try{
+      const max=Math.max(1, Number(row.available)||1);
+      let ex=CART.find(x=>String(x.id)===id);
+      if(ex){ ex.quantity=Math.min(max, Number(ex.quantity||1)+1); added=true; }
+      else { CART.push({id, name:nameOf(row), quantity:1, type:row.item_type||row.tracking_type||'item', note:note||'', max}); added=true; }
+    }catch(e){ console.warn('pack cart add failed',e); }
+    return added;
+  }
+  function normalizeCartAdd(id, note){
+    if(loading){packToast('Pričekaj da se katalog učita.');return;}
+    const key=String(id||'');
+    const row=rows().find(r=>rowKey(r)===key) || rows().find(r=>plain(rowKey(r))===plain(key));
+    if(!row){packToast('Nisam našao artikl.');return;}
+    if(!available(row)){packToast('Artikl trenutno nije dostupan.');return;}
+    addCartRow(row,note||'Dodano iz kataloga');
+    try{if(typeof renderRequest==='function')renderRequest();}catch(e){}
+    $('drawer')?.classList.add('open');
+    packToast('Dodano u zahtjev: '+nameOf(row));
+  }
+  const PACKS={
+    'srt-basic':{
+      title:'Osobna oprema',
+      note:'Paket: osobna oprema. Provjeri veličinu pojasa/kacige i model descendera prije slanja.',
+      groups:[
+        {label:'Kaciga', tests:[t=>t.includes('kacig')]},
+        {label:'Pojas / navez', tests:[t=>t.includes('pojas')||t.includes('navez')]},
+        {label:'Blokeri i Croll', tests:[t=>t.includes('croll')||t.includes('krol')||t.includes('bloker')||t.includes('ascension')||t.includes('prsna penjalica')||t.includes('rucna penjalica')]},
+        {label:'Pupci', tests:[t=>t.includes('pupak')||t.includes('pupci')||t.includes('lanyard')||t.includes('cowstail')||t.includes('cow tail')]},
+        {label:'Descender', tests:[t=>t.includes('descender')||t.includes('spustalic')||t.includes('stop')||t.includes('simple')||t.includes('rig')]},
+        {label:'Centralni/pomoćni karabiner', tests:[t=>t.includes('centralni')||t.includes('pomocni')||t.includes('pomoćni')||t.includes('karabiner')||t.includes('maillon')||t.includes('delta')||t.includes('omni')]}
+      ]
+    },
+    'rigging-basic':{
+      title:'Sidrenje i opremanje',
+      note:'Paket: sidrenje i opremanje. Oružar potvrđuje točne komade prema izletu i planu opremanja.',
+      groups:[
+        {label:'Karabineri', tests:[t=>t.includes('karabiner')||t.includes('spojnic')||t.includes('maillon')]},
+        {label:'Sidrišne pločice', tests:[t=>t.includes('plocic')||t.includes('pločic')||t.includes('hanger')]},
+        {label:'Fix / Spit', tests:[t=>t.includes('fix')||t.includes('spit')||t.includes('sidrisni okov')||t.includes('sidrišni okov')||t.includes('anker')||t.includes('bolt')]},
+        {label:'Zaštita užeta', tests:[t=>t.includes('zastita uzeta')||t.includes('zaštita užeta')||t.includes('protektor')||t.includes('tekstil')]},
+        {label:'Alat za opremanje', tests:[t=>t.includes('alat')||t.includes('kljuc')||t.includes('ključ')||t.includes('busilic')||t.includes('bušilic')||t.includes('svrdl')]}
+      ]
+    },
+    'survey-basic':{
+      title:'Mjerenje i crtanje',
+      note:'Paket: mjerenje i crtanje. Dodan je razumni set za topografiju/dokumentaciju.',
+      groups:[
+        {label:'Mjerenje', tests:[t=>t.includes('mjer')||t.includes('metar')||t.includes('daljin')||t.includes('laser')||t.includes('disto')]},
+        {label:'Crtanje', tests:[t=>t.includes('crtan')||t.includes('topofil')||t.includes('tablet')||t.includes('papir')||t.includes('olovk')]},
+        {label:'Kompas / busola', tests:[t=>t.includes('kompas')||t.includes('busol')||t.includes('klinometar')||t.includes('azimut')]},
+        {label:'Dokumentacija', tests:[t=>t.includes('dokument')||t.includes('foto')||t.includes('kamera')||t.includes('gps')]}
+      ]
+    },
+    'light-comms':{
+      title:'Rasvjeta i elektronika',
+      note:'Paket: rasvjeta i elektronika. Provjeri baterije/punjače i stvarnu potrebu prije slanja.',
+      groups:[
+        {label:'Rasvjeta', tests:[t=>t.includes('rasvjet')||t.includes('lamp')||t.includes('svjet')||t.includes('svjetl')||t.includes('led')]},
+        {label:'Baterije / punjači', tests:[t=>t.includes('bater')||t.includes('punjac')||t.includes('punjač')||t.includes('powerbank')]},
+        {label:'Komunikacija', tests:[t=>t.includes('radio')||t.includes('stanic')||t.includes('komunik')||t.includes('gps')]},
+        {label:'Elektronika', tests:[t=>t.includes('elektr')||t.includes('kabl')||t.includes('adapter')||t.includes('dron')]}
+      ]
+    }
+  };
+  function addPack(packId){
+    if(loading){packToast('Pričekaj da se katalog učita.');return;}
+    const pack=PACKS[packId] || PACKS['srt-basic'];
+    const list=availableRows();
+    const used=new Set(); let added=0; const missed=[];
+    pack.groups.forEach(g=>{
+      const r=bestMatch(list,used,g.tests||[]);
+      if(r){ used.add(rowKey(r)); if(addCartRow(r, pack.note+' · '+g.label)) added++; }
+      else missed.push(g.label);
+    });
+    try{if(typeof renderRequest==='function')renderRequest();}catch(e){}
+    $('drawer')?.classList.add('open');
+    if($('reqTrip') && !$('reqTrip').value) $('reqTrip').value=pack.title;
+    if($('reqNote')){
+      const addNote=pack.note+(missed.length?' Nedostaje/ručnom provjerom: '+missed.join(', ')+'.':'');
+      if(!$('reqNote').value.includes(pack.title)) $('reqNote').value=($('reqNote').value?$('reqNote').value+'\n':'')+addNote;
+    }
+    packToast(added?('Dodan paket: '+pack.title+' ('+added+' stavki). Pregledaj prije slanja.'):'Nema dostupnih stavki za taj paket.');
+  }
+  function installPackUi(){
+    const box=document.querySelector('.quick-packs'); if(!box)return;
+    if(box.dataset.v6139j==='1')return; box.dataset.v6139j='1';
+    box.classList.add('v6139j-pack-panel');
+    box.innerHTML=`<h2>Predloženi paketi</h2><p class="fineprint v6139j-pack-help">Paket samo napuni tvoj zahtjev. Prije slanja možeš maknuti stavke, promijeniti količine i dopisati napomenu.</p>
+      <button class="quick-pack v6139j-pack" type="button" onclick="addUserLoanPack('srt-basic')"><b>Osobna oprema</b><small>SRT osnova: kaciga/pojas, blokeri i Croll, pupci, descender, centralni/pomoćni karabineri.</small><span>Dodaj</span></button>
+      <button class="quick-pack v6139j-pack" type="button" onclick="addUserLoanPack('rigging-basic')"><b>Sidrenje i opremanje</b><small>Karabineri, pločice, Fix/Spit, zaštita užeta i osnovni alat.</small><span>Dodaj</span></button>
+      <button class="quick-pack v6139j-pack" type="button" onclick="addUserLoanPack('survey-basic')"><b>Mjerenje i crtanje</b><small>Osnovni set za topografiju, mjerenje i dokumentaciju.</small><span>Dodaj</span></button>
+      <button class="quick-pack v6139j-pack" type="button" onclick="addUserLoanPack('light-comms')"><b>Rasvjeta i elektronika</b><small>Svjetla, baterije i komunikacijska/elektronička oprema ako je dostupna.</small><span>Dodaj</span></button>`;
+  }
+  window.addUserLoanPack=addPack;
+  window.addCategoryPack=function(category){
+    const p=plain(category);
+    if(p.includes('osob'))return addPack('srt-basic');
+    if(p.includes('sidrist')||p.includes('oprem'))return addPack('rigging-basic');
+    if(p.includes('mjer')||p.includes('crtan')||p.includes('dokument'))return addPack('survey-basic');
+    if(p.includes('rasvjet')||p.includes('elektr'))return addPack('light-comms');
+    return addPack('srt-basic');
+  };
+  window.addToCart=normalizeCartAdd;
+  window.v459Add=normalizeCartAdd;
+  const oldAttach=attach;
+  attach=function(){ oldAttach(); installPackUi(); };
+
+    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(boot,20)); else setTimeout(boot,20);
 })();
