@@ -245,7 +245,7 @@
     return true;
   }
   const TABLE_COLUMNS={
-    equipment_categories:['legacy_id','name','description','type','sort_order','updated_at'],
+    equipment_categories:['legacy_id','name','description','type','sort_order','icon','note','display_name','short_name','search_terms','updated_at'],
     equipment_locations:['legacy_id','name','description','type'],
     equipment_items:['legacy_id','catalog_id','name','category_id','category_name','subcategory','unit','tracking_type','quantity','loaned','available','minimum','status','availability','member_visible','internal_note','source_sheet','item_kind','code_required','physical_code_note','quantity_label','available_label','last_inventory_date','source_xls_row','xls_category','xls_subcategory','original_quantity_text','updated_at'],
     equipment_pieces:['legacy_id','catalog_legacy_id','equipment_item_id','name','sku','manufacturer','model','purchase_date','location_id','location_name','status','next_service','note','updated_at'],
@@ -587,7 +587,7 @@
     const strictLive=!!options.strictLive;
     if(!configured()) return null;
     const client=sb();
-    const out={summary:{source:'Supabase live'},categories:[],items:[],pieces:[],ropes:[],loans:[],inventories:[],inventory_items:[],procurement:[],services:[],disposed:[],lost:[],field:[],locations:[]};
+    const out={summary:{source:'Supabase live'},categories:[],subcategory_meta:[],items:[],pieces:[],ropes:[],loans:[],inventories:[],inventory_items:[],procurement:[],services:[],disposed:[],lost:[],field:[],locations:[]};
     const manifest=await loadCatalogManifest();
     const cached=readCatalogCache();
     if(!strictLive && manifest && cached && cached.manifest && cached.manifest.catalog_version===manifest.catalog_version && catalogRowCount(cached.data)>=20){
@@ -611,13 +611,32 @@
       }catch(e){console.warn('SOVArmoryDB load '+table,e.message||e); return [];}
     }
     const cats=await safe('equipment_categories','*');
+    const subcatMeta=await safe('equipment_subcategory_meta','*');
+    out.subcategory_meta=(subcatMeta||[]).map(s=>({id:s.id,category_name:s.category_name,subcategory_name:s.subcategory_name,display_name:s.display_name,short_name:s.short_name||'',search_terms:s.search_terms||'',note:s.note||'',icon:s.icon||''}));
     const groupedCatalog=await safe('sov_equipment_app_catalog_grouped','*');
     const rawAppCatalog=await safe('sov_equipment_app_catalog','*');
     if(groupedCatalog && groupedCatalog.length){
       out.summary.source='Supabase canonical grouped catalog v5.45';
+      const catMeta=new Map((cats||[]).map((c,idx)=>{
+        const name=canonicalArmoryCategory(c.name||'Ostalo',c.description||'');
+        return [String(name).trim().toLowerCase(),{
+          id:c.id||c.legacy_id||('cat-db-'+idx),
+          name,
+          description:c.description||'',
+          type:c.type||'canonical',
+          sort_order:c.sort_order||idx,
+          icon:c.icon||'',
+          note:c.note||'',
+          display_name:c.display_name||'',
+          short_name:c.short_name||'',
+          search_terms:c.search_terms||''
+        }];
+      }));
       out.categories=[...new Map(groupedCatalog.map((g,idx)=>{
         const name=g.category_name||g.main_category||g.category||'Ostalo';
-        return [name,{id:'cat-'+idx,name,description:'Canonical grouped catalog',type:'canonical',sort_order:g.priority||idx}];
+        const key=String(name).trim().toLowerCase();
+        const meta=catMeta.get(key)||{};
+        return [name,{id:meta.id||('cat-'+idx),name,description:meta.description||'Canonical grouped catalog',type:meta.type||'canonical',sort_order:meta.sort_order||g.priority||idx,icon:meta.icon||'',note:meta.note||'',display_name:meta.display_name||'',short_name:meta.short_name||'',search_terms:meta.search_terms||''}];
       })).values()];
       out.items=groupedCatalog.map((g,idx)=>({
         id:g.app_id||g.source_id||('GROUP-'+idx),
@@ -669,7 +688,7 @@
     const loans=await safe('equipment_loans','*');
     const inv=await safe('inventory_sessions','*');
     const proc=await safe('procurement_plan','*');
-    out.categories=(cats||[]).map((c,idx)=>({id:c.legacy_id||c.id||String(idx+1),name:canonicalArmoryCategory(c.name,c.description||''),description:c.description||'',type:c.type||'',sort_order:c.sort_order||idx})).filter(c=>c.name);
+    out.categories=(cats||[]).map((c,idx)=>({id:c.legacy_id||c.id||String(idx+1),name:canonicalArmoryCategory(c.name,c.description||''),description:c.description||'',type:c.type||'',sort_order:c.sort_order||idx,icon:c.icon||'',note:c.note||'',display_name:c.display_name||'',short_name:c.short_name||'',search_terms:c.search_terms||''})).filter(c=>c.name);
     out.items=(items||[]).map((i,idx)=>({
       id:i.legacy_id||i.catalog_id||i.id||('DB-ITEM-'+idx),
       legacy_id:i.legacy_id||i.id,
@@ -1020,7 +1039,24 @@
     return data;
   }
 
-  window.SOVArmoryDB={configured,upsertSimpleItem,retireSimpleItem,loadArmoryNotes,saveArmoryNote,doneArmoryNote,loadRequests,createRequest,updateRequestStatus,issueRequest,returnRequestItems,importStaticData,loadAllData,loadCatalogManifest,createEquipmentItem,createEquipmentPiece,createEquipmentPieces,createRope,updateEquipmentStatus,updateInventoryCount,updateEquipmentItemFull,loadLocations,createLocation};
+  // v6.1.38: persistent category icon + note used by Inventar and Inventura category headers.
+  async function updateCategoryMeta(name, icon, note){
+    if(!configured()) throw new Error('Supabase nije konfiguriran.');
+    const client=sb();
+    const nm=String(name||'').trim();
+    if(!nm) throw new Error('Naziv kategorije je prazan.');
+    const payload={name:nm,icon:String(icon||'').trim()||null,note:String(note||'').trim()||null,updated_at:new Date().toISOString()};
+    const {data,error}=await client
+      .from('equipment_categories')
+      .upsert(payload,{onConflict:'name'})
+      .select('*')
+      .single();
+    if(error) throw error;
+    try{['sov_armory_catalog_cache_v607','sov_armory_catalog_cache_v606','sov_armory_catalog_cache_v548','sov_armory_catalog_cache_v548_old','sov_armory_catalog_cache'].forEach(function(k){localStorage.removeItem(k);});}catch(_e){}
+    return data;
+  }
+
+  window.SOVArmoryDB={configured,upsertSimpleItem,retireSimpleItem,loadArmoryNotes,saveArmoryNote,doneArmoryNote,loadRequests,createRequest,updateRequestStatus,issueRequest,returnRequestItems,importStaticData,loadAllData,loadCatalogManifest,createEquipmentItem,createEquipmentPiece,createEquipmentPieces,createRope,updateEquipmentStatus,updateInventoryCount,updateEquipmentItemFull,loadLocations,createLocation,updateCategoryMeta};
 
   // v5.48.1: true cache-first wrapper. The old v5.48 path still asked the manifest view
   // before returning cached data; on large Supabase views that made every page open feel like a full sync.

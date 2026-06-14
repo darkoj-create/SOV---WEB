@@ -21,6 +21,7 @@
   function statusLabel(s){return ({requested:'za izdati',issued:'izdano vani',partial_return:'djelomično vraćeno',returned:'vraćeno',cancelled:'zatvoreno'})[statusKey(s)]||String(s||'za izdati')}
   function statusBadge(s){const k=statusKey(s); if(k==='issued'||k==='returned') return 'ok'; if(k==='requested'||k==='partial_return') return 'warn'; return 'bad'}
   function toast(m){let t=document.getElementById('cmToast'); if(!t){t=document.createElement('div');t.id='cmToast';t.className='cm-toast';document.body.appendChild(t)} t.textContent=m;t.classList.add('show');clearTimeout(t._to);t._to=setTimeout(()=>t.classList.remove('show'),2300)}
+  // v6.1.39a: category/subcategory display naming layer; raw DB names remain stable.
   function categoryName(row,type){
     const raw=norm(row.category_name||row.main_category||row.category||row.xls_category||row.raw_category||(type==='rope'?'Užad':'Ostalo'))||'Ostalo';
     return raw==='Užeta' ? 'Užad' : raw;
@@ -78,12 +79,47 @@
     if(t.includes('alat')||t.includes('odrzav')||t.includes('radion'))return '🧰';
     return '📦'
   }
+
+  function injectCategoryMetaCss(){
+    if(document.getElementById('armory-category-meta-v6138-css'))return;
+    const css=document.createElement('style'); css.id='armory-category-meta-v6138-css';
+    css.textContent=`.cat-meta-shell{border:1px solid rgba(220,255,235,.14);border-radius:24px;background:linear-gradient(135deg,rgba(215,246,111,.08),rgba(255,255,255,.035));padding:14px;margin:0 0 14px;display:grid;gap:10px}.cat-meta-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.cat-meta-title{display:flex;gap:12px;align-items:center}.cat-meta-bigico{width:54px;height:54px;border-radius:18px;display:grid;place-items:center;border:1px solid rgba(220,255,235,.16);background:rgba(0,0,0,.18);font-size:31px}.cat-meta-title h3{margin:0;font-size:22px;letter-spacing:-.03em}.cat-meta-title p{margin:3px 0 0;color:#9fb3ad}.cat-meta-form{display:grid;grid-template-columns:86px minmax(180px,1fr) auto;gap:9px;align-items:start}.cat-icon-input{min-width:0!important;width:86px!important;text-align:center!important;font-size:28px!important;line-height:1!important}.cat-note-input{min-height:58px!important;resize:vertical!important;font-family:inherit!important}.cat-note-preview{display:block!important;margin-top:8px!important;color:#d8e9e3!important;border-top:1px solid rgba(255,255,255,.08);padding-top:8px;white-space:pre-wrap}.cat-tile-note{margin-top:9px!important;padding:8px 10px!important;border:1px solid rgba(215,246,111,.18);border-radius:14px;background:rgba(215,246,111,.055);color:#dbeee6!important;display:-webkit-box!important;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.cat-tile-clean .cat-tile-edit-hint{font-size:11px!important;color:#d7f66f!important;margin-top:9px!important}@media(max-width:720px){.cat-meta-top{display:grid}.cat-meta-form{grid-template-columns:1fr}.cat-icon-input{width:100%!important}.cat-meta-bigico{width:48px;height:48px;font-size:28px}}`;
+    document.head.appendChild(css);
+  }
+  function categoryMeta(name){
+    const key=strip(name);
+    const cats=((STATE.data&&STATE.data.categories)||[]);
+    return cats.find(c=>strip(c.name)===key||strip(c.display_name)===key||strip(c.short_name)===key)||{};
+  }
+  function displayCategoryName(name){const m=categoryMeta(name); return norm(m.display_name||m.short_name||name)||'Ostalo'}
+  function displayCategoryShort(name){const m=categoryMeta(name); return norm(m.short_name||m.display_name||name)||'Ostalo'}
+  function subcategoryMeta(cat,sub){
+    const ck=strip(cat), sk=strip(sub);
+    const rows=((STATE.data&&STATE.data.subcategory_meta)||[]);
+    return rows.find(x=>strip(x.category_name)===ck && strip(x.subcategory_name)===sk)||{};
+  }
+  function displaySubcategoryName(cat,sub){const m=subcategoryMeta(cat,sub); return norm(m.display_name||m.short_name||sub)||'Ostalo'}
+  function subcategoryIcon(cat,sub){const m=subcategoryMeta(cat,sub); return norm(m.icon)||iconFor(sub)}
+  function categoryIcon(name){return norm(categoryMeta(name).icon)||iconFor(name)}
+  function categoryNote(name){return norm(categoryMeta(name).note||'')}
+  function categoryTile(c,rs){
+    const note=categoryNote(c), label=displayCategoryName(c);
+    return `<button class="cat-tile cat-tile-clean" onclick="CleanArmory.pickCat('${esc(c)}')"><span class="ico">${esc(categoryIcon(c))}</span><b>${esc(label)}</b><small>${esc(rs.length)} stavki · otvori podkategorije</small>${note?`<small class="cat-tile-note">📝 ${esc(note)}</small>`:`<small class="cat-tile-edit-hint">Klikni kategoriju za ikonicu i napomenu</small>`}</button>`;
+  }
+  function categoryMetaPanel(cat){
+    const meta=categoryMeta(cat);
+    const icon=norm(meta.icon)||iconFor(cat);
+    const note=norm(meta.note||'');
+    const label=displayCategoryName(cat);
+    const raw=label!==cat?`<small class="muted">Interno: ${esc(cat)}</small>`:'';
+    return `<section class="cat-meta-shell"><div class="cat-meta-top"><div class="cat-meta-title"><span class="cat-meta-bigico">${esc(icon)}</span><div><h3>${esc(label)}</h3>${raw}<p>Ikonica i napomena kategorije. Ostaje trajno u Supabaseu i vidi se u Inventaru i Inventuri.</p>${note?`<div class="cat-note-preview">📝 ${esc(note)}</div>`:''}</div></div></div><form class="cat-meta-form" onsubmit="CleanArmory.saveCategoryMeta(event,'${esc(cat)}')"><input class="cm-input cat-icon-input" id="catIconInput" maxlength="4" value="${esc(icon)}" title="Ikonica kategorije"><textarea class="cm-input cat-note-input" id="catNoteInput" placeholder="Napomena za ovu kategoriju: što provjeriti, gdje stoji, posebna pravila...">${esc(note)}</textarea><button class="cm-btn primary">Spremi kategoriju</button></form></section>`;
+  }
   function categoryPriority(c){
-    const x=strip(c);
-    const order=['osobni srt komplet','uzad','sidrista i opremanje','tehnicko spasavanje i cisto podzemlje','prosirivanje i regulirana oprema','mjerenje crtanje i dokumentacija','rasvjeta elektronika i komunikacija','logor ekspedicija i kuhinja','medicinska oprema','alpinisticka i penjacka oprema','ronilacka oprema','alat i odrzavanje','ostalo'];
-    const exact=order.indexOf(x);
+    const x=strip(c), xd=strip(displayCategoryName(c));
+    const order=['osobni srt komplet','osobna oprema','uzad','sidrista i opremanje','tehnicko spasavanje i cisto podzemlje','prosirivanje i regulirana oprema','mjerenje crtanje i dokumentacija','rasvjeta elektronika i komunikacija','logor ekspedicija i kuhinja','medicinska oprema','alpinisticka i penjacka oprema','ronilacka oprema','alat i odrzavanje','ostalo'];
+    let exact=order.indexOf(x); if(exact<0) exact=order.indexOf(xd);
     if(exact>=0) return exact;
-    const i=order.findIndex(k=>x.includes(k)||k.includes(x)); return i<0?999:i;
+    const i=order.findIndex(k=>x.includes(k)||k.includes(x)||xd.includes(k)||k.includes(xd)); return i<0?999:i;
   }
 
 
@@ -189,7 +225,9 @@
     const avLabel=norm(r.available_label||r.available_qty_label||'');
     const unit=norm(r.unit||'kom')||'kom';
     const needsCount=/provjer|prebroj|prazno polje/i.test([r.status,r.availability,qtyLabel,avLabel,r.internal_note,r.note].join(' '));
-    return {raw:r,type,id:String(r.app_id||r.source_id||r.legacy_id||r.catalog_id||r.sku||r.id||`${type}-${i}`),name:displayName(r,type),category:categoryName(r,type),subcategory:subcategoryName(r),qty,av,loan,qtyLabel,avLabel,unit,needsCount,lastInventoryDate:norm(r.last_inventory_date||''),sourceXlsRow:r.source_xls_row||null,location:norm(r.location_name||r.location||''),status:norm(r.status||r.availability||'aktivno'),minimum:countInt(r.minimum??r.threshold??r.min_quantity??0,0),search:qtext(r),variants:countInt(r.variant_count||1,1)};
+    const cat=categoryName(r,type), sub=subcategoryName(r);
+    const displaySearch=strip([displayCategoryName(cat),displaySubcategoryName(cat,sub),categoryMeta(cat).search_terms,subcategoryMeta(cat,sub).search_terms].join(' '));
+    return {raw:r,type,id:String(r.app_id||r.source_id||r.legacy_id||r.catalog_id||r.sku||r.id||`${type}-${i}`),name:displayName(r,type),category:cat,rawCategory:cat,subcategory:sub,rawSubcategory:sub,qty,av,loan,qtyLabel,avLabel,unit,needsCount,lastInventoryDate:norm(r.last_inventory_date||''),sourceXlsRow:r.source_xls_row||null,location:norm(r.location_name||r.location||''),status:norm(r.status||r.availability||'aktivno'),minimum:countInt(r.minimum??r.threshold??r.min_quantity??0,0),search:[qtext(r),displaySearch].join(' '),variants:countInt(r.variant_count||1,1)};
   }
   function filtered(){
     let rows=STATE.rows;
@@ -251,7 +289,7 @@
   }
 
   function renderInventory(){
-    const root=document.getElementById('inventoryRoot'); if(!root)return; renderKpis(); bindSearch(renderInventory);
+    const root=document.getElementById('inventoryRoot'); if(!root)return; injectCategoryMetaCss(); renderKpis(); bindSearch(renderInventory);
     if(!STATE.rows || !STATE.rows.length){renderDbLoading(); return;}
     const cat=STATE.cat, sub=STATE.sub;
     const allRows=filtered();
@@ -269,19 +307,19 @@
     else if(!cat){
       title='Kategorije opreme';
       hint='Čisti operativni pregled inventara za oružara. Količine su vidljive tek na artiklu, da se početni ekran ne zatrpa.';
-      html=`<div class="cm-section-head"><div><h2>${esc(title)}</h2><p>${esc(hint)}</p></div><div class="cm-mini-stats"><span>${esc(activeRows.length)} stavki</span>${lowCount?`<span class="danger">${esc(lowCount)} ispod praga</span>`:''}</div></div><div class="cm-tools cm-inline-actions">${locFilterHtml()}</div><div class="cat-grid cat-grid-clean">${categories(activeRows).map(([c,rs])=>`<button class="cat-tile cat-tile-clean" onclick="CleanArmory.pickCat('${esc(c)}')"><span class="ico">${iconFor(c)}</span><b>${esc(c)}</b><small>${esc(rs.length)} stavki · otvori podkategorije</small></button>`).join('')}</div>`;
+      html=`<div class="cm-section-head"><div><h2>${esc(title)}</h2><p>${esc(hint)}</p></div><div class="cm-mini-stats"><span>${esc(activeRows.length)} stavki</span>${lowCount?`<span class="danger">${esc(lowCount)} ispod praga</span>`:''}</div></div><div class="cm-tools cm-inline-actions">${locFilterHtml()}</div><div class="cat-grid cat-grid-clean">${categories(activeRows).map(([c,rs])=>categoryTile(c,rs)).join('')}</div>`;
     }
     else if(!sub){
       const catRows=activeRows.filter(r=>r.category===cat);
       title=cat;
       hint='Odaberi podkategoriju ili se vrati na sve kategorije.';
-      html=`<div class="cm-breadcrumb"><button onclick="CleanArmory.pickCat('')">Sve kategorije</button><span>${esc(cat)}</span></div><div class="cm-section-head"><div><h2>${esc(title)}</h2><p>${esc(hint)}</p></div><div class="cm-mini-stats"><span>${esc(catRows.length)} stavki</span></div></div><div class="cat-grid cat-grid-clean">${subcategories(cat).map(([s,rs])=>`<button class="cat-tile cat-tile-clean" onclick="CleanArmory.pickSub('${esc(s)}')"><span class="ico">${iconFor(s)}</span><b>${esc(s)}</b><small>${esc(rs.length)} artikala</small></button>`).join('')}</div>`;
+      html=`<div class="cm-breadcrumb"><button onclick="CleanArmory.pickCat('')">Sve kategorije</button><span>${esc(displayCategoryName(cat))}</span></div>${categoryMetaPanel(cat)}<div class="cm-section-head"><div><h2>${esc(title)}</h2><p>${esc(hint)}</p></div><div class="cm-mini-stats"><span>${esc(catRows.length)} stavki</span></div></div><div class="cat-grid cat-grid-clean">${subcategories(cat).map(([s,rs])=>`<button class="cat-tile cat-tile-clean" onclick="CleanArmory.pickSub('${esc(s)}')"><span class="ico">${esc(subcategoryIcon(cat,s))}</span><b>${esc(displaySubcategoryName(cat,s))}</b><small>${esc(rs.length)} artikala</small></button>`).join('')}</div>`;
     }
     else {
       const rows=activeRows.filter(r=>r.category===cat&&r.subcategory===sub);
       title=sub;
       hint='Uredi artikl, dodaj novu stavku ili exportaj cijeli inventar iz gornjeg izbornika.';
-      html=`<div class="cm-breadcrumb"><button onclick="CleanArmory.pickCat('')">Sve kategorije</button><button onclick="CleanArmory.pickCat('${esc(cat)}')">${esc(cat)}</button><span>${esc(sub)}</span></div><div class="cm-section-head"><div><h2>${esc(title)}</h2><p>${esc(hint)}</p></div><div class="cm-mini-stats"><span>${esc(rows.length)} artikala</span></div></div><div class="cm-tools cm-inline-actions"><button class="cm-btn primary" onclick="CleanArmory.newItem()">+ Dodaj artikl</button><button class="cm-btn" onclick="CleanArmory.pickSub('')">← Podkategorije</button>${locFilterHtml()}</div><div class="item-grid item-grid-clean">${rows.map(itemCard).join('')}</div>`;
+      html=`<div class="cm-breadcrumb"><button onclick="CleanArmory.pickCat('')">Sve kategorije</button><button onclick="CleanArmory.pickCat('${esc(cat)}')">${esc(displayCategoryName(cat))}</button><span>${esc(displaySubcategoryName(cat,sub))}</span></div>${categoryMetaPanel(cat)}<div class="cm-section-head"><div><h2>${esc(title)}</h2><p>${esc(hint)}</p></div><div class="cm-mini-stats"><span>${esc(rows.length)} artikala</span></div></div><div class="cm-tools cm-inline-actions"><button class="cm-btn primary" onclick="CleanArmory.newItem()">+ Dodaj artikl</button><button class="cm-btn" onclick="CleanArmory.pickSub('')">← Podkategorije</button>${locFilterHtml()}</div><div class="item-grid item-grid-clean">${rows.map(itemCard).join('')}</div>`;
     }
     root.innerHTML=html||`<div class="empty">Nema artikala za prikaz.</div>`;
   }
@@ -292,7 +330,7 @@
     const avDisplay=r.needsCount?(r.avLabel||'provjeriti'):r.av;
     const statusText=r.needsCount?'prebrojiti':(low?'ispod praga':(r.av>0?'dostupno':'nema dostupno'));
     // UI FIX v6.1.30: ne prikazuj interni XLS/source tekst na karticama opreme
-    return `<article class="item-card item-card-clean ${low?'low-stock':''} ${r.needsCount?'needs-count':''}"><div class="item-head"><div><h3>${esc(r.name)}</h3><div class="muted">${esc(r.category)} · ${esc(r.subcategory)}</div></div><span class="badge ${statusClass}">${esc(statusText)}</span></div><div class="badgetray"><span class="badge">${esc(r.location||'bez lokacije')}</span><span class="badge">${esc(r.unit)}</span>${r.lastInventoryDate?`<span class="badge">inventura ${esc(r.lastInventoryDate)}</span>`:''}${r.variants&&r.variants>1?`<span class="badge">${esc(r.variants)} varijanti</span>`:''}${r.minimum?`<span class="badge warn">prag ${esc(r.minimum)}</span>`:''}</div><div class="stock stock-clean"><span><b>${esc(qtyDisplay)}</b><em>ukupno</em></span><span><b>${esc(avDisplay)}</b><em>dostupno</em></span><span><b>${esc(r.loan)}</b><em>vani</em></span></div><div class="cm-tools item-actions"><button class="cm-btn" onclick="CleanArmory.editItem('${esc(r.id)}')">Uredi</button><button class="cm-btn bad" onclick="CleanArmory.removeItem('${esc(r.id)}')">Makni</button></div></article>`;
+    return `<article class="item-card item-card-clean ${low?'low-stock':''} ${r.needsCount?'needs-count':''}"><div class="item-head"><div><h3>${esc(r.name)}</h3><div class="muted">${esc(displayCategoryName(r.category))} · ${esc(displaySubcategoryName(r.category,r.subcategory))}</div></div><span class="badge ${statusClass}">${esc(statusText)}</span></div><div class="badgetray"><span class="badge">${esc(r.location||'bez lokacije')}</span><span class="badge">${esc(r.unit)}</span>${r.lastInventoryDate?`<span class="badge">inventura ${esc(r.lastInventoryDate)}</span>`:''}${r.variants&&r.variants>1?`<span class="badge">${esc(r.variants)} varijanti</span>`:''}${r.minimum?`<span class="badge warn">prag ${esc(r.minimum)}</span>`:''}</div><div class="stock stock-clean"><span><b>${esc(qtyDisplay)}</b><em>ukupno</em></span><span><b>${esc(avDisplay)}</b><em>dostupno</em></span><span><b>${esc(r.loan)}</b><em>vani</em></span></div><div class="cm-tools item-actions"><button class="cm-btn" onclick="CleanArmory.editItem('${esc(r.id)}')">Uredi</button><button class="cm-btn bad" onclick="CleanArmory.removeItem('${esc(r.id)}')">Makni</button></div></article>`;
   }
 
 
@@ -347,7 +385,7 @@
   function getRow(id){return (STATE.rows||[]).find(r=>String(r.id)===String(id));}
   function openItemModal(r){
     const isNew=!r; r=r||{id:'NEW-'+Date.now(),name:'',category:STATE.cat||'Ostalo',subcategory:STATE.sub||'Ostalo',qty:0,av:0,loan:0,location:'Oružarstvo',minimum:0,status:'aktivno',type:'item'};
-    const html=`<div class="cm-modal-backdrop" id="itemModal"><div class="cm-modal"><div class="cm-modal-head"><div><h2>${isNew?'Dodaj artikl':'Uredi artikl'}</h2><p class="muted">Ručni edit je za korekcije. Glavna kategorizacija dolazi iz SQL canonical viewa.</p></div><button class="cm-icon-btn" onclick="CleanArmory.closeItemModal()">×</button></div><form class="cm-form" onsubmit="CleanArmory.saveItem(event,'${esc(r.id)}',${isNew})"><div class="cm-form-grid"><input class="cm-input" id="itemName" placeholder="Naziv artikla" value="${esc(r.name)}"><input class="cm-input" id="itemCat" placeholder="Kategorija" value="${esc(r.category)}"><input class="cm-input" id="itemSub" placeholder="Podkategorija" value="${esc(r.subcategory)}"></div><div class="cm-form-grid"><input class="cm-input" id="itemQty" type="number" min="0" placeholder="Ukupno" value="${esc(r.qty)}"><input class="cm-input" id="itemAv" type="number" min="0" placeholder="Dostupno" value="${esc(r.av)}"><input class="cm-input" id="itemMin" type="number" min="0" placeholder="Crveni prag" value="${esc(r.minimum||0)}"></div><div class="cm-form-grid">${locationSelectHtml(r.location||'Oružarstvo')}<input class="cm-input" id="itemCode" placeholder="Opcionalni kod / napomena" value="${esc(r.raw&&r.raw.physical_code_note||'')}"><input class="cm-input" id="itemStatus" placeholder="Status" value="${esc(r.status||'aktivno')}"></div><div class="cm-tools"><button class="cm-btn" type="button" onclick="CleanArmory.closeItemModal()">Odustani</button><button class="cm-btn primary">Spremi</button></div></form></div></div>`;
+    const html=`<div class="cm-modal-backdrop" id="itemModal"><div class="cm-modal"><div class="cm-modal-head"><div><h2>${isNew?'Dodaj artikl':'Uredi artikl'}</h2><p class="muted">Ručni edit je za korekcije. Glavna kategorizacija dolazi iz SQL canonical viewa.</p></div><button class="cm-icon-btn" onclick="CleanArmory.closeItemModal()">×</button></div><form class="cm-form" onsubmit="CleanArmory.saveItem(event,'${esc(r.id)}',${isNew})"><div class="cm-form-grid"><input class="cm-input" id="itemName" placeholder="Naziv artikla" value="${esc(r.name)}"><input class="cm-input" id="itemCat" placeholder="Kategorija" value="${esc(r.rawCategory||r.category)}"><input class="cm-input" id="itemSub" placeholder="Podkategorija" value="${esc(r.rawSubcategory||r.subcategory)}"></div><div class="cm-form-grid"><input class="cm-input" id="itemQty" type="number" min="0" placeholder="Ukupno" value="${esc(r.qty)}"><input class="cm-input" id="itemAv" type="number" min="0" placeholder="Dostupno" value="${esc(r.av)}"><input class="cm-input" id="itemMin" type="number" min="0" placeholder="Crveni prag" value="${esc(r.minimum||0)}"></div><div class="cm-form-grid">${locationSelectHtml(r.location||'Oružarstvo')}<input class="cm-input" id="itemCode" placeholder="Opcionalni kod / napomena" value="${esc(r.raw&&r.raw.physical_code_note||'')}"><input class="cm-input" id="itemStatus" placeholder="Status" value="${esc(r.status||'aktivno')}"></div><div class="cm-tools"><button class="cm-btn" type="button" onclick="CleanArmory.closeItemModal()">Odustani</button><button class="cm-btn primary">Spremi</button></div></form></div></div>`;
     document.body.insertAdjacentHTML('beforeend',html);
   }
   function closeItemModal(){const m=document.getElementById('itemModal'); if(m)m.remove();}
@@ -398,15 +436,35 @@
   function xlsCell(v,cls=''){return `<td class="${cls}">${xmlEsc(v)}</td>`;}
   function xlsWorkbook(filename,sheets){const names=sheets.map(s=>safeSheetName(s.name)); const tabs=names.map(n=>`<x:ExcelWorksheet><x:Name>${xmlEsc(n)}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet>`).join(''); const body=sheets.map((sheet,idx)=>`<div style="mso-element:worksheet" id="${xmlEsc(names[idx])}"><table>${sheet.html}</table></div>`).join('\n'); const html=`<!doctype html><html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets>${tabs}</x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--><style>table{border-collapse:collapse;font-family:Arial,sans-serif;font-size:12px}td,th{border:1px solid #999;padding:6px;mso-number-format:"\\@"}th{background:#d9ead3;font-weight:bold}.num{mso-number-format:"0"}.head{background:#073b32;color:#fff;font-size:16px;font-weight:bold}</style></head><body>${body}</body></html>`; const blob=new Blob([html],{type:'application/vnd.ms-excel;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=filename; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();},1500);}
   function rowsByCategory(){const m=new Map(); STATE.rows.filter(r=>r.name&&!/rashod|otpis|deleted|obrisano|arhiva|stari_katalog|neaktiv/i.test(String(r.status||''))).forEach(r=>{const c=r.category||'Ostalo'; if(!m.has(c))m.set(c,[]); m.get(c).push(r);}); return [...m.entries()].sort((a,b)=>(categoryPriority(a[0])-categoryPriority(b[0]))||a[0].localeCompare(b[0],'hr'));}
-  async function exportInventoryXls(){await loadData(); const date=new Date().toISOString().slice(0,10); const sheets=rowsByCategory().map(([cat,rows])=>{const header=`<tr><th colspan="9" class="head">Inventar — ${xmlEsc(cat)} — ${xmlEsc(date)}</th></tr><tr><th>Kategorija</th><th>Podkategorija</th><th>Naziv</th><th>Količina</th><th>Jedinica</th><th>Datum evidencije</th><th>Lokacija</th><th>Status</th><th>Napomena / detalji</th></tr>`; const body=rows.sort((a,b)=>(a.subcategory+a.name).localeCompare(b.subcategory+b.name,'hr')).map(r=>`<tr>${xlsCell(r.category)}${xlsCell(r.subcategory)}${xlsCell(r.name)}${xlsCell(r.needsCount?(r.qtyLabel||''):r.qty,'num')}${xlsCell(r.unit)}${xlsCell(r.lastInventoryDate||'')}${xlsCell(r.location||'Oružarstvo')}${xlsCell(r.status||'aktivno')}${xlsCell((r.raw&&(r.raw.physical_code_note||r.raw.note||r.raw.internal_note||r.raw.sku))||'')}</tr>`).join(''); return {name:cat,html:header+body};}); if(!sheets.length){toast('Nema inventara za export.');return;} xlsWorkbook(`SOV_inventar_${date}.xls`,sheets); toast('Inventar exportiran u XLS');}
-  async function exportInventuraXls(){await loadData(); const date=(document.querySelector('input[type="date"]')?.value)||new Date().toISOString().slice(0,10); const sheets=rowsByCategory().map(([cat,rows])=>{const header=`<tr><th colspan="10" class="head">Inventura — ${xmlEsc(cat)} — ${xmlEsc(date)}</th></tr><tr><th>Kategorija</th><th>Podkategorija</th><th>Naziv</th><th>Broj u bazi</th><th>Jedinica</th><th>Stvarno prebrojano</th><th>Razlika</th><th>Lokacija</th><th>Za rashod?</th><th>Napomena</th></tr>`; const body=rows.sort((a,b)=>(a.subcategory+a.name).localeCompare(b.subcategory+b.name,'hr')).map(r=>`<tr>${xlsCell(r.category)}${xlsCell(r.subcategory)}${xlsCell(r.name)}${xlsCell(r.needsCount?(r.qtyLabel||''):r.qty,'num')}${xlsCell(r.unit)}${xlsCell('')}${xlsCell('')}${xlsCell(r.location||'Oružarstvo')}${xlsCell('')}${xlsCell(r.needsCount?'prebrojiti':'')}</tr>`).join(''); return {name:cat,html:header+body};}); if(!sheets.length){toast('Nema inventara za inventuru export.');return;} xlsWorkbook(`SOV_inventura_${date}.xls`,sheets); toast('Inventura exportirana u XLS');}
+  async function exportInventoryXls(){await loadData(); const date=new Date().toISOString().slice(0,10); const sheets=rowsByCategory().map(([cat,rows])=>{const displayCat=displayCategoryName(cat); const header=`<tr><th colspan="9" class="head">Inventar — ${xmlEsc(displayCat)} — ${xmlEsc(date)}</th></tr><tr><th>Kategorija</th><th>Podkategorija</th><th>Naziv</th><th>Količina</th><th>Jedinica</th><th>Datum evidencije</th><th>Lokacija</th><th>Status</th><th>Napomena / detalji</th></tr>`; const body=rows.sort((a,b)=>(a.subcategory+a.name).localeCompare(b.subcategory+b.name,'hr')).map(r=>`<tr>${xlsCell(displayCategoryName(r.category))}${xlsCell(displaySubcategoryName(r.category,r.subcategory))}${xlsCell(r.name)}${xlsCell(r.needsCount?(r.qtyLabel||''):r.qty,'num')}${xlsCell(r.unit)}${xlsCell(r.lastInventoryDate||'')}${xlsCell(r.location||'Oružarstvo')}${xlsCell(r.status||'aktivno')}${xlsCell((r.raw&&(r.raw.physical_code_note||r.raw.note||r.raw.internal_note||r.raw.sku))||'')}</tr>`).join(''); return {name:displayCat,html:header+body};}); if(!sheets.length){toast('Nema inventara za export.');return;} xlsWorkbook(`SOV_inventar_${date}.xls`,sheets); toast('Inventar exportiran u XLS');}
+  async function exportInventuraXls(){await loadData(); const date=(document.querySelector('input[type="date"]')?.value)||new Date().toISOString().slice(0,10); const sheets=rowsByCategory().map(([cat,rows])=>{const displayCat=displayCategoryName(cat); const header=`<tr><th colspan="10" class="head">Inventura — ${xmlEsc(displayCat)} — ${xmlEsc(date)}</th></tr><tr><th>Kategorija</th><th>Podkategorija</th><th>Naziv</th><th>Broj u bazi</th><th>Jedinica</th><th>Stvarno prebrojano</th><th>Razlika</th><th>Lokacija</th><th>Za rashod?</th><th>Napomena</th></tr>`; const body=rows.sort((a,b)=>(a.subcategory+a.name).localeCompare(b.subcategory+b.name,'hr')).map(r=>`<tr>${xlsCell(displayCategoryName(r.category))}${xlsCell(displaySubcategoryName(r.category,r.subcategory))}${xlsCell(r.name)}${xlsCell(r.needsCount?(r.qtyLabel||''):r.qty,'num')}${xlsCell(r.unit)}${xlsCell('')}${xlsCell('')}${xlsCell(r.location||'Oružarstvo')}${xlsCell('')}${xlsCell(r.needsCount?'prebrojiti':'')}</tr>`).join(''); return {name:displayCat,html:header+body};}); if(!sheets.length){toast('Nema inventara za inventuru export.');return;} xlsWorkbook(`SOV_inventura_${date}.xls`,sheets); toast('Inventura exportirana u XLS');}
 
   async function loadNotes(){try{ if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.loadArmoryNotes){const n=await SOVArmoryDB.loadArmoryNotes(); if(Array.isArray(n))return n;} }catch(e){console.warn(e)} try{return JSON.parse(localStorage.getItem('sov_armory_notes')||'[]')}catch(e){return []}}
   async function renderNotes(){const root=document.getElementById('notesRoot'); if(!root)return; const notes=await loadNotes(); const open=notes.filter(n=>!/done|closed|obavljeno/i.test(String(n.status||'open'))); root.innerHTML=`<div class="loan-grid"><section class="cm-panel"><h2>+ Nova bilješka / reminder</h2><form class="cm-form" onsubmit="CleanArmory.saveNote(event)"><input class="cm-input" id="noteTitle" placeholder="Naslov, npr. Nabaviti spitove"><textarea class="cm-input" id="noteBody" placeholder="Detalji / napomena"></textarea><div class="cm-form-grid"><input class="cm-input" id="noteDue" type="date"><select class="cm-input" id="noteType"><option value="todo">Obaviti</option><option value="buy">Nabaviti</option><option value="check">Provjeriti</option></select><select class="cm-input" id="notePriority"><option value="normal">Normalno</option><option value="high">Hitno</option><option value="low">Nisko</option></select></div><button class="cm-btn primary">Spremi reminder</button></form></section><section class="cm-panel"><h2>Bilješke</h2><div class="loan-list">${open.length?open.map(n=>`<div class="loan-row"><div class="loan-row-top"><div><b>${esc(n.title||'Bilješka')}</b><div class="muted">${esc(n.due_date||'bez datuma')} · ${esc(n.note_type||n.type||'todo')} · ${esc(n.priority||'normal')}</div></div><span class="badge ${n.priority==='high'?'bad':'warn'}">${esc(n.status||'open')}</span></div><p>${esc(n.body||n.note||'')}</p><button class="cm-btn primary" onclick="CleanArmory.doneNote('${esc(n.id)}')">Označi obavljeno</button></div>`).join(''):'<div class="empty">Nema otvorenih podsjetnika.</div>'}</div></section></div>`;}
   async function saveNote(ev){ev.preventDefault(); const n={id:'NOTE-'+Date.now(),title:document.getElementById('noteTitle').value||'Bilješka',body:document.getElementById('noteBody').value||'',due_date:document.getElementById('noteDue').value||null,note_type:document.getElementById('noteType').value,priority:document.getElementById('notePriority').value,status:'open',created_at:new Date().toISOString()}; try{ if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.saveArmoryNote){await SOVArmoryDB.saveArmoryNote(n);} }catch(e){console.warn(e)} const l=JSON.parse(localStorage.getItem('sov_armory_notes')||'[]'); l.unshift(n); localStorage.setItem('sov_armory_notes',JSON.stringify(l)); await renderNotes(); toast('Reminder spremljen');}
   async function doneNote(id){try{ if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.doneArmoryNote) await SOVArmoryDB.doneArmoryNote(id);}catch(e){console.warn(e)} const l=JSON.parse(localStorage.getItem('sov_armory_notes')||'[]'); const n=l.find(x=>String(x.id)===String(id)); if(n)n.status='done'; localStorage.setItem('sov_armory_notes',JSON.stringify(l)); await renderNotes(); toast('Označeno obavljeno');}
 
+  async function saveCategoryMeta(ev,cat){
+    ev.preventDefault();
+    const icon=norm(document.getElementById('catIconInput')?.value||iconFor(cat));
+    const note=norm(document.getElementById('catNoteInput')?.value||'');
+    try{
+      if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.updateCategoryMeta){
+        const saved=await SOVArmoryDB.updateCategoryMeta(cat,icon,note);
+        STATE.data=STATE.data||{}; STATE.data.categories=STATE.data.categories||[];
+        const key=strip(cat);
+        let m=STATE.data.categories.find(c=>strip(c.name)===key);
+        if(!m){m={name:cat}; STATE.data.categories.push(m);}
+        m.icon=(saved&&saved.icon)||icon; m.note=(saved&&saved.note)||note; m.id=(saved&&saved.id)||m.id;
+        toast('Kategorija spremljena');
+      } else {
+        toast('Supabase nije dostupan za spremanje kategorije.');
+      }
+    }catch(e){console.warn('saveCategoryMeta failed',e); toast('Greška kod spremanja kategorije');}
+    renderInventory();
+  }
+
   async function init(){renderDbLoading(); await loadData(); await loadRequests(); renderKpis(); if(STATE.rows&&STATE.rows.length){renderMaster(); renderInventory();} else {renderDbLoading(); scheduleDbRetry();} await renderLoans(); await renderNotes();}
-  window.CleanArmory={init,pickCat(c){STATE.cat=c||null;STATE.sub=null;renderInventory()},pickSub(s){STATE.sub=s||null;renderInventory()},clearSearch(){STATE.query='';STATE.cat=null;STATE.sub=null;const q=document.getElementById('cmSearch'); if(q)q.value=''; renderInventory()},renderLoans,setStatus,manualLoan,newItem,editItem,removeItem,exportInventoryXls,exportInventuraXls,openReturn,closeReturn,confirmReturn,closeItemModal,saveItem,renderNotes,saveNote,doneNote,issueLoan,onLocChange,pickLoc};
+  window.CleanArmory={init,pickCat(c){STATE.cat=c||null;STATE.sub=null;renderInventory()},pickSub(s){STATE.sub=s||null;renderInventory()},clearSearch(){STATE.query='';STATE.cat=null;STATE.sub=null;const q=document.getElementById('cmSearch'); if(q)q.value=''; renderInventory()},renderLoans,setStatus,manualLoan,newItem,editItem,removeItem,exportInventoryXls,exportInventuraXls,openReturn,closeReturn,confirmReturn,closeItemModal,saveItem,renderNotes,saveNote,doneNote,saveCategoryMeta,issueLoan,onLocChange,pickLoc};
   document.addEventListener('DOMContentLoaded',init);
 })();
