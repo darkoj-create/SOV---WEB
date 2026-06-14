@@ -86,95 +86,189 @@
     }
     return {announcements:rows, announcementsText:section.text};
   }
+  function normalizeLeaderName(name){
+    const raw = String(name||'').trim().replace(/[.,;:]+$/,'');
+    const map = {
+      'Daliboru':'Dalibor','Daliborom':'Dalibor','Dalibor':'Dalibor',
+      'Petri':'Petra','Petra':'Petra',
+      'Dori':'Dora','Dora':'Dora',
+      'Veniu':'Venio','Veniju':'Venio','Venio':'Venio',
+      'Ličku':'Ličko','Licku':'Ličko','Ličko':'Ličko',
+      'Dališi':'Dališa','Dališa':'Dališa','Dalisa':'Dališa',
+      'Čedi':'Čedo','Čedo':'Čedo','Cedi':'Čedo','Cedo':'Čedo'
+    };
+    return map[raw] || raw.replace(/u$/,'').trim();
+  }
+  function normalizeLeaders(text){
+    return String(text||'').split(/\s+i\s+|,|\/|&/i).map(normalizeLeaderName).filter(Boolean).join(' i ');
+  }
+  function cleanAnnouncementRest(rest){
+    return String(rest||'')
+      .replace(/^\s*[,.:;–—-]+\s*/,'')
+      .replace(/^\([^)]*\)\s*,?\s*/,'')
+      .replace(/^\s*(?:je\s+)?/i,'')
+      .trim();
+  }
+  function validDate(y,m,d){ return !!(y && m>=1 && m<=12 && d>=1 && d<=31); }
+  function parseDatePrefix(s, defaultYear, defaultMonth){
+    const original = String(s||'').replace(/\s+/g,' ').trim();
+    const norm = original.replace(/[–—]/g,'-');
+    let m, d1, d2, mo1, mo2, y1, y2, rest;
+
+    // 4.-7.6. / 4. - 7. 6. 2026. / 10.-12.-7.
+    m = norm.match(/^(\d{1,2})\.\s*-\s*(\d{1,2})\.\s*-?\s*(\d{1,2})\.\s*(\d{4})?\.?\s*[,.:]?\s*(.*)$/);
+    if(m){
+      d1=Number(m[1]); d2=Number(m[2]); mo1=mo2=Number(m[3]); y1=y2=Number(m[4]||defaultYear); rest=m[5]||'';
+      if(validDate(y1,mo1,d1) && validDate(y2,mo2,d2)) return {start:iso(y1,mo1,d1), end:iso(y2,mo2,d2), rest:cleanAnnouncementRest(rest), confidence:0.28, dateWeak:false};
+    }
+
+    // 20. - 21. 6. 2026. Burinka
+    m = norm.match(/^(\d{1,2})\.\s*-\s*(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})\.?\s*[,.:]?\s*(.*)$/);
+    if(m){
+      d1=Number(m[1]); d2=Number(m[2]); mo1=mo2=Number(m[3]); y1=y2=Number(m[4]); rest=m[5]||'';
+      if(validDate(y1,mo1,d1) && validDate(y2,mo2,d2)) return {start:iso(y1,mo1,d1), end:iso(y2,mo2,d2), rest:cleanAnnouncementRest(rest), confidence:0.28, dateWeak:false};
+    }
+
+    // 06.06. - 07.06. / 25.07.-09.08. / 16.9. - 20.9.
+    m = norm.match(/^(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})?\.?\s*(?:-\s*(\d{1,2})\.\s*(?:(\d{1,2})\.)?\s*(\d{4})?\.?)?\s*[,.:]?\s*(.*)$/);
+    if(m){
+      d1=Number(m[1]); mo1=Number(m[2]); y1=Number(m[3]||defaultYear);
+      d2=m[4]?Number(m[4]):null; mo2=m[5]?Number(m[5]):mo1; y2=Number(m[6]||y1); rest=m[7]||'';
+      if(validDate(y1,mo1,d1) && (!d2 || validDate(y2,mo2,d2))) return {start:iso(y1,mo1,d1), end:d2?iso(y2,mo2,d2):iso(y1,mo1,d1), rest:cleanAnnouncementRest(rest), confidence:0.30, dateWeak:false};
+    }
+
+    // 20. - 21. 2026. (month missing; use meeting month)
+    m = norm.match(/^(\d{1,2})\.\s*-\s*(\d{1,2})\.\s*(\d{4})\.?\s*[,.:]?\s*(.*)$/);
+    if(m && defaultMonth){
+      d1=Number(m[1]); d2=Number(m[2]); mo1=mo2=defaultMonth; y1=y2=Number(m[3]); rest=m[4]||'';
+      if(validDate(y1,mo1,d1) && validDate(y2,mo2,d2)) return {start:iso(y1,mo1,d1), end:iso(y2,mo2,d2), rest:cleanAnnouncementRest(rest), confidence:0.18, dateWeak:true};
+    }
+
+    return {start:null, end:null, rest:original, confidence:0, dateWeak:true};
+  }
+  const KNOWN_PLACES = [
+    {canon:'Homoljačko polje kod Plitvica', rx:/Homolj[aā]čko\s+polje(?:\s+kod\s+Plitvica)?/i},
+    {canon:'Žumberačko gorje', rx:/Žumberačko\s+gorje/i},
+    {canon:'Duman i Burinka', rx:/Duman\s+i\s+Burinka/i},
+    {canon:'Bijele sige na Medvednici', rx:/Bijele\s+sige(?:\s+na\s+Medvednici)?/i},
+    {canon:'Sjeverna Makedonija (BCC)', rx:/Sjeverna\s+Makedonija(?:\s*\(BCC\))?|BCC/i},
+    {canon:'Sjeverni Velebit', rx:/Sjeverni\s+Velebit/i},
+    {canon:'Munižaba', rx:/Munižab[aiu]?/i},
+    {canon:'Ponorac', rx:/Ponor(?:ac|cu|ca)/i},
+    {canon:'Burinka', rx:/Burink[aiu]?/i},
+    {canon:'Duman', rx:/Duman/i},
+    {canon:'Bunovac', rx:/Bunovac/i},
+    {canon:'Krasno', rx:/Krasn[ou]/i},
+    {canon:'Ratkovo', rx:/Ratkovom?/i},
+    {canon:'Žica', rx:/Žic[aiu]?/i}
+  ];
+  function knownPlaceIn(text){
+    const s = String(text||'');
+    let best = null;
+    for(const p of KNOWN_PLACES){
+      const m = s.match(p.rx);
+      if(m){ const idx = m.index == null ? 99999 : m.index; if(!best || idx < best.idx) best = {canon:p.canon, match:m[0], idx}; }
+    }
+    return best;
+  }
+  function firstMeaningfulChunk(rest){
+    const r = String(rest||'').trim();
+    const dash = r.search(/\s+[–—-]\s+|:\s+/);
+    if(dash >= 0) return r.slice(0,dash).replace(/[:–—-]+$/,'').trim();
+    const comma = r.indexOf(',');
+    if(comma > 2 && comma < 90) return r.slice(0, comma).trim();
+    return r;
+  }
+  function isGenericChunk(chunk){
+    const c = String(chunk||'').trim();
+    if(!c || c.length > 90) return true;
+    if(/^(od\s+\d|se\s+|bi\s+|je\s+|ako\s+|treba\s+|ide\s+se\s+|slobodno\s+)/i.test(c)) return true;
+    if(/\b(vodi|najavljuje|organizira|javite|javiti|okupljamo|mogla|postavljala|seminar|stručni skup|akcija)\b/i.test(c)) return true;
+    if(/^[A-ZČĆŽŠĐ][a-zčćžšđ]+$/.test(c)) return true;
+    return false;
+  }
   function parseAnnouncementLine(line, defaultYear, defaultMonth, meetingDate){
     let s = line.replace(/\s+/g,' ').trim();
-    let rest = s, start=null, end=null, confidence=0.35, dateWeak=false;
-    const datePart = s.match(/^([0-9.\s–\-]+\d{4}?\.?)/);
-    const m1 = s.match(/^(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})?\s*(?:[–-]\s*(\d{1,2})\.\s*(?:(\d{1,2})\.)?\s*(\d{4})?)?\s*[,.:]?\s*(.*)$/);
-    const m2 = !m1 && s.match(/^(\d{1,2})\.\s*[–-]\s*(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})?\s*[,.:]?\s*(.*)$/);
-    const m3 = !m1 && !m2 && s.match(/^(\d{1,2})\.\s*[–-]\s*(\d{1,2})\.\s*(\d{4})\.?\s*[,.:]?\s*(.*)$/);
-    if(m1){
-      const d1=Number(m1[1]), mo1=Number(m1[2]), y1=Number(m1[3]||defaultYear);
-      let d2=m1[4]?Number(m1[4]):null, mo2=m1[5]?Number(m1[5]):mo1, y2=Number(m1[6]||y1);
-      start=iso(y1,mo1,d1); end=d2?iso(y2,mo2,d2):start; rest=m1[7]||''; confidence+=0.25;
-    }else if(m2){
-      const d1=Number(m2[1]), d2=Number(m2[2]), mo=Number(m2[3]), y=Number(m2[4]||defaultYear);
-      start=iso(y,mo,d1); end=iso(y,mo,d2); rest=m2[5]||''; confidence+=0.22;
-    }else if(m3){
-      const d1=Number(m3[1]), d2=Number(m3[2]), y=Number(m3[3]), mo=defaultMonth;
-      start=iso(y,mo,d1); end=iso(y,mo,d2); rest=m3[4]||''; confidence+=0.12; dateWeak=true;
-    }else if(datePart){
-      rest=s.replace(datePart[0],'').trim();
-    }
-    if(!rest || rest.length<3) return null;
-    let title = rest, desc = rest;
-    const split = rest.search(/\s+[–—-]\s+|:\s+/);
-    if(split>=0){
-      const before = rest.slice(0,split).replace(/[:–—-]+$/,'').trim();
-      const after = rest.slice(split).replace(/^\s*[:–—-]+\s*/,'').trim();
-      if(before){title=before; desc=after||rest;}
-    }else{
-      const comma = rest.indexOf(',');
-      if(comma>2 && comma<80){ title=rest.slice(0,comma).trim(); desc=rest.slice(comma+1).trim(); }
-    }
-    title = title.replace(/^\(?[a-zčćžšđ]+\)?\s*/i,'').trim() || 'Najava iz zapisnika';
-    let category = detectCategory(rest, title);
-    const picked = refineTitleLocation(rest, title, category);
-    title = picked.title || title;
-    let location = picked.location || title;
+    const dp = parseDatePrefix(s, defaultYear, defaultMonth);
+    let rest = dp.rest || s;
+    let start = dp.start, end = dp.end, dateWeak = dp.dateWeak;
+    if(!rest || rest.length < 3) return null;
+
+    let category = detectCategory(rest, '');
     let leader = detectLeader(rest);
-    if(title) confidence += 0.15;
-    if(start) confidence += 0.15;
-    if(leader) confidence += 0.05;
+    let chunk = firstMeaningfulChunk(rest);
+    let place = knownPlaceIn(rest);
+    let title = chunk;
+    let location = chunk;
+
+    if(isGenericChunk(chunk) && place){ title = place.canon; location = place.canon; }
+    else if(place && place.idx <= 25 && chunk.length > place.match.length + 20){ title = place.canon; location = place.canon; }
+
+    const special = refineTitleLocation(rest, title, category, place);
+    title = special.title || title;
+    location = special.location || location || title;
+    category = special.category || category;
+
+    const desc = rest.replace(/^\s*[,.:;–—-]+\s*/,'').trim();
+    let confidence = 0.35 + (dp.confidence || 0);
+    if(title && !isGenericChunk(title)) confidence += 0.18;
+    if(start) confidence += 0.17;
+    if(leader) confidence += 0.06;
+    if(place) confidence += 0.08;
     if(dateWeak) confidence -= 0.12;
+    if(isGenericChunk(title) && !place) confidence -= 0.18;
     confidence = Math.max(0.2, Math.min(0.98, confidence));
-    return {raw_text:line, title, location_name:location, start_date:start, end_date:end||start, leader_name:leader, trip_category:category, description:desc||rest, confidence:Number(confidence.toFixed(2)), status: confidence < .62 ? 'treba_provjeru' : 'novo', meta:{date_weak:dateWeak}};
+
+    return {raw_text:line, title: title || 'Najava iz zapisnika', location_name:location || title || '', start_date:start, end_date:end||start, leader_name:leader, trip_category:category, description:desc, confidence:Number(confidence.toFixed(2)), status: confidence < .66 ? 'treba_provjeru' : 'novo', meta:{date_weak:dateWeak, place_detected:place ? place.canon : null}};
   }
   function detectCategory(text,title){
     const h=(text+' '+title).toLowerCase();
     if(/predavanje|prezentacij/.test(h)) return 'predavanje';
     if(/seminar|stručni skup|skup/.test(h)) return 'seminar';
     if(/vježb|samospašavanje|žici|žica/.test(h)) return 'vježba';
-    if(/ekspedicij|bcc|camp/.test(h)) return 'ekspedicija';
-    if(/akcija|inventur/.test(h)) return 'akcija';
+    if(/ekspedicij|predekspedicij|bcc|camp/.test(h)) return 'ekspedicija';
+    if(/akcija|inventur|postavljala bi se žica|postavljanje žice/.test(h)) return 'akcija';
     return 'izlet';
   }
-  function refineTitleLocation(rest, title, category){
+  function refineTitleLocation(rest, title, category, place){
     const clean = String(rest||'').replace(/^\([^)]*\)\s*/,'').trim();
-    let out = {title, location:title};
+    if(/od\s+\d{1,2}\s+sati.*Žic[aiu]?/i.test(clean)) return {title:'Žica – vježba samospašavanja', location:'Žica', category:'vježba'};
     let m;
-    if(category === 'vježba'){
-      m = clean.match(/na\s+(Žici|Zici|žici|zici)/i);
-      if(m) return {title:'Žica – vježba samospašavanja', location:'Žica'};
-    }
-    if(category === 'akcija'){
-      m = clean.match(/akcija\s+na\s+([^,.;]+)/i) || clean.match(/na\s+([^,.;]+)/i);
-      if(m) return {title:'Akcija na '+m[1].trim(), location:m[1].trim()};
-    }
+    m = clean.match(/odlazak\s+u\s+jamu\s+([^,.;]+?)(?:,|\s+vježbat|$)/i);
+    if(m) return {title:m[1].trim(), location:m[1].trim(), category: category || 'izlet'};
+    if(/akcija\s+na\s+Ratkovom/i.test(clean)) return {title:'Akcija na Ratkovom', location:'Ratkovo / Mrkopalj', category:'akcija'};
+    if(/predekspedicija/i.test(clean)) return {title:'Predekspedicija – postavljanje žice', location:'Sjeverni Velebit', category:'ekspedicija'};
     if(category === 'seminar'){
       m = clean.match(/stručni\s+skup\s+u\s+([^,.;]+?)(?:\s+na\s+koji|\s+ako|$)/i);
-      if(m) return {title:'Stručni skup u '+m[1].trim(), location:m[1].trim()};
-      m = clean.match(/seminar.*?(?:u|na)\s+([^,.;]+)/i);
-      if(m) return {title:'Seminar – '+m[1].trim(), location:m[1].trim()};
+      if(m) return {title:'Stručni skup – '+normalizePlaceCase(m[1].trim()), location:normalizePlaceCase(m[1].trim()), category:'seminar'};
+      if(place) return {title:'Seminar – '+place.canon, location:place.canon, category:'seminar'};
     }
     if(category === 'predavanje'){
+      if(place && place.canon === 'Žica') return {title:'Žica – predavanje prve pomoći', location:'Žica', category:'predavanje'};
       m = clean.match(/predavanje\s+(?:o\s+)?([^,.;]+)/i);
-      if(m) return {title:'Predavanje: '+m[1].trim(), location:''};
+      if(m) return {title:'Predavanje: '+m[1].trim(), location:'Velebit', category:'predavanje'};
     }
-    if(/^od\s+\d{1,2}/i.test(clean)){
-      m = clean.match(/na\s+([^,.;]+?)\s+i\s+vježb/i);
-      if(m) return {title:m[1].trim(), location:m[1].trim()};
-    }
-    return out;
+    if(place && isGenericChunk(title)) return {title:place.canon, location:place.canon, category};
+    return {title, location:title, category};
+  }
+  function normalizePlaceCase(s){
+    const p = knownPlaceIn(s);
+    return p ? p.canon : s;
   }
   function detectLeader(text){
     const patterns = [
       /([A-ZČĆŽŠĐ][a-zčćžšđ]+)\s+(?:najavljuje|vodi|organizira|podsjeća)/,
-      /javiti\s+se\s+([A-ZČĆŽŠĐ][a-zčćžšđ]+)/i,
-      /javite\s+se\s+([A-ZČĆŽŠĐ][a-zčćžšđ]+)/i,
-      /javiti\s+se\s+([A-ZČĆŽŠĐ][a-zčćžšđ]+u)/i
+      /javiti\s+se\s+([^.;,]+?)(?:\s+ako|\s+za|[.;,]|$)/i,
+      /javite\s+se\s+([^.;,]+?)(?:\s+ako|\s+za|[.;,]|$)/i,
+      /neka\s+mu\s+se\s+javi/i
     ];
-    for(const p of patterns){ const m=text.match(p); if(m) return m[1].replace(/u$/,'').trim(); }
+    for(const p of patterns){
+      const m=text.match(p);
+      if(m){
+        if(p.source.includes('neka')) return 'Dališa';
+        return normalizeLeaders(m[1]);
+      }
+    }
     return '';
   }
   async function parseFile(file){
