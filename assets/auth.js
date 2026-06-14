@@ -22,7 +22,7 @@
   }
   const REGISTERED_PAGES = new Set([
     'dashboard.html','karta.html','pregled-baze.html','izleti.html','izleti-cloud.html','kalendar-izleta.html',
-    'dokumentacija.html','dokumenti.html','pregled-zapisnika.html','zapisnici-skupstine.html','zapisnici-aktualni-2026.html','zapisnici-arhiva-2017-2022.html','zapisnici-cijela-arhiva.html','zapisnici-import.html','novi-zapisnik.html',
+    'dokumentacija.html','dokumenti.html','pregled-zapisnika.html','zapisnici-skupstine.html','zapisnici-aktualni-2026.html','zapisnici-arhiva-2017-2022.html','zapisnici-cijela-arhiva.html','zapisnici-import.html','zapisnici-najave.html','novi-zapisnik.html',
     'speleo-zapisnik.html','topodroid.html','napisi-clanak.html','predaj-novu-jamu.html','arhivar-dashboard.html','arhivar.html','arhivar-zahvati.html','arhivar-predane-jame.html','arhivar-izvoz.html','speleo-sql-safe.html','speleo-sql-edit-sandbox.html','speleo-sql-compare.html','speleo-sql-object-hub.html','speleo-sql-promote.html','speleo-sql-go-live.html','oruzarstvo.html','oruzarstvo-import.html','oruzar-master-notes.html','oruzar-master-inventura.html','oruzar-master-inventar.html','oruzar-master-posudbe.html','oruzar-master.html','admin-users.html','admin-notifications.html','role-manager.html','news-editor.html','sync-status.html','audit-status.html'
   ]);
   const ROLE_LABELS = {webmaster:'Webmaster',admin:'Admin',editor:'Urednik',oruzar:'Oružar',arhivar:'Arhivar',user:'Član'};
@@ -404,7 +404,7 @@
     else if(p === 'news-editor.html') await requireEditor();
     else if(p === 'napisi-clanak.html' || p === 'predaj-novu-jamu.html') await requireApproved();
     else if(p === 'oruzarstvo.html' || p === 'oruzarstvo-import.html' || p.startsWith('oruzar-master') || p === 'inventura.html') await requireArmory();
-    else if(p === 'arhivar-dashboard.html' || p === 'arhivar.html' || p === 'arhivar-zahvati.html' || p === 'arhivar-predane-jame.html' || p === 'arhivar-izvoz.html' || p === 'zapisnici-import.html') await requireArchive();
+    else if(p === 'arhivar-dashboard.html' || p === 'arhivar.html' || p === 'arhivar-zahvati.html' || p === 'arhivar-predane-jame.html' || p === 'arhivar-izvoz.html' || p === 'zapisnici-import.html' || p === 'zapisnici-najave.html') await requireArchive();
     else await requireApproved();
     await renderUserBadge();
   }
