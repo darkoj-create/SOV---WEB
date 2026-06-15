@@ -88,7 +88,7 @@
 
   function stripDiacritics(s){ return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim(); }
   function canonicalArmoryCategory(raw, text){
-    // v6.1.42c: SQL/app catalog is the canonical armory taxonomy. Preserve the category exactly
+    // v6.1.42d: inventory/XLS category is the display source of truth. Preserve it exactly
     // instead of reclassifying it into broader virtual buckets. Search still uses
     // text tags, but inventory/order screens must match the XLS and SQL seed 1:1.
     const clean=String(raw||'').trim();
@@ -536,7 +536,7 @@
   }
 
 
-  const ARMORY_CATALOG_CACHE_KEY='sov_armory_catalog_cache_v6142c_taxonomy';
+  const ARMORY_CATALOG_CACHE_KEY='sov_armory_catalog_cache_v6142d_inventory_names';
 
   function catalogRowCount(d){
     if(!d) return 0;
@@ -611,7 +611,7 @@
     if(groupedCatalog && groupedCatalog.length){
       out.summary.source='Supabase canonical grouped catalog v5.45';
       out.categories=[...new Map(groupedCatalog.map((g,idx)=>{
-        const name=g.main_category||g.category||g.category_name||'Ostalo';
+        const name=g.xls_category||g.raw_category||g.main_category||g.category||g.category_name||'Ostalo';
         return [name,{id:'cat-'+idx,name,description:'Canonical grouped catalog',type:'canonical',sort_order:g.priority||idx}];
       })).values()];
       out.items=groupedCatalog.map((g,idx)=>({
@@ -619,9 +619,13 @@
         legacy_id:g.source_id||g.app_id||('GROUP-'+idx),
         catalog_id:g.catalog_group_key||g.source_id||g.app_id||('GROUP-'+idx),
         name:g.display_name||g.name||'Artikl',
-        category:g.main_category||g.category||g.category_name||'Ostalo',
-        category_name:g.main_category||g.category||g.category_name||'Ostalo',
-        subcategory:g.subcategory||g.raw_subcategory||'Ostalo',
+        category:g.xls_category||g.raw_category||g.main_category||g.category||g.category_name||'Ostalo',
+        category_name:g.xls_category||g.raw_category||g.main_category||g.category||g.category_name||'Ostalo',
+        xls_category:g.xls_category||g.raw_category||g.main_category||g.category||g.category_name||'Ostalo',
+        raw_category:g.raw_category||g.main_category||g.category||g.category_name||'Ostalo',
+        main_category:g.main_category||g.raw_category||g.category||g.category_name||'Ostalo',
+        subcategory:g.xls_subcategory||g.raw_subcategory||g.subcategory||'Ostalo',
+        xls_subcategory:g.xls_subcategory||g.raw_subcategory||g.subcategory||'Ostalo',
         unit:g.unit||'kom',
         tracking_type:'grouped_catalog',
         quantity:safeQuantity(g.total_qty)||0,
@@ -665,8 +669,8 @@
       legacy_id:i.legacy_id||i.id,
       catalog_id:i.catalog_id||i.legacy_id||i.id,
       name:i.name||i.item_name||'Artikl',
-      category:canonicalArmoryCategory(i.category_name||i.category||i.xls_category||'Ostalo',[i.name,i.subcategory,i.internal_note].join(' ')),
-      category_name:canonicalArmoryCategory(i.category_name||i.category||i.xls_category||'Ostalo',[i.name,i.subcategory,i.internal_note].join(' ')),
+      category:canonicalArmoryCategory(i.xls_category||i.category_name||i.category||'Ostalo',[i.name,i.subcategory,i.internal_note].join(' ')),
+      category_name:canonicalArmoryCategory(i.xls_category||i.category_name||i.category||'Ostalo',[i.name,i.subcategory,i.internal_note].join(' ')),
       subcategory:i.subcategory||i.xls_subcategory||'Ostalo',
       unit:i.unit||'kom',
       tracking_type:i.tracking_type||'xls_row',
@@ -895,6 +899,7 @@
   function clearArmoryCatalogCaches(){
     try{
       [
+        'sov_armory_catalog_cache_v6142d_inventory_names',
         'sov_armory_catalog_cache_v6142c_taxonomy',
         'sov_armory_catalog_cache_v607',
         'sov_armory_catalog_cache_v606',
@@ -959,9 +964,9 @@
   // before returning cached data; on large Supabase views that made every page open feel like a full sync.
   // Now UI gets the last valid catalog immediately, while a single background refresh may update the cache.
   (function installFastCacheFirstWrapper(){
-    const CACHE_KEY='sov_armory_catalog_cache_v6142c_taxonomy';
+    const CACHE_KEY='sov_armory_catalog_cache_v6142d_inventory_names';
     try{
-      ['sov_armory_catalog_cache_v6142c_taxonomy','sov_armory_catalog_cache_v607','sov_armory_catalog_cache_v606','sov_armory_catalog_cache_v548','sov_armory_catalog_cache_v548_old','sov_armory_catalog_cache'].forEach(k=>localStorage.removeItem(k));
+      ['sov_armory_catalog_cache_v6142d_inventory_names','sov_armory_catalog_cache_v6142c_taxonomy','sov_armory_catalog_cache_v607','sov_armory_catalog_cache_v606','sov_armory_catalog_cache_v548','sov_armory_catalog_cache_v548_old','sov_armory_catalog_cache'].forEach(k=>localStorage.removeItem(k));
     }catch(e){}
     const MIN_ROWS=20;
     let inflight=null;
