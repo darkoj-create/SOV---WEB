@@ -88,7 +88,7 @@
 
   function stripDiacritics(s){ return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim(); }
   function canonicalArmoryCategory(raw, text){
-    // v6.1.42d: inventory/XLS category is the display source of truth. Preserve it exactly
+    // v6.1.42e: inventory/XLS category is the display source of truth. Preserve it exactly
     // instead of reclassifying it into broader virtual buckets. Search still uses
     // text tags, but inventory/order screens must match the XLS and SQL seed 1:1.
     const clean=String(raw||'').trim();
@@ -536,7 +536,7 @@
   }
 
 
-  const ARMORY_CATALOG_CACHE_KEY='sov_armory_catalog_cache_v6142d_inventory_names';
+  const ARMORY_CATALOG_CACHE_KEY='sov_armory_catalog_cache_v6142e_inventory_subcategories';
 
   function catalogRowCount(d){
     if(!d) return 0;
@@ -899,6 +899,7 @@
   function clearArmoryCatalogCaches(){
     try{
       [
+        'sov_armory_catalog_cache_v6142e_inventory_subcategories',
         'sov_armory_catalog_cache_v6142d_inventory_names',
         'sov_armory_catalog_cache_v6142c_taxonomy',
         'sov_armory_catalog_cache_v607',
@@ -964,9 +965,9 @@
   // before returning cached data; on large Supabase views that made every page open feel like a full sync.
   // Now UI gets the last valid catalog immediately, while a single background refresh may update the cache.
   (function installFastCacheFirstWrapper(){
-    const CACHE_KEY='sov_armory_catalog_cache_v6142d_inventory_names';
+    const CACHE_KEY='sov_armory_catalog_cache_v6142e_inventory_subcategories';
     try{
-      ['sov_armory_catalog_cache_v6142d_inventory_names','sov_armory_catalog_cache_v6142c_taxonomy','sov_armory_catalog_cache_v607','sov_armory_catalog_cache_v606','sov_armory_catalog_cache_v548','sov_armory_catalog_cache_v548_old','sov_armory_catalog_cache'].forEach(k=>localStorage.removeItem(k));
+      ['sov_armory_catalog_cache_v6142e_inventory_subcategories','sov_armory_catalog_cache_v6142d_inventory_names','sov_armory_catalog_cache_v6142c_taxonomy','sov_armory_catalog_cache_v607','sov_armory_catalog_cache_v606','sov_armory_catalog_cache_v548','sov_armory_catalog_cache_v548_old','sov_armory_catalog_cache'].forEach(k=>localStorage.removeItem(k));
     }catch(e){}
     const MIN_ROWS=20;
     let inflight=null;
