@@ -1,9 +1,9 @@
-/* SOV Oružarstvo DB gate v6.1.6
+/* SOV Oružarstvo DB gate v6.1.42c
    Contract: do not render any inventory/catalog rows until Supabase returns a real catalog.
    Static JSON/cache are deliberately not displayed during DB seed/import. */
 (function(){
   'use strict';
-  const BUILD='6.1.6-db-gate';
+  const BUILD='6.1.42c-db-gate-taxonomy';
   const MIN_ROWS=20;
   const LIVE_TIMEOUT=65000;
   const RETRY_MS=4500;
@@ -58,12 +58,29 @@
   function rows(){
     const d=window.DATA||{};
     const items=(Array.isArray(d.items)?d.items:[]).map(x=>({...x,item_type:x.item_type||'item'}));
-    const ropes=(Array.isArray(d.ropes)?d.ropes:[]).map(r=>({...r,id:'ROPE-'+(r.id||r.legacy_id||r.sku||r.name),item_type:'rope',name:r.name||('Uže '+(r.sku||'')),category:r.category||r.category_name||'Užeta',category_name:r.category_name||r.category||'Užeta',subcategory:r.subcategory||'Užad',available:/društvu|drustvu|aktiv|dostup/i.test(String(r.status||''))?1:0,unit:'kom'}));
+    const ropes=(Array.isArray(d.ropes)?d.ropes:[]).map(r=>({...r,id:'ROPE-'+(r.id||r.legacy_id||r.sku||r.name),item_type:'rope',name:r.name||('Uže '+(r.sku||'')),category:r.category||r.category_name||'Užad',category_name:r.category_name||r.category||'Užad',subcategory:r.subcategory||'Užad',available:/društvu|drustvu|aktiv|dostup/i.test(String(r.status||''))?1:0,unit:'kom'}));
     const pieces=(Array.isArray(d.pieces)?d.pieces:[]).map(p=>({...p,id:'PIECE-'+(p.id||p.legacy_id||p.sku||p.name),item_type:'piece',name:p.name||p.model||p.sku||'Komad opreme',category:p.category||p.category_name||'Inventarna oprema',category_name:p.category_name||p.category||'Inventarna oprema',subcategory:p.subcategory||p.location_name||'Pojedinačno',available:/društvu|drustvu|aktiv|dostup/i.test(String(p.status||''))?1:0,unit:'kom'}));
     return [...items,...ropes,...pieces];
   }
-  function categoryMeta(c){const x=plain(c); if(x.includes('uze'))return ['🪢','Užeta']; if(x.includes('osob'))return ['🧗','Osobna oprema']; if(x.includes('postavlj'))return ['🪛','Oprema za postavljanje']; if(x.includes('prosir'))return ['⛏️','Oprema za proširivanje']; if(x.includes('elektro')||x.includes('foto')||x.includes('rasv'))return ['💡','Elektro i foto oprema']; if(x.includes('crtan')||x.includes('mjeren')||x.includes('kompas')||x.includes('busol'))return ['🧭','Oprema za crtanje']; if(x.includes('dron'))return ['🚁','Dronovi i dodaci']; if(x.includes('alat'))return ['🧰','Ostali alat']; return ['📦','Oprema'];}
-  function sortCats(a){const order=['Osobna oprema','Oprema za postavljanje','Čisto podzemlje','Oprema za crtanje','Oprema za proširivanje','Elektro i foto oprema','Alpinistička oprema','Ronilačka oprema','Ostali alat','Užeta','Oprema za logor','Medicinska oprema','Ostalo']; return a.sort((x,y)=>(order.indexOf(x)<0?99:order.indexOf(x))-(order.indexOf(y)<0?99:order.indexOf(y))||String(x).localeCompare(String(y),'hr'));}
+  function categoryMeta(c){
+    const m={
+      'Osobni SRT komplet':['🧗','Osobna SRT oprema za člana.'],
+      'Sidrišta i opremanje':['⚓','Karabineri, pločice, sidrišta i pribor za opremanje.'],
+      'Tehničko spašavanje i Čisto podzemlje':['🧹','Spašavanje, čišćenje podzemlja i povezana terenska oprema.'],
+      'Mjerenje, crtanje i dokumentacija':['🧭','Mjerenje, crtanje, dokumentiranje i terenska evidencija.'],
+      'Proširivanje i regulirana oprema':['⛏️','Proširivanje i oprema s posebnim režimom korištenja.'],
+      'Rasvjeta, elektronika i komunikacija':['💡','Rasvjeta, elektronika, komunikacija, foto i dron oprema.'],
+      'Alpinistička i penjačka oprema':['⛰️','Alpinistička i penjačka oprema.'],
+      'Ronilačka oprema':['🤿','Ronilačka oprema.'],
+      'Alat i održavanje':['🧰','Alat, servis i održavanje opreme.'],
+      'Užad':['🪢','Užad i vezana oprema.'],
+      'Logor, ekspedicija i kuhinja':['⛺','Logor, ekspedicija, kuhinja i terenski boravak.'],
+      'Medicinska oprema':['✚','Prva pomoć i medicinska oprema.'],
+      'Ostalo':['📦','Stavke koje još treba provjeriti.']
+    };
+    return m[c]||['📦','Oprema'];
+  }
+  function sortCats(a){const order=['Osobni SRT komplet','Sidrišta i opremanje','Tehničko spašavanje i Čisto podzemlje','Mjerenje, crtanje i dokumentacija','Proširivanje i regulirana oprema','Rasvjeta, elektronika i komunikacija','Alpinistička i penjačka oprema','Ronilačka oprema','Alat i održavanje','Užad','Logor, ekspedicija i kuhinja','Medicinska oprema','Ostalo']; return a.sort((x,y)=>(order.indexOf(x)<0?99:order.indexOf(x))-(order.indexOf(y)<0?99:order.indexOf(y))||String(x).localeCompare(String(y),'hr'));}
   function currentItems(){const q=plain($('q')?.value||''); const cat=$('cat')?.value||activeCat; const av=$('avail')?.value||''; return rows().filter(visible).filter(r=>!q||rowText(r).includes(q)).filter(r=>!cat||catOf(r)===cat).filter(r=>!activeSub||subOf(r)===activeSub).filter(r=>!av||(av==='dostupno'?available(r):(av==='nedostupno'?!available(r):true)));}
   function setMiniStatus(kind,msg){const el=$('armoryBootStatus')||document.querySelector('[data-armory-boot-status]'); if(el)el.textContent=msg; const line=$('v607StatusText'); if(line)line.textContent=msg;}
   function renderLoading(message, detail){

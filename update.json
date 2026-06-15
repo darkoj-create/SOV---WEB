@@ -1,26 +1,30 @@
 {
   "app": "SOV web",
-  "version": "6.1.42b",
-  "versionName": "v6.1.42b-user-equipment-borrowing",
-  "build": "sov-web-build-v6.1.42b-user-equipment-borrowing",
-  "createdAt": "2026-06-14T23:55:00Z",
-  "cacheBust": "6142b-user-equipment",
+  "version": "6.1.42c",
+  "versionName": "v6.1.42c-equipment-user-taxonomy-fix",
+  "build": "sov-web-build-v6.1.42c-equipment-user-taxonomy-fix",
+  "createdAt": "2026-06-15T16:30:00Z",
+  "cacheBust": "6142c-equipment-taxonomy",
   "base": "sov-web-build-v6.1.38-oruzarstvo-inventory-edit-name-cleanup.zip",
   "requiresSql": false,
   "requiredSql": [],
   "changedFiles": [
     "dashboard.html",
-    "assets/auth.js",
-    "assets/sov-shell-v55825.js",
+    "oruzarstvo.html",
+    "assets/oruzarstvo-supabase.js",
+    "assets/oruzarstvo-boot-v615.js",
+    "data/oruzarstvo-data.json",
+    "data/oruzarstvo-xls-canonical-v6.1.5.json",
     "update.json",
     "VERSION.txt",
     "BUILD_VERSION.txt"
   ],
-  "releaseType": "user-equipment-borrowing-hotfix",
+  "releaseType": "equipment-user-taxonomy-hotfix",
   "notes": [
-    "User role can see and open the member equipment catalog/borrowing page.",
-    "Armory master, import, inventory, loans administration and inventory count pages remain restricted to armory/admin/webmaster roles.",
-    "Dashboard still hides archive, editor, admin, tracking and webmaster modules from ordinary users.",
+    "Member equipment catalog now uses the current Supabase/app taxonomy category names.",
+    "Static equipment JSON fallback was updated from the old category labels to the current labels.",
+    "Armory catalog browser cache key was bumped and old catalog cache keys are cleared.",
+    "Quick-pack labels were renamed to match the current category taxonomy.",
     "No SQL changes are required for this build."
   ]
 }

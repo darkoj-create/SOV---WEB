@@ -1,1 +1,1 @@
-sov-web-build-v6.1.42b-user-equipment-borrowing
+sov-web-build-v6.1.42c-equipment-user-taxonomy-fix

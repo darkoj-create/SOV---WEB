@@ -88,13 +88,13 @@
 
   function stripDiacritics(s){ return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim(); }
   function canonicalArmoryCategory(raw, text){
-    // v6.1.5: XLS is the canonical armory taxonomy. Preserve the category exactly
+    // v6.1.42c: SQL/app catalog is the canonical armory taxonomy. Preserve the category exactly
     // instead of reclassifying it into broader virtual buckets. Search still uses
     // text tags, but inventory/order screens must match the XLS and SQL seed 1:1.
     const clean=String(raw||'').trim();
-    if(clean) return clean==='Užad' ? 'Užeta' : clean;
+    if(clean) return clean;
     const t=stripDiacritics(String(text||''));
-    if(/uzad|uze|rope|statik/.test(t)) return 'Užeta';
+    if(/uzad|uze|rope|statik/.test(t)) return 'Užad';
     return 'Ostalo';
   }
 
@@ -536,7 +536,7 @@
   }
 
 
-  const ARMORY_CATALOG_CACHE_KEY='sov_armory_catalog_cache_v607';
+  const ARMORY_CATALOG_CACHE_KEY='sov_armory_catalog_cache_v6142c_taxonomy';
 
   function catalogRowCount(d){
     if(!d) return 0;
@@ -693,7 +693,7 @@
     })).filter(i=>i.name);
     out.ropes=(ropes||[]).map((r,idx)=>({
       id:r.legacy_id||r.sku||r.id||('DB-ROPE-'+idx), legacy_id:r.legacy_id||r.id, sku:r.sku||r.legacy_id||'', name:r.name||r.sku||'Uže',
-      category:'Užeta', category_name:'Užeta', subcategory:r.subcategory||'Užad', quantity:1, available:/posu|vani|otpis|rashod|izgubl/i.test(String(r.status||''))?0:1, loaned:/posu|vani/i.test(String(r.status||''))?1:0,
+      category:'Užad', category_name:'Užad', subcategory:r.subcategory||'Užad', quantity:1, available:/posu|vani|otpis|rashod|izgubl/i.test(String(r.status||''))?0:1, loaned:/posu|vani/i.test(String(r.status||''))?1:0,
       diameter_mm:r.diameter_mm, length_m:r.length_m, manufacturer:r.manufacturer||'', model:r.model||'', production_year:r.production_year, in_use_since:r.in_use_since,
       color:r.color||'', location:r.location_name||'', location_name:r.location_name||'', status:r.status||'U društvu', note:r.note||'', member_visible:true
     })).filter(r=>r.name);
@@ -895,6 +895,7 @@
   function clearArmoryCatalogCaches(){
     try{
       [
+        'sov_armory_catalog_cache_v6142c_taxonomy',
         'sov_armory_catalog_cache_v607',
         'sov_armory_catalog_cache_v606',
         'sov_armory_catalog_cache_v548',
@@ -958,9 +959,9 @@
   // before returning cached data; on large Supabase views that made every page open feel like a full sync.
   // Now UI gets the last valid catalog immediately, while a single background refresh may update the cache.
   (function installFastCacheFirstWrapper(){
-    const CACHE_KEY='sov_armory_catalog_cache_v607';
+    const CACHE_KEY='sov_armory_catalog_cache_v6142c_taxonomy';
     try{
-      ['sov_armory_catalog_cache_v607','sov_armory_catalog_cache_v606','sov_armory_catalog_cache_v548','sov_armory_catalog_cache_v548_old','sov_armory_catalog_cache'].forEach(k=>localStorage.removeItem(k));
+      ['sov_armory_catalog_cache_v6142c_taxonomy','sov_armory_catalog_cache_v607','sov_armory_catalog_cache_v606','sov_armory_catalog_cache_v548','sov_armory_catalog_cache_v548_old','sov_armory_catalog_cache'].forEach(k=>localStorage.removeItem(k));
     }catch(e){}
     const MIN_ROWS=20;
     let inflight=null;
