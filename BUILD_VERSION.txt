@@ -1,1 +1,1 @@
-sov-web-build-v6.1.42a-dashboard-hard-role-hide
+sov-web-build-v6.1.42b-user-equipment-borrowing

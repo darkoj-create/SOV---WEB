@@ -1,24 +1,26 @@
 {
   "app": "SOV web",
-  "version": "6.1.42a",
-  "versionName": "v6.1.42a-dashboard-hard-role-hide",
-  "build": "sov-web-build-v6.1.42a-dashboard-hard-role-hide",
-  "createdAt": "2026-06-14T23:10:00Z",
-  "cacheBust": "6142a-hard-role-hide",
+  "version": "6.1.42b",
+  "versionName": "v6.1.42b-user-equipment-borrowing",
+  "build": "sov-web-build-v6.1.42b-user-equipment-borrowing",
+  "createdAt": "2026-06-14T23:55:00Z",
+  "cacheBust": "6142b-user-equipment",
   "base": "sov-web-build-v6.1.38-oruzarstvo-inventory-edit-name-cleanup.zip",
   "requiresSql": false,
   "requiredSql": [],
   "changedFiles": [
     "dashboard.html",
+    "assets/auth.js",
     "assets/sov-shell-v55825.js",
     "update.json",
     "VERSION.txt",
     "BUILD_VERSION.txt"
   ],
-  "releaseType": "dashboard-hard-role-hide-hotfix",
+  "releaseType": "user-equipment-borrowing-hotfix",
   "notes": [
-    "Dashboard privileged modules are hidden in the initial HTML and only shown after the active role is confirmed.",
-    "Common shell navigation hides armory, archive, editor, admin and webmaster links from unauthorized roles.",
+    "User role can see and open the member equipment catalog/borrowing page.",
+    "Armory master, import, inventory, loans administration and inventory count pages remain restricted to armory/admin/webmaster roles.",
+    "Dashboard still hides archive, editor, admin, tracking and webmaster modules from ordinary users.",
     "No SQL changes are required for this build."
   ]
 }

@@ -356,7 +356,8 @@
     else if(p === 'role-manager.html' || p === 'sync-status.html' || p === 'audit-status.html' || p.startsWith('speleo-sql-')) await requireWebmaster();
     else if(p === 'news-editor.html') await requireEditor();
     else if(p === 'napisi-clanak.html' || p === 'predaj-novu-jamu.html') await requireApproved();
-    else if(p === 'oruzarstvo.html' || p === 'oruzarstvo-import.html' || p.startsWith('oruzar-master') || p === 'inventura.html') await requireArmory();
+    else if(p === 'oruzarstvo.html') await requireApproved();
+    else if(p === 'oruzarstvo-import.html' || p.startsWith('oruzar-master') || p === 'inventura.html') await requireArmory();
     else if(p === 'arhivar-dashboard.html' || p === 'arhivar.html' || p === 'arhivar-zahvati.html' || p === 'arhivar-predane-jame.html' || p === 'arhivar-izvoz.html' || p === 'zapisnici-import.html') await requireArchive();
     else await requireApproved();
     await renderUserBadge();
