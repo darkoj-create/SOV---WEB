@@ -1,10 +1,10 @@
 {
   "app": "SOV web",
-  "version": "6.1.42d",
-  "versionName": "v6.1.42d-equipment-inventory-names-fix",
-  "build": "sov-web-build-v6.1.42d-equipment-inventory-names-fix",
-  "createdAt": "2026-06-15T16:55:00Z",
-  "cacheBust": "6142d-equipment-inventory-names",
+  "version": "6.1.42e",
+  "versionName": "v6.1.42e-equipment-inventory-subcategories-fix",
+  "build": "sov-web-build-v6.1.42e-equipment-inventory-subcategories-fix",
+  "createdAt": "2026-06-15T17:10:00Z",
+  "cacheBust": "6142e-equipment-inventory-subcategories",
   "base": "sov-web-build-v6.1.38-oruzarstvo-inventory-edit-name-cleanup.zip",
   "requiresSql": false,
   "requiredSql": [],
@@ -19,12 +19,13 @@
     "VERSION.txt",
     "BUILD_VERSION.txt"
   ],
-  "releaseType": "equipment-inventory-names-hotfix",
+  "releaseType": "equipment-inventory-subcategories-hotfix",
   "notes": [
-    "Member equipment catalog now displays the same category names used by inventory/inventory count.",
+    "Member equipment catalog now displays the same category and subcategory names used by inventory/inventory count.",
     "Live Supabase grouped catalog now prefers xls_category/raw inventory category over main_category for display.",
+    "User display maps app/normalized subcategory labels back to inventory labels, e.g. Karabineri i spojnice -> Karabineri.",
     "Static equipment JSON fallback was restored to inventory/XLS category names.",
-    "Armory catalog browser cache key was bumped again and older taxonomy cache keys are cleared.",
+    "Armory catalog browser cache key was bumped again and older inventory/taxonomy cache keys are cleared.",
     "Quick-pack labels were restored to inventory category names.",
     "No SQL changes are required for this build."
   ]

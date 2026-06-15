@@ -1,1 +1,1 @@
-sov-web-build-v6.1.42d-equipment-inventory-names-fix
+sov-web-build-v6.1.42e-equipment-inventory-subcategories-fix

@@ -1,9 +1,9 @@
-/* SOV Oružarstvo DB gate v6.1.42d
+/* SOV Oružarstvo DB gate v6.1.42e
    Contract: do not render any inventory/catalog rows until Supabase returns a real catalog.
    Static JSON/cache are deliberately not displayed during DB seed/import. */
 (function(){
   'use strict';
-  const BUILD='6.1.42d-db-gate-inventory-names';
+  const BUILD='6.1.42e-db-gate-inventory-subcategories';
   const MIN_ROWS=20;
   const LIVE_TIMEOUT=65000;
   const RETRY_MS=4500;
@@ -53,7 +53,58 @@
   function idOf(r){return String(r.id||r.legacy_id||r.catalog_id||r.sku||r.name||Math.random()).replace(/'/g,'');}
   function nameOf(r){return r.display_name||r.name||r.item_name||r.model||'Artikl';}
   function catOf(r){return r.xls_category||r.raw_category||r.category_name||r.category||r.main_category||'Ostalo';}
-  function subOf(r){return r.subcategory||r.group_name||r.type||'Ostalo';}
+  function subOf(r){return inventorySubcategoryName(catOf(r), r.xls_subcategory||r.raw_subcategory||r.subcategory||r.group_name||r.type||'Ostalo');}
+  function inventorySubcategoryName(category, raw){
+    const c=String(category||'').trim();
+    const s=String(raw||'').trim();
+    if(!s) return 'Ostalo';
+    const exact={
+      'Karabineri i spojnice':'Karabineri',
+      'Sidrišne pločice':'Pločice',
+      'Bušilice, baterije i svrdla':'Bušilice i baterije',
+      'Transportne vreće i drybagovi':'Transportke',
+      'Tekstil i zaštita užeta':'Tekstil',
+      'Alat za opremanje':'Alat',
+      'Statička speleo užad':'Statik',
+      'Dinamička užad':'Dinamik',
+      'Označavanje i održavanje užadi':'Ostalo',
+      'Kuhinjski pribor i posuđe':'Posuđe',
+      'Higijena, čišćenje i potrošno':'Pranje',
+      'Skladištenje i transport logora':'Skladištenje',
+      'Voda i spremnici':'Voda',
+      'Logorski alat i energija':'Alat',
+      'Promo i društvena logistika':'Promo',
+      'Kuhanje i plin':'Kuhanje',
+      'Baterije, punjači i kablovi':'Baterije i punjenje',
+      'Foto rasvjeta':'Rasvjeta',
+      'Uređaji i navigacija':'Uređaji',
+      'Dronovi i pribor':'Dronovi',
+      'Regulirani potrošni materijal':'Hilti meci',
+      'Regulirana aktivacijska oprema':'Izrada punjenja',
+      'Ručni alat':'Alat za rokanje',
+      'Svrdla i štemanje':'Svrdla',
+      'Aid i tehnička oprema':'Ostalo',
+      'Ledna oprema':'Ostalo',
+      'Pojasevi i lanyardi':'Ostalo',
+      'Osiguravanje i spuštanje':'Ostalo',
+      'Via ferrata i apsorberi':'Ostalo',
+      'Neopren i zaštita':'Ostalo',
+      'Koloture i traxioni':'Ostalo',
+      'Akcijska oprema':'Ostalo',
+      'Rescue spuštalice':'Ostalo',
+      'Spojni i okretni elementi':'Ostalo',
+      'Rigging plate / PAW':'Ostalo',
+      'Penjalice i blokeri':'Ostalo',
+      'Pojasevi i prsni navezi':'Ostalo',
+      'Spojni elementi osobni':'Ostalo',
+      'Spuštalice':'Ostalo',
+      'Kacige':'Ostalo',
+      'Pupci i lanyardi':'Ostalo'
+    };
+    if(exact[s]) return exact[s];
+    if(c==='Osobna oprema'||c==='Osobni SRT komplet'||c==='Alpinistička oprema'||c==='Alpinistička i penjačka oprema'||c==='Čisto podzemlje'||c==='Tehničko spašavanje i Čisto podzemlje'||c==='Ronilačka oprema') return s==='Ostalo' ? s : 'Ostalo';
+    return s;
+  }
   function visible(r){return r.member_visible!==false && !/rashod|otpis|izgublj|obris/i.test(String(r.status||''));}
   function available(r){return Number(r.available)>0;}
   function rowText(r){return plain([nameOf(r),catOf(r),subOf(r),r.internal_note,r.note,r.location,r.location_name,r.sku].join(' '));}
