@@ -235,7 +235,7 @@ window.deleteTripFromCalendar=async function(encodedId){
   if(!id){toast('Izlet nema cloud ID.');return}
   const trip=trips.find(t=>clean(t.cloudId||t.id)===id);
   const title=trip ? (clean(trip.location)||clean(trip.goal)||id) : id;
-  const ok=confirm(`Obrisati izlet iz baze?\n\n${title}\n\nOvo briše izlet iz Supabase baze i ne može se poništiti iz kalendara.`);
+  const ok=confirm(`Obrisati izlet iz baze?\n\n${title}\n\nOvo briše izlet iz baze i ne može se poništiti iz kalendara.`);
   if(!ok)return;
   try{ await window.SOVTripsCloud.deleteTrip(id); toast('Izlet obrisan iz baze.'); await fetchTripsFromCloud(); }
   catch(e){console.error(e); toast('Brisanje nije uspjelo: '+(e.message||e));}

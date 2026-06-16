@@ -1,1 +1,1 @@
-sov-web-build-v6.1.42e-equipment-inventory-subcategories-fix
+v6.1.42f-ui-copy-cleanup
