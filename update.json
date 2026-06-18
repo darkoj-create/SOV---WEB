@@ -1,10 +1,10 @@
 {
   "app": "SOV web",
-  "version": "6.1.43d",
-  "versionName": "v6.1.43d-gmail-sync-complete",
-  "build": "sov-web-build-v6.1.43d-gmail-sync-complete",
+  "version": "6.1.43e",
+  "versionName": "v6.1.43e-smart-location-future-trips",
+  "build": "sov-web-build-v6.1.43e-smart-location-future-trips",
   "createdAt": "2026-06-18T21:00:00Z",
-  "cacheBust": "6143d-gmail-sync-complete",
+  "cacheBust": "6143e-smart-location-future-trips",
   "base": "sov-web-build-v6.1.38-oruzarstvo-inventory-edit-name-cleanup.zip",
   "requiresSql": false,
   "requiredSql": [],
@@ -40,6 +40,7 @@
     "Gmail-imported and manually uploaded DOCX minutes can be reviewed, deduplicated and approved into sov_trips.",
     "Manual Gmail sync button writes a real Supabase queue request and no longer depends on a missing endpoint.",
     "Gmail-imported meeting minutes automatically produce staging announcement cards when the page opens.",
+    "Announcement titles now prefer locations and expired announcements are excluded.",
     "No SQL changes are required because the v6.1.40b/v6.1.41 backend is already present."
   ]
 }
