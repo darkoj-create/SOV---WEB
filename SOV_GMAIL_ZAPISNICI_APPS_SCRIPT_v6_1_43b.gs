@@ -75,7 +75,7 @@ function ingest_(message, attachment, checksum, text) {
     p_attachment_name:attachment.getName(),
     p_checksum_sha256:checksum,
     p_plain_text:text,
-    p_storage_path:null
+    p_storage_path:'gmail/' + message.getId() + '/' + attachment.getName()
   };
   const res = UrlFetchApp.fetch(SOV_GMAIL_CFG.SUPABASE_URL + '/rest/v1/rpc/sov_ingest_meeting_minutes_from_gmail', {
     method:'post', contentType:'application/json', muteHttpExceptions:true,
