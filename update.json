@@ -1,10 +1,10 @@
 {
   "app": "SOV web",
-  "version": "6.1.43a",
-  "versionName": "v6.1.43a-prerelease-polish-minutes-trips",
-  "build": "sov-web-build-v6.1.43a-prerelease-polish-minutes-trips",
+  "version": "6.1.43b",
+  "versionName": "v6.1.43b-manual-gmail-sync-28d",
+  "build": "sov-web-build-v6.1.43b-manual-gmail-sync-28d",
   "createdAt": "2026-06-18T21:00:00Z",
-  "cacheBust": "6143a-minutes-trips",
+  "cacheBust": "6143b-gmail-sync-28d",
   "base": "sov-web-build-v6.1.38-oruzarstvo-inventory-edit-name-cleanup.zip",
   "requiresSql": false,
   "requiredSql": [],
@@ -21,6 +21,7 @@
     "zapisnici-najave.html",
     "assets/zapisnici-najave-v6143a.js",
     "assets/zapisnici-najave-v6143a.css",
+    "SOV_GMAIL_ZAPISNICI_APPS_SCRIPT_v6_1_43b.gs",
     "dokumenti.html",
     "update.json",
     "VERSION.txt",
@@ -36,6 +37,7 @@
     "Equipment loader/status text now uses catalog/evidencija wording instead of database/debug terms.",
     "Restored the missing meeting-minutes to trip-announcement review flow.",
     "Gmail-imported and manually uploaded DOCX minutes can be reviewed, deduplicated and approved into sov_trips.",
+    "Manual Gmail sync button searches the last 28 days through the Apps Script web hook.",
     "No SQL changes are required because the v6.1.40b/v6.1.41 backend is already present."
   ]
 }
