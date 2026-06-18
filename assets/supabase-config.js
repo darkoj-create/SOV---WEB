@@ -12,3 +12,6 @@ window.SOV_GOOGLE_DRIVE_API_KEY = window.SOV_GOOGLE_DRIVE_API_KEY || '';
 
 // v5.24 hard-restored trips calendar Apps Script endpoint
 window.SOV_TRIPS_WEBAPP_URL = window.SOV_TRIPS_WEBAPP_URL || 'https://script.google.com/macros/s/AKfycbybGi7p6_ImXAXEErJ6P9K0GYHy8lHW850K9cQe2py8yUV2oJO6UW1DJi00quorVTHOGQ/exec';
+
+// Gmail zapisnici web-hook. Nakon prvog deploya priloženog Apps Scripta ovdje upisati /exec URL.
+window.SOV_GMAIL_MINUTES_SYNC_ENDPOINT = window.SOV_GMAIL_MINUTES_SYNC_ENDPOINT || '';
