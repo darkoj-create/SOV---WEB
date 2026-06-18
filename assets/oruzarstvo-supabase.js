@@ -88,7 +88,7 @@
 
   function stripDiacritics(s){ return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim(); }
   function canonicalArmoryCategory(raw, text){
-    // v6.1.42e: inventory/XLS category is the display source of truth. Preserve it exactly
+    // v6.1.43: inventory/XLS category is the display source of truth. Preserve it exactly
     // instead of reclassifying it into broader virtual buckets. Search still uses
     // text tags, but inventory/order screens must match the XLS and SQL seed 1:1.
     const clean=String(raw||'').trim();
@@ -383,8 +383,8 @@
   }
 
   async function importStaticData(data){
-    if(!configured()) throw new Error('Supabase nije konfiguriran.');
-    if(!(await SOVAuth.can('armory'))) throw new Error('Import može raditi samo admin ili oružar.');
+    if(!configured()) throw new Error('Sustav trenutno nije dostupan.');
+    if(!(await SOVAuth.can('armory'))) throw new Error('Uvoz može raditi samo oružar ili upravljanje.');
     data=normalizeStaticData(data);
     const cats=dedupeByKey((data.categories||[])
       .filter(c => String(c.name||'').trim())
@@ -442,8 +442,8 @@
   }
 
   async function requireArmory(){
-    if(!configured()) throw new Error('Supabase nije konfiguriran.');
-    if(!(await SOVAuth.can('armory'))) throw new Error('Samo admin ili oružar.');
+    if(!configured()) throw new Error('Sustav trenutno nije dostupan.');
+    if(!(await SOVAuth.can('armory'))) throw new Error('Samo oružar ili upravljanje.');
     return sb();
   }
   async function createEquipmentItem(row){
@@ -582,19 +582,19 @@
     const strictLive=!!options.strictLive;
     if(!configured()) return null;
     const client=sb();
-    const out={summary:{source:'Supabase live'},categories:[],items:[],pieces:[],ropes:[],loans:[],inventories:[],inventory_items:[],procurement:[],services:[],disposed:[],lost:[],field:[],locations:[]};
+    const out={summary:{source:'Evidencija opreme'},categories:[],items:[],pieces:[],ropes:[],loans:[],inventories:[],inventory_items:[],procurement:[],services:[],disposed:[],lost:[],field:[],locations:[]};
     const manifest=await loadCatalogManifest();
     const cached=readCatalogCache();
     if(!strictLive && manifest && cached && cached.manifest && cached.manifest.catalog_version===manifest.catalog_version && catalogRowCount(cached.data)>=20){
       cached.data.summary=cached.data.summary||{};
-      cached.data.summary.source='Supabase cache-first · katalog već ažuran';
+      cached.data.summary.source='Evidencija opreme';
       cached.data.summary.catalog_version=manifest.catalog_version;
       cached.data.summary.cache_saved_at=cached.saved_at;
       return cached.data;
     }
     if(!strictLive && !manifest && cached && catalogRowCount(cached.data)>=20){
       cached.data.summary=cached.data.summary||{};
-      cached.data.summary.source='Lokalni cache · manifest nedostupan';
+      cached.data.summary.source='Evidencija opreme';
       return cached.data;
     }
     async function safe(table, cols='*'){
@@ -609,7 +609,7 @@
     const groupedCatalog=await safe('sov_equipment_app_catalog_grouped','*');
     const rawAppCatalog=await safe('sov_equipment_app_catalog','*');
     if(groupedCatalog && groupedCatalog.length){
-      out.summary.source='Supabase canonical grouped catalog v5.45';
+      out.summary.source='Evidencija opreme';
       out.categories=[...new Map(groupedCatalog.map((g,idx)=>{
         const name=g.xls_category||g.raw_category||g.main_category||g.category||g.category_name||'Ostalo';
         return [name,{id:'cat-'+idx,name,description:'Canonical grouped catalog',type:'canonical',sort_order:g.priority||idx}];
@@ -684,7 +684,7 @@
       availability:i.availability||'dostupno',
       member_visible:i.member_visible!==false,
       internal_note:i.internal_note||i.note||'',
-      source_sheet:i.source_sheet||'Supabase',
+      source_sheet:i.source_sheet||'Evidencija',
       location:i.location_name||i.location||'',
       location_name:i.location_name||i.location||'',
       item_kind:i.item_kind||'xls_row',
@@ -847,7 +847,7 @@
     if(error){
       const msg=error.message||String(error);
       if(/sov_armory_upsert_simple_item|function .* does not exist|Could not find the function/i.test(msg)){
-        throw new Error('Nedostaje SQL Build 4 RPC sov_armory_upsert_simple_item. Pokreni SUPABASE_ORUZARSTVO_V2_1_BUILD4_INVENTORY_EDIT_AND_NAME_CLEANUP.sql pa probaj opet.');
+        throw new Error('Spremanje artikla trenutno nije dostupno. Pokušaj ponovno kasnije.');
       }
       throw error;
     }
@@ -913,7 +913,7 @@
     }catch(e){}
   }
   async function recordLegacyReturn(payload){
-    if(!configured()) throw new Error('Supabase nije konfiguriran.');
+    if(!configured()) throw new Error('Sustav trenutno nije dostupan.');
     const client=sb();
     const p=payload||{};
     const args={
@@ -936,7 +936,7 @@
     return data;
   }
   async function addItemAndLegacyReturn(payload){
-    if(!configured()) throw new Error('Supabase nije konfiguriran.');
+    if(!configured()) throw new Error('Sustav trenutno nije dostupan.');
     const client=sb();
     const p=payload||{};
     const args={
@@ -981,7 +981,7 @@
       const data=cached && cached.data;
       if(data){
         data.summary=data.summary||{};
-        data.summary.source='Lokalni cache · provjera u pozadini';
+        data.summary.source='Evidencija opreme';
         data.summary.cache_saved_at=cached.saved_at||null;
       }
       return data;

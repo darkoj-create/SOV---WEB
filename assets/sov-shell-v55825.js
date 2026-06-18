@@ -11,7 +11,7 @@
   const SHELL_PAGES=new Set([...APP_PAGES,...PUBLIC_PAGES]);
   const IS_APP=APP_PAGES.has(PAGE);
   const IS_PUBLIC=PUBLIC_PAGES.has(PAGE);
-  const ROLE_LABEL={public:'SOV',webmaster:'Webmaster',admin:'Admin',oruzar:'Oružar',arhivar:'Arhivar',editor:'Urednik',user:'Član'};
+  const ROLE_LABEL={public:'SOV',webmaster:'Sustav',admin:'Upravljanje',oruzar:'Oružar',arhivar:'Arhivar',editor:'Urednik',user:'Član'};
   const PUBLIC_LINKS=[
     {href:'index.html',label:'Novosti',group:'SOV'},
     {href:'vijesti.html',label:'Sve vijesti',group:'SOV'},
@@ -36,18 +36,15 @@
     {href:'oruzar-master-inventar.html',label:'Inventar',roles:['oruzar','admin','webmaster'],group:'Oružar'},
     {href:'oruzar-master-inventura.html',label:'Inventura',roles:['oruzar','admin','webmaster'],group:'Oružar'},
     {href:'news-editor.html',label:'Urednik vijesti',roles:['editor','admin','webmaster'],group:'Urednik'},
-    {href:'admin-users.html',label:'Korisnici',roles:['admin','webmaster'],group:'Admin'},
-    {href:'admin-notifications.html',label:'Obavijesti',roles:['admin','webmaster'],group:'Admin'},
-    {href:'role-manager.html',label:'Role manager',roles:['webmaster'],group:'Webmaster'},
-    {href:'sync-status.html',label:'Sync status',roles:['webmaster'],group:'Webmaster'},
-    {href:'speleo-sql-safe.html',label:'SQL alati',roles:['webmaster'],group:'Webmaster'}
+    {href:'admin-users.html',label:'Korisnici',roles:['admin','webmaster'],group:'Upravljanje'},
+    {href:'admin-notifications.html',label:'Obavijesti',roles:['admin','webmaster'],group:'Upravljanje'}
   ];
   function ready(fn){ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',fn); else fn(); }
   function esc(s){return String(s||'').replace(/[&<>'"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m]));}
   function pageLabel(){
     const t=(document.title||'SOV Cloud').replace(/\s*[—|·].*$/,'').trim();
     const map={
-      'karta.html':'Karta','baza.html':'Karta','oruzarstvo.html':'Oprema','oruzar-master.html':'Oružar','oruzar-master-posudbe.html':'Posudbe','oruzar-master-inventar.html':'Inventar','oruzar-master-inventura.html':'Inventura','arhivar.html':'Uređivanje arhive','arhivar-predane-jame.html':'Predane jame','arhivar-izvoz.html':'Izvoz arhive','news-editor.html':'Urednik vijesti','dokumenti.html':'Dokumenti','sync-status.html':'Sync status','audit-status.html':'Audit status'
+      'karta.html':'Karta','baza.html':'Karta','oruzarstvo.html':'Oprema','oruzar-master.html':'Oružar','oruzar-master-posudbe.html':'Posudbe','oruzar-master-inventar.html':'Inventar','oruzar-master-inventura.html':'Inventura','arhivar.html':'Uređivanje arhive','arhivar-predane-jame.html':'Predane jame','arhivar-izvoz.html':'Izvoz arhive','news-editor.html':'Urednik vijesti','dokumenti.html':'Dokumenti','admin-users.html':'Korisnici','admin-notifications.html':'Obavijesti'
     };
     return map[PAGE] || t || 'SOV Cloud';
   }
@@ -69,7 +66,7 @@
   }
   function visibleLinks(role){ return LINKS.filter(l=>l.roles.includes(role)); }
   function groupLinks(items){
-    const order=['Osnovno','Arhivar','Oružar','Urednik','Admin','Webmaster'];
+    const order=['Osnovno','Arhivar','Oružar','Urednik','Upravljanje'];
     return order.map(g=>[g,items.filter(l=>l.group===g)]).filter(([,arr])=>arr.length);
   }
   function ensureHeader(role){

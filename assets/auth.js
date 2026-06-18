@@ -1,13 +1,5 @@
 (function(){
-  // v5.58.12: Webmaster super-role + operational Admin split. Preview role switcher is opt-in with ?preview=1 or localStorage SOV_OPEN_PREVIEW_MODE=true.
-  const SOV_OPEN_PREVIEW_MODE = (()=>{
-    try{
-      const q = new URLSearchParams(location.search);
-      if(q.get('preview') === '1'){ localStorage.setItem('SOV_OPEN_PREVIEW_MODE','true'); return true; }
-      if(q.get('preview') === '0'){ localStorage.removeItem('SOV_OPEN_PREVIEW_MODE'); return false; }
-      return localStorage.getItem('SOV_OPEN_PREVIEW_MODE') === 'true';
-    }catch(e){ return false; }
-  })();
+  const SOV_OPEN_PREVIEW_MODE = false;
   const OPEN_PREVIEW_PROFILE_BASE = {id:null,email:'preview@sov.local',full_name:'Preview korisnik',role:'webmaster',status:'approved',open_preview:true};
   const PREVIEW_ROLES = ['user','oruzar','arhivar','editor','admin','webmaster'];
   function getPreviewRole(){
@@ -22,10 +14,10 @@
   }
   const REGISTERED_PAGES = new Set([
     'dashboard.html','karta.html','pregled-baze.html','izleti.html','izleti-cloud.html','kalendar-izleta.html',
-    'dokumentacija.html','dokumenti.html','pregled-zapisnika.html','zapisnici-skupstine.html','zapisnici-aktualni-2026.html','zapisnici-arhiva-2017-2022.html','zapisnici-cijela-arhiva.html','zapisnici-import.html','novi-zapisnik.html',
+    'dokumentacija.html','dokumenti.html','pregled-zapisnika.html','zapisnici-skupstine.html','zapisnici-aktualni-2026.html','zapisnici-arhiva-2017-2022.html','zapisnici-cijela-arhiva.html','zapisnici-import.html','zapisnici-najave.html','novi-zapisnik.html',
     'speleo-zapisnik.html','topodroid.html','napisi-clanak.html','predaj-novu-jamu.html','arhivar-dashboard.html','arhivar.html','arhivar-zahvati.html','arhivar-predane-jame.html','arhivar-izvoz.html','speleo-sql-safe.html','speleo-sql-edit-sandbox.html','speleo-sql-compare.html','speleo-sql-object-hub.html','speleo-sql-promote.html','speleo-sql-go-live.html','oruzarstvo.html','oruzarstvo-import.html','oruzar-master-notes.html','oruzar-master-inventura.html','oruzar-master-inventar.html','oruzar-master-posudbe.html','oruzar-master.html','admin-users.html','admin-notifications.html','role-manager.html','news-editor.html','sync-status.html','audit-status.html'
   ]);
-  const ROLE_LABELS = {webmaster:'Webmaster',admin:'Admin',editor:'Urednik',oruzar:'Oružar',arhivar:'Arhivar',user:'Član'};
+  const ROLE_LABELS = {webmaster:'Sustav',admin:'Upravljanje',editor:'Urednik',oruzar:'Oružar',arhivar:'Arhivar',user:'Član'};
   const ADMIN_ROLES = ['webmaster','admin'];
   const WEBMASTER_ROLES = ['webmaster'];
   const EDITOR_ROLES = ['webmaster','admin','editor'];
@@ -36,8 +28,8 @@
     editor:{label:'Urednik',can_view_sov_base:true,can_view_katastar:false,can_edit_objects:true,can_upload_drawings:true,can_verify_drawings:false,can_manage_trips:true,can_manage_equipment:false,can_edit_news:true,can_use_sql_tools:false,can_manage_users:false,can_send_notifications:false},
     arhivar:{label:'Arhivar',can_view_sov_base:true,can_view_katastar:false,can_edit_objects:true,can_upload_drawings:true,can_verify_drawings:true,can_manage_trips:true,can_manage_equipment:false,can_edit_news:false,can_use_sql_tools:false,can_manage_users:false,can_send_notifications:false},
     oruzar:{label:'Oružar',can_view_sov_base:true,can_view_katastar:false,can_edit_objects:false,can_upload_drawings:true,can_verify_drawings:false,can_manage_trips:false,can_manage_equipment:true,can_edit_news:false,can_use_sql_tools:false,can_manage_users:false,can_send_notifications:false},
-    admin:{label:'Admin',can_view_sov_base:true,can_view_katastar:true,can_edit_objects:true,can_upload_drawings:true,can_verify_drawings:true,can_manage_trips:true,can_manage_equipment:true,can_edit_news:true,can_use_sql_tools:false,can_manage_users:true,can_send_notifications:true},
-    webmaster:{label:'Webmaster',can_view_sov_base:true,can_view_katastar:true,can_edit_objects:true,can_upload_drawings:true,can_verify_drawings:true,can_manage_trips:true,can_manage_equipment:true,can_edit_news:true,can_use_sql_tools:true,can_manage_users:true,can_send_notifications:true}
+    admin:{label:'Upravljanje',can_view_sov_base:true,can_view_katastar:true,can_edit_objects:true,can_upload_drawings:true,can_verify_drawings:true,can_manage_trips:true,can_manage_equipment:true,can_edit_news:true,can_use_sql_tools:false,can_manage_users:true,can_send_notifications:true},
+    webmaster:{label:'Sustav',can_view_sov_base:true,can_view_katastar:true,can_edit_objects:true,can_upload_drawings:true,can_verify_drawings:true,can_manage_trips:true,can_manage_equipment:true,can_edit_news:true,can_use_sql_tools:true,can_manage_users:true,can_send_notifications:true}
   };
   const ABILITY_TO_PERMISSION = {
     admin:'can_manage_users', webmaster:'can_use_sql_tools', editor:'can_edit_news', armory:'can_manage_equipment', notification:'can_send_notifications',
@@ -137,7 +129,7 @@
 
   async function register(payload){
     const sb = getClient();
-    if(!sb) return {ok:false,msg:'Supabase još nije konfiguriran. Upisi URL i anon key u assets/supabase-config.js.'};
+    if(!sb) return {ok:false,msg:'Sustav za prijavu trenutno nije dostupan.'};
     const email = (payload.email||'').trim().toLowerCase();
     const password = payload.password || '';
     const full_name = (payload.name||'').trim();
@@ -177,12 +169,12 @@
         }catch(e){ console.warn('Direct profile upsert exception. SQL trigger/RPC should handle profile sync.', e); }
       }
     }
-    return {ok:true,msg:'Zahtjev je poslan. Račun čeka admin odobrenje.'};
+    return {ok:true,msg:'Zahtjev je poslan. Račun čeka odobrenje.'};
   }
 
   async function login(email,password){
     const sb = getClient();
-    if(!sb) return {ok:false,msg:'Supabase nije konfiguriran. Upisi URL i anon key u assets/supabase-config.js.'};
+    if(!sb) return {ok:false,msg:'Sustav za prijavu trenutno nije dostupan.'};
     const {data,error} = await sb.auth.signInWithPassword({email:(email||'').trim().toLowerCase(),password});
     if(error) return {ok:false,msg:'Krivi email/lozinka ili račun nije potvrđen.'};
     profileCache = null; permissionCache = null;
@@ -190,7 +182,7 @@
     if(!profile || profile.status !== 'approved'){
       await sb.auth.signOut();
       profileCache = null;
-      return {ok:false,msg:'Račun još nije odobren. Pričekaj admin approval.'};
+      return {ok:false,msg:'Račun još čeka odobrenje.'};
     }
     return {ok:true,user:profile};
   }
@@ -209,7 +201,7 @@
   }
   async function requireApproved(){
     if(SOV_OPEN_PREVIEW_MODE){ await renderUserBadge(); return true; }
-    if(!isConfigured()){ showAuthWarning('Supabase nije konfiguriran. Upisi ključeve u assets/supabase-config.js.'); return false; }
+    if(!isConfigured()){ showAuthWarning('Sustav za prijavu trenutno nije dostupan.'); return false; }
     const {user} = await getSession();
     const profile = await getProfile();
     if(!user || !profile || profile.status !== 'approved'){
@@ -227,7 +219,7 @@
 
   async function updateProfile(id, patch){
     const sb = getClient();
-    if(!sb) throw new Error('Supabase nije konfiguriran.');
+    if(!sb) throw new Error('Sustav trenutno nije dostupan.');
     // v5.59.8: admin update goes through RPC first so broken/strict profiles RLS cannot hide or block approvals.
     try{
       const rpc = await sb.rpc('sov_admin_update_user_profile',{
@@ -274,7 +266,7 @@
   async function setRole(id, role){ return updateProfile(id,{role}); }
 
   function renderPreviewRoleSwitcher(u){
-    if(!SOV_OPEN_PREVIEW_MODE) return;
+    return;
     let box = document.getElementById('sov-preview-role-switcher');
     const roles = [
       ['user','👤','User'],
@@ -282,7 +274,7 @@
       ['arhivar','🗂️','Arhivar'],
       ['editor','✏️','Urednik'],
       ['admin','🛡️','Admin'],
-      ['webmaster','🧑‍💻','Webmaster']
+      ['webmaster','🧑‍💻','Sustav']
     ];
     if(!document.getElementById('sov-preview-role-style')){
       const st=document.createElement('style');
@@ -358,7 +350,7 @@
     else if(p === 'napisi-clanak.html' || p === 'predaj-novu-jamu.html') await requireApproved();
     else if(p === 'oruzarstvo.html') await requireApproved();
     else if(p === 'oruzarstvo-import.html' || p.startsWith('oruzar-master') || p === 'inventura.html') await requireArmory();
-    else if(p === 'arhivar-dashboard.html' || p === 'arhivar.html' || p === 'arhivar-zahvati.html' || p === 'arhivar-predane-jame.html' || p === 'arhivar-izvoz.html' || p === 'zapisnici-import.html') await requireArchive();
+    else if(p === 'arhivar-dashboard.html' || p === 'arhivar.html' || p === 'arhivar-zahvati.html' || p === 'arhivar-predane-jame.html' || p === 'arhivar-izvoz.html' || p === 'zapisnici-import.html' || p === 'zapisnici-najave.html') await requireArchive();
     else await requireApproved();
     await renderUserBadge();
   }

@@ -33,11 +33,11 @@
 <section class="archive-hero">
 <span class="eyebrow">🗃️ Puna arhiva zapisnika</span>
 <h1>1960–2026, bez ogromnog web ZIP-a.</h1>
-<p>Cijela arhiva zapisnika na jednom mjestu. Dok se baza ne popuni do kraja, prikazuje se postojeći pregled 2017–2022 i 2026.</p>
+<p>Ova stranica je pripremljena za kompletnu arhivu: SQL drži metapodatke i pretragu, Supabase Storage drži stvarne dokumente. Dok baza još nije popunjena, prikazuje se postojeći statički preview 2017–2022 i 2026.</p>
 <div class="hero-actions"><a class="primary" href="zapisnici-import.html" data-role-archive>Bulk upload / import</a><a href="dokumenti.html">← Dokumenti</a><span id="sourcePill" class="source-pill">učitavanje</span></div>
 <div class="stats-grid" id="statsGrid"><div class="stat-card"><strong>…</strong><span>učitavanje</span></div></div>
 </section>
-<div id="dbNotice" class="notice"><strong>Učitavanje:</strong> dohvaćam arhivu. Ako još nema podataka, prikazuje se postojeći pregled.</div>
+<div id="dbNotice" class="notice"><strong>Provjera:</strong> spajam se na SQL/Storage arhivu. Ako SQL još nije pokrenut ili nema redova, automatski ide preview.</div>
 <div class="toolbar" aria-label="Pretraga cijele arhive zapisnika">
 <input id="q" type="search" placeholder="Pretraži naziv, sažetak, godinu, format…" autocomplete="off"/>
 <select id="yearFilter"><option value="all">Sve godine</option></select>
@@ -45,7 +45,7 @@
 <button id="resetBtn" type="button">Reset</button>
 </div>
 <div class="year-grid" id="yearGrid"></div>
-<div id="archiveContent"><div class="loading"><span></span><strong>Učitavam arhivu…</strong><em>Učitavam…</em></div></div>
+<div id="archiveContent"><div class="loading"><span></span><strong>Učitavam arhivu…</strong><em>Prvo SQL/Storage, zatim preview.</em></div></div>
 <div class="backline"><a href="zapisnici-aktualni-2026.html">Aktualni 2026</a><a href="zapisnici-arhiva-2017-2022.html">Arhiva 2017–2022</a><a href="SUPABASE_SOV_DOCUMENTS_ARCHIVE_v6_1_10.sql">SQL schema</a></div>
 </main>
 </div>

@@ -1,13 +1,11 @@
-/* SOV Oružarstvo DB gate v6.1.42e
-   Contract: do not render any inventory/catalog rows until Supabase returns a real catalog.
-   Static JSON/cache are deliberately not displayed during DB seed/import. */
+/* SOV Oružarstvo catalog loader v6.1.43 */
 (function(){
   'use strict';
-  const BUILD='6.1.42e-db-gate-inventory-subcategories';
+  const BUILD='6.1.43-prerelease-polish';
   const MIN_ROWS=20;
   const LIVE_TIMEOUT=65000;
   const RETRY_MS=4500;
-  let activeSource='Čekam Supabase';
+  let activeSource='Učitavanje evidencije';
   let activeCat='';
   let activeSub='';
   let booted=false;
@@ -140,20 +138,20 @@
   function renderLoading(message, detail){
     loading=true; injectCss();
     const el=$('catalog'); if(!el)return;
-    el.innerHTML=`<div class="armory-db-loading"><div class="armory-db-pills"><span class="armory-db-pill warn">DB gate ${BUILD}</span><span class="armory-db-pill">pokušaj ${attempt||1}</span></div><h2>${esc(message||'Punim oružarstvo iz baze…')}</h2><div class="armory-db-bar" aria-hidden="true"></div><p>${esc(detail||'Inventar je namjerno sakriven dok Supabase ne vrati stvarni katalog. Nema lokalnog XLS/cache prikaza i nema demo/fallback opreme.')}</p></div>`;
-    setMiniStatus('warn', message||'Čekam bazu');
+    el.innerHTML=`<div class="armory-db-loading"><div class="armory-db-pills"><span class="armory-db-pill warn">Učitavanje</span><span class="armory-db-pill">pokušaj ${attempt||1}</span></div><h2>${esc(message||'Učitavam katalog opreme…')}</h2><div class="armory-db-bar" aria-hidden="true"></div><p>${esc(detail||'Katalog će se prikazati čim evidencija bude spremna.')}</p></div>`;
+    setMiniStatus('warn', message||'Učitavam evidenciju');
   }
   function renderFilters(){const sel=$('cat'); if(!sel)return; const cur=sel.value||activeCat; const cats=sortCats([...new Set(rows().filter(visible).map(catOf).filter(Boolean))]); sel.innerHTML='<option value="">Sve kategorije</option>'+cats.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join(''); sel.value=cur;}
-  function statusLine(total){return `<div class="v607-status-line"><span class="v607-pill ok">${esc(activeSource)} · ${total} stavki</span><span class="v607-pill">DB ready · ${BUILD}</span></div>`;}
+  function statusLine(total){return `<div class="v607-status-line"><span class="v607-pill ok">${esc(activeSource)} · ${total} stavki</span><span class="v607-pill">spremno</span></div>`;}
   function renderCatalog(){
-    if(loading){renderLoading('Punim oružarstvo iz baze…','Inventar ostaje sakriven dok se baza ne popuni.'); return;}
+    if(loading){renderLoading('Učitavam katalog opreme…','Katalog će se prikazati čim evidencija bude spremna.'); return;}
     const el=$('catalog'); if(!el)return;
     const all=rows().filter(visible); const q=plain($('q')?.value||''); const cat=$('cat')?.value||activeCat;
-    if(!all.length){renderLoading('Baza još ne vraća katalog.','Ne prikazujem statički katalog ni cache.'); return;}
+    if(!all.length){renderLoading('Katalog još nije spreman.','Osvježi stranicu za koju minutu.'); return;}
     const status=statusLine(all.length);
     if(!q&&!cat&&!activeSub){
       const cats=sortCats([...new Set(all.map(catOf).filter(Boolean))]);
-      el.innerHTML=status+`<div class="user-catalog-head"><div><h2>Što trebaš?</h2><p>Katalog je učitan iz Supabase baze. Nema prikaza prije stvarnog DB stanja.</p></div><button class="btn primary" onclick="document.getElementById('drawer')?.classList.add('open')">Moj zahtjev</button></div><div class="user-category-grid">${cats.map(c=>{const meta=categoryMeta(c); const rs=all.filter(r=>catOf(r)===c); const subs=new Set(rs.map(subOf)); return `<button class="user-category-card" onclick="sovArmory606.pickCat('${esc(c)}')"><span class="ico">${meta[0]}</span><b>${esc(c)}</b><small>${esc(meta[1])}</small><small class="v607-card-count">${rs.length} stavki · ${subs.size} podkategorija</small></button>`}).join('')}</div>`;
+      el.innerHTML=status+`<div class="user-catalog-head"><div><h2>Što trebaš?</h2><p>Odaberi kategoriju opreme iz evidencije.</p></div><button class="btn primary" onclick="document.getElementById('drawer')?.classList.add('open')">Moj zahtjev</button></div><div class="user-category-grid">${cats.map(c=>{const meta=categoryMeta(c); const rs=all.filter(r=>catOf(r)===c); const subs=new Set(rs.map(subOf)); return `<button class="user-category-card" onclick="sovArmory606.pickCat('${esc(c)}')"><span class="ico">${meta[0]}</span><b>${esc(c)}</b><small>${esc(meta[1])}</small><small class="v607-card-count">${rs.length} stavki · ${subs.size} podkategorija</small></button>`}).join('')}</div>`;
       return;
     }
     const base=rows().filter(visible).filter(r=>!q||rowText(r).includes(q)).filter(r=>!cat||catOf(r)===cat);
@@ -172,22 +170,22 @@
     loading=false; booted=true; clearTimeout(retryTimer); retryTimer=null;
     renderFilters(); try{if(typeof renderKpis==='function')renderKpis();}catch(e){}
     renderCatalog(); try{if(typeof renderRequest==='function')renderRequest();}catch(e){} try{if(typeof renderMyRequests==='function')renderMyRequests();}catch(e){}
-    setMiniStatus('ok',`${source} · ${countData(norm)} stavki · ${BUILD}`);
+    setMiniStatus('ok',`${source} · ${countData(norm)} stavki`);
     return true;
   }
   async function loadLiveStrict(){
     if(!(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.loadAllData)){
-      renderLoading('Supabase još nije konfiguriran ili nije spreman.','Inventar je sakriven. Provjeri assets/supabase-config.js i pričekaj deploy.'); return false;
+      renderLoading('Katalog trenutno nije dostupan.','Pokušaj ponovno za nekoliko minuta.'); return false;
     }
     const live=await Promise.race([SOVArmoryDB.loadAllData({force:true,strictLive:true}),timeout(LIVE_TIMEOUT,{__timeout:true})]);
-    if(live&&live.__timeout){renderLoading('Baza se još puni…','Supabase nije vratio katalog unutar timeouta. Ne prikazujem cache ni statiku.');return false;}
-    if(hasRows(live)) return applyData(live,'Supabase live');
-    renderLoading('Baza još ne vraća inventar.','Čekam da SQL seed/viewovi završe i da se pojavi stvarni katalog.'); return false;
+    if(live&&live.__timeout){renderLoading('Katalog se još učitava…','Osvježi stranicu za koju minutu.');return false;}
+    if(hasRows(live)) return applyData(live,'Evidencija opreme');
+    renderLoading('Katalog još nije spreman.','Osvježi stranicu za koju minutu.'); return false;
   }
   async function pollLive(){
-    attempt += 1; renderLoading('Punim oružarstvo iz baze…','Inventar ostaje sakriven dok Supabase ne vrati stvarni katalog.');
+    attempt += 1; renderLoading('Učitavam katalog opreme…','Katalog će se prikazati čim evidencija bude spremna.');
     try{ const ok=await loadLiveStrict(); if(ok){ setTimeout(loadRequests,150); return; } }
-    catch(e){console.warn('SOV armory db-gate load failed',e?.message||e); renderLoading('Baza još nije spremna.',String(e?.message||e||'Čekam Supabase.').slice(0,180));}
+    catch(e){console.warn('SOV armory catalog load failed',e?.message||e); renderLoading('Katalog još nije spreman.','Pokušaj ponovno za nekoliko minuta.');}
     retryTimer=setTimeout(pollLive,RETRY_MS);
   }
   async function loadRequests(){try{ if(typeof loadRequestsFromBackend==='function') await Promise.race([loadRequestsFromBackend(),timeout(3000,null)]); if(typeof renderMyRequests==='function')renderMyRequests();}catch(e){console.warn('SOV armory requests skipped',e?.message||e);} }
@@ -203,7 +201,7 @@
     window.renderCatalog=renderCatalog;
   }
   async function boot(){
-    injectCss(); attach(); renderLoading('Punim oružarstvo iz baze…','Nema prikaza inventara dok baza ne vrati stvarni katalog.');
+    injectCss(); attach(); renderLoading('Učitavam katalog opreme…','Katalog će se prikazati čim evidencija bude spremna.');
     authLight().then(()=>{try{if(!loading)renderCatalog();}catch(e){}});
     pollLive();
   }
