@@ -181,3 +181,14 @@ body{margin:0;background:radial-gradient(circle at 15% 5%,rgba(213,168,91,.14),t
 
 /* v5.21 Expedition public banner */
 .expedition-banner-section{max-width:1280px;margin:-42px auto 34px;padding:0 24px;position:relative;z-index:5}.expedition-banner-link{display:block;position:relative;overflow:hidden;border-radius:30px;border:1px solid rgba(255,255,255,.14);box-shadow:0 28px 90px rgba(0,0,0,.45),0 0 0 1px rgba(215,255,82,.08);background:#05080a;text-decoration:none;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}.expedition-banner-link:hover{transform:translateY(-3px);border-color:rgba(215,255,82,.42);box-shadow:0 32px 110px rgba(0,0,0,.52),0 0 42px rgba(215,255,82,.10)}.expedition-banner-link img{display:block;width:100%;height:auto;aspect-ratio:16/7;object-fit:cover}.expedition-banner-cta{position:absolute;right:22px;bottom:18px;display:inline-flex;align-items:center;justify-content:center;padding:12px 18px;border-radius:999px;background:rgba(215,255,82,.95);color:#101400;font-weight:1000;box-shadow:0 16px 50px rgba(0,0,0,.35)}@media(max-width:760px){.expedition-banner-section{margin:-20px auto 24px;padding:0 14px}.expedition-banner-link{border-radius:22px}.expedition-banner-link img{aspect-ratio:16/9}.expedition-banner-cta{left:14px;right:14px;bottom:12px;padding:11px 14px;font-size:13px}}
+
+/* v6.1.44 legacy WordPress import/local media */
+.legacy-source-note{
+  margin:0 0 18px;
+  padding:12px 14px;
+  border:1px solid rgba(170,190,150,.35);
+  border-radius:16px;
+  background:rgba(28,43,34,.08);
+  color:#4b5a4f;
+  font-weight:800;
+}
