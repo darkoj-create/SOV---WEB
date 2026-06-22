@@ -1,8 +1,8 @@
 {
   "app": "SOV web",
-  "version": "6.1.43e",
+  "version": "6.1.44",
   "versionName": "v6.1.43e-smart-location-future-trips",
-  "build": "sov-web-build-v6.1.43e-smart-location-future-trips",
+  "build": "sov-web-build-v6.1.44-legacy-wordpress-scraper-local-media",
   "createdAt": "2026-06-18T21:00:00Z",
   "cacheBust": "6143e-smart-location-future-trips",
   "base": "sov-web-build-v6.1.38-oruzarstvo-inventory-edit-name-cleanup.zip",
