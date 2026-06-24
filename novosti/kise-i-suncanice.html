@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="hr"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Kiše i sunčanice — SOV arhiva</title>
+<link href="../assets/site.css" rel="stylesheet"/>
+<link href="../assets/mobile.css" rel="stylesheet"/>
+<link href="../assets/sov-logo.png" rel="icon"/>
+<link href="../assets/sov-foundation-v55822.css" rel="stylesheet"/>
+<link href="../assets/sov-shell-v55825.css" rel="stylesheet"/>
+<link href="../assets/sov-polish-v55826.css" rel="stylesheet"/>
+<link href="../assets/sov-wow-v6.css" rel="stylesheet"/>
+<style>
+:root{--legacy-gold:#d5a85b;--legacy-line:rgba(255,255,255,.12);--legacy-muted:#a9b4c0;--legacy-panel:rgba(255,255,255,.045)}
+body.legacy-public{margin:0;background:radial-gradient(circle at 18% 0%,rgba(213,168,91,.12),transparent 34%),linear-gradient(180deg,#05070a,#0b1016 46%,#05070a);color:#f6f0e7;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+.legacy-top{position:sticky;top:0;z-index:50;background:rgba(5,7,10,.82);backdrop-filter:blur(18px);border-bottom:1px solid var(--legacy-line)}
+.legacy-nav{max-width:1220px;margin:auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:18px}
+.legacy-brand{display:flex;gap:12px;align-items:center;text-decoration:none;color:#fff;font-weight:950;letter-spacing:.06em;text-transform:uppercase;font-size:13px}
+.legacy-brand img{width:38px;height:38px;object-fit:contain}
+.legacy-links{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.legacy-links a{color:#d8e3de;text-decoration:none;border:1px solid rgba(255,255,255,.10);border-radius:999px;padding:8px 11px;font-weight:850;font-size:13px;background:rgba(255,255,255,.035)}
+.legacy-links a:hover{color:#fff;border-color:rgba(213,168,91,.5)}
+.legacy-shell{width:min(1180px,calc(100% - 32px));margin:0 auto;padding:34px 0 84px}
+.legacy-hero{border:1px solid var(--legacy-line);border-radius:34px;background:linear-gradient(135deg,rgba(255,255,255,.085),rgba(255,255,255,.03));padding:clamp(24px,5vw,54px);box-shadow:0 24px 90px rgba(0,0,0,.32);margin:20px 0 28px;position:relative;overflow:hidden}
+.legacy-hero:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 82% 8%,rgba(215,246,111,.11),transparent 26%),radial-gradient(circle at 4% 95%,rgba(120,215,255,.12),transparent 28%);pointer-events:none}
+.legacy-hero>*{position:relative}
+.legacy-eyebrow{display:inline-flex;border:1px solid rgba(213,168,91,.50);border-radius:999px;padding:8px 12px;color:#f0c477;text-transform:uppercase;letter-spacing:.14em;font-size:12px;font-weight:950;background:rgba(0,0,0,.18)}
+.legacy-hero h1{font-size:clamp(42px,7vw,88px);letter-spacing:-.07em;line-height:.92;margin:18px 0 16px}
+.legacy-hero p{font-size:clamp(17px,2vw,22px);color:#d8e0e8;line-height:1.5;max-width:850px;margin:0}
+.legacy-toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:22px 0}
+.legacy-input,.legacy-select{border:1px solid var(--legacy-line);border-radius:999px;background:rgba(255,255,255,.055);color:#fff;padding:12px 14px;font-weight:850;outline:0}
+.legacy-input{min-width:min(460px,100%);flex:1}
+.legacy-select option{color:#111}
+.legacy-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.legacy-card{display:flex;flex-direction:column;gap:10px;text-decoration:none;color:#fff;border:1px solid var(--legacy-line);border-radius:26px;background:rgba(255,255,255,.045);padding:20px;min-height:220px;box-shadow:0 18px 60px rgba(0,0,0,.18)}
+.legacy-card:hover{transform:translateY(-2px);border-color:rgba(213,168,91,.5)}
+.legacy-meta{color:#f0c477;font-size:12px;text-transform:uppercase;letter-spacing:.12em;font-weight:950}
+.legacy-card h2,.legacy-card h3{margin:0;font-size:clamp(22px,2.4vw,31px);line-height:1.04;letter-spacing:-.045em}
+.legacy-card p{color:#b9c4cf;line-height:1.55;margin:0}
+.legacy-pillrow{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto}
+.legacy-pill{font-size:11px;font-weight:900;color:#e8f0ed;border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:5px 8px;background:rgba(255,255,255,.04)}
+.legacy-article{display:grid;grid-template-columns:minmax(0,780px) 280px;gap:44px;align-items:start}
+.legacy-content{border:1px solid var(--legacy-line);border-radius:30px;background:rgba(255,255,255,.045);padding:clamp(22px,4vw,44px);box-shadow:0 24px 80px rgba(0,0,0,.24)}
+.legacy-content h1{font-size:clamp(38px,7vw,74px);line-height:.94;letter-spacing:-.065em;margin:12px 0 18px}
+.legacy-lead{font-size:20px;line-height:1.55;color:#d7e0de;margin:0 0 28px}
+.legacy-body{font-family:Georgia,'Times New Roman',serif;font-size:19px;line-height:1.82;color:#f0eadf}
+.legacy-body p{margin:0 0 1.25em}.legacy-body h2,.legacy-body h3{font-family:Inter,system-ui,sans-serif;color:#fff;letter-spacing:-.04em;line-height:1.08;margin:1.7em 0 .65em}.legacy-body h2{font-size:36px}.legacy-body h3{font-size:28px}.legacy-body a{color:#9dd2ff}.legacy-body blockquote{border-left:4px solid #d7f66f;background:rgba(215,246,111,.07);margin:24px 0;padding:18px;border-radius:0 18px 18px 0}
+.legacy-side{position:sticky;top:96px;border:1px solid var(--legacy-line);border-radius:24px;background:rgba(255,255,255,.045);padding:20px;color:#d8e3de}
+.legacy-side h3{margin:0 0 10px}.legacy-side p{color:#a9b4c0;line-height:1.5}.legacy-side a{display:block;color:#fff;text-decoration:none;border-top:1px solid var(--legacy-line);padding:12px 0}
+.media-deferred{border:1px dashed rgba(213,168,91,.42);border-radius:20px;background:rgba(213,168,91,.07);padding:14px 16px;color:#f7dfb1;font-family:Inter,system-ui,sans-serif;font-size:15px;line-height:1.5;margin:22px 0}
+.legacy-table{width:100%;border-collapse:collapse;border:1px solid var(--legacy-line);border-radius:18px;overflow:hidden}.legacy-table th,.legacy-table td{border-bottom:1px solid var(--legacy-line);padding:10px;text-align:left}.legacy-footer{max-width:1180px;margin:0 auto;padding:28px 20px 56px;color:#7f8b96;border-top:1px solid var(--legacy-line)}
+@media(max-width:980px){.legacy-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.legacy-article{grid-template-columns:1fr}.legacy-side{position:relative;top:0}}
+@media(max-width:700px){.legacy-nav{align-items:flex-start;flex-direction:column}.legacy-links{width:100%;overflow:auto;flex-wrap:nowrap;padding-bottom:3px}.legacy-links a{white-space:nowrap}.legacy-grid{grid-template-columns:1fr}.legacy-body{font-size:18px}}
+
+</style>
+</head><body class="legacy-public"><header class="legacy-top"><nav class="legacy-nav"><a class="legacy-brand" href="../index.html"><img alt="SOV" src="../assets/sov-logo.png"/>SOV Velebit</a><div class="legacy-links"><a href="../index.html">Naslovnica</a><a href="../vijesti.html">Arhiva novosti</a><a href="../o-drustvu.html">O društvu</a><a href="../speleoskola.html">Speleoškola</a><a href="../legacy-wordpress/index.html">Stari web</a><a href="../dashboard.html">Članski ulaz</a></div></nav></header>
+<main class="legacy-shell legacy-article">
+  <article class="legacy-content">
+    <a class="legacy-eyebrow" href="../vijesti.html">← Arhiva novosti</a>
+    <div class="legacy-meta" style="margin-top:18px">Istraživanja · 21.09.2017.</div>
+    <h1>Kiše i sunčanice</h1>
+    <p class="legacy-lead">Problematiku moguće zamjene speleologa sa natrpanim ruksacima, transportkama i pokojom najlon -vrećicom sa kakvom skupinom Kurda, riješavamo prijavom našeg boravka na tom mjestu nadležnoj graničnoj policiji.</p>
+    <div class="media-deferred">Fotografije, galerije i ostali mediji iz ove objave nisu uključeni u ovu text-only fazu. Evidentirani su u media manifestu i bit će dodani nakon rješavanja storagea/servera.</div>
+    <div class="legacy-body"><p><em>Piše: Marjan Prpić - Luka</em>
+<em>Fotografije: Tanja Šinko</em></p>
+Mislite da naslov nema veze jedno sa drugim, a još manje i sa speleologijom?
+E, ima.
+<p>Deveti mjesec nekako uvijek ostane rezerviran za istraživanja u bližim relacijama. Jedna od njih je okolica Drežnik Grada i već famozna špilja u kojoj se kraj istraživanja niti ne nazire. Adios.
+Unatoč ne baš lijepim vremenskim prognozama i ovisno o obavezama skupili smo se u dvije ekipe (<em>kao sa liste policijskog izvješća</em>); prva – <em>Marijan Č., Luka H., Ana B., Marijan S.</em> krenula je u petak predvečer, a druga; pročelnica Tanja Š., tajnica Marina G. sa osobnim vozačem pročelništva <em>Marjanom P. zvanim Luka</em>, krenula je u subotu rano ujutro. Obje ekipe ispratila je kiša, a onu subotnju još i teški prolom oblaka.</p>
+<p>U subotu dopodne kiša je, kako su norvežani i najavili – prestala, a uz mala odstupanja od pravocrtnog hoda po šumi iz razloga obrisanih markacija, obje ekipe su se u planiranim terminima ipak našle u Adiosu. Štoviše, u subotu smo se i mimoišli u šumi jer se ona prva vraćala po dio stvario koje im se nije dalo nositi prethodnu noć, a i da obave kratki šoping u mjestu.
+Ako je manjak markacija bila loša vijest, dobra je ta da je šuma puna novih puteva, očišćenih do te mjere da se u slučaju potrebe terencem može doći gotovo do pred špilju. Dodatna loša vijest je kako je to područje prije koji dan bilo u policijskim vijestima o prekinutoj ruti švercanja emigranata.
+Ah, da ne zaboravimo i to da se još uvijek radi o minski sumnjivom području.</p>
+<p>Problematiku moguće zamjene speleologa sa natrpanim ruksacima, transportkama i pokojom najlon -vrećicom sa kakvom skupinom slično odjevenih i natovarenih Kurda, Sirijaca ili Afganistanaca, riješavamo prijavom našeg boravka na tom mjestu nadležnoj graničnoj policiji. A ako je sa druge strane još kolegica iz Dubovca onda se sve riješi na najbrži način, uz špiljarsko „<em>sretno</em>“.</p>
+<p>Da kiša može ubiti svaku volju za radom to već znamo. Ali kad se druga ekipa vratila iz šopinga sa punim vrećama gljiva sunčanica veličine tanjura i od gomile druge hrane, vina, pive (bilo je i nešto malo vode), želja za ulaskom u vodene kanale Adiosa naglo je splašnjavala. A plan je bio ambiciozan za subotu i nedjelju (<em>planovi su uvijek ambiciozni</em>);
+-  nastavak istraživanja na etaži iznad sifona,
+-  postavljanje gelendera na etaži između druge i prve dvorane, rješavanje nekih upitnika na istoj, ali i nastavak istraživanja,
+- crtanje mjernog vlaka od Adiosa do rijeke Korane u cilju ustanovljavanja točne visinske razlike,
+- plivanje Koranom do dvije poznate i od SOV-a istražene špilje kako bi ih označili pločicom.</p>
+<p>Počeli smo kalkulirati – možda je bolje dok kiša ne pada povući vlak (<em>to će kasnije postati mantra br.2</em>), potražiti te dvije špilje, a sutra kada je najavljena nova kiša – zavući se u Adios i odraditi posao. Uz pogled na toplu vatru, sve je bilo nekako u opravdanju mantre „<em>neda nam se</em>“.
+I u pola četiri popodne smo se zavukli u Adios, obje ekipe. Na sifon nas je išlo četvero; Ana, Marijan, Tanja i ja. Gornju etažu odradit će Maligan, Lukica, Marina.</p>
+<p>Putem prema sifonu zamjetna odsutnost šuma vode u nekim poznatim škrapama glavnog kanala. Jedan dio kanala  iza treće dvorane, obično do koljena pun vode, sada smo prešli bez močenja đona, što nam je dobro došlo jer smo radi lakšeg kretanja neoprene odlučili obući neposredno pred samim vodenim kanalom. Ubrzo smo do jezera prije sifona, a opremu u tri transportke; bušilicu, špage, fotić i bliceve elegantno prebacujemo pomoću luftića. Penjemo na gornju etažu i nastavljamo do točke gdje smo stali zadnji puta. Mogući perspektivni penj kojim bi bajpasirali sifon ostavljamo za povratak.</p>
+<p>Ana postavlja prečnicu za napredovanje i prelazimo u novi kanal. Još dok je postavljala, Marijan se spustio u rupu ispod zadnje točke i istražio novi prostor između naše gornje etaže i glavnog (aktivnog) kanala. Ostavljamo to za kraj, napredujemo dalje. U novom kanalu otkrivamo prelijepi, ogromni visoki salijev izbrazdan poput hrastove kore, pa je tako dobio i ime <em>Salijev Stari hrast</em>. No iza njega, u tom kratkom kanalu uz ponešto drugih svjetlucavih ukrasa spustila se prekrasna velika sigasta zavjesa. Kucanjem daje dugi zvonki ton, poput instrumenta. Prvi takav ton prestrašio je jednog jedinog šišmiša kojeg smo vidjeli ovoga puta u Adiosu. Nije se smirio slijedećih sat vremena, neprestano leteći između nas. Taj kratki kanal kojeg smo zbog te lijepe zavjese prozvali <em>Kanal jedra</em> završavao je jamom i vertikalom od sedam metara, a u tom novom dijelu Ana je postavila još jednu vertikalu kojom se spustila na glavni kanal, no obzirom da je dosta uska, istu rasprema pa ona i Marijan mjere taj novi prostor.
+Tanja i ja mjerimo iznad njih, a čekajući na točki pred jamom gledamo u dimnjak iznad nas i zamijećujemo onog šišmiša kako u vrhu dimnjaka prolazi s lijeva na desno, paralelno sa <em>Kanalom jedra</em>. Zatim se nakon nekog vremena vraća natrag. Naznaka je to još jednog kanala iznad nas.
+Pišemo upitnik, a onda se, taj šišmiš pojavio ispred nas pred vertikalom i nestao iza stijene sa lijeve strane. Na kraju jame kanal se, skoro pod pravim kutem, nastavljao dalje i to nitko nije primjetio sve dok nam šišmiš nije pokazao put.
+I sad neka netko pita zašto špiljari vole šišmiše.</p>
+<p>Zato, tom jednom krilatom prijatelju u čast, novom kanalu dajemo ime <em>Šišmišev prolaz</em>.</p>
+<p><em>Šišmišev prolaz</em> nastavlja se velikom perspektivom, no nas je lagano savladao umor, ali i pothlađenost. Već smo bili skoro šest sati u istraživanju, nekima su i falili  ključni dijelovi neoprena poput čarapica, stoga odlučujemo završiti i prema van. U povratku mjerimo bez crtanja prostor između gornje etaže i glavnog kanala. Upitnika ima podosta, a jedan od značajnijih koje bi trebalo provjeriti je vertikala ispod koje se, bacanjem kamena čuje duboki pljusak i odjek koji bi mogao skrivati neki veći prostor ili „bazen“. Put prema glavnom kanalu prolazi preko dubokog i dugog procijepa u čijem dnu se vidi otvor i prostor. Pucamo laserom koji kaže 10 metara. Malo dalje od procijepa, još jedan  upitnik i horizontalni kanal koji vodi do glavnog kanala u Adiosu, neposredno pred jezerom prije sifona i na poznatu točku.</p>
+<p>Postavljamo špagu, spuštamo se i vučemo prema van. Da ne gubimo vrijeme, ne presvlačimo se u suho već nastavljamo u neoprenima, a što nas uz teglenje po vodi i sve prethodno učinjeno, dodatno troši. I dobro da smo odlučili ne presvlačiti se u suho, jer nas je već nakon par minuta hoda dočekala voda u kanalu gdje je nije bilo. Očito je vani padala jaka kiša jer se desetak metara kanala napunilo do koljena, a preko malog salijeva i dalje je tekao slap. Svi oni klokoti vode koji su nam falili na početku, sada su se čuli putem ispod nas.
+Pred drugom dvoranom primjećujemo kako je prva ekipa bila vrijedna i postavila još jednu prečnicu iznad <em>Veseljka</em> (maleno i blatom duboko jezero koje se prelazi „na suho“ po bočnoj stijeni). Svima izaziva nelagodu u prelasku, a onima koji prijeđu daje podlu nadu da se možda nasmiju nekome tko bi se mogao poskliznuti i bućnuti.
+Otuda ime <em>Veseljko</em>.
+Penjemo iz druge dvorane („<em>Dvorana sa bijelim saljevom</em>“, Maligan, 1985. ili „<em>Dvorana glonđi</em>“ iz novijih istraživanja 2012.). Nad prečnicom uočavamo još jedan detalj – prva ekipa je postavila i špagu sa gornje etaže iznad dvije dvorane, pa je sada puno lakše  za daljnja istraživanja, nema potrebe za dalekim odlaskom na drugi kraj špilje radi penjanja u tu etažu. Ubrzo, nakon zadnjih pedesetak umornih, mučnih metara i cijeđenja kroz provlačenja izlazimo u <em>Amfiteatar</em> oko 23:30, dok je prva ekipa došla tek sat vremena prije nas.</p>
+<p>Brzo radimo oganj, presvlačimo se u suho i radujemo večeri: pohanim sunčanicama, piletinom, kobasicama, pitom od jabuka...
+Uz brdo druge hrane, koje kako mi se čini, svaki put ima sve više i više. Puno više nego što ljudi ide na izlet. Otvaramo boce Caberneta i Terana (<em>SOV hedonizam na najjače</em>), pivice, domaće ajvare i razne druge priloge. Vatrica gori, toplo je, a mi sjedimo u polušpilji i pričamo priče dok vani lije pljusak.</p>
+<p>Zaspali smo iza 02 sata, a jutro se nastavilo kišom. Do podne smo si priredili ručak kojeg se ne bi postidio ni jedan bolji restoran – od krmenadli, ćevapa, salata, namaza, voća, te prigodno jelovniku i laganim bijelim vinom. Kiša je prestala oko podne, kako su (opet) najavili Norvežani, a mi odustajemo od kupanja u Korani i „<em>povlačenju vlaka</em>“ (ne bi bolje da je riječ o vlaku na pruzi Zagreb-Rijeka), te se opet tovarimo poput magaraca (obzirom na količinu stvari i blizinu farme naša Pročelnica  ozbiljno i na glas razmišlja o nabavci par tih  tovarnih životinja za buduća istraživanja). U tom smislu, propitivajući Maligana o nekim izrazima na španjolskom, skovali smo i jedan novi – <em>magarinjo</em>.</p>
+<p>Kiša je potpuno prestala i grije nas sunce te smo nakon manje od sat hoda kod automobila, krcamo opremu i bježimo u Slunj na pranje opreme. Tamo, na kupalištu ispod mosta smo sve lijepo očistili, a zatim uživali na suncu i – pojeli ono što nam je ostalo još od Adiosa. Zalili pivicom i put pod kotače. Do Zagreba toplo sunce piči sve u šesnaest, a telefoni javljaju kako je tamo prolom oblaka, ujutro bila čak i tuča. Na radiju slušamo o potopljenom Ogulinu...</p>
+<p>Dva svijeta. Nešto poput pohane sunčanice na kiši.</p>
+<p><em><strong>EPILOG</strong> </em>
+I sad onaj bolni dio – mislim, duševno bolni. Iako sam svo vrijeme u nepropusnom koferu teglio fotić i dva blica, nisam „opalio“ niti jednu fotku. Niti jednu jedinu. Žao mi je zbog Starog hrasta i Jedra, ali morat će čekat neki drugi put. Blata je bilo i previše, a možda bi i jedan svjetlonoša“ dobro došao. Nema veze, fotka je za sad umemorirana u našim sjećanjima, a Tanja je ipak spasila stvar. I ono bitno - istraženo je novih 160 metara, otkriveno dosta novih i perspektivnih upitnika, a kompleksni i lijepi Adios se protegnuo na <strong>1.969</strong> metara. Svi na broju, živi, zdravi i siti (<em>Hej, haj Velebit – glavno da sam sit</em>).</p>
+[youtube https://www.youtube.com/watch?v=HWzjWO6mJ5Q&w=560&h=315]
+
+[gallery ids="1197,1209,1207,1206,1190,1202,1198,1194,1200,1193,1196,1195,1203,1189,1187,1210,1199,1205,1192,1188,1208,1204,1201,1211,1191" type="rectangular"]</div>
+  </article>
+  <aside class="legacy-side"><h3>SOV arhiva</h3><p>Tekst je prenesen iz WordPress XML exporta. Slike nisu hotlinkane ni uključene u ovaj build.</p><a href="../vijesti.html">Sve objave</a><a href="../legacy-wordpress/index.html">Stranice starog weba</a><a href="../speleoskola.html">Speleoškola</a><a href="../o-drustvu.html">O društvu</a><div class="legacy-pillrow" style="margin-top:14px"><span class="legacy-pill">adios</span><span class="legacy-pill">ana</span><span class="legacy-pill">drežnik</span><span class="legacy-pill">havliček</span><span class="legacy-pill">luka</span><span class="legacy-pill">maligan</span><span class="legacy-pill">marina</span><span class="legacy-pill">sifon</span></div></aside>
+</main><footer class="legacy-footer">Speleološki odsjek PDS Velebit · text-only migracija starog WordPress sadržaja</footer><script defer src="../assets/sov-version.js?v=6.1.44b"></script></body></html>

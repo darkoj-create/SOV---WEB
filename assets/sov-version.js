@@ -2,10 +2,10 @@
 // Fix: never writes textContent into <html> or <body>; older v6.1.1 could wipe the page because body.dataset.sovVersion matched [data-sov-version].
 (function(){
   'use strict';
-  const FALLBACK_VERSION='6.1.43e';
-  const FALLBACK_CACHE='6143e-smart-location-future-trips';
-  const FALLBACK_BUILD='sov-web-build-v6.1.43e-smart-location-future-trips';
-  const FALLBACK_NAME='v6.1.43e-smart-location-future-trips';
+  const FALLBACK_VERSION='6.1.44b';
+  const FALLBACK_CACHE='6144b-wxr-text-only';
+  const FALLBACK_BUILD='sov-web-build-v6.1.44b-legacy-wordpress-wxr-text-only';
+  const FALLBACK_NAME='v6.1.44b-legacy-wordpress-wxr-text-only';
   window.SOV_BUILD={version:FALLBACK_VERSION, versionName:FALLBACK_NAME, build:FALLBACK_BUILD, cacheBust:FALLBACK_CACHE};
   function safeSetText(sel, value){
     try{

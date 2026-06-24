@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="hr"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Bocnuli smo Bocinu! — SOV arhiva</title>
+<link href="../assets/site.css" rel="stylesheet"/>
+<link href="../assets/mobile.css" rel="stylesheet"/>
+<link href="../assets/sov-logo.png" rel="icon"/>
+<link href="../assets/sov-foundation-v55822.css" rel="stylesheet"/>
+<link href="../assets/sov-shell-v55825.css" rel="stylesheet"/>
+<link href="../assets/sov-polish-v55826.css" rel="stylesheet"/>
+<link href="../assets/sov-wow-v6.css" rel="stylesheet"/>
+<style>
+:root{--legacy-gold:#d5a85b;--legacy-line:rgba(255,255,255,.12);--legacy-muted:#a9b4c0;--legacy-panel:rgba(255,255,255,.045)}
+body.legacy-public{margin:0;background:radial-gradient(circle at 18% 0%,rgba(213,168,91,.12),transparent 34%),linear-gradient(180deg,#05070a,#0b1016 46%,#05070a);color:#f6f0e7;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+.legacy-top{position:sticky;top:0;z-index:50;background:rgba(5,7,10,.82);backdrop-filter:blur(18px);border-bottom:1px solid var(--legacy-line)}
+.legacy-nav{max-width:1220px;margin:auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:18px}
+.legacy-brand{display:flex;gap:12px;align-items:center;text-decoration:none;color:#fff;font-weight:950;letter-spacing:.06em;text-transform:uppercase;font-size:13px}
+.legacy-brand img{width:38px;height:38px;object-fit:contain}
+.legacy-links{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.legacy-links a{color:#d8e3de;text-decoration:none;border:1px solid rgba(255,255,255,.10);border-radius:999px;padding:8px 11px;font-weight:850;font-size:13px;background:rgba(255,255,255,.035)}
+.legacy-links a:hover{color:#fff;border-color:rgba(213,168,91,.5)}
+.legacy-shell{width:min(1180px,calc(100% - 32px));margin:0 auto;padding:34px 0 84px}
+.legacy-hero{border:1px solid var(--legacy-line);border-radius:34px;background:linear-gradient(135deg,rgba(255,255,255,.085),rgba(255,255,255,.03));padding:clamp(24px,5vw,54px);box-shadow:0 24px 90px rgba(0,0,0,.32);margin:20px 0 28px;position:relative;overflow:hidden}
+.legacy-hero:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 82% 8%,rgba(215,246,111,.11),transparent 26%),radial-gradient(circle at 4% 95%,rgba(120,215,255,.12),transparent 28%);pointer-events:none}
+.legacy-hero>*{position:relative}
+.legacy-eyebrow{display:inline-flex;border:1px solid rgba(213,168,91,.50);border-radius:999px;padding:8px 12px;color:#f0c477;text-transform:uppercase;letter-spacing:.14em;font-size:12px;font-weight:950;background:rgba(0,0,0,.18)}
+.legacy-hero h1{font-size:clamp(42px,7vw,88px);letter-spacing:-.07em;line-height:.92;margin:18px 0 16px}
+.legacy-hero p{font-size:clamp(17px,2vw,22px);color:#d8e0e8;line-height:1.5;max-width:850px;margin:0}
+.legacy-toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:22px 0}
+.legacy-input,.legacy-select{border:1px solid var(--legacy-line);border-radius:999px;background:rgba(255,255,255,.055);color:#fff;padding:12px 14px;font-weight:850;outline:0}
+.legacy-input{min-width:min(460px,100%);flex:1}
+.legacy-select option{color:#111}
+.legacy-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.legacy-card{display:flex;flex-direction:column;gap:10px;text-decoration:none;color:#fff;border:1px solid var(--legacy-line);border-radius:26px;background:rgba(255,255,255,.045);padding:20px;min-height:220px;box-shadow:0 18px 60px rgba(0,0,0,.18)}
+.legacy-card:hover{transform:translateY(-2px);border-color:rgba(213,168,91,.5)}
+.legacy-meta{color:#f0c477;font-size:12px;text-transform:uppercase;letter-spacing:.12em;font-weight:950}
+.legacy-card h2,.legacy-card h3{margin:0;font-size:clamp(22px,2.4vw,31px);line-height:1.04;letter-spacing:-.045em}
+.legacy-card p{color:#b9c4cf;line-height:1.55;margin:0}
+.legacy-pillrow{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto}
+.legacy-pill{font-size:11px;font-weight:900;color:#e8f0ed;border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:5px 8px;background:rgba(255,255,255,.04)}
+.legacy-article{display:grid;grid-template-columns:minmax(0,780px) 280px;gap:44px;align-items:start}
+.legacy-content{border:1px solid var(--legacy-line);border-radius:30px;background:rgba(255,255,255,.045);padding:clamp(22px,4vw,44px);box-shadow:0 24px 80px rgba(0,0,0,.24)}
+.legacy-content h1{font-size:clamp(38px,7vw,74px);line-height:.94;letter-spacing:-.065em;margin:12px 0 18px}
+.legacy-lead{font-size:20px;line-height:1.55;color:#d7e0de;margin:0 0 28px}
+.legacy-body{font-family:Georgia,'Times New Roman',serif;font-size:19px;line-height:1.82;color:#f0eadf}
+.legacy-body p{margin:0 0 1.25em}.legacy-body h2,.legacy-body h3{font-family:Inter,system-ui,sans-serif;color:#fff;letter-spacing:-.04em;line-height:1.08;margin:1.7em 0 .65em}.legacy-body h2{font-size:36px}.legacy-body h3{font-size:28px}.legacy-body a{color:#9dd2ff}.legacy-body blockquote{border-left:4px solid #d7f66f;background:rgba(215,246,111,.07);margin:24px 0;padding:18px;border-radius:0 18px 18px 0}
+.legacy-side{position:sticky;top:96px;border:1px solid var(--legacy-line);border-radius:24px;background:rgba(255,255,255,.045);padding:20px;color:#d8e3de}
+.legacy-side h3{margin:0 0 10px}.legacy-side p{color:#a9b4c0;line-height:1.5}.legacy-side a{display:block;color:#fff;text-decoration:none;border-top:1px solid var(--legacy-line);padding:12px 0}
+.media-deferred{border:1px dashed rgba(213,168,91,.42);border-radius:20px;background:rgba(213,168,91,.07);padding:14px 16px;color:#f7dfb1;font-family:Inter,system-ui,sans-serif;font-size:15px;line-height:1.5;margin:22px 0}
+.legacy-table{width:100%;border-collapse:collapse;border:1px solid var(--legacy-line);border-radius:18px;overflow:hidden}.legacy-table th,.legacy-table td{border-bottom:1px solid var(--legacy-line);padding:10px;text-align:left}.legacy-footer{max-width:1180px;margin:0 auto;padding:28px 20px 56px;color:#7f8b96;border-top:1px solid var(--legacy-line)}
+@media(max-width:980px){.legacy-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.legacy-article{grid-template-columns:1fr}.legacy-side{position:relative;top:0}}
+@media(max-width:700px){.legacy-nav{align-items:flex-start;flex-direction:column}.legacy-links{width:100%;overflow:auto;flex-wrap:nowrap;padding-bottom:3px}.legacy-links a{white-space:nowrap}.legacy-grid{grid-template-columns:1fr}.legacy-body{font-size:18px}}
+
+</style>
+</head><body class="legacy-public"><header class="legacy-top"><nav class="legacy-nav"><a class="legacy-brand" href="../index.html"><img alt="SOV" src="../assets/sov-logo.png"/>SOV Velebit</a><div class="legacy-links"><a href="../index.html">Naslovnica</a><a href="../vijesti.html">Arhiva novosti</a><a href="../o-drustvu.html">O društvu</a><a href="../speleoskola.html">Speleoškola</a><a href="../legacy-wordpress/index.html">Stari web</a><a href="../dashboard.html">Članski ulaz</a></div></nav></header>
+<main class="legacy-shell legacy-article">
+  <article class="legacy-content">
+    <a class="legacy-eyebrow" href="../vijesti.html">← Arhiva novosti</a>
+    <div class="legacy-meta" style="margin-top:18px">Istraživanja, Novosti · 26.02.2025.</div>
+    <h1>Bocnuli smo Bocinu!</h1>
+    <p class="legacy-lead">Proteklog vikenda, kao dio priprema za nadolazeću 55. Zagrebačku speleološku školu, SOV je krenuo obići Vražju i Bocinu jamu, blizu Ogulina.</p>
+    <div class="media-deferred">Fotografije, galerije i ostali mediji iz ove objave nisu uključeni u ovu text-only fazu. Evidentirani su u media manifestu i bit će dodani nakon rješavanja storagea/servera.</div>
+    <div class="legacy-body"><p><em>Datum: 21.-22. 02. 2025.<br/>Napisao i fotkao: Edo Vričić / Kapetan Puž<br/>Ekipa (SOV): Ana Ercegovac, Mateja Dimitrijević, Teo Barić., Edo Vričić </em><br/></p>
+<p>Proteklog vikenda, kao dio priprema za nadolazeću 55. Zagrebačku speleološku školu, SOV je krenuo obići Vražju i Bocinu jamu, blizu Ogulina. Od originalno planiranih 9 članova na izlet je krenulo nas 4 (Ana E., Mateja D., Teo B., Edo V.) pa smo radi nedostatka u brojevima i iskustva s lokacijom (Teo je jedini bio i to u ulozi školarca), odlučili da ćemo fokusirati snage na samo jedan od ta 2 objekta…i tako smo ‘bocnuli’ Bocinu!😊<br/>U petak 21. 02. '25 navečer našli smo se u Velebitu, skupili svu potrebnu opremu (ili smo bar tako mislili), sjeli u ‘Miška’ (neslužbeni i još neodobreni naziv za ‘novi’ SOV kombi, kojem se opiru mnogi, ali autor vjeruje da boljeg imena nema!) i krenuli put Ogulina. Uz naravno još pokoju stanku na putu, jer Teo je zaboravio novčanik, a trebalo je otići i u opskrbu pa smo iz Zagreba izašli tek oko 21 sat. Ništa zato, čekao nas je zimski krajolik okolice Ogulina, a svi znamo koliko je to lijepo i mistično mjesto…pa nisu džabe vještice svoj dom našle na obližnjem Kleku😊 ?!</p>
+<p>Kako je plan izleta pao u zadnji čas, nismo stigli uhvatiti ključ od lokalne lovačke kuće pa smo uz najavu domaćinima odlučili prespavati pod nadstrešnicom. Kroz glavu se provlačila misao da će biti mrzlo, no na kraju smo se super snašli - po dolasku smo spojili klupe i od njih napravili veliki ležaj, kako bi se odmakli od hladnoće poda, a sa dvije cerade zatvorili smo bar dio ‘strana’ i tako stvorili koliko-toliko ugodan prostor za provesti noć na polu-otvorenom. Naravno, palo je i koje pivce, a prepričavale su se zgode i nezgode sa lokacije, drugih škola, izleta i sl. Sve po običaju… 😊 Noć je prošla dobro jer svi smo imali i dobre vreće, a jutro nas je dočekalo relativno toplo, da možemo na miru obaviti doručak, kaficu/čaj, WC, i to bez da se srmznemo. Hvala Priroda! Nakon doručka smo spremili opremu, presvukli se i krenuli put Bocine. Pritom smo ustanovili da smo donijeli sveuupno 4 transportke opreme (planirano za 2 jame), sa čak 2 bušilice, ali da nemamo niti jednog jedinog borera?! Naš mladi ‘oružarski šegrt’ Teo naučio je lekciju – na popis treba staviti baš svaki detalj!</p>
+<p>Ana (prvi put na lokaciji) je vodila prvi dio puta, prateći teren i poziciju jame na Oruxu – još jedna dobra vježba prije škole! Uz malo vrludanja, došli smo na ulaz i dogovorili ‘strategiju’ – Teo će postaviti školsku liniju i time vježbati postavljanje, a instruktorsku liniju će postaviti Mateja D. iz ASAK-a, koji je nedavno postao i član SOV-a (sad je naš!). Ana i ja smo išli za njima, a zahvaljujući relativnoj blizini sidrišta i jednostavnosti objekta, svi zajedno smo komunicirali o raznim detaljima jame, tijekom samog postavljanja. Po meni, idealan način da svi zajedno učimo na licu mjesta! S obzirom na vodu u završnom ‘bunaru’ jame, Mateja i Teo su podosta brzo postavili jamu do police gdje inače stajemo sa školarcima pa smo se svo četvero uskoro našli na njoj. Tu je pala kratka pauza i mini-gablec te rezimiranje viđenog u vertikali. Imali smo nekih primjedbi na protekle postavljače, posebice jer u nedostatku borera nismo mogli ništa učiniti po tom pitanju, ali sve u svemu bilo je zabavno i poučno, posnimili smo puno detalja u jami, a i svi se složili da je Bocina baš onako, che’che’… 😊 Iako relativno plitka (-63m), bunarskog je tipa pa je i dosta pregledna te daje lijepi pogled u dubinu kada su svjetla ispod tebe. Također, uz glavnu vertikalu, postoji i paralelna, koja se spaja na spomenutu policu i raspiruje ideje o novim, dodatnim načinima postavljanja jame. Sve u svemu, pravi mali bombončić za jedan kraći vikend izlet!</p>
+<p>U popodnevnim satima izašli smo iz jame, skupili stvari i zatim ‘uboli’ najbolji i najkraći put do lovačke kuće te snimili track, koji će poslužiti za školicu. Na kući smo se presvukli i taman krenuli nešto prigrist, kad nam se pridružio i naš Davorin T. koji živi u blizini, s kojim smo se kratko podružili uz mezu i pivce.</p>
+<p>Prema Zagrebu smo krenuli oko 19.30, taman da neki od nas odmore kao ljudi, a drugi pak odu na neku pankeriju u Boogaloo…svak’ na svoj način slavi dobar izlet 😊 !</p></div>
+  </article>
+  <aside class="legacy-side"><h3>SOV arhiva</h3><p>Tekst je prenesen iz WordPress XML exporta. Slike nisu hotlinkane ni uključene u ovaj build.</p><a href="../vijesti.html">Sve objave</a><a href="../legacy-wordpress/index.html">Stranice starog weba</a><a href="../speleoskola.html">Speleoškola</a><a href="../o-drustvu.html">O društvu</a><div class="legacy-pillrow" style="margin-top:14px"><span class="legacy-pill">ana ercegovac</span><span class="legacy-pill">bocina</span><span class="legacy-pill">edo vričić</span><span class="legacy-pill">mateja dimitrijević</span><span class="legacy-pill">ogulin</span></div></aside>
+</main><footer class="legacy-footer">Speleološki odsjek PDS Velebit · text-only migracija starog WordPress sadržaja</footer><script defer src="../assets/sov-version.js?v=6.1.44b"></script></body></html>

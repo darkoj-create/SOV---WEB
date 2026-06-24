@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="hr"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Popis instruktora i speleologa SOV — stari SOV web</title>
+<link href="../../assets/site.css" rel="stylesheet"/>
+<link href="../../assets/mobile.css" rel="stylesheet"/>
+<link href="../../assets/sov-logo.png" rel="icon"/>
+<link href="../../assets/sov-foundation-v55822.css" rel="stylesheet"/>
+<link href="../../assets/sov-shell-v55825.css" rel="stylesheet"/>
+<link href="../../assets/sov-polish-v55826.css" rel="stylesheet"/>
+<link href="../../assets/sov-wow-v6.css" rel="stylesheet"/>
+<style>
+:root{--legacy-gold:#d5a85b;--legacy-line:rgba(255,255,255,.12);--legacy-muted:#a9b4c0;--legacy-panel:rgba(255,255,255,.045)}
+body.legacy-public{margin:0;background:radial-gradient(circle at 18% 0%,rgba(213,168,91,.12),transparent 34%),linear-gradient(180deg,#05070a,#0b1016 46%,#05070a);color:#f6f0e7;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+.legacy-top{position:sticky;top:0;z-index:50;background:rgba(5,7,10,.82);backdrop-filter:blur(18px);border-bottom:1px solid var(--legacy-line)}
+.legacy-nav{max-width:1220px;margin:auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:18px}
+.legacy-brand{display:flex;gap:12px;align-items:center;text-decoration:none;color:#fff;font-weight:950;letter-spacing:.06em;text-transform:uppercase;font-size:13px}
+.legacy-brand img{width:38px;height:38px;object-fit:contain}
+.legacy-links{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.legacy-links a{color:#d8e3de;text-decoration:none;border:1px solid rgba(255,255,255,.10);border-radius:999px;padding:8px 11px;font-weight:850;font-size:13px;background:rgba(255,255,255,.035)}
+.legacy-links a:hover{color:#fff;border-color:rgba(213,168,91,.5)}
+.legacy-shell{width:min(1180px,calc(100% - 32px));margin:0 auto;padding:34px 0 84px}
+.legacy-hero{border:1px solid var(--legacy-line);border-radius:34px;background:linear-gradient(135deg,rgba(255,255,255,.085),rgba(255,255,255,.03));padding:clamp(24px,5vw,54px);box-shadow:0 24px 90px rgba(0,0,0,.32);margin:20px 0 28px;position:relative;overflow:hidden}
+.legacy-hero:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 82% 8%,rgba(215,246,111,.11),transparent 26%),radial-gradient(circle at 4% 95%,rgba(120,215,255,.12),transparent 28%);pointer-events:none}
+.legacy-hero>*{position:relative}
+.legacy-eyebrow{display:inline-flex;border:1px solid rgba(213,168,91,.50);border-radius:999px;padding:8px 12px;color:#f0c477;text-transform:uppercase;letter-spacing:.14em;font-size:12px;font-weight:950;background:rgba(0,0,0,.18)}
+.legacy-hero h1{font-size:clamp(42px,7vw,88px);letter-spacing:-.07em;line-height:.92;margin:18px 0 16px}
+.legacy-hero p{font-size:clamp(17px,2vw,22px);color:#d8e0e8;line-height:1.5;max-width:850px;margin:0}
+.legacy-toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:22px 0}
+.legacy-input,.legacy-select{border:1px solid var(--legacy-line);border-radius:999px;background:rgba(255,255,255,.055);color:#fff;padding:12px 14px;font-weight:850;outline:0}
+.legacy-input{min-width:min(460px,100%);flex:1}
+.legacy-select option{color:#111}
+.legacy-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.legacy-card{display:flex;flex-direction:column;gap:10px;text-decoration:none;color:#fff;border:1px solid var(--legacy-line);border-radius:26px;background:rgba(255,255,255,.045);padding:20px;min-height:220px;box-shadow:0 18px 60px rgba(0,0,0,.18)}
+.legacy-card:hover{transform:translateY(-2px);border-color:rgba(213,168,91,.5)}
+.legacy-meta{color:#f0c477;font-size:12px;text-transform:uppercase;letter-spacing:.12em;font-weight:950}
+.legacy-card h2,.legacy-card h3{margin:0;font-size:clamp(22px,2.4vw,31px);line-height:1.04;letter-spacing:-.045em}
+.legacy-card p{color:#b9c4cf;line-height:1.55;margin:0}
+.legacy-pillrow{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto}
+.legacy-pill{font-size:11px;font-weight:900;color:#e8f0ed;border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:5px 8px;background:rgba(255,255,255,.04)}
+.legacy-article{display:grid;grid-template-columns:minmax(0,780px) 280px;gap:44px;align-items:start}
+.legacy-content{border:1px solid var(--legacy-line);border-radius:30px;background:rgba(255,255,255,.045);padding:clamp(22px,4vw,44px);box-shadow:0 24px 80px rgba(0,0,0,.24)}
+.legacy-content h1{font-size:clamp(38px,7vw,74px);line-height:.94;letter-spacing:-.065em;margin:12px 0 18px}
+.legacy-lead{font-size:20px;line-height:1.55;color:#d7e0de;margin:0 0 28px}
+.legacy-body{font-family:Georgia,'Times New Roman',serif;font-size:19px;line-height:1.82;color:#f0eadf}
+.legacy-body p{margin:0 0 1.25em}.legacy-body h2,.legacy-body h3{font-family:Inter,system-ui,sans-serif;color:#fff;letter-spacing:-.04em;line-height:1.08;margin:1.7em 0 .65em}.legacy-body h2{font-size:36px}.legacy-body h3{font-size:28px}.legacy-body a{color:#9dd2ff}.legacy-body blockquote{border-left:4px solid #d7f66f;background:rgba(215,246,111,.07);margin:24px 0;padding:18px;border-radius:0 18px 18px 0}
+.legacy-side{position:sticky;top:96px;border:1px solid var(--legacy-line);border-radius:24px;background:rgba(255,255,255,.045);padding:20px;color:#d8e3de}
+.legacy-side h3{margin:0 0 10px}.legacy-side p{color:#a9b4c0;line-height:1.5}.legacy-side a{display:block;color:#fff;text-decoration:none;border-top:1px solid var(--legacy-line);padding:12px 0}
+.media-deferred{border:1px dashed rgba(213,168,91,.42);border-radius:20px;background:rgba(213,168,91,.07);padding:14px 16px;color:#f7dfb1;font-family:Inter,system-ui,sans-serif;font-size:15px;line-height:1.5;margin:22px 0}
+.legacy-table{width:100%;border-collapse:collapse;border:1px solid var(--legacy-line);border-radius:18px;overflow:hidden}.legacy-table th,.legacy-table td{border-bottom:1px solid var(--legacy-line);padding:10px;text-align:left}.legacy-footer{max-width:1180px;margin:0 auto;padding:28px 20px 56px;color:#7f8b96;border-top:1px solid var(--legacy-line)}
+@media(max-width:980px){.legacy-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.legacy-article{grid-template-columns:1fr}.legacy-side{position:relative;top:0}}
+@media(max-width:700px){.legacy-nav{align-items:flex-start;flex-direction:column}.legacy-links{width:100%;overflow:auto;flex-wrap:nowrap;padding-bottom:3px}.legacy-links a{white-space:nowrap}.legacy-grid{grid-template-columns:1fr}.legacy-body{font-size:18px}}
+
+</style>
+</head><body class="legacy-public"><header class="legacy-top"><nav class="legacy-nav"><a class="legacy-brand" href="../../index.html"><img alt="SOV" src="../../assets/sov-logo.png"/>SOV Velebit</a><div class="legacy-links"><a href="../../index.html">Naslovnica</a><a href="../../vijesti.html">Arhiva novosti</a><a href="../../o-drustvu.html">O društvu</a><a href="../../speleoskola.html">Speleoškola</a><a href="../../legacy-wordpress/index.html">Stari web</a><a href="../../dashboard.html">Članski ulaz</a></div></nav></header>
+<main class="legacy-shell legacy-article">
+  <article class="legacy-content">
+    <a class="legacy-eyebrow" href="../../legacy-wordpress/index.html">← Stranice starog weba</a>
+    <div class="legacy-meta" style="margin-top:18px">Stara WordPress stranica · 18.12.2025.</div>
+    <h1>Popis instruktora i speleologa SOV</h1>
+    <p class="legacy-lead">Stručni nazivi Speleolog i Instruktor speleologije u okviru Komisije za speleologiju HPS Jedna od osnovnih zadaća Komisije za speleologiju je speleološko školovanje, koje se odvija kroz speleološke škole,…</p>
+    <div class="media-deferred">Fotografije/mediji s ove stare stranice nisu uključeni u text-only fazu. Evidentirani su za kasniji media import.</div>
+    <div class="legacy-body"><p>Stručni nazivi Speleolog i Instruktor speleologije u okviru Komisije za speleologiju HPS</p>
+<p>Jedna od osnovnih zadaća Komisije za speleologiju je speleološko školovanje, koje se odvija kroz speleološke škole, seminare, skupove i ispite za stručne nazive speleolog i instruktor speleologije. Prvi speleološki tečaj organiziran je 1957. godine u Ogulinu, a slijedili su tečaji u Donjoj Cerovačkoj špilji 1958. te u Tounju 1960. godine. Godine 1966. Komisija za speleologiju HPS-a donijela je program speleološke škole, a od 1971. takve se škole redovito organiziraju svake godine u Zagrebu, Splitu, Karlovcu, Šibeniku i drugim gradovima. Razvoj speleološkog školovanja u Hrvatskoj predstavljen je podrobnije u priručniku <strong><a href="http://www.hps.hr/files/data/170/Speleolosko%20skolovanje%20u%20Hrvatskoj.pdf" rel="noopener" target="_blank">Speleološko školovanje u Hrvatskoj</a></strong>. U izdanju Komisije za speleologiju HPS-a i na njezin poticaj izdano je više stručnih publikacija i priručnika za speleološko školovanje.</p>
+
+<p><br/><strong>INSTRUKTORI SPELEOLOGIJE</strong><br/><br/>ime i prezime / godina stjecanja zvanja / broj značke</p>
+<p>1 Marijan Čepelak, 1979. 0007<br/>2 Radovan Čepelak, 1979. 0008<br/>3 Ivan Filipčić, 1979. 0009<br/>4 Mladen Garašić, 1979. 0114<br/>5 Tomica Imenšek, 1979. 0011<br/>6 Miron Kovačić, 1979. 0012<br/>7 Ivan Kruhak, 1979. 0013<br/>8 Hrvoje Malinar, 1979. 0014<br/>9 Đuro Sekelj, 1979. 0015<br/>10 Boris Vrbek, 1979. 0016<br/>11 Robert Jagodić, 1980. 0020<br/>12 Damir Prelovec, 1980. 0021<br/>13 Ana Bakšić, 1994. 0106<br/>14 Darko Cucančić, 1994. 0031<br/>15 Damir Lacković, 1994. 0032<br/>16 Darko Bakšić, 1997. 0035<br/>17 Teo Barišić, 1997. 0101<br/>18 Tanja Bizjak, 1997. 0037<br/>19 Sunčica Hrašćanec, 1997. 0038<br/>20 Čedo Josipović, 1997. 0039<br/>21 Dubravko Kavčić, 1997. 0040<br/>22 Siniša Rešetar, 1997. 0041<br/>23 Gordan Tomšić, 1997. 0042<br/>24 Darko Troha, 1997. 0043<br/>25 Dalibor Paar, 2005. 0100<br/>26 Ivica Ćukušić, 2005. 0112<br/>27 Filip Filipović, 2007. 0111<br/>28 Ronald Železnjak, 2012. 0108<br/>29. Marko Rakovac, 2019. 0126<br/>29 Dino Grozić, 2022. 0131<br/>30 Marina Grandić, 2024. 0136</p>
+
+<p><strong>STRUČNO ZVANJE SPELEOLOG</strong><br/></p>
+<p>ime i prezimeudrugagodinabr. značkeTomica ImenšekVelebit1970.021Ivan FilipčićVelebit1970.022Radovan ČepelakVelebit1970.027Hrvoje MalinarVelebit1970.028Ivan KruhakVelebit1970.029Dubravko PenovićVelebit1970.032Marijan ČepelakVelebit1970.033Mladen GarašićVelebit1970.034Miron KovačićVelebit1970.035Boris VrbekVelebit1970.036Zlatko BanVelebit1972.040Đuro SekeljVelebit1974.041Armand JurkovićVelebit1975.042Ervin ŠilićVelebit1975.045Damir PrelovecVelebit1975.047Robert JagodićVelebit1976.050Boris MudriVelebit1976.051Marijan TortićVelebit1976.052Darko CucančićVelebit1983.077Neven ČobanovVelebit1983.079Robert ErhardtVelebit1983.082Ivica NemešVelebit1983.083Edo KiretaVelebit1985.087Slaven DobrovićVelebit1985.090Ana BakšićVelebit1987.094Čedo JosipovićVelebit1987.095Damir LackovićVelebit1987.096Teo BarišićVelebit1988.098Siniša RešetarVelebit1988.099Zoran StipetićVelebit1990.109Aida BarišićVelebit1990.110Gordan TomšićVelebit1990.111Darko TrohaVelebit1993.113Dubravko KavčićVelebit1993.114Tanja BizjakVelebit1995.115Sunčica HrašćanecVelebit1995.117Darko BakšićVelebit1995.118Donat PetricioliVelebit1997.121Jagoda MunićVelebit1997.122Ana ČopVelebit1997.124Ljiljana NovoselVelebit1997.125Marko AndreisVelebit1997.126Ivica RadićVelebit1997.129Darko ŠtefanacVelebit1997.130Ivančica ZovkoVelebit1997.132Dalibor PaarVelebit2000.138Ana Katarina SansevićVelebit2000.139Josip PetričevićVelebit2002.140Ivica ĆukušićVelebit2002.141Tihana BobanVelebit2005.149Filip FilipovićVelebit2005.151Jana BedekVelebit2005.158Slaven BobanVelebit2005.159Matija ČepelakVelebit2007.162Luka MudronjaVelebit2009.175Ronald ŽeleznjakVelebit2009.176Andrej StrojVelebit2010.177Marinko MalenicaVelebit2010.185Dean BratušekVelebit2010.186Tea SelakovićVelebit2012.196Marko RakovacVelebit2012.197Vladimir MilutinovićVelebit2012.198Anja ŽmegačVelebit2013.207Valentina LipovecVelebit2013.208Dina KovačVelebit2013.209Perušić AndrijaVelebit2014.212Sutlović MarijanVelebit2014.213Marin MustapićVelebit2015.216Tanja ŠinkoVelebit2015.218Luka HavličekVelebit2015.219Vedran FerenčakVelebit2015.220Tibor BaliVelebit2016.227Marjan PrpićVelebit2016.228Darija Šarić MustapićVelebit2016.229Edo VričićVelebit2016.230Marina GrandićVelebit2018.240Darko ŠpanjaVelebit2018.241Valentina PlemenčićVelebit2018.245Katarina Koller ŠarićVelebit2018.246Dino GrozićVelebit2018.247Mak SedmakVelebit2019.257Domagoj ČajkoVelebit2021.271Ana LipovacVelebit2021.272Pava VidićVelebit2021.273Gorana PerićVelebit2023.279Luka IvančićVelebit2023.280Marko LičkoVelebit2024.284Maja MarinićVelebit2024.287Barbara DomitrovićVelebit2024.288Olga Jerković PerićVelebit2026.294Mislav SajkoVelebit2026.295</p></div>
+  </article>
+  <aside class="legacy-side"><h3>Stari web</h3><p>Ovo je tekstualna migracija statične WordPress stranice.</p><a href="../../legacy-wordpress/index.html">Sve stare stranice</a><a href="../../vijesti.html">Arhiva novosti</a><a href="../../index.html">Naslovnica</a></aside>
+</main><footer class="legacy-footer">Speleološki odsjek PDS Velebit · text-only migracija starog WordPress sadržaja</footer><script defer src="../../assets/sov-version.js?v=6.1.44b"></script></body></html>
