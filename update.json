@@ -1,33 +1,28 @@
 {
   "app": "SOV web",
-  "version": "6.1.44b",
-  "versionName": "v6.1.44b-legacy-wordpress-wxr-text-only",
-  "build": "sov-web-build-v6.1.44b-legacy-wordpress-wxr-text-only",
-  "createdAt": "2026-06-24T16:46:46.690247Z",
-  "cacheBust": "6144b-wxr-text-only",
+  "version": "6.1.44c",
+  "versionName": "v6.1.44c-wordpress-text-import-preserve-current-public",
+  "build": "sov-web-build-v6.1.44c-wordpress-text-import-preserve-current-public",
+  "createdAt": "2026-06-24T17:03:11.259951Z",
+  "cacheBust": "6144c-wxr-text-preserve-current",
   "base": "sov-web-build-v6.1.43e-smart-location-future-trips.zip",
   "requiresSql": false,
-  "requiredSql": [],
-  "releaseType": "legacy-wordpress-text-only-import",
+  "releaseType": "wordpress-text-import-preserve-current-public",
   "changedFiles": [
-    "index.html",
     "vijesti.html",
-    "novosti/*.html",
-    "legacy-wordpress/index.html",
-    "legacy-wordpress/stranice/*.html",
-    "data/news.json",
+    "novosti/*.html (only missing old posts)",
     "data/legacy-wordpress-content.json",
     "data/legacy-wordpress-media-manifest.json",
-    "tools/sov_wordpress_wxr_text_importer.py",
+    "index.html (small link to all posts)",
     "VERSION.txt",
     "BUILD_VERSION.txt",
     "update.json"
   ],
   "notes": [
-    "Imported published WordPress posts and pages from WXR/XML export as text-only content.",
-    "No legacy images, galleries, attachments or media binaries are included in the build.",
-    "Legacy media references are recorded in data/legacy-wordpress-media-manifest.json for a later storage/server phase.",
-    "Public news archive now uses generated static HTML pages and JSON index.",
-    "No Supabase SQL, roles, Izleti, Oružarstvo, Arhivar, Karta or APK compatibility changes."
+    "Current homepage and existing image-rich news cards remain as they were.",
+    "Existing public pages like O nama, Povijest, Speleoškola, Velebitaški duh, Pročelništvo and Velebiten were not overwritten by WordPress page export.",
+    "Only missing WordPress posts were added as clean text article pages.",
+    "No legacy image/media bulk import; no 2GB Git push.",
+    "No SQL, Izleti, Oružarstvo, Arhivar, Karta, role, login or APK compatibility changes."
   ]
 }

@@ -1,12 +1,14 @@
 {
-  "build": "sov-web-build-v6.1.44b-legacy-wordpress-wxr-text-only",
+  "build": "sov-web-build-v6.1.44c-wordpress-text-import-preserve-current-public",
   "source_export": "sovelebit.wordpress.com.2026-06-24.000.xml",
-  "strategy": "text-only build; media not included; URLs are for later storage migration only",
+  "strategy": "media not included in Git/build; preserve current images only; use this later for storage/server media phase",
   "counts": {
-    "published_posts": 198,
-    "published_pages": 14,
-    "attachments": 2634,
-    "unique_media_urls": 3440
+    "published_posts_in_export": 198,
+    "existing_modern_news_pages_preserved": 11,
+    "new_text_post_pages_generated": 187,
+    "published_pages_in_export_skipped": 14,
+    "attachments_in_export": 2634,
+    "unique_media_urls_manifested": 3440
   },
   "media_urls": [
     {
@@ -13775,7 +13777,6 @@
       "type": "post",
       "title": "Sve što je lijepo kratko traje, osim puta do Velebitaškog duha",
       "slug": "sve-sto-je-lijepo-kratko-traje-osim-puta-do-velebitaskog-duha",
-      "url": "novosti/sve-sto-je-lijepo-kratko-traje-osim-puta-do-velebitaskog-duha.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2026/05/autorica-teksta-na-izlazu-iz-dvojame_paula-skelin.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2026/05/demonstracija-tehnickog-penjanja_gorana-peric.jpg?w=1080",
@@ -13798,7 +13799,6 @@
       "type": "post",
       "title": "Pa po užetu dol' pa po užetu gor'!",
       "slug": "pa-po-uzetu-dol-pa-po-uzetu-gor",
-      "url": "novosti/pa-po-uzetu-dol-pa-po-uzetu-gor.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2026/05/cekin-pilic_jelena-babic.jpg?w=810",
         "https://sovelebit.wordpress.com/wp-content/uploads/2026/05/sestrice-selakovic_jelena-babic.jpg?w=810",
@@ -13822,7 +13822,6 @@
       "type": "post",
       "title": "Spust u jamu",
       "slug": "6806",
-      "url": "novosti/6806.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2026/04/grupno-crtanje_klara-krsticevic.jpg?w=810",
         "https://sovelebit.wordpress.com/wp-content/uploads/2026/04/matija-na-dnu_jelena-babic.jpg?w=810",
@@ -13846,7 +13845,6 @@
       "type": "post",
       "title": "Hej, haj Terihaj (i Gorsko)",
       "slug": "hej-haj-terihaj-i-gorsko",
-      "url": "novosti/hej-haj-terihaj-i-gorsko.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2026/04/gorsko-zrcalo-na-stijeni_petra-jagodic.jpg?w=813",
         "https://sovelebit.wordpress.com/wp-content/uploads/2026/04/pogled-na-stijenu-terihaj_klara-kundid.jpg?w=810",
@@ -13862,7 +13860,6 @@
       "type": "post",
       "title": "Prvo špiljarenje",
       "slug": "6783",
-      "url": "novosti/6783.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2026/04/blatni-skolarci_gorana-peric.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2026/04/brodic_matija-hrzenjak.jpg?w=1080",
@@ -13884,14 +13881,12 @@
       "type": "post",
       "title": "56. ZAGREBAČKA SPELEOŠKOLA",
       "slug": "56-zagrebacka-speleoskola",
-      "url": "novosti/56-zagrebacka-speleoskola.html",
       "media_urls": []
     },
     "6702": {
       "type": "post",
       "title": "Novi Velebiten!",
       "slug": "novi-velebiten-4",
-      "url": "novosti/novi-velebiten-4.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/12/sadrzaj.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/12/sadrzaj.jpg",
@@ -13902,7 +13897,6 @@
       "type": "post",
       "title": "Duman, obećana zemlja",
       "slug": "duman-obecana-zemlja",
-      "url": "novosti/duman-obecana-zemlja.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/11/duman_1.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/11/duman_2.jpg?w=813",
@@ -13942,7 +13936,6 @@
       "type": "post",
       "title": "Mamet Inspirirajući",
       "slug": "mamet-inspirirajuci",
-      "url": "novosti/mamet-inspirirajuci.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/10/mamet_2025_1.jpg?w=810",
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/10/mamet_2025_2.jpg?w=810",
@@ -13972,7 +13965,6 @@
       "type": "post",
       "title": "Žumberački odred za čistoću",
       "slug": "zumberacki-odred-za-cistocu",
-      "url": "novosti/zumberacki-odred-za-cistocu.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/10/unnamed.jpg?w=485",
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/10/1000125521.jpg?w=1080",
@@ -14009,7 +14001,6 @@
       "type": "post",
       "title": "Izlet iz snova",
       "slug": "izlet-iz-snova",
-      "url": "novosti/izlet-iz-snova.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/10/kucica.jpg?w=810",
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/10/niski-vodostaj.jpg?w=1080",
@@ -14024,7 +14015,6 @@
       "type": "post",
       "title": "Najbolji dan u životu",
       "slug": "najbolji-dan-u-zivotu",
-      "url": "novosti/najbolji-dan-u-zivotu.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2021/04/001-munizaba_foto_d_baksic_-ulaz.jpg?w=748",
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/09/01-duga-za-srecu.jpeg?w=810",
@@ -14043,7 +14033,6 @@
       "type": "post",
       "title": "Fugro, QGIS, Orux!",
       "slug": "fugro-qgis-orux",
-      "url": "novosti/fugro-qgis-orux.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/08/paul-karoshi.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/08/paul-karoshi-2.jpg?w=1080",
@@ -14078,7 +14067,6 @@
       "type": "post",
       "title": "Bez soma nema doma",
       "slug": "bez-soma-nema-doma",
-      "url": "novosti/bez-soma-nema-doma.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/07/gotov-film.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/07/istrazujemo.jpg?w=1080",
@@ -14096,14 +14084,12 @@
       "type": "post",
       "title": "Speleološka ekspedicija \"Sjeverni Velebit 2025.\"",
       "slug": "speleoloska-ekspedicija-sjeverni-velebit-2025",
-      "url": "novosti/speleoloska-ekspedicija-sjeverni-velebit-2025.html",
       "media_urls": []
     },
     "6470": {
       "type": "post",
       "title": "Suze radosnice u Munižabi",
       "slug": "suze-radosnice-u-munizabi",
-      "url": "novosti/suze-radosnice-u-munizabi.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/06/00-nesudeni-pit-stop-autor-ivona.jpeg?w=748",
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/06/06-zeleni-barsun-autor-ivona.jpeg?w=748",
@@ -14136,7 +14122,6 @@
       "type": "post",
       "title": "Suze u Munižabi",
       "slug": "suze-u-munizabi",
-      "url": "novosti/suze-u-munizabi.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/05/1000080601.jpg?w=748",
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/05/1000080607.jpg?w=748",
@@ -14171,7 +14156,6 @@
       "type": "post",
       "title": "Uskršnje lidarke",
       "slug": "uskrsnje-lidarke",
-      "url": "novosti/uskrsnje-lidarke.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/05/lidarke-1.jpg?w=488",
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/05/lidarke-2.jpg?w=650",
@@ -14190,7 +14174,6 @@
       "type": "post",
       "title": "Istraživanja na Gubačkom vrhu",
       "slug": "6412",
-      "url": "novosti/6412.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/04/gubacki-vrh-2025.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/04/gubacki-vrh-2025.jpg"
@@ -14200,7 +14183,6 @@
       "type": "post",
       "title": "'Zec il' žaba?' na Vražjoj i Bocinoj",
       "slug": "zec-il-zaba-na-vrazjoj-i-bocinoj",
-      "url": "novosti/zec-il-zaba-na-vrazjoj-i-bocinoj.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/04/vrazja-i-bocina-1_dejan.jpg?w=748",
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/04/vrazja-i-bocina-_goga.jpg?w=1080",
@@ -14227,7 +14209,6 @@
       "type": "post",
       "title": "Camino de Studena",
       "slug": "camino-de-studena",
-      "url": "novosti/camino-de-studena.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/04/studena-2_dragana.jpg?w=499",
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/04/studena-2_jele.jpg?w=1080",
@@ -14269,7 +14250,6 @@
       "type": "post",
       "title": "Norenje u Ponorcu",
       "slug": "norenje-u-ponorcu",
-      "url": "novosti/norenje-u-ponorcu.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/04/cug-koji-nikad-ne-kasni-mikic-t.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/04/roko-levar-ponorac-mikic-t.jpg?w=1080",
@@ -14329,7 +14309,6 @@
       "type": "post",
       "title": "(Op!) Žica, žica, žica... & 55. školica",
       "slug": "op-zica-zica-zica-55-skolica",
-      "url": "novosti/op-zica-zica-zica-55-skolica.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/03/zica_55_3_ana-marija.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/03/zica_55_2_ana-marija.jpg?w=598",
@@ -14362,7 +14341,6 @@
       "type": "post",
       "title": "Počelo je! (55. školica SOV)",
       "slug": "pocelo-je",
-      "url": "novosti/pocelo-je.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/03/tounj-2_petra.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/03/tounj_tibor.jpg?w=1080",
@@ -14397,7 +14375,6 @@
       "type": "post",
       "title": "Kombi u snijegu",
       "slug": "kombi-u-snijegu",
-      "url": "novosti/kombi-u-snijegu.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/03/dragana-vjezba-busenje-mislav-sajko.jpeg?w=810",
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/03/izlazak-mislav-sajko.jpeg?w=810",
@@ -14425,7 +14402,6 @@
       "type": "post",
       "title": "Bocnuli smo Bocinu!",
       "slug": "bocnuli-smo-bocinu",
-      "url": "novosti/bocnuli-smo-bocinu.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/02/bocina-jama-21.-22.02-1.jpeg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/02/bocina-jama-21.-22.02-2.jpeg?w=1080",
@@ -14463,7 +14439,6 @@
       "type": "post",
       "title": "Kalnička škljizancija",
       "slug": "kalnicka-skljizancija",
-      "url": "novosti/kalnicka-skljizancija.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/01/ekipa.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/01/foto-1-vinka-dubovecak-sukz-18.01.-panorama-kalnika.jpeg?w=1080",
@@ -14493,7 +14468,6 @@
       "type": "post",
       "title": "Velebiten br. 58",
       "slug": "velebiten-br-58",
-      "url": "novosti/velebiten-br-58.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/01/velebiten-58_naslovna.jpg?w=748",
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/01/velebiten-58_naslovna-crop.jpg"
@@ -14503,7 +14477,6 @@
       "type": "post",
       "title": "Put ka Novoj 2025.",
       "slug": "6138",
-      "url": "novosti/6138.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/01/slika-1.-ratkovo-skloniste-nova-2025.-godina.jpg?w=489",
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/01/slika-2.-ekipa-iz-susila-edo-fotografira-1.jpg?w=1080",
@@ -14551,7 +14524,6 @@
       "type": "post",
       "title": "55. speleološka škola - prijave",
       "slug": "55-speleoloska-skola-prijave",
-      "url": "novosti/55-speleoloska-skola-prijave.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/01/fb-cover-55.-zg-speleo-skola-sov.png?w=851",
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/01/velebiten-speleoskola.jpg",
@@ -14562,7 +14534,6 @@
       "type": "post",
       "title": "Prvi BuBu (Buk Buvljak) & Božićna radionica",
       "slug": "prvi-bubu-bukbuvljak-bozicna-radionica",
-      "url": "novosti/prvi-bubu-bukbuvljak-bozicna-radionica.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2024/12/logo-sivoplava-pozadina-right-side-book.jpg?w=1011",
         "https://sovelebit.wordpress.com/wp-content/uploads/2024/12/bubu10.jpg?w=810",
@@ -14592,7 +14563,6 @@
       "type": "post",
       "title": "Munižaba \"prešla\" 10 kilometara",
       "slug": "munizaba-presla-10-kilometara",
-      "url": "novosti/munizaba-presla-10-kilometara.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2021/04/munizaba-nova-istrazivanja.jpg?w=1080"
       ]
@@ -14601,7 +14571,6 @@
       "type": "post",
       "title": "Akcijske predakcije",
       "slug": "akcijske-predakcije",
-      "url": "novosti/akcijske-predakcije.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2024/07/img_20240615_185331.jpg?w=810",
         "https://sovelebit.wordpress.com/wp-content/uploads/2024/07/img_20240615_185044.jpg?w=810",
@@ -14631,7 +14600,6 @@
       "type": "post",
       "title": "Školarci, janjetina i Ličko",
       "slug": "skolarci-janjetina-i-licko",
-      "url": "novosti/skolarci-janjetina-i-licko.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2024/05/janjetina-1.jpg?w=640",
         "https://sovelebit.wordpress.com/wp-content/uploads/2024/05/janjetina-2.jpg?w=896",
@@ -14660,7 +14628,6 @@
       "type": "post",
       "title": "Moje ime",
       "slug": "moje-ime",
-      "url": "novosti/moje-ime.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2024/05/p4200179-1.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2024/05/img_20240420_175533.jpg?w=810",
@@ -14685,7 +14652,6 @@
       "type": "post",
       "title": "Prečnica i crtanje na Mijatovoj jami",
       "slug": "precnica-i-crtanje-na-mijatovoj-jami",
-      "url": "novosti/precnica-i-crtanje-na-mijatovoj-jami.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2024/04/mijatova-1.jpg?w=810",
         "https://sovelebit.wordpress.com/wp-content/uploads/2024/04/mijatova-2.jpg?w=1080",
@@ -14704,7 +14670,6 @@
       "type": "post",
       "title": "Ljute papučice, Maslački i Durex na Matešićki.",
       "slug": "ljute-papucice-maslacki-i-durex-na-matesicki",
-      "url": "novosti/ljute-papucice-maslacki-i-durex-na-matesicki.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2024/04/mat1.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2024/04/matesiceva-spilja-1.jpg?w=1080",
@@ -14746,7 +14711,6 @@
       "type": "post",
       "title": "Osvrt na prvi izlet 54. škole",
       "slug": "osvrt-na-prvi-izlet-54-skole",
-      "url": "novosti/osvrt-na-prvi-izlet-54-skole.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2024/03/54_skola_web.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2024/03/tounj_2.jpg?w=810",
@@ -14777,7 +14741,6 @@
       "type": "post",
       "title": "HŽ supstitucija (prvi izlet 54. škole)",
       "slug": "hz-supstitucija-prvi-izlet-54-skole",
-      "url": "novosti/hz-supstitucija-prvi-izlet-54-skole.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2024/03/program-54.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2024/03/1_54.jpg?w=1080",
@@ -14816,14 +14779,12 @@
       "type": "post",
       "title": "Otvorene prijave za 54. speleološku školu",
       "slug": "otvorene-prijave-za-54-speleolosku-skolu",
-      "url": "novosti/otvorene-prijave-za-54-speleolosku-skolu.html",
       "media_urls": []
     },
     "5745": {
       "type": "post",
       "title": "33 godine i 57 brojeva Velebitena kasnije...",
       "slug": "33-godine-i-57-brojeva-velebitena-kasnije",
-      "url": "novosti/33-godine-i-57-brojeva-velebitena-kasnije.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2024/01/promo-1.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2024/01/promo-2.jpg?w=1080",
@@ -14845,7 +14806,6 @@
       "type": "post",
       "title": "Promocija novog Velebitena",
       "slug": "promocija-novog-velebitena-2",
-      "url": "novosti/promocija-novog-velebitena-2.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2024/01/promocija_velebiten-57.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2024/01/promocija_velebiten-57.jpg"
@@ -14855,7 +14815,6 @@
       "type": "post",
       "title": "Velebiten br. 57!",
       "slug": "velebiten-br-57",
-      "url": "novosti/velebiten-br-57.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2023/12/velebiten-57-najava.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2023/12/velebiten-57-najava.jpg",
@@ -14867,7 +14826,6 @@
       "type": "post",
       "title": "Čisto podzemlje – Maklenska jama, 18.-19.11.2023.",
       "slug": "cisto-podzemlje-maklenska-jama-18-19-11-2023",
-      "url": "novosti/cisto-podzemlje-maklenska-jama-18-19-11-2023.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2023/12/maklenska-004.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2023/12/maklenska-005.jpg?w=1080",
@@ -14932,7 +14890,6 @@
       "type": "post",
       "title": "Pakleni tajfun",
       "slug": "pakleni-tajfun",
-      "url": "novosti/pakleni-tajfun.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2023/11/ml-1.jpg?w=808",
         "https://sovelebit.wordpress.com/wp-content/uploads/2023/11/ml-2.jpg?w=1080",
@@ -14954,7 +14911,6 @@
       "type": "post",
       "title": "Speleološka ekspedicija \"Sjeverni Velebit 2023.\"",
       "slug": "speleoloska-ekspedicija-sjeverni-velebit-2023",
-      "url": "novosti/speleoloska-ekspedicija-sjeverni-velebit-2023.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2023/09/sjv-23-jurica-jagetic.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2023/09/sjv-23-krunoslav-runtas.jpg?w=1018",
@@ -14991,7 +14947,6 @@
       "type": "post",
       "title": "The way you make me feel",
       "slug": "the-way-you-make-me-feel",
-      "url": "novosti/the-way-you-make-me-feel.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2023/05/jankonka-2-nikola.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2023/05/jankonka-5-jenny.jpg?w=1080",
@@ -15021,7 +14976,6 @@
       "type": "post",
       "title": "Prve priče iz 53. škole",
       "slug": "prve-price-iz-53-skole",
-      "url": "novosti/prve-price-iz-53-skole.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2023/04/zica2_foto-marina.jpg?w=810",
         "https://sovelebit.wordpress.com/wp-content/uploads/2023/04/zica1_foto-marina.jpg?w=810",
@@ -15065,7 +15019,6 @@
       "type": "post",
       "title": "Rescuing the Depth",
       "slug": "rescuing-the-depth",
-      "url": "novosti/rescuing-the-depth.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2023/04/rescuing-the-depth-2.jpg"
       ]
@@ -15074,7 +15027,6 @@
       "type": "post",
       "title": "Čišćenje jame u Permanima",
       "slug": "ciscenje-jame-u-permanima",
-      "url": "novosti/ciscenje-jame-u-permanima.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2023/03/cp1.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2023/03/cp5.jpg?w=600",
@@ -15095,7 +15047,6 @@
       "type": "post",
       "title": "2021.-",
       "slug": "2021",
-      "url": "novosti/2021.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2023/02/51-zss.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2023/02/52-zss.jpg?w=1080",
@@ -15115,7 +15066,6 @@
       "type": "post",
       "title": "2011.-2020.",
       "slug": "2011-2020",
-      "url": "novosti/2011-2020.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2023/02/42-zss.jpg?w=960",
         "https://sovelebit.wordpress.com/wp-content/uploads/2023/02/43-skola.jpg?w=1080",
@@ -15141,7 +15091,6 @@
       "type": "post",
       "title": "2001.-2010.",
       "slug": "2001-2010",
-      "url": "novosti/2001-2010.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2023/02/skola2010-2.jpg?w=400",
         "https://sovelebit.wordpress.com/wp-content/uploads/2023/02/2004-ravni-dabar-2.jpg?w=810",
@@ -15159,7 +15108,6 @@
       "type": "post",
       "title": "1991.-2000.",
       "slug": "1991-2000",
-      "url": "novosti/1991-2000.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2023/02/1990.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2023/02/1994-lukina-foto_v_bozic.jpg?w=787",
@@ -15171,7 +15119,6 @@
       "type": "post",
       "title": "1981.-1990.",
       "slug": "1981-1990",
-      "url": "novosti/1981-1990.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2023/02/spe.skola-84.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2023/02/brosura-1972_001.jpg",
@@ -15182,7 +15129,6 @@
       "type": "post",
       "title": "1971. - 1980.",
       "slug": "1971-1980",
-      "url": "novosti/1971-1980.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2023/02/f-3.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2023/02/brosura-1972_001-1.jpg?w=256",
@@ -15206,7 +15152,6 @@
       "type": "post",
       "title": "Prijave za 53. speleološku školu",
       "slug": "otvorene-prijave-za-speleolosku-skolu",
-      "url": "novosti/otvorene-prijave-za-speleolosku-skolu.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2023/02/program-53.speleoloske-skole.pdf",
         "https://sovelebit.wordpress.com/wp-content/uploads/2023/02/program-53.speleoskole.jpg?w=1080",
@@ -15219,7 +15164,6 @@
       "type": "post",
       "title": "Česta pitanja u vezi speleo škole",
       "slug": "cesta-pitanja-u-vezi-speleo-skole",
-      "url": "novosti/cesta-pitanja-u-vezi-speleo-skole.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2023/02/sto-mi-treba.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2023/02/505a8231.jpg?w=591",
@@ -15240,7 +15184,6 @@
       "type": "post",
       "title": "SPELEON - centar podzemne baštine",
       "slug": "speleon-centar-podzemne-bastine",
-      "url": "novosti/speleon-centar-podzemne-bastine.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2023/01/speleon8.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2023/01/speleon7.jpg?w=1080",
@@ -15265,7 +15208,6 @@
       "type": "post",
       "title": "Bila je gužva",
       "slug": "bila-je-guzva",
-      "url": "novosti/bila-je-guzva.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2022/12/tulum-1.jpg?w=484",
         "https://sovelebit.wordpress.com/wp-content/uploads/2022/12/tulum-4.jpg?w=484",
@@ -15290,7 +15232,6 @@
       "type": "post",
       "title": "Djeci su izmamili osmijeh na lice!",
       "slug": "mrazovi-nad-klaicevom-part-2-22",
-      "url": "novosti/mrazovi-nad-klaicevom-part-2-22.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2022/12/penjanje1.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2022/12/penjanje3.jpg?w=1080",
@@ -15314,7 +15255,6 @@
       "type": "post",
       "title": "Ne budi Grinch, dođi na promociju i tulum",
       "slug": "ne-budi-grinch-dodi-na-promociju-i-tulum",
-      "url": "novosti/ne-budi-grinch-dodi-na-promociju-i-tulum.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2022/12/20221219_124837.jpg?w=484",
         "https://sovelebit.wordpress.com/wp-content/uploads/2022/12/20221219_124837.jpg"
@@ -15324,7 +15264,6 @@
       "type": "post",
       "title": "Božićni tulum i promocija novog Velebitena!",
       "slug": "bozicni-tulum-i-promocija-novog-velebitena",
-      "url": "novosti/bozicni-tulum-i-promocija-novog-velebitena.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2022/12/pozivnica_tulum-i-promocija.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2022/12/pozivnica_tulum-i-promocija.jpg"
@@ -15334,7 +15273,6 @@
       "type": "post",
       "title": "Novi Velebiten!",
       "slug": "novi-velebiten-3",
-      "url": "novosti/novi-velebiten-3.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2022/12/ivor-jankovic_jpgrg-1.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2022/12/velebiten-56_prednja-za-reklamu2-1.jpg?w=764",
@@ -15347,7 +15285,6 @@
       "type": "post",
       "title": "Odsječka akcija čišćenja podzemlja",
       "slug": "odsjecka-akcija-ciscenja-podzemlja",
-      "url": "novosti/odsjecka-akcija-ciscenja-podzemlja.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2022/10/1-smece-iz-vrtace.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2022/10/2-smece-u-pecini.jpg?w=1080",
@@ -15377,7 +15314,6 @@
       "type": "post",
       "title": "U sjećanje: Darko Cucančić - Cuco",
       "slug": "u-sjecanje-darko-cucancic-cuco",
-      "url": "novosti/u-sjecanje-darko-cucancic-cuco.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2022/09/cuc-i-sep-ispred-ulaza-u-panjkov-ponor-1983..jpg?w=708",
         "https://sovelebit.wordpress.com/wp-content/uploads/2022/09/darko-cucancic-2.jpg?w=320",
@@ -15395,7 +15331,6 @@
       "type": "post",
       "title": "Lipanjska ekspedicija \"Nedam 2022\" - izvještaj",
       "slug": "lipanjska-ekspedicija-nedam-2022-izvjestaj",
-      "url": "novosti/lipanjska-ekspedicija-nedam-2022-izvjestaj.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2022/08/nedam-lipanj-7_nova-najdublja-tocka-jame-nedam.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2022/08/nedam-lipanj-1.jpg?w=684",
@@ -15427,7 +15362,6 @@
       "type": "post",
       "title": "Napustio nas je Cuco",
       "slug": "napustio-nas-je-cuco",
-      "url": "novosti/napustio-nas-je-cuco.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2022/07/mg_1558-1.jpg?w=873",
         "https://sovelebit.wordpress.com/wp-content/uploads/2022/07/dsc_3841.jpg?w=955",
@@ -15448,7 +15382,6 @@
       "type": "post",
       "title": "SPELEOLOŠKA EKSPEDICIJA \"NEDAM 2022\"",
       "slug": "speleoloska-ekspedicija-nedam-2022",
-      "url": "novosti/speleoloska-ekspedicija-nedam-2022.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2022/06/fuel-exchange_photo-by-efrosina-hristova.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2022/06/fuel-exchange_photo-by-efrosina-hristova.jpg"
@@ -15458,7 +15391,6 @@
       "type": "post",
       "title": "Došao je i taj dan",
       "slug": "dosao-je-i-taj-dan",
-      "url": "novosti/dosao-je-i-taj-dan.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2022/05/img_3261.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2022/05/crnovrelo009.jpg?w=1080",
@@ -15498,7 +15430,6 @@
       "type": "post",
       "title": "Izlet škole u Rokinu bezdanu",
       "slug": "4859",
-      "url": "novosti/4859.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2022/04/img_20220409_130704_burst1.jpg?w=810",
         "https://sovelebit.wordpress.com/wp-content/uploads/2022/04/img_20220409_110118.jpg?w=1080",
@@ -15538,7 +15469,6 @@
       "type": "post",
       "title": "Ponorac i naučena lekcija",
       "slug": "ponorac-i-naucena-lekcija",
-      "url": "novosti/ponorac-i-naucena-lekcija.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2022/04/05271242.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2022/04/05271237.jpg?w=1080",
@@ -15566,7 +15496,6 @@
       "type": "post",
       "title": "Koka na krošnji",
       "slug": "koka-na-krosnji",
-      "url": "novosti/koka-na-krosnji.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2022/04/sp-3.jpg?w=790",
         "https://sovelebit.wordpress.com/wp-content/uploads/2022/04/sp-19.jpg?w=816"
@@ -15576,7 +15505,6 @@
       "type": "post",
       "title": "2. izlet speleološke škole SOV",
       "slug": "2-vikend-speleoloske-skole-sov",
-      "url": "novosti/2-vikend-speleoloske-skole-sov.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2022/03/drugi-vikend-zica.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2022/03/drugi-vikend-zica-4.jpg",
@@ -15599,7 +15527,6 @@
       "type": "post",
       "title": "Prvi izlet 52. speleološke škole",
       "slug": "prvi-izlet-52-speleoloske-skole",
-      "url": "novosti/prvi-izlet-52-speleoloske-skole.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2022/03/flir03.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2022/03/p3201479.jpg?w=1080",
@@ -15614,7 +15541,6 @@
       "type": "post",
       "title": "Promocija novog Velebitena!",
       "slug": "promocija-novog-velebitena",
-      "url": "novosti/promocija-novog-velebitena.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2022/01/reklama-velebiten-55web.jpg?w=898"
       ]
@@ -15623,7 +15549,6 @@
       "type": "post",
       "title": "Speleološki početak godine u Istri",
       "slug": "speleoloski-pocetak-godine-u-istri",
-      "url": "novosti/speleoloski-pocetak-godine-u-istri.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2022/01/autor-teksta-raki.jpg?w=693",
         "https://sovelebit.wordpress.com/wp-content/uploads/2022/01/dora-u-nategu.jpg?w=1080",
@@ -15641,7 +15566,6 @@
       "type": "post",
       "title": "52. speleološka škola",
       "slug": "52-speleoloska-skola",
-      "url": "novosti/52-speleoloska-skola.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2022/01/poste-speleo-skola-page-001.jpg?w=764",
         "https://sovelebit.wordpress.com/wp-content/uploads/2022/01/skola52_3.jpg",
@@ -15654,7 +15578,6 @@
       "type": "post",
       "title": "Produženi vikend u JSC- ulaz Kita",
       "slug": "produzeni-vikend-u-jsc-ulaz-kita",
-      "url": "novosti/produzeni-vikend-u-jsc-ulaz-kita.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2021/06/1-jsc_lipanj.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2021/06/6-jsc_lipanj_nadogradeni-truli-bivak.jpg?w=1080",
@@ -15677,7 +15600,6 @@
       "type": "post",
       "title": "Ekspedicija Nedam 2021.",
       "slug": "ekspedicija-nedam-2021",
-      "url": "novosti/ekspedicija-nedam-2021.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/08/jenny_nedam2020_3.jpg?w=720"
       ]
@@ -15686,7 +15608,6 @@
       "type": "post",
       "title": "Nacrt i morfologija špilje Munižabe",
       "slug": "nacrt-i-morfologija-spilje-munizabe",
-      "url": "novosti/nacrt-i-morfologija-spilje-munizabe.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2021/04/munizaba-profil-2008-m1-5000.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2021/04/munizaba-tlocrt-2008-m1-5000.jpg?w=1080",
@@ -15712,7 +15633,6 @@
       "type": "post",
       "title": "Munižaba (pregled istraživanja 1998.-2025.)",
       "slug": "munizaba-pregled-istrazivanja",
-      "url": "novosti/munizaba-pregled-istrazivanja.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2021/04/001-munizaba_foto_d_baksic_-ulaz.jpg?w=1024",
         "https://sovelebit.wordpress.com/wp-content/uploads/2021/04/007-munizaba_foto_d_baksic_-kaskade-veliki-kanjon.jpg?w=1024",
@@ -15803,7 +15723,6 @@
       "type": "post",
       "title": "Nastavak istraživanja u JSC",
       "slug": "nastavak-istrazivanja-u-jsc",
-      "url": "novosti/nastavak-istrazivanja-u-jsc.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2021/03/17_raki-na-ulazu_lh.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2021/03/16_lukica-i-luka-na-ulazu_mr.jpg",
@@ -15827,7 +15746,6 @@
       "type": "post",
       "title": "Projekt \"Novi fosili\" - poziv članovima PDSV",
       "slug": "projekt-novi-fosili-poziv-clanovima-so-pdsv",
-      "url": "novosti/projekt-novi-fosili-poziv-clanovima-so-pdsv.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2021/03/2pred-velebitom1.jpg?w=862",
         "https://sovelebit.wordpress.com/wp-content/uploads/2021/03/2pred-velebitom1-colorized.jpg?w=862",
@@ -15840,7 +15758,6 @@
       "type": "post",
       "title": "Velebitaši u Mic-po-mic penju",
       "slug": "velebitasi-u-mic-po-mic-penju",
-      "url": "novosti/velebitasi-u-mic-po-mic-penju.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2021/03/g0020013.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2021/03/gopr0101.jpg?w=1080",
@@ -15859,7 +15776,6 @@
       "type": "post",
       "title": "Speleoškolica kao san",
       "slug": "speleoskolica-kao-san",
-      "url": "novosti/speleoskolica-kao-san.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2021/03/50.-skola_4_autorica.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2021/03/50.-skola_1.jpg?w=810",
@@ -15877,7 +15793,6 @@
       "type": "post",
       "title": "O užetu, užetima i užadi",
       "slug": "o-uzetu-uzetima-i-uzadi",
-      "url": "novosti/o-uzetu-uzetima-i-uzadi.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2021/03/o-uzadi-2.jpg?w=640",
         "https://sovelebit.wordpress.com/wp-content/uploads/2021/03/o-uzadi-1.jpg?w=640",
@@ -15888,7 +15803,6 @@
       "type": "post",
       "title": "Kreće 51. Zagrebačka speleološka škola",
       "slug": "krece-51-zagrebacka-speleoloska-skola",
-      "url": "novosti/krece-51-zagrebacka-speleoloska-skola.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2021/02/505a8072.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2021/02/55.jpg?w=1080",
@@ -15899,7 +15813,6 @@
       "type": "post",
       "title": "Stupina jama",
       "slug": "stupina-jama",
-      "url": "novosti/stupina-jama.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2021/01/stupinajamatopo.jpg?w=578",
         "https://sovelebit.wordpress.com/wp-content/uploads/2021/01/stupina_m_garasic-01.jpg?w=752",
@@ -15923,7 +15836,6 @@
       "type": "post",
       "title": "Velebiten br. 54",
       "slug": "velebiten-br-54",
-      "url": "novosti/velebiten-br-54.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2021/01/novi-velebiten.jpg?w=938"
       ]
@@ -15932,7 +15844,6 @@
       "type": "post",
       "title": "Špiljari na Sv. brdu i u jami Duša na Crnopcu",
       "slug": "spiljari-na-sv-brdu-i-u-jami-dusa-na-crnopcu",
-      "url": "novosti/spiljari-na-sv-brdu-i-u-jami-dusa-na-crnopcu.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/12/bivakiranje-na-crnopcu.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/12/improvizirani-karimat.jpg?w=1080",
@@ -15954,7 +15865,6 @@
       "type": "post",
       "title": "Speleološko-planinarski logor za djecu",
       "slug": "speleolosko-planinarski-logor-za-djecu",
-      "url": "novosti/speleolosko-planinarski-logor-za-djecu.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/11/dsc00451.jpg?w=1080",
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/11/dsc00074.jpg?w=1080",
@@ -15974,7 +15884,6 @@
       "type": "post",
       "title": "Počinje 50. speleoškola!",
       "slug": "pocinje-50-speleoskola",
-      "url": "novosti/pocinje-50-speleoskola.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/09/50_b-stock.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/09/505a8321.jpg",
@@ -15985,7 +15894,6 @@
       "type": "post",
       "title": "Završetak speleološke ekspedicije \"Nedam 2020\"",
       "slug": "4064",
-      "url": "novosti/4064.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/08/nedam-2020_novi-nacrt.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/08/jama-ester-jedina-jama-cija-se-dubina-topljenjem-leda-smanjila.jpg",
@@ -16002,7 +15910,6 @@
       "type": "post",
       "title": "Novosti iz jame Nedam",
       "slug": "novosti-iz-jame-nedam",
-      "url": "novosti/novosti-iz-jame-nedam.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/08/posjet-hps.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/08/nedam_sifon-na-1250.jpg",
@@ -16018,14 +15925,12 @@
       "type": "post",
       "title": "Speleološka ekspedicija NEDAM 2020.",
       "slug": "speleoloska-ekspedicija-nedam-2020",
-      "url": "novosti/speleoloska-ekspedicija-nedam-2020.html",
       "media_urls": []
     },
     "3965": {
       "type": "post",
       "title": "Jama Nedam ide dalje",
       "slug": "jama-nedam-ide-dalje",
-      "url": "novosti/jama-nedam-ide-dalje.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/07/nedam.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/07/vertikala-8.5-na-1100m_foto_raki.jpg",
@@ -16061,7 +15966,6 @@
       "type": "post",
       "title": "Nedam - predakcija predakcije",
       "slug": "nedam-predakcija-predakcije",
-      "url": "novosti/nedam-predakcija-predakcije.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/06/stvari-iz-bivka-koje-je-razbacala-voda_-marko-rakovac.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/06/a-nec5a1to-je-otic5a1lo-i-u-vertikalu_-marko-rakovac.jpg",
@@ -16088,7 +15992,6 @@
       "type": "post",
       "title": "Velebitaši na Plitvicama",
       "slug": "velebitasi-na-plitvicama",
-      "url": "novosti/velebitasi-na-plitvicama.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/05/plitvice-2020_1.jpeg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/05/plitvice-2020_2.jpeg",
@@ -16112,7 +16015,6 @@
       "type": "post",
       "title": "Započela speleološka istraživanja u NP Plitvička jezera",
       "slug": "speleoloski-susreti-na-plitvicama",
-      "url": "novosti/speleoloski-susreti-na-plitvicama.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/05/sd-veles-sk-ursus-spelaeus-so-velebit_10.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/05/sk-samobor_1.jpg",
@@ -16143,7 +16045,6 @@
       "type": "post",
       "title": "Jama Patkov gušt, Sjeverni Velebit",
       "slug": "jama-patkov-gust-sjeverni-velebit",
-      "url": "novosti/jama-patkov-gust-sjeverni-velebit.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/04/2008-patkov-gust_02.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/03/zoran-stipetic487-patak_.jpg",
@@ -16172,7 +16073,6 @@
       "type": "post",
       "title": "Jama pod Kamenitim vratima",
       "slug": "jama-pod-kamenitim-vratima",
-      "url": "novosti/jama-pod-kamenitim-vratima.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/04/djuro-sekelj-i-robert-erhardt-na-345-metara-snimio-d.-petricioli.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/04/u-jami-pod-kamenitim-vratima-foto-c5bd-supic48dic487.jpg",
@@ -16183,7 +16083,6 @@
       "type": "post",
       "title": "Dachstein Mammuthöhle - zimska speleologija",
       "slug": "dachstein-mammuthohle-zimska-speleologija",
-      "url": "novosti/dachstein-mammuthohle-zimska-speleologija.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/04/dmhprofil001.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/04/dmh001.jpg",
@@ -16246,7 +16145,6 @@
       "type": "post",
       "title": "Voronya 2009.",
       "slug": "voronya-2009",
-      "url": "novosti/voronya-2009.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/04/051-game-over-2080-baksa-i-robi-foto-dimitrij-fedotov.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/04/voronja-topo-sh.jpg",
@@ -16365,7 +16263,6 @@
       "type": "post",
       "title": "Kuba - put u prošlost",
       "slug": "kuba-put-u-proslost",
-      "url": "novosti/kuba-put-u-proslost.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/04/001-habana.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/04/004-habana.jpg",
@@ -16409,7 +16306,6 @@
       "type": "post",
       "title": "Speleološka ekspedicija 'Kuba 2004-2005.'",
       "slug": "speleoloska-ekspedicija-kuba-2004-2005",
-      "url": "novosti/speleoloska-ekspedicija-kuba-2004-2005.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/04/krskube.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/04/majagua.jpg",
@@ -16484,7 +16380,6 @@
       "type": "post",
       "title": "Živi svijet i osnovni pojmovi u speleologiji",
       "slug": "zivi-svijet-i-osnovni-pojmovi-u-speleologiji",
-      "url": "novosti/zivi-svijet-i-osnovni-pojmovi-u-speleologiji.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/04/2006-spiljaprovala-zumbera-foto_d_paar.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/04/c48dovjec48dja-ribica.jpg"
@@ -16494,7 +16389,6 @@
       "type": "post",
       "title": "Pijavica Croatobranchus mestrovi",
       "slug": "pijavica-croatobranchus-mestrovi",
-      "url": "novosti/pijavica-croatobranchus-mestrovi.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/04/velebita10_croatobranchus_dp.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/04/croatobranchus_drawing.jpg",
@@ -16516,7 +16410,6 @@
       "type": "post",
       "title": "Sistem BC-4, Mala Boka",
       "slug": "sistem-bc-4-mala-boka",
-      "url": "novosti/sistem-bc-4-mala-boka.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/04/mala-boka_2.-pristup.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/04/mala-boka_3.-pristup.jpg",
@@ -16550,7 +16443,6 @@
       "type": "post",
       "title": "Glavu gore, nema predaje!",
       "slug": "glavu-gore-nema-predaje",
-      "url": "novosti/glavu-gore-nema-predaje.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/04/sov_cz_glavu-gore.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/04/sov_1.jpg",
@@ -16575,7 +16467,6 @@
       "type": "post",
       "title": "Odgovorno i u prirodu za vrijeme pandemije",
       "slug": "odgovorno-i-u-prirodu-za-vrijeme-pandemije",
-      "url": "novosti/odgovorno-i-u-prirodu-za-vrijeme-pandemije.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/03/hgss_400x400.jpg"
       ]
@@ -16584,14 +16475,12 @@
       "type": "post",
       "title": "Odgađaju se sastanci i 50. škola!",
       "slug": "odgadaju-se-sastanci-i-50-skola",
-      "url": "novosti/odgadaju-se-sastanci-i-50-skola.html",
       "media_urls": []
     },
     "3234": {
       "type": "post",
       "title": "Đula-Medvedica; nakon 85 godina ponovo kroz Poljakov prolaz",
       "slug": "3234",
-      "url": "novosti/3234.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/02/poljakov-prolaz-foto-dalibor-paar.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/02/poljakov-prolaz-sov-15.2.2020..jpg"
@@ -16601,7 +16490,6 @@
       "type": "post",
       "title": "2019-a godina na našem portalu...",
       "slug": "2019-a-godina-na-nasem-portalu",
-      "url": "novosti/2019-a-godina-na-nasem-portalu.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/01/1.-od-kuda-su-nas-sve-posjetili.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/01/search-engines.jpg",
@@ -16614,7 +16502,6 @@
       "type": "post",
       "title": "Izborna skupština SOV",
       "slug": "izborna-skupstina-sov",
-      "url": "novosti/izborna-skupstina-sov.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/01/20200117_195821.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/01/valentina.jpg",
@@ -16631,7 +16518,6 @@
       "type": "post",
       "title": "50. Zagrebačka speleološka škola",
       "slug": "50-zagrebacka-speleoloska-skola",
-      "url": "novosti/50-zagrebacka-speleoloska-skola.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/01/15_45-speleoskola.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/01/12_45-speleoskola.jpg",
@@ -16657,7 +16543,6 @@
       "type": "post",
       "title": "NOVI VELEBITEN!",
       "slug": "novi-velebiten-2",
-      "url": "novosti/novi-velebiten-2.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/11/velebiten-br-53.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/11/velebiten-br-53_crop.jpg",
@@ -16668,7 +16553,6 @@
       "type": "post",
       "title": "Radne akcije na Ratkovom skloništu",
       "slug": "radne-akcije-na-ratkovom-sklonistu",
-      "url": "novosti/radne-akcije-na-ratkovom-sklonistu.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/10/1_ratkovo-2019..jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/10/2_ratkovo-2019..jpg",
@@ -16688,7 +16572,6 @@
       "type": "post",
       "title": "Eisriesenwelt: Divovski ledeni svijet",
       "slug": "divovski-ledeni-svijet",
-      "url": "novosti/divovski-ledeni-svijet.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/10/3_eiswerfen-2019_hotel-u-kojem-smo-se-smjestili-odmah-pod-tennenom.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/10/9_eiswerfen-2019_burg-hohenwerfen.jpg",
@@ -16779,7 +16662,6 @@
       "type": "post",
       "title": "Speleološka ekspedicija SOV - \"KINA 1988.\"",
       "slug": "speleoloska-ekspedicija-sov-kina-1988",
-      "url": "novosti/speleoloska-ekspedicija-sov-kina-1988.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/10/naslovna-kina-1988_b.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/10/speleolog-25-1988-1989.jpg",
@@ -16841,7 +16723,6 @@
       "type": "post",
       "title": "Jama Nedam - nova hrvatska tisućica!",
       "slug": "jama-nedam-nova-hrvatska-tisucica",
-      "url": "novosti/jama-nedam-nova-hrvatska-tisucica.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/09/nedam-13-15-9-2019.-marijan-sutlovic487-mak-sedmak-slaven-boban-i-darko-troha.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/09/jama-nedam-16.9.2019.jpg",
@@ -16853,7 +16734,6 @@
       "type": "post",
       "title": "Nedam blizu -1000!",
       "slug": "2700",
-      "url": "novosti/2700.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/09/kamen2.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/09/19_ekipa-s-dna_sutla-c5a0arc-i-lovel.jpg",
@@ -16869,14 +16749,12 @@
       "type": "post",
       "title": "Nedam na -740. Ide dalje.",
       "slug": "nedam-na-740",
-      "url": "novosti/nedam-na-740.html",
       "media_urls": []
     },
     "2651": {
       "type": "post",
       "title": "\"Nedam\" je pokleknula",
       "slug": "nedam-je-pokleknula",
-      "url": "novosti/nedam-je-pokleknula.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/06/1.nacrt-jame-nedam.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/06/2.odnos-nedam-lubuc5a1ka-i-lukina.png",
@@ -16899,7 +16777,6 @@
       "type": "post",
       "title": "Mandelaja",
       "slug": "mandelaja",
-      "url": "novosti/mandelaja.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/06/mandelaja_1.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/06/mandelaja_2.jpg",
@@ -16914,7 +16791,6 @@
       "type": "post",
       "title": "T2 - ili kako to Mađari rade",
       "slug": "t2-ili-kako-to-madari-rade",
-      "url": "novosti/t2-ili-kako-to-madari-rade.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/05/3.-t2-logo.jpeg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/05/13.-testiranje-krola.jpg",
@@ -16941,7 +16817,6 @@
       "type": "post",
       "title": "Interview: Marko Rakovac",
       "slug": "interview-marko-rakovac",
-      "url": "novosti/interview-marko-rakovac.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/05/akcija-spac5a1avanja-unesrec487enog-speleologa-u-jami-riesending-njemac48dka-2014-.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/05/dio-sudionika-bugarsko-hrvatske-ekspedicije-slovac48dka-jama-2017-fotoef80a2-marko-rakovac.jpg",
@@ -16957,7 +16832,6 @@
       "type": "post",
       "title": "Nova podzemljarska generacija",
       "slug": "2549",
-      "url": "novosti/2549.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/05/5.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/05/9-1.jpg",
@@ -16998,7 +16872,6 @@
       "type": "post",
       "title": "Izlet speleoškole na Ponorac",
       "slug": "izlet-speleoskole-na-ponorac",
-      "url": "novosti/izlet-speleoskole-na-ponorac.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/05/ponorac_8.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/05/20.jpg",
@@ -17028,7 +16901,6 @@
       "type": "post",
       "title": "SPELEOLOGIJA - 2. izdanje!",
       "slug": "speleologija-2-izdanje",
-      "url": "novosti/speleologija-2-izdanje.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/04/speleologija013.jpg"
       ]
@@ -17037,7 +16909,6 @@
       "type": "post",
       "title": "Tounjčica speleoronjenjem spojena sa Špiljom u kamenolomu Tounj",
       "slug": "tounjcica-speleoronjenjem-spojena-sa-spiljom-u-kamenolomu-tounj",
-      "url": "novosti/tounjcica-speleoronjenjem-spojena-sa-spiljom-u-kamenolomu-tounj.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/04/tounjc48dica-i-mamutovo-2019..jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/04/c5a0pilja-tounjc48dica-i-sifon.jpg",
@@ -17060,7 +16931,6 @@
       "type": "post",
       "title": "Velebitaši opet u Panjkovom ponoru",
       "slug": "kaos-u-krslji",
-      "url": "novosti/kaos-u-krslji.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/03/sustav-panjkov-ponor-krc5a1lje.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/03/na-ulazu-u-panjkov-ponor-1983.-s-lijeva-marijan-c48cepelak-darko-cucanc48dic487-i-robert-erhardt-1.jpg",
@@ -17087,7 +16957,6 @@
       "type": "post",
       "title": "Mora li svaki izlet biti speleološki da bi bio dobar?",
       "slug": "mora-li-svaki-izlet-biti-speleoloski-da-bi-bio-dobar",
-      "url": "novosti/mora-li-svaki-izlet-biti-speleoloski-da-bi-bio-dobar.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/03/lic48dke-pric48de_2.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/03/lic48dke-pric48de_5.jpg",
@@ -17106,7 +16975,6 @@
       "type": "post",
       "title": "Samo pedalaj",
       "slug": "samo-pedalaj",
-      "url": "novosti/samo-pedalaj.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/03/1_samo-pedalaj.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/03/2_noc487ni-vlak.jpg",
@@ -17129,7 +16997,6 @@
       "type": "post",
       "title": "Godišnja skupština SO Velebit",
       "slug": "godisnja-skupstina-so-velebit",
-      "url": "novosti/godisnja-skupstina-so-velebit.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/03/skupc5a1tina-2019-escobarov-pouc48dak-tajnic48dko-izvjec5a1c487e-1.jpg"
       ]
@@ -17138,7 +17005,6 @@
       "type": "post",
       "title": "GAMEBOSKOP - iz zafrkancije u legendu",
       "slug": "gameboskop-iz-zafrkancije-u-legendu",
-      "url": "novosti/gameboskop-iz-zafrkancije-u-legendu.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/02/sudionici-ekspedicije-grenland-1971.-u-logoru-ispod-ingolsfjelda-hrvoje-lukatela-branko-c5a0eparovic487-jerko-kirigin-nenad-c48culic487-vladimir-mesaric487-marijan-c48cepelak-i-dolfi-rot.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/02/gameboskop2.jpg",
@@ -17152,7 +17018,6 @@
       "type": "post",
       "title": "Izložba fotografija PDS Velebit",
       "slug": "izlozba-fotografija-pds-velebit",
-      "url": "novosti/izlozba-fotografija-pds-velebit.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/01/marjan-prpić_baške-oštarije_velebit.jpg"
       ]
@@ -17161,7 +17026,6 @@
       "type": "post",
       "title": "Čudna šuma",
       "slug": "2197",
-      "url": "novosti/2197.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/01/14a_prvi-i-nažalost-jedini-te-bivši-hrvatski-speleološki-dom.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/01/1_čudne-parole-uvode-nas-u-čudnu-šumu.jpg",
@@ -17181,7 +17045,6 @@
       "type": "post",
       "title": "Nova Godina u Kiti ili Netko nas sabotira",
       "slug": "nova-godina-u-kiti-ili-netko-nas-sabotira",
-      "url": "novosti/nova-godina-u-kiti-ili-netko-nas-sabotira.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/01/0_pripreme-za-ulazak-u-jamu.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/01/8_hc-mace-i-bednici.jpg",
@@ -17208,7 +17071,6 @@
       "type": "post",
       "title": "49. ZAGREBAČKA SPELEOLOŠKA ŠKOLA",
       "slug": "49-zagrebacka-speleoloska-skola",
-      "url": "novosti/49-zagrebacka-speleoloska-skola.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/01/speleološka-škola-so-pds-velebit-2019.jpg"
       ]
@@ -17217,7 +17079,6 @@
       "type": "post",
       "title": "Crtice sa Skupa speleologa Hrvatske",
       "slug": "crtice-sa-skupa",
-      "url": "novosti/crtice-sa-skupa.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/11/skup-speleologa_dodjela-nagrada-za-najbolju-speleoloc5a1ku-fotografiju.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/11/skup-speleologa_natjec48daj-za-najbolju-speleoloc5a1ku-fotografiju.jpg",
@@ -17233,7 +17094,6 @@
       "type": "post",
       "title": "Balada o slušnom aparatiću i usponu na Mont Blanc (2. dio)",
       "slug": "balada-o-slusnom-aparaticu-i-usponu-na-mont-blanc-2-dio",
-      "url": "novosti/balada-o-slusnom-aparaticu-i-usponu-na-mont-blanc-2-dio.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/11/foto-15-dalek-je-put-do-tete-rousse.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/11/foto-15a-na-poc48detku-uspona-treba-proc487i-kroz-ledenjak.jpg",
@@ -17255,7 +17115,6 @@
       "type": "post",
       "title": "Otvaranjem dviju izložbi počeo tjedan speleologije u Ogulinu",
       "slug": "2100",
-      "url": "novosti/2100.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/11/dalibor-paar-sov.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/11/dio-izloc5bebe-vode-podzemlja-c48dlanova-hss.jpg",
@@ -17272,7 +17131,6 @@
       "type": "post",
       "title": "Balada o slušnom aparatiću i usponu na Mont Blanc (1. dio)",
       "slug": "balada-o-slusnom-aparaticu-i-usponu-na-mont-blanc-1-dio",
-      "url": "novosti/balada-o-slusnom-aparaticu-i-usponu-na-mont-blanc-1-dio.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/11/foto-1-prikaz-drame-na-freney-pillar-1961.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/11/foto-2-mazeaud-vieille-kohlman-na-bivku-1-central-pillar.jpg",
@@ -17292,7 +17150,6 @@
       "type": "post",
       "title": "Šešeljevac",
       "slug": "seseljevac",
-      "url": "novosti/seseljevac.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/11/konj-a-u-pozadini-teren-od-interesa.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/11/vrtac48da-c5a1ec5a1eljevac.jpg",
@@ -17311,7 +17168,6 @@
       "type": "post",
       "title": "Istraživanje pod Meduzom (KG_DP)",
       "slug": "istrazivanje-pod-meduzom-kg-dp",
-      "url": "novosti/istrazivanje-pod-meduzom-kg-dp.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/11/prec48dka-u-nove-dijelove_foto-m-rakovac.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/11/novi-dijelovi-na-vrhu-vertikale-pod-meduzom_foto-ana-lipovac.jpg",
@@ -17334,7 +17190,6 @@
       "type": "post",
       "title": "Izlet na Glogovo",
       "slug": "izlet-na-glogovo",
-      "url": "novosti/izlet-na-glogovo.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/11/donja-cerovac48dka-a-bakc5a1ic487.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/11/donja-cerovac48dka-a-bakc5a1ic4871.jpg",
@@ -17350,7 +17205,6 @@
       "type": "post",
       "title": "Šestorka u Bunjevcu (Bunovcu)",
       "slug": "sestorka-u-bunjevcu-bunovcu",
-      "url": "novosti/sestorka-u-bunjevcu-bunovcu.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/10/na-ulazu-foto-marko-rakovac.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/10/poziranjeu-bunovcu-foto-marko-rakovac.jpg",
@@ -17362,7 +17216,6 @@
       "type": "post",
       "title": "Vježba \"Zagreb 2018.\"",
       "slug": "vjezba-zagreb-2018",
-      "url": "novosti/vjezba-zagreb-2018.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/10/vjec5beba-zagreb-2018_-foto-marko-prpic487.jpeg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/10/1-foto-hrvoje-grgic487_maglovito-okupljanje.jpg",
@@ -17391,7 +17244,6 @@
       "type": "post",
       "title": "Međunarodna speleospasilačka vježba u Skalarjevom breznu",
       "slug": "medunarodna-speleospasilacka-vjezba-u-skalarjevom-breznu",
-      "url": "novosti/medunarodna-speleospasilacka-vjezba-u-skalarjevom-breznu.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/10/brezno_1.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/10/brezno_6.jpg",
@@ -17410,7 +17262,6 @@
       "type": "post",
       "title": "Puna Kita iskustva",
       "slug": "kita-u-rujnu",
-      "url": "novosti/kita-u-rujnu.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/09/makova-povezanost-s-kuhinjom.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/09/priprema-za-akciju.jpg",
@@ -17424,7 +17275,6 @@
       "type": "post",
       "title": "Fosilijada 2018.",
       "slug": "fosilijada-2018",
-      "url": "novosti/fosilijada-2018.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/09/ali-pjesma-ne-posustaje.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/09/davorin-zupanic48d.jpg",
@@ -17443,7 +17293,6 @@
       "type": "post",
       "title": "Novi Velebiten!",
       "slug": "novi-velebiten",
-      "url": "novosti/novi-velebiten.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/05/velebiten_br52.jpg"
       ]
@@ -17452,7 +17301,6 @@
       "type": "post",
       "title": "Plava jakna",
       "slug": "plava-jakna",
-      "url": "novosti/plava-jakna.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/05/lijec48dnica-gigliola-mancinelli.jpeg"
       ]
@@ -17461,7 +17309,6 @@
       "type": "post",
       "title": "Glazba i kamenje: nemogući razgovori?",
       "slug": "glazba-i-kamenje-nemoguci-razgovori",
-      "url": "novosti/glazba-i-kamenje-nemoguci-razgovori.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/05/1_kameni-timpani-u-adiosu.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/05/2_kameni-timpani-u-adiosu.jpg",
@@ -17472,7 +17319,6 @@
       "type": "post",
       "title": "Prvo pa Kita.",
       "slug": "prvo-pa-kita",
-      "url": "novosti/prvo-pa-kita.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/05/kita-35_-gunslinger-girls.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/05/kita-35_-di-c487emo-c5a1ta-c487emo.jpg",
@@ -17497,7 +17343,6 @@
       "type": "post",
       "title": "Završila 48. zagrebačka speleološka škola",
       "slug": "zavrsila-48-zagrebacka-speleoloska-skola",
-      "url": "novosti/zavrsila-48-zagrebacka-speleoloska-skola.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/04/481.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/04/482.jpg",
@@ -17531,7 +17376,6 @@
       "type": "post",
       "title": "IN MEMORIAM Zoran Stipetić – Patak (1960. – 1996.)",
       "slug": "in-memoriam-zoran-stipetic-patak-1960-1996",
-      "url": "novosti/in-memoriam-zoran-stipetic-patak-1960-1996.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/03/zoran-stipetic487-patak_.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/03/ravni-dabar-davor-peric487-darko-bakc5a1ic487-i-zoran-stipetic487-patak.jpg",
@@ -17545,7 +17389,6 @@
       "type": "post",
       "title": "Četvrti tjedan planinarstva i penjanja u Sloveniji",
       "slug": "cetvrti-tjedan-planinarstva-i-penjanja-u-sloveniji",
-      "url": "novosti/cetvrti-tjedan-planinarstva-i-penjanja-u-sloveniji.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/03/img_0579.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/03/img_0580.jpg",
@@ -17559,7 +17402,6 @@
       "type": "post",
       "title": "Zimska posla",
       "slug": "zimska-posla",
-      "url": "novosti/zimska-posla.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/03/avantura-poc48dinje.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/03/dan-prvi-veliki-lubenovac.jpg",
@@ -17572,7 +17414,6 @@
       "type": "post",
       "title": "Održana godišnja skupština SOV",
       "slug": "odrzana-godisnja-skupstina-sov",
-      "url": "novosti/odrzana-godisnja-skupstina-sov.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/03/novo-vodstvo-sov-a.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/06/baner_slovacka_2017.jpg",
@@ -17591,7 +17432,6 @@
       "type": "post",
       "title": "Održani ispiti za stjecanje naziva Speleolog",
       "slug": "odrzani-ispiti-za-stjecanje-naziva-speleolog",
-      "url": "novosti/odrzani-ispiti-za-stjecanje-naziva-speleolog.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/01/novi-speleolozi-2018.jpg"
       ]
@@ -17600,7 +17440,6 @@
       "type": "post",
       "title": "Upisi na 48. Zagrebačku speleološku školu",
       "slug": "upisi-na-48-zagrebacku-speleolosku-skolu",
-      "url": "novosti/upisi-na-48-zagrebacku-speleolosku-skolu.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/01/speleoloc5a1ka-c5a1kola-so-velebit_2018.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/01/program-48-zagrebacke-speleoloske-skole-so-velebit.pdf",
@@ -17611,7 +17450,6 @@
       "type": "post",
       "title": "Doček Nove u Kiti",
       "slug": "docek-nove-u-kiti",
-      "url": "novosti/docek-nove-u-kiti.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/01/zvonimir.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2018/01/loko-na-poslu.jpg",
@@ -17628,7 +17466,6 @@
       "type": "post",
       "title": "Vikend u Zračku nade II",
       "slug": "vikend-u-zracku-nade-ii",
-      "url": "novosti/vikend-u-zracku-nade-ii.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/12/6-curke-u-kastvu.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/12/luka-se-sanjka-po-guzici.jpg",
@@ -17643,7 +17480,6 @@
       "type": "post",
       "title": "128. istraživanje Kite iliti 34.282 m",
       "slug": "128-istrazivanje-kite-iliti-34-282-m",
-      "url": "novosti/128-istrazivanje-kite-iliti-34-282-m.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/12/edo.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/12/5.jpg",
@@ -17665,7 +17501,6 @@
       "type": "post",
       "title": "Kako smo se (dobro) proveli na Skupu speleologa 2017.",
       "slug": "kako-smo-se-dobro-proveli-na-skupu-speleologa",
-      "url": "novosti/kako-smo-se-dobro-proveli-na-skupu-speleologa.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/11/ukrcaj-robe-i-putnika.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/11/ekipa-iz-zadnjeg-dijela-busa.jpg",
@@ -17693,7 +17528,6 @@
       "type": "post",
       "title": "Hrtići u Beogradu",
       "slug": "hrtici-u-beogradu",
-      "url": "novosti/hrtici-u-beogradu.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/11/beogradskim-ulicama-a-bakc5a1ic487.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/11/podigni-jugic487a-d-c5a1panja.jpg",
@@ -17720,7 +17554,6 @@
       "type": "post",
       "title": "Bavarski dvorci na Velebitaški način",
       "slug": "bavarski-dvorci-na-velebitaski",
-      "url": "novosti/bavarski-dvorci-na-velebitaski.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/11/1-jezero-elbsee-d-c5a1panja.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/11/21-visec487i-most-112m-visok-i-400m-dug-a-bakc5a1ic487.jpg",
@@ -17770,7 +17603,6 @@
       "type": "post",
       "title": "Svi putevi vode u Burinku",
       "slug": "svi-putevi-vode-u-burinku",
-      "url": "novosti/svi-putevi-vode-u-burinku.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/11/dscn3114.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/11/dscn3141.jpg",
@@ -17787,7 +17619,6 @@
       "type": "post",
       "title": "Tri gracije u bočnom kanalu",
       "slug": "tri-gracije-u-bocnom-kanalu",
-      "url": "novosti/tri-gracije-u-bocnom-kanalu.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/10/adios-jesenski-pogled-iz-amfiteatra-d-c5a1panja.jpg?w=225",
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/10/pod-lipovac48dom-vuneni-odbor-za-doc48dek-speleologa-m-prpic487.jpg?w=300",
@@ -17811,7 +17642,6 @@
       "type": "post",
       "title": "\"Usrani\" izlet u Đulu-Medvedicu",
       "slug": "usrani-izlet-u-dulu-medvedicu",
-      "url": "novosti/usrani-izlet-u-dulu-medvedicu.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/10/gimlijev-prolaz.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/10/pa220430_.jpg",
@@ -17827,7 +17657,6 @@
       "type": "post",
       "title": "Nas tri same",
       "slug": "nas-tri-same",
-      "url": "novosti/nas-tri-same.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/10/norvec5beanka-ana-bakc5a1ic487.jpg?w=225",
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/10/karta-22_23_7_2017.jpg",
@@ -17845,7 +17674,6 @@
       "type": "post",
       "title": "Oprosti za kung-fu",
       "slug": "oprosti-za-kung-fu",
-      "url": "novosti/oprosti-za-kung-fu.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/10/1-da-ne-bi-prifalilo.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/10/2-dobar-dan-doc5a1li-smo-vas-spasiti.jpg",
@@ -17873,7 +17701,6 @@
       "type": "post",
       "title": "Kitarenje u prozi",
       "slug": "kitarenje-u-prozi",
-      "url": "novosti/kitarenje-u-prozi.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/10/kitarenje-u-listopadu_kruc5beok-oko-stola.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/10/kitarenje-u-listopadu_lic48dko-u-modu-gore-dolje.jpg",
@@ -17885,7 +17712,6 @@
       "type": "post",
       "title": "Promocija knjige Speleologija",
       "slug": "promocija-knjige-speleologija",
-      "url": "novosti/promocija-knjige-speleologija.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/09/speleologija_900_700_withoutgrow.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/09/promocija-knjige-speleologija-01.jpg",
@@ -17910,7 +17736,6 @@
       "type": "post",
       "title": "Kiše i sunčanice",
       "slug": "kise-i-suncanice",
-      "url": "novosti/kise-i-suncanice.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/09/adios_iskrcavanjeu-blato-pod-lipovac48dom.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/09/adios_malo-nam-se-neda.jpg",
@@ -17943,7 +17768,6 @@
       "type": "post",
       "title": "Muda ipak nisu nalik Kiti",
       "slug": "muda-ipak-nisu-nalik-kiti",
-      "url": "novosti/muda-ipak-nisu-nalik-kiti.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/08/muda-i-sov-2017_atmosfera-u-logoru-na-mudima.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/08/muda-i-sov-2017_prvi-tehnic48dki-penj.jpg",
@@ -17970,7 +17794,6 @@
       "type": "post",
       "title": "Kako sam planinario u Visokim Tatrima",
       "slug": "kako-sam-planinario-u-visokim-tatrima",
-      "url": "novosti/kako-sam-planinario-u-visokim-tatrima.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/07/erasmus-plus-program.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/07/hrvatski-tim.png",
@@ -17991,7 +17814,6 @@
       "type": "post",
       "title": "Slovačka 2017. - izvještaj",
       "slug": "slovacka-2017-izvjestaj",
-      "url": "novosti/slovacka-2017-izvjestaj.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/07/slovac48dka-2017_istrac5beivanje-u-limbo-kanalu.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/07/slovac48dka-2017_sifon-u-kic5a1nim-vratima-1290-m.jpg",
@@ -18007,7 +17829,6 @@
       "type": "post",
       "title": "Njegov tata je imao kuburu",
       "slug": "njegov-tata-je-imao-kuburu",
-      "url": "novosti/njegov-tata-je-imao-kuburu.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/06/filac1.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/06/filac2.jpg",
@@ -18021,7 +17842,6 @@
       "type": "post",
       "title": "Maroko u mom oku",
       "slug": "maroko-u-mom-oku",
-      "url": "novosti/maroko-u-mom-oku.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/06/maroko-u-mojim-oc48dima_balkanci-na-milanskom-aerodromu.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/06/maroko_tko-tu-koga-jac5a1e-ili-slic48di.jpg",
@@ -18043,7 +17863,6 @@
       "type": "post",
       "title": "Nove SOV majice!",
       "slug": "nove-sov-majice",
-      "url": "novosti/nove-sov-majice.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/06/c5beenska-used-rasberry.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/06/muc5a1ka-navy.jpg",
@@ -18057,7 +17876,6 @@
       "type": "post",
       "title": "Velebitaški hipiji na Cvjetnom",
       "slug": "velebitaski-hipiji-na-cvjetnom",
-      "url": "novosti/velebitaski-hipiji-na-cvjetnom.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/06/cest_11.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/06/cest_2.jpg",
@@ -18076,7 +17894,6 @@
       "type": "post",
       "title": "Pseće muke po Glogovu",
       "slug": "psece-muke-po-glogovu",
-      "url": "novosti/psece-muke-po-glogovu.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/06/glogovski-pejzac5be-2.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/06/glogovo_ajde-molim-te-upali-se.jpg",
@@ -18092,7 +17909,6 @@
       "type": "post",
       "title": "Slovačka jama 2017.",
       "slug": "slovacka-jama-2017",
-      "url": "novosti/slovacka-jama-2017.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/06/baner_slovacka_2017.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/06/slovacka02_foto_d_baksic023.jpg"
@@ -18102,7 +17918,6 @@
       "type": "post",
       "title": "Ekspedicija Rožanski kukovi 2017.",
       "slug": "ekspedicija-rozanski-kukovi-2017",
-      "url": "novosti/ekspedicija-rozanski-kukovi-2017.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/06/roc5beanski-kukovi-okomita_fj.jpg"
       ]
@@ -18111,21 +17926,18 @@
       "type": "post",
       "title": "Vodič kroz Namibiju (za Velebitange)",
       "slug": "vodic-kroz-namibiju-za-velebitange",
-      "url": "novosti/vodic-kroz-namibiju-za-velebitange.html",
       "media_urls": []
     },
     "182": {
       "type": "post",
       "title": "33.333 metara Kite!",
       "slug": "uskrsnja-kita",
-      "url": "novosti/uskrsnja-kita.html",
       "media_urls": []
     },
     "234": {
       "type": "post",
       "title": "Brezno rumenega maka",
       "slug": "brezno-rumenega-maka",
-      "url": "novosti/brezno-rumenega-maka.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/05/na-vrhu-c5beic48dare-u-bovcu-s-lijeva-na-desno_-c5a1pela-borko-marko-rakovac-marijan-sutlovic487-aleksandra-privc5a1ek-tomac5be-kranjc-foto_-matic-di-batista.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/05/druc5a1tvo-na-okupu-ispred-jamarskog-bivka-foto_-domagoj-korais.jpg",
@@ -18137,7 +17949,6 @@
       "type": "post",
       "title": "47. zagrebačka speleoškola",
       "slug": "47-zagrebacka-speleoskola",
-      "url": "novosti/47-zagrebacka-speleoskola.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/05/1bc.jpg?w=207",
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/05/plakat47.jpg"
@@ -18147,7 +17958,6 @@
       "type": "post",
       "title": "Prvi izlet nakon škole (a nema Luke da sastavi tekst)",
       "slug": "prvi-izlet-nakon-skole-a-nema-luke-da-sastavi-tekst",
-      "url": "novosti/prvi-izlet-nakon-skole-a-nema-luke-da-sastavi-tekst.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/06/1_ratkovo-sklonic5a1te-foto-nikolina-buljan.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/06/2_vic5a1nja-u-snijegu-foto-nikolina-buljan.jpg",
@@ -18159,7 +17969,6 @@
       "type": "post",
       "title": "46. zagrebačka speleoškola",
       "slug": "46-zagrebacka-speleoskola",
-      "url": "novosti/46-zagrebacka-speleoskola.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/05/46_speleoskola_andrija.jpg?w=154",
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/05/plakat-46.jpg"
@@ -18169,7 +17978,6 @@
       "type": "post",
       "title": "Rokina bezdana - ispit speleološke škole 2015.",
       "slug": "rokina-bezdana-ispit-speleoloske-skole-2015",
-      "url": "novosti/rokina-bezdana-ispit-speleoloske-skole-2015.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/06/na-hladnom-u-drvarnici.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/06/na-hladnom-u-drvarnici.jpg?w=200",
@@ -18206,7 +18014,6 @@
       "type": "post",
       "title": "45. zagrebačka speleoškola",
       "slug": "45-zagrebacka-speleoskola",
-      "url": "novosti/45-zagrebacka-speleoskola.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/05/45_speleoskola_marin.jpg?w=169"
       ]
@@ -18215,7 +18022,6 @@
       "type": "post",
       "title": "Gorsko zrcalo nekad i danas",
       "slug": "gorsko-zrcalo-nekad-i-danas",
-      "url": "novosti/gorsko-zrcalo-nekad-i-danas.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/06/gorsko-zrcalo-e28093-speleoloc5a1ka-c5a1kola-2015-foto_-marjan-prpicc487-luka.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/06/gorsko-zrcalo-e28093-speleoloc5a1ka-c5a1kola-2015-foto_-marjan-prpicc487-luka.jpg?w=225",
@@ -18229,7 +18035,6 @@
       "type": "post",
       "title": "1959. Prvo ronjenje u špilji u Hrvatskoj",
       "slug": "1959-prvo-ronjenje-u-spilji-u-hrvatskoj",
-      "url": "novosti/1959-prvo-ronjenje-u-spilji-u-hrvatskoj.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/06/veternica-e28093-hrvoje-malinar-kod-sifonskog-jezera-1959.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/06/veternica-e28093-hrvoje-malinar-kod-sifonskog-jezera-1959.jpg?w=204",
@@ -18262,7 +18067,6 @@
       "type": "post",
       "title": "Sa snijegom u noći u Avatar ću poći",
       "slug": "sa-snijegom-u-noci-u-avatar-cu-poci",
-      "url": "novosti/sa-snijegom-u-noci-u-avatar-cu-poci.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2014/10/avatar_nacrt_c5a1mida.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2014/10/avatar_nacrt_c5a1mida.jpg?w=197",
@@ -18281,18 +18085,10 @@
         "https://sovelebit.wordpress.com/wp-content/uploads/2014/10/stjepan-spreman-za-ulaz-u-jamu.jpg"
       ]
     },
-    "4": {
-      "type": "page",
-      "title": "Pitajte nas",
-      "slug": "contact",
-      "url": "legacy-wordpress/stranice/contact.html",
-      "media_urls": []
-    },
     "2": {
       "type": "page",
       "title": "Zašto ste došli upravo na ove stranice",
       "slug": "home",
-      "url": "legacy-wordpress/stranice/home.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/10/group-cave-men-and-women-cleaning-the-cave-with-broom.png",
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/03/baner_rozanski_2017.jpg",
@@ -18320,18 +18116,22 @@
         "https://sovelebit.wordpress.com/wp-content/uploads/2026/01/navjestenje-56.jpg"
       ]
     },
+    "4": {
+      "type": "page",
+      "title": "Pitajte nas",
+      "slug": "contact",
+      "media_urls": []
+    },
     "145": {
       "type": "page",
       "title": "Novosti",
       "slug": "vijesti",
-      "url": "legacy-wordpress/stranice/vijesti.html",
       "media_urls": []
     },
     "228": {
       "type": "page",
       "title": "Povijest",
       "slug": "povijest",
-      "url": "legacy-wordpress/stranice/povijest.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2020/10/2020_70_50_30_b.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2022/11/velebiten-54.jpg",
@@ -18348,21 +18148,18 @@
       "type": "page",
       "title": "Tko smo mi, čime se i gdje bavimo te ponajviše zašto",
       "slug": "o-nama",
-      "url": "legacy-wordpress/stranice/o-nama.html",
       "media_urls": []
     },
     "415": {
       "type": "page",
       "title": "Velebitaški duh",
       "slug": "velebitaski-duh",
-      "url": "legacy-wordpress/stranice/velebitaski-duh.html",
       "media_urls": []
     },
     "416": {
       "type": "page",
       "title": "Pročelništvo",
       "slug": "procelnistvo",
-      "url": "legacy-wordpress/stranice/procelnistvo.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2024/03/mislav-sajko.jpg?w=392",
         "https://sovelebit.wordpress.com/wp-content/uploads/2022/03/barbara-domitrovic.jpg",
@@ -18385,7 +18182,6 @@
       "type": "page",
       "title": "Velebiten",
       "slug": "velebiten",
-      "url": "legacy-wordpress/stranice/velebiten.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/05/velebiten47.jpg?w=219",
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/05/velebiten-br1_1990.pdf",
@@ -18408,7 +18204,6 @@
       "type": "page",
       "title": "Speleoškola",
       "slug": "speleoskola",
-      "url": "legacy-wordpress/stranice/speleoskola.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2023/02/ivan-kruhak.-vjezbe-na-gorskom-zrcalu-26.-ozujka-1967.-opis-fotke-u-1971.sk_.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/05/naslovna.jpg"
@@ -18418,7 +18213,6 @@
       "type": "page",
       "title": "Uredništvo portala",
       "slug": "urednistvo-portala",
-      "url": "legacy-wordpress/stranice/urednistvo-portala.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/12/idi-i-amin.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/12/ispred-svih-uspjec5a1nih-c5beena-stoje-i-poneki-muc5a1karci.jpg",
@@ -18431,7 +18225,6 @@
       "type": "page",
       "title": "Ekspedicija \"Sjeverni Velebit 2019\"",
       "slug": "ekspedicija-northern-velebit-2019-hr",
-      "url": "legacy-wordpress/stranice/ekspedicija-northern-velebit-2019-hr.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/05/180729-avatar-9594.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/05/lom-i-ledena-jama-marjan-prpic.jpg",
@@ -18486,7 +18279,6 @@
       "type": "page",
       "title": "Caving Expedition \"Northern Velebit 2019\"",
       "slug": "ekspedicija-northern-velebit-2019-en",
-      "url": "legacy-wordpress/stranice/ekspedicija-northern-velebit-2019-en.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/05/180729-avatar-9469.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2019/05/ledena-jama-na-lomskoj-dulibi-dalibor.jpg",
@@ -18509,14 +18301,12 @@
       "type": "page",
       "title": "Saznaj više",
       "slug": "saznaj-vise",
-      "url": "legacy-wordpress/stranice/saznaj-vise.html",
       "media_urls": []
     },
     "6715": {
       "type": "page",
       "title": "Popis instruktora i speleologa SOV",
       "slug": "popis-instruktora-i-speleologa-sov",
-      "url": "legacy-wordpress/stranice/popis-instruktora-i-speleologa-sov.html",
       "media_urls": [
         "https://sovelebit.wordpress.com/wp-content/uploads/2025/12/instruktor-speleologije_znacka.jpg",
         "https://sovelebit.wordpress.com/wp-content/uploads/2017/05/speleologija_knjiga.jpg?w=748"
