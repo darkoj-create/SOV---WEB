@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="hr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Živi zapisnici — SOV Cloud v6.1.44e</title>
+<link href="assets/site.css" rel="stylesheet"/>
+<link href="assets/mobile.css" rel="stylesheet"/>
+<link href="assets/sov-foundation-v55822.css" rel="stylesheet"/>
+<link href="assets/sov-shell-v55825.css" rel="stylesheet"/>
+<link href="assets/sov-polish-v55826.css" rel="stylesheet"/>
+<link href="assets/sov-wow-v6.css" rel="stylesheet"/>
+<link href="assets/sov-wow-app-v6.css" rel="stylesheet"/>
+<link href="assets/zapisnici-native-v6144e.css" rel="stylesheet"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="assets/supabase-config.js"></script>
+<script src="assets/auth.js"></script>
+</head>
+<body class="sov-premium minutes-native-page">
+<div class="mn-shell">
+<header class="sov-top">
+<a class="sov-brand" href="dashboard.html"><div class="sov-mark">SOV</div><div><strong>Dokumenti</strong><small>Živi zapisnici</small></div></a>
+<nav class="sov-nav"><a href="dashboard.html">SOV Cloud</a><a href="dokumenti.html">Dokumenti</a><a href="zapisnici-najave.html">Najave iz zapisnika</a><a class="primary" href="zapisnici-native.html">Živi zapisnici</a></nav>
+</header>
+<main>
+<section class="mn-hero">
+<div class="mn-crumbs"><a href="dokumenti.html">Dokumenti</a><span>›</span><a href="dokumenti.html#zapisnici-sastanaka">Zapisnici</a><span>›</span><strong>Native tekst</strong></div>
+<span class="mn-eyebrow">Gmail / DOCX → native zapisnik</span>
+<h1>Živi zapisnici.</h1>
+<p>Gmail ili ručni DOCX import ne mora spremati originalni DOCX u web. Sadržaj se sprema kao čitljiv tekst u bazi, lijepo prikazuje ovdje i po potrebi se ponovno izvozi u Word/DOCX.</p>
+<div class="mn-actions-top"><a class="mn-btn primary" href="zapisnici-najave.html">Gmail sync i najave →</a><a class="mn-btn" href="zapisnici-aktualni-2026.html">Stara DOCX mapa</a><button class="mn-btn" id="refreshBtn">Osvježi</button></div>
+</section>
+<section class="mn-kpis"><div><b id="kCount">—</b><span>zapisnika u bazi</span></div><div><b id="kGmail">—</b><span>Gmail import</span></div><div><b id="kLatest">—</b><span>zadnji zapisnik</span></div><div><b>DOCX</b><span>export iz teksta</span></div></section>
+<section class="mn-toolbar"><input id="searchBox" class="mn-search" placeholder="Pretraži zapisnike po datumu, naslovu, sadržaju…" autocomplete="off"/><select id="sourceFilter" class="mn-select"><option value="all">Svi izvori</option><option value="gmail">Gmail</option><option value="manual_upload">Ručni upload</option><option value="manual_native">Ručni native unos</option></select></section>
+<section class="mn-grid"><aside class="mn-list"><div class="mn-panel-head"><b>Lista zapisnika</b><span id="listStatus">Učitavam…</span></div><div id="minutesList" class="mn-items"><div class="mn-empty">Učitavam zapisnike…</div></div></aside><section class="mn-detail"><div class="mn-panel-head"><b id="detailTitle">Preview</b><span id="detailMeta"></span></div><div id="detailActions" class="mn-detail-actions" hidden><button class="mn-btn primary" id="exportDocxBtn">Export DOCX</button><button class="mn-btn" id="exportTxtBtn">TXT</button><button class="mn-btn" id="copyBtn">Kopiraj tekst</button><a class="mn-btn" href="zapisnici-najave.html">Izvuci najave</a></div><article id="paper" class="mn-paper-empty">Odaberi zapisnik s lijeve strane.</article></section></section>
+<section class="mn-note"><b>Napomena:</b> ova stranica koristi tablicu <code>meeting_minutes</code>. Za Gmail automatski uvoz treba pokrenuti SQL <code>SUPABASE_SOV_GMAIL_ZAPISNICI_NATIVE_v6_1_44e.sql</code> i postaviti Apps Script <code>SOV_GMAIL_ZAPISNICI_APPS_SCRIPT_v6_1_44e_NATIVE_QUEUE.gs</code>.</section>
+</main>
+</div>
+<script src="assets/zapisnici-native-v6144e.js?v=6.1.44e"></script>
+<script defer src="assets/sov-version.js?v=6.1.44e"></script>
+<script defer src="assets/sov-client-logger.js?v=6.1.44e"></script>
+</body>
+</html>
