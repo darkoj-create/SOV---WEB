@@ -1,7 +1,7 @@
 {
-  "build": "sov-web-build-v6.1.44c-wordpress-text-import-preserve-current-public",
+  "build": "v6.1.44d",
   "source_export": "sovelebit.wordpress.com.2026-06-24.000.xml",
-  "strategy": "Preserve current public pages and current image-rich news; add only missing WordPress post text pages.",
+  "strategy": "Preserve current public pages and current image-rich news; add only missing WordPress post text pages. + featured-only optimized media for imported old posts",
   "counts": {
     "published_posts_in_export": 198,
     "existing_modern_news_pages_preserved": 11,
@@ -54,7 +54,11 @@
       "url": "novosti/6806.html",
       "preserved_existing_modern_page": false,
       "excerpt": "I konačno je stigao dan da se spustimo u jamu, donekle, ili barem u špilju s jamskim ulazom, Jopićevu špilju, dovoljno blizu da budemo sretni.",
-      "media_count": 16
+      "media_count": 16,
+      "featured_article_image": "assets/legacy-wordpress-featured/2026/04/6806-6806.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2026/04/6806-6806.webp",
+      "featured_source_size_mb": 0.804,
+      "featured_article_size_mb": 0.18
     },
     {
       "id": "6796",
@@ -84,7 +88,11 @@
       "url": "novosti/6783.html",
       "preserved_existing_modern_page": false,
       "excerpt": "I tako smo došli do izlaza, izlazim van i prvo što vidim i čujem je Gogu kako kaže: „Jana, ti pišeš izvještaj o prvom izletu!“. Ajme meni!",
-      "media_count": 14
+      "media_count": 14,
+      "featured_article_image": "assets/legacy-wordpress-featured/2026/04/6783-6783.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2026/04/6783-6783.webp",
+      "featured_source_size_mb": 0.651,
+      "featured_article_size_mb": 0.385
     },
     {
       "id": "6750",
@@ -114,7 +122,11 @@
       "url": "novosti/novi-velebiten-4.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Novi broj našeg časopisa Velebiten je tu! Pregršt priča iz planinarstva, visokogorstva, speleologije, putopisa i punom vrećom prekrasnih fotografija",
-      "media_count": 3
+      "media_count": 3,
+      "featured_article_image": "assets/legacy-wordpress-featured/2025/12/6702-novi-velebiten-4.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2025/12/6702-novi-velebiten-4.webp",
+      "featured_source_size_mb": 3.788,
+      "featured_article_size_mb": 0.149
     },
     {
       "id": "6660",
@@ -146,7 +158,11 @@
       "url": "novosti/mamet-inspirirajuci.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Skupila se tako entuzijastična i brojčano impresivna ekipa od osamnaest odvažnih djevojaka i mladića spremnih da osvoji dno Mameta. Putem su brojčano otpadali na ponosnih osam.",
-      "media_count": 22
+      "media_count": 22,
+      "featured_article_image": "assets/legacy-wordpress-featured/2025/10/6639-mamet-inspirirajuci.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2025/10/6639-mamet-inspirirajuci.webp",
+      "featured_source_size_mb": 1.794,
+      "featured_article_size_mb": 0.583
     },
     {
       "id": "6575",
@@ -193,7 +209,11 @@
       "url": "novosti/najbolji-dan-u-zivotu.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Još tijekom ekspedicije u Punaru, Olga je spomenula Munižabu. Moje svježe i vatreno speleološko srce, koje je tek počelo otkrivati čari speleologije, odmah je reagiralo – upitala sam Olgu mogu li i ja poći.",
-      "media_count": 11
+      "media_count": 11,
+      "featured_article_image": "assets/legacy-wordpress-featured/2021/04/6543-najbolji-dan-u-zivotu.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2021/04/6543-najbolji-dan-u-zivotu.webp",
+      "featured_source_size_mb": 0.132,
+      "featured_article_size_mb": 0.051
     },
     {
       "id": "6517",
@@ -224,7 +244,11 @@
       "url": "novosti/bez-soma-nema-doma.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Najavljena je Munižaba i odmah sam shvatio da 3 dana u prekrasnoj jami i dobra ekipa znače samo jedno - valja prodati dušu vragu.",
-      "media_count": 10
+      "media_count": 10,
+      "featured_article_image": "assets/legacy-wordpress-featured/2025/07/6504-bez-soma-nema-doma.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2025/07/6504-bez-soma-nema-doma.webp",
+      "featured_source_size_mb": 0.57,
+      "featured_article_size_mb": 0.168
     },
     {
       "id": "6499",
@@ -255,7 +279,11 @@
       "url": "novosti/suze-radosnice-u-munizabi.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Oko tri ujutro iz dubokog sna probudio nas je ostatak ekipe, puni dojmova o novoj dubini od -557 m i mističnom oknu. Idući dan proveli smo u rekuperaciji i pranju svega na rijeci Otuči. Stigli smo i popričati sa…",
-      "media_count": 25
+      "media_count": 25,
+      "featured_article_image": "assets/legacy-wordpress-featured/2025/06/6470-suze-radosnice-u-munizabi.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2025/06/6470-suze-radosnice-u-munizabi.webp",
+      "featured_source_size_mb": 0.178,
+      "featured_article_size_mb": 0.151
     },
     {
       "id": "6433",
@@ -271,7 +299,11 @@
       "url": "novosti/suze-u-munizabi.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Sljedećih nekoliko dana izgledalo je kao emocionalni ekvivalent pite mađarice, samo što su se umjesto kore i kreme svako malo izmjenjivali strah i uzbuđenje. Više sam se puta pitala što mi je trebalo to da za drugi…",
-      "media_count": 27
+      "media_count": 27,
+      "featured_article_image": "assets/legacy-wordpress-featured/2025/05/6433-suze-u-munizabi.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2025/05/6433-suze-u-munizabi.webp",
+      "featured_source_size_mb": 0.154,
+      "featured_article_size_mb": 0.114
     },
     {
       "id": "6417",
@@ -286,7 +318,11 @@
       "url": "novosti/uskrsnje-lidarke.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Lidar tehnologijom se služimo već nekoliko godina te nam je ona pokazala potencijalne objekte na području Nacionalnog parka Plitvička jezera. S obzirom da napokon imamo priliku koristiti javno dostupne podatke snimanja…",
-      "media_count": 11
+      "media_count": 11,
+      "featured_article_image": "assets/legacy-wordpress-featured/2025/05/6417-uskrsnje-lidarke.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2025/05/6417-uskrsnje-lidarke.webp",
+      "featured_source_size_mb": 0.165,
+      "featured_article_size_mb": 0.184
     },
     {
       "id": "6412",
@@ -301,7 +337,11 @@
       "url": "novosti/6412.html",
       "preserved_existing_modern_page": false,
       "excerpt": "U nedjelju, 27. travnja 2025. godine mala ali motivirana ekipa antropologa, arheologa i speleologa se uputila ka Gubačkom vrhu,",
-      "media_count": 2
+      "media_count": 2,
+      "featured_article_image": "assets/legacy-wordpress-featured/2025/04/6412-6412.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2025/04/6412-6412.webp",
+      "featured_source_size_mb": 1.409,
+      "featured_article_size_mb": 0.543
     },
     {
       "id": "6392",
@@ -333,7 +373,11 @@
       "url": "novosti/camino-de-studena.html",
       "preserved_existing_modern_page": false,
       "excerpt": "U duhu speleologije, koja neefikasnost u količini opreme nadoknađuje voljom za tegljenjem, ponijeli smo i veliki lonac za varivo do parkinga. Nije lonac kriv, ali mogli bi biti masivni plamenik i one silne litre vina…",
-      "media_count": 34
+      "media_count": 34,
+      "featured_article_image": "assets/legacy-wordpress-featured/2025/04/6366-camino-de-studena.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2025/04/6366-camino-de-studena.webp",
+      "featured_source_size_mb": 1.476,
+      "featured_article_size_mb": 0.16
     },
     {
       "id": "6329",
@@ -349,7 +393,11 @@
       "url": "novosti/norenje-u-ponorcu.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Cilj ovog izleta bilo je iskusiti kretanje u špilji s vodenim tokom. Međutim, vrlo brzo nakon prvih ispuštenih zvukova ushićenja poput \"ovo je moj najbolji dan u životu\" nekoliko metara od početka toka započeo je tek…",
-      "media_count": 52
+      "media_count": 52,
+      "featured_article_image": "assets/legacy-wordpress-featured/2025/04/6329-norenje-u-ponorcu.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2025/04/6329-norenje-u-ponorcu.webp",
+      "featured_source_size_mb": 0.922,
+      "featured_article_size_mb": 0.064
     },
     {
       "id": "6303",
@@ -364,7 +412,11 @@
       "url": "novosti/op-zica-zica-zica-55-skolica.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Drugi terenski vikend ove naše (55.) speleoškole bio je dosta drugačiji od prethodnog. Teren nam je bilo Sljeme, a budući da većina nas školaraca (i instruktora) živi u Zagrebu, ovaj vikend, nažalost, nismo zajedno…",
-      "media_count": 25
+      "media_count": 25,
+      "featured_article_image": "assets/legacy-wordpress-featured/2025/03/6303-op-zica-zica-zica-55-skolica.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2025/03/6303-op-zica-zica-zica-55-skolica.webp",
+      "featured_source_size_mb": 1.416,
+      "featured_article_size_mb": 0.222
     },
     {
       "id": "6277",
@@ -379,7 +431,11 @@
       "url": "novosti/pocelo-je.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Riječima starih planinara izlet nije gotov dok izvještaj nije predan, pa evo meni je pripala čast napisati osvrt na prvi izlet 55. speleo škole SOV Velebit. Kako sada od svih misli, doživljaja i događaja napraviti imalo…",
-      "media_count": 27
+      "media_count": 27,
+      "featured_article_image": "assets/legacy-wordpress-featured/2025/03/6277-pocelo-je.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2025/03/6277-pocelo-je.webp",
+      "featured_source_size_mb": 6.491,
+      "featured_article_size_mb": 0.733
     },
     {
       "id": "6260",
@@ -395,7 +451,11 @@
       "url": "novosti/kombi-u-snijegu.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Gotovo je, gotovo. Tko bi očekivao da bi se istraživanje jame od 80 metara dubine pretvorilo u opetovano dolaženje u tri različita vikenda? Vjerojatno nitko, ali eto, potreba za proširivanjem i nedostatak opreme je…",
-      "media_count": 20
+      "media_count": 20,
+      "featured_article_image": "assets/legacy-wordpress-featured/2025/03/6260-kombi-u-snijegu.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2025/03/6260-kombi-u-snijegu.webp",
+      "featured_source_size_mb": 0.425,
+      "featured_article_size_mb": 0.427
     },
     {
       "id": "6234",
@@ -411,7 +471,11 @@
       "url": "novosti/bocnuli-smo-bocinu.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Proteklog vikenda, kao dio priprema za nadolazeću 55. Zagrebačku speleološku školu, SOV je krenuo obići Vražju i Bocinu jamu, blizu Ogulina.",
-      "media_count": 30
+      "media_count": 30,
+      "featured_article_image": "assets/legacy-wordpress-featured/2025/02/6234-bocnuli-smo-bocinu.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2025/02/6234-bocnuli-smo-bocinu.webp",
+      "featured_source_size_mb": 0.207,
+      "featured_article_size_mb": 0.065
     },
     {
       "id": "6216",
@@ -427,7 +491,11 @@
       "url": "novosti/kalnicka-skljizancija.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Međudsječka suradnja SOV i SUKZ odvela je ekipu na Kalnik. u toj suradnji nismo sigurni da li su bolje jeli ili istraživali...",
-      "media_count": 22
+      "media_count": 22,
+      "featured_article_image": "assets/legacy-wordpress-featured/2025/01/6216-kalnicka-skljizancija.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2025/01/6216-kalnicka-skljizancija.webp",
+      "featured_source_size_mb": 0.13,
+      "featured_article_size_mb": 0.067
     },
     {
       "id": "6208",
@@ -442,7 +510,11 @@
       "url": "novosti/velebiten-br-58.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Uskoro izlazi novi broj Velebitena, a što u njemu ima, između ostalog, pročitajte u osvrtu našeg urednika Ivora Jankovića",
-      "media_count": 2
+      "media_count": 2,
+      "featured_article_image": "assets/legacy-wordpress-featured/2025/01/6208-velebiten-br-58.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2025/01/6208-velebiten-br-58.webp",
+      "featured_source_size_mb": 2.509,
+      "featured_article_size_mb": 0.112
     },
     {
       "id": "6138",
@@ -457,7 +529,11 @@
       "url": "novosti/6138.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Vrlo intenzivna priča o tome kako dva tjedna mogu predstavljati prikaz životnih zgoda i nezgodan. Odmah da napišem bilo nam je predivno i ponovila bih sve opet",
-      "media_count": 40
+      "media_count": 40,
+      "featured_article_image": "assets/legacy-wordpress-featured/2025/01/6138-6138.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2025/01/6138-6138.webp",
+      "featured_source_size_mb": 0.964,
+      "featured_article_size_mb": 0.299
     },
     {
       "id": "6107",
@@ -473,7 +549,11 @@
       "url": "novosti/55-speleoloska-skola-prijave.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Hola! U novu godinu oštro i na prvu! Otvorene su prijave za 55. po redu Zagrebačku speleološku školu. Imaš li ono u sebi potrebno za susret sa novim i nepoznatim svijetom?",
-      "media_count": 3
+      "media_count": 3,
+      "featured_article_image": "assets/legacy-wordpress-featured/2025/01/6107-55-speleoloska-skola-prijave.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2025/01/6107-55-speleoloska-skola-prijave.webp",
+      "featured_source_size_mb": 0.319,
+      "featured_article_size_mb": 0.042
     },
     {
       "id": "6073",
@@ -488,7 +568,11 @@
       "url": "novosti/prvi-bubu-bukbuvljak-bozicna-radionica.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Jučer se u prostorima Speleološkog odsjeka PDS Velebita (Klaićeva 42, Zagreb), održao prvi BuBu (Buk Buvljak) i Božićna radionica za djecu. Cijeli događaj ima veliki humanitarni karakter",
-      "media_count": 22
+      "media_count": 22,
+      "featured_article_image": "assets/legacy-wordpress-featured/2024/12/6073-prvi-bubu-bukbuvljak-bozicna-radionica.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2024/12/6073-prvi-bubu-bukbuvljak-bozicna-radionica.webp",
+      "featured_source_size_mb": 0.027,
+      "featured_article_size_mb": 0.009
     },
     {
       "id": "6068",
@@ -504,7 +588,11 @@
       "url": "novosti/munizaba-presla-10-kilometara.html",
       "preserved_existing_modern_page": false,
       "excerpt": "U dva recentna istraživanja, nakon duljeg vremena došlo je do pomaka u istraživanjima pa je tako u ovoj crnopačkoj ljepotici istraženo i snimljeno 428 metara novih kanala, a još puno upitnika je ostalo.",
-      "media_count": 1
+      "media_count": 1,
+      "featured_article_image": "assets/legacy-wordpress-featured/2021/04/6068-munizaba-presla-10-kilometara.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2021/04/6068-munizaba-presla-10-kilometara.webp",
+      "featured_source_size_mb": 0.203,
+      "featured_article_size_mb": 0.103
     },
     {
       "id": "6005",
@@ -520,7 +608,11 @@
       "url": "novosti/akcijske-predakcije.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Došlo je ono doba godine kad počinju ekspedicije, a uz svaku ekspediciju potrebna je predakcija. Ove godine uz vodstvo naše divne Valentine, krenule su pripreme i nas 12 heroja se uputilo u malu vikend avanturu.",
-      "media_count": 22
+      "media_count": 22,
+      "featured_article_image": "assets/legacy-wordpress-featured/2024/07/6005-akcijske-predakcije.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2024/07/6005-akcijske-predakcije.webp",
+      "featured_source_size_mb": 3.748,
+      "featured_article_size_mb": 0.25
     },
     {
       "id": "5974",
@@ -536,7 +628,11 @@
       "url": "novosti/skolarci-janjetina-i-licko.html",
       "preserved_existing_modern_page": false,
       "excerpt": "...Nakon Marinovog dirljivog govora i dobivenih poklona, Ličko je pokušao sakriti emocije, ali ljubav se definitivno osjetila…",
-      "media_count": 21
+      "media_count": 21,
+      "featured_article_image": "assets/legacy-wordpress-featured/2024/05/5974-skolarci-janjetina-i-licko.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2024/05/5974-skolarci-janjetina-i-licko.webp",
+      "featured_source_size_mb": 0.174,
+      "featured_article_size_mb": 0.05
     },
     {
       "id": "5956",
@@ -552,7 +648,11 @@
       "url": "novosti/moje-ime.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Moje ime je Igor Božić i sve ovo oko mene je vlažni, hladni i mračni svijet.",
-      "media_count": 17
+      "media_count": 17,
+      "featured_article_image": "assets/legacy-wordpress-featured/2024/05/5956-moje-ime.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2024/05/5956-moje-ime.webp",
+      "featured_source_size_mb": 5.249,
+      "featured_article_size_mb": 0.462
     },
     {
       "id": "5939",
@@ -567,7 +667,11 @@
       "url": "novosti/precnica-i-crtanje-na-mijatovoj-jami.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Glavna zvijezda trećeg izleta 54. zagrebačke speleološke škole održanog za vikend 13. i 14.04.2024. bila je Mijatova jama– jama u kojoj na užetu ne treba rasvjeta.",
-      "media_count": 11
+      "media_count": 11,
+      "featured_article_image": "assets/legacy-wordpress-featured/2024/04/5939-precnica-i-crtanje-na-mijatovoj-jami.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2024/04/5939-precnica-i-crtanje-na-mijatovoj-jami.webp",
+      "featured_source_size_mb": 0.42,
+      "featured_article_size_mb": 0.157
     },
     {
       "id": "5876",
@@ -583,7 +687,11 @@
       "url": "novosti/ljute-papucice-maslacki-i-durex-na-matesicki.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Sedam ujutro je, 6. travnja 2024. godine i krećemo na drugi izlet naše speleološke školice. Nalazimo se kod NSB-a na jutarnjoj kavici iz termosica. Neki rane, neki kasne. Oko 8:10 smo se uspjeli svi skupiti, potrpati u…",
-      "media_count": 34
+      "media_count": 34,
+      "featured_article_image": "assets/legacy-wordpress-featured/2024/04/5876-ljute-papucice-maslacki-i-durex-na-matesicki.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2024/04/5876-ljute-papucice-maslacki-i-durex-na-matesicki.webp",
+      "featured_source_size_mb": 0.863,
+      "featured_article_size_mb": 0.661
     },
     {
       "id": "5854",
@@ -599,7 +707,11 @@
       "url": "novosti/osvrt-na-prvi-izlet-54-skole.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Iza nas je prvi izlet u Tounj (kojem su se veselili više instruktori, nego mi školarci), posjet Špilji u kamenolomu Tounj, prve vježbe sa zamkama i čvorovima, na užetima te HŽ saga.",
-      "media_count": 23
+      "media_count": 23,
+      "featured_article_image": "assets/legacy-wordpress-featured/2024/03/5854-osvrt-na-prvi-izlet-54-skole.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2024/03/5854-osvrt-na-prvi-izlet-54-skole.webp",
+      "featured_source_size_mb": 8.595,
+      "featured_article_size_mb": 0.384
     },
     {
       "id": "5817",
@@ -614,7 +726,11 @@
       "url": "novosti/hz-supstitucija-prvi-izlet-54-skole.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Nakon uvodnih predavanja u srijedu, raspoložena družina okupila se u subotu 16. ožujka rano ujutro na Glavnom kolodvoru i krenula željeznicom na svoj prvi izlet u Tounj.",
-      "media_count": 31
+      "media_count": 31,
+      "featured_article_image": "assets/legacy-wordpress-featured/2024/03/5817-hz-supstitucija-prvi-izlet-54-skole.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2024/03/5817-hz-supstitucija-prvi-izlet-54-skole.webp",
+      "featured_source_size_mb": 1.05,
+      "featured_article_size_mb": 0.138
     },
     {
       "id": "5793",
@@ -644,7 +760,11 @@
       "url": "novosti/33-godine-i-57-brojeva-velebitena-kasnije.html",
       "preserved_existing_modern_page": false,
       "excerpt": "U prepunoj prostoriji našeg PDS Velebit održana je promocija novog broja Velebitena",
-      "media_count": 14
+      "media_count": 14,
+      "featured_article_image": "assets/legacy-wordpress-featured/2024/01/5745-33-godine-i-57-brojeva-velebitena-kasnije.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2024/01/5745-33-godine-i-57-brojeva-velebitena-kasnije.webp",
+      "featured_source_size_mb": 0.189,
+      "featured_article_size_mb": 0.097
     },
     {
       "id": "5740",
@@ -659,7 +779,11 @@
       "url": "novosti/promocija-novog-velebitena-2.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Dođite na promociju novog broja našeg časopisa!",
-      "media_count": 2
+      "media_count": 2,
+      "featured_article_image": "assets/legacy-wordpress-featured/2024/01/5740-promocija-novog-velebitena-2.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2024/01/5740-promocija-novog-velebitena-2.webp",
+      "featured_source_size_mb": 0.862,
+      "featured_article_size_mb": 0.184
     },
     {
       "id": "5729",
@@ -674,7 +798,11 @@
       "url": "novosti/velebiten-br-57.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Da, došao je taj trenutak u godini kada iz tiska iščekujemo novi, pedeset i sedmi broj časopisa koji već 33 godine neprekidno puni naše duše vašim pričama i doživljajima sa vrhova planina, iz skrivenih odaja majčice…",
-      "media_count": 4
+      "media_count": 4,
+      "featured_article_image": "assets/legacy-wordpress-featured/2023/12/5729-velebiten-br-57.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2023/12/5729-velebiten-br-57.webp",
+      "featured_source_size_mb": 4.492,
+      "featured_article_size_mb": 0.235
     },
     {
       "id": "5676",
@@ -689,7 +817,11 @@
       "url": "novosti/cisto-podzemlje-maklenska-jama-18-19-11-2023.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Prve su to riječi maila u kojem nas je Ličko pozvao na akciju čišćenja Maklenske jame, kraj Broda Moravice, za vikend 18.-19.11.2023. Nije trebalo čitati dalje…uvod je odzvonio na pravi način I bio sam ‘upecan’ !…",
-      "media_count": 57
+      "media_count": 57,
+      "featured_article_image": "assets/legacy-wordpress-featured/2023/12/5676-cisto-podzemlje-maklenska-jama-18-19-11-2023.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2023/12/5676-cisto-podzemlje-maklenska-jama-18-19-11-2023.webp",
+      "featured_source_size_mb": 4.021,
+      "featured_article_size_mb": 0.425
     },
     {
       "id": "5661",
@@ -705,7 +837,11 @@
       "url": "novosti/pakleni-tajfun.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Za produženi vikend sam se nećkao između pet dana špiljarenja ili penjanje na Čikoli po moguće lošem vremenu. Odlučio sam se za jamu jer iako je vani možda crveni meteoalarm zbog kiše, unutra je uvijek dobro, možda se…",
-      "media_count": 14
+      "media_count": 14,
+      "featured_article_image": "assets/legacy-wordpress-featured/2023/11/5661-pakleni-tajfun.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2023/11/5661-pakleni-tajfun.webp",
+      "featured_source_size_mb": 1.137,
+      "featured_article_size_mb": 0.129
     },
     {
       "id": "5635",
@@ -720,7 +856,11 @@
       "url": "novosti/speleoloska-ekspedicija-sjeverni-velebit-2023.html",
       "preserved_existing_modern_page": false,
       "excerpt": "U periodu 29.7. do 13.8.2023. održali smo speleološku ekspediciju ''Sjeverni Velebit 2023'' na području Rožanskih kukova u NP Sjeverni Velebit, pod vodstvom naših dama Maje Marinić i Gorane Perić.",
-      "media_count": 29
+      "media_count": 29,
+      "featured_article_image": "assets/legacy-wordpress-featured/2023/09/5635-speleoloska-ekspedicija-sjeverni-velebit-2023.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2023/09/5635-speleoloska-ekspedicija-sjeverni-velebit-2023.webp",
+      "featured_source_size_mb": 1.415,
+      "featured_article_size_mb": 0.567
     },
     {
       "id": "5608",
@@ -735,7 +875,11 @@
       "url": "novosti/the-way-you-make-me-feel.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Volim trenutke u životu gdje se osjećam živom, i špiljarenje donosi taj snažan feeling. Jer špiljarenje nije samo ulazak u špilju, razgledavanje i otkrivanje, to je puno više, to je timski rad, snalaženje u prirodi,…",
-      "media_count": 22
+      "media_count": 22,
+      "featured_article_image": "assets/legacy-wordpress-featured/2023/05/5608-the-way-you-make-me-feel.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2023/05/5608-the-way-you-make-me-feel.webp",
+      "featured_source_size_mb": 4.346,
+      "featured_article_size_mb": 0.067
     },
     {
       "id": "5562",
@@ -751,7 +895,11 @@
       "url": "novosti/prve-price-iz-53-skole.html",
       "preserved_existing_modern_page": false,
       "excerpt": "U kišno subotnje jutro prvog izleta,, uslijedilo je upoznavanje bitnog pojma \"Velebitaški stol\". Zatim se krenulo \"jedan na jedan\" i već nakon te subote bili su spremni na susret sa Zrcalom. Onda odoše u prirodu",
-      "media_count": 36
+      "media_count": 36,
+      "featured_article_image": "assets/legacy-wordpress-featured/2023/04/5562-prve-price-iz-53-skole.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2023/04/5562-prve-price-iz-53-skole.webp",
+      "featured_source_size_mb": 1.056,
+      "featured_article_size_mb": 0.311
     },
     {
       "id": "5552",
@@ -766,7 +914,11 @@
       "url": "novosti/rescuing-the-depth.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Pogledajte poučni dokumentarni video zapis sa akcije Čistog podzemlja u kojoj je sudjelovalo 36 volontera iz SOV-a, SOŽ-a i SUE",
-      "media_count": 1
+      "media_count": 1,
+      "featured_article_image": "assets/legacy-wordpress-featured/2023/04/5552-rescuing-the-depth.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2023/04/5552-rescuing-the-depth.webp",
+      "featured_source_size_mb": 0.735,
+      "featured_article_size_mb": 0.083
     },
     {
       "id": "5524",
@@ -781,7 +933,11 @@
       "url": "novosti/ciscenje-jame-u-permanima.html",
       "preserved_existing_modern_page": false,
       "excerpt": "U sklopu inicijative Čisto podzemlje organizirana akcija čišćenja Jame na Puharevom u selu Permani kod Rijeke. Desetljeća sustavnog odlaganja otpada u ovom objektu bile su poticaj speleolozima SO Velebit, SU Estavela i…",
-      "media_count": 13
+      "media_count": 13,
+      "featured_article_image": "assets/legacy-wordpress-featured/2023/03/5524-ciscenje-jame-u-permanima.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2023/03/5524-ciscenje-jame-u-permanima.webp",
+      "featured_source_size_mb": 0.571,
+      "featured_article_size_mb": 0.421
     },
     {
       "id": "5486",
@@ -796,7 +952,11 @@
       "url": "novosti/2021.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Broji li se od brojke 50 unatrag ili dalje, prema 100? Već sama činjenica da je u kontinuitetu održano 50 speleoloških škola, kroz koje je prošlo i educirano preko 1200 speleoloških pripravnika -dovoljno je impresivna.…",
-      "media_count": 12
+      "media_count": 12,
+      "featured_article_image": "assets/legacy-wordpress-featured/2023/02/5486-2021.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2023/02/5486-2021.webp",
+      "featured_source_size_mb": 1.162,
+      "featured_article_size_mb": 0.539
     },
     {
       "id": "5434",
@@ -811,7 +971,11 @@
       "url": "novosti/2011-2020.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Četvrto desetljeće zagrebačke speleološke škole nastavilo je sa stvaranjem novih speleoloških pripravnika. Tih godina održali smo i dvije škole mimo naših tradicionalnih. Od ostalih stvari pamtit ćemo i odgađanje…",
-      "media_count": 18
+      "media_count": 18,
+      "featured_article_image": "assets/legacy-wordpress-featured/2023/02/5434-2011-2020.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2023/02/5434-2011-2020.webp",
+      "featured_source_size_mb": 0.181,
+      "featured_article_size_mb": 0.172
     },
     {
       "id": "5407",
@@ -826,7 +990,11 @@
       "url": "novosti/2001-2010.html",
       "preserved_existing_modern_page": false,
       "excerpt": "2003. godine Speleološki odsjek PDS Velebit, osim svojih škola organizirao je i održao 1. Ličku speleološku školu. Voditelj je bio Darko Bakšić...",
-      "media_count": 10
+      "media_count": 10,
+      "featured_article_image": "assets/legacy-wordpress-featured/2023/02/5407-2001-2010.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2023/02/5407-2001-2010.webp",
+      "featured_source_size_mb": 0.067,
+      "featured_article_size_mb": 0.045
     },
     {
       "id": "5387",
@@ -841,7 +1009,11 @@
       "url": "novosti/1991-2000.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Unatoč ratu, SO Velebit nastavio je sa održavanjem speleoloških škola. Izostali su redovni posjeti poznatim speleološkim lokacijama na Kordunu, ali su zato zamjenske lokacije u Samoborskom gorju, Žumberku, Gorskom…",
-      "media_count": 4
+      "media_count": 4,
+      "featured_article_image": "assets/legacy-wordpress-featured/2023/02/5387-1991-2000.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2023/02/5387-1991-2000.webp",
+      "featured_source_size_mb": 0.078,
+      "featured_article_size_mb": 0.062
     },
     {
       "id": "5374",
@@ -856,7 +1028,11 @@
       "url": "novosti/1981-1990.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Broj polaznika Zagrebačke speleološke škole je u rastu pa nije rijetkost da pojedine škole imaju i više od 40 polaznika. Krajem osamdesetih i po- četkom devedesetih dolazi do organiziranja speleoloških škola u…",
-      "media_count": 3
+      "media_count": 3,
+      "featured_article_image": "assets/legacy-wordpress-featured/2023/02/5374-1981-1990.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2023/02/5374-1981-1990.webp",
+      "featured_source_size_mb": 0.187,
+      "featured_article_size_mb": 0.154
     },
     {
       "id": "5343",
@@ -871,7 +1047,11 @@
       "url": "novosti/1971-1980.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Na inicijativu Pročelnika Hrvoja Malinara od 1962. godine Speleološki odsjek redovito do dva puta godišnje provodi vježbe speleoloških tehnika kako bi članovi bili utrenirani za predstojeću sezonu. Jedan neformalni…",
-      "media_count": 16
+      "media_count": 16,
+      "featured_article_image": "assets/legacy-wordpress-featured/2023/02/5343-1971-1980.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2023/02/5343-1971-1980.webp",
+      "featured_source_size_mb": 1.138,
+      "featured_article_size_mb": 0.359
     },
     {
       "id": "5256",
@@ -887,7 +1067,11 @@
       "url": "novosti/otvorene-prijave-za-speleolosku-skolu.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Otvoreni su upisi u ovogodišnju, 53. po redu Zagrebačku speleološku školu. Sve što trebate znati o tome potražite ovdje",
-      "media_count": 5
+      "media_count": 5,
+      "featured_article_image": "assets/legacy-wordpress-featured/2023/02/5256-otvorene-prijave-za-speleolosku-skolu.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2023/02/5256-otvorene-prijave-za-speleolosku-skolu.webp",
+      "featured_source_size_mb": 0.142,
+      "featured_article_size_mb": 0.093
     },
     {
       "id": "5247",
@@ -902,7 +1086,11 @@
       "url": "novosti/cesta-pitanja-u-vezi-speleo-skole.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Mogu li se sa iskaznicom speleološkog pripravnika besplatno voziti Zagrebačkim tramvajem? Odgovore na to i druga logična pitanja od kojih boli glava, potraži ovdje",
-      "media_count": 13
+      "media_count": 13,
+      "featured_article_image": "assets/legacy-wordpress-featured/2023/02/5247-cesta-pitanja-u-vezi-speleo-skole.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2023/02/5247-cesta-pitanja-u-vezi-speleo-skole.webp",
+      "featured_source_size_mb": 0.1,
+      "featured_article_size_mb": 0.013
     },
     {
       "id": "5183",
@@ -917,7 +1105,11 @@
       "url": "novosti/speleon-centar-podzemne-bastine.html",
       "preserved_existing_modern_page": false,
       "excerpt": "U ponedjeljak, 23. siječnja svečano se otvara Speleon – centar podzemne baštine. Centar je smješten u Novoj Kršlji na mjestu nekadašnjeg Prvog speleološkog doma Republike Hrvatske, početne točke brojnih ekspedicijskih…",
-      "media_count": 17
+      "media_count": 17,
+      "featured_article_image": "assets/legacy-wordpress-featured/2023/01/5183-speleon-centar-podzemne-bastine.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2023/01/5183-speleon-centar-podzemne-bastine.webp",
+      "featured_source_size_mb": 0.408,
+      "featured_article_size_mb": 0.268
     },
     {
       "id": "5116",
@@ -932,7 +1124,11 @@
       "url": "novosti/bila-je-guzva.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Srijeda 21.12.2022. ostat će zapamćena po gužvi i masi ljudi koja se nagurala u prostor u Klaićevoj 42/1.",
-      "media_count": 17
+      "media_count": 17,
+      "featured_article_image": "assets/legacy-wordpress-featured/2022/12/5116-bila-je-guzva.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2022/12/5116-bila-je-guzva.webp",
+      "featured_source_size_mb": 2.304,
+      "featured_article_size_mb": 0.196
     },
     {
       "id": "5103",
@@ -947,7 +1143,11 @@
       "url": "novosti/mrazovi-nad-klaicevom-part-2-22.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Drugu godinu zaredom, članovi Speleološkog odsjeka planinarskog društva Velebit organizirali su hvale vrijednu humanitarnu akciju i mališanima koji Božić neće provesti sa svojim najmilijima, dan uljepšali darovima,…",
-      "media_count": 16
+      "media_count": 16,
+      "featured_article_image": "assets/legacy-wordpress-featured/2022/12/5103-mrazovi-nad-klaicevom-part-2-22.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2022/12/5103-mrazovi-nad-klaicevom-part-2-22.webp",
+      "featured_source_size_mb": 0.89,
+      "featured_article_size_mb": 0.119
     },
     {
       "id": "5093",
@@ -962,7 +1162,11 @@
       "url": "novosti/ne-budi-grinch-dodi-na-promociju-i-tulum.html",
       "preserved_existing_modern_page": false,
       "excerpt": "I Orašari bi čitali Velebiten. Ali ne mogu. Zato ti možeš. Kada i kako pogledaj u nastavku",
-      "media_count": 2
+      "media_count": 2,
+      "featured_article_image": "assets/legacy-wordpress-featured/2022/12/5093-ne-budi-grinch-dodi-na-promociju-i-tulum.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2022/12/5093-ne-budi-grinch-dodi-na-promociju-i-tulum.webp",
+      "featured_source_size_mb": 2.468,
+      "featured_article_size_mb": 0.159
     },
     {
       "id": "5085",
@@ -977,7 +1181,11 @@
       "url": "novosti/bozicni-tulum-i-promocija-novog-velebitena.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Špek, luk, hladna piva, Velebiten... Treba li što više?",
-      "media_count": 2
+      "media_count": 2,
+      "featured_article_image": "assets/legacy-wordpress-featured/2022/12/5085-bozicni-tulum-i-promocija-novog-velebitena.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2022/12/5085-bozicni-tulum-i-promocija-novog-velebitena.webp",
+      "featured_source_size_mb": 1.701,
+      "featured_article_size_mb": 0.158
     },
     {
       "id": "5059",
@@ -992,7 +1200,11 @@
       "url": "novosti/novi-velebiten-3.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Nova godina, novi Velebiten, pedeset i šesti po redu. O čemu su sve pisali članovi našeg društva i kakve su sve lijepe fotografije snimili pročitajte u nastavku i pogledajte u novom broju",
-      "media_count": 5
+      "media_count": 5,
+      "featured_article_image": "assets/legacy-wordpress-featured/2022/12/5059-novi-velebiten-3.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2022/12/5059-novi-velebiten-3.webp",
+      "featured_source_size_mb": 0.119,
+      "featured_article_size_mb": 0.02
     },
     {
       "id": "5023",
@@ -1007,7 +1219,11 @@
       "url": "novosti/odsjecka-akcija-ciscenja-podzemlja.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Prošlog vikenda udruženi Velebitaši/ce iz svih odsjeka (speleološki, alpinistički i planinarski) čistili su smeće iz četiri onečišćena objekta na području NP Plitvička jezera. Najveća količina smeća nalazila se u jami…",
-      "media_count": 22
+      "media_count": 22,
+      "featured_article_image": "assets/legacy-wordpress-featured/2022/10/5023-odsjecka-akcija-ciscenja-podzemlja.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2022/10/5023-odsjecka-akcija-ciscenja-podzemlja.webp",
+      "featured_source_size_mb": 0.816,
+      "featured_article_size_mb": 0.292
     },
     {
       "id": "5010",
@@ -1022,7 +1238,11 @@
       "url": "novosti/u-sjecanje-darko-cucancic-cuco.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Dana 19.07.2022. smo se na mirogojskom krematoriju oprostili od našeg prijatelja, Velebitaša, planinara, speleologa i gorskog spašavatelja Cucančić Darka-Cuce, koji je nakon teške bolesti umro u 68. godini života.",
-      "media_count": 10
+      "media_count": 10,
+      "featured_article_image": "assets/legacy-wordpress-featured/2022/09/5010-u-sjecanje-darko-cucancic-cuco.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2022/09/5010-u-sjecanje-darko-cucancic-cuco.webp",
+      "featured_source_size_mb": 0.283,
+      "featured_article_size_mb": 0.074
     },
     {
       "id": "4981",
@@ -1037,7 +1257,11 @@
       "url": "novosti/lipanjska-ekspedicija-nedam-2022-izvjestaj.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Ekspedicija u organizaciji SO Velebit i suradnji KS HPS, NP Sjeverni Velebit i potporu HGSS-a završila je uspješno. Zahtjevnim straživanjem iza sifona Nedam je postala druga najdublja jama u Hrvatskoj.",
-      "media_count": 24
+      "media_count": 24,
+      "featured_article_image": "assets/legacy-wordpress-featured/2022/08/4981-lipanjska-ekspedicija-nedam-2022-izvjestaj.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2022/08/4981-lipanjska-ekspedicija-nedam-2022-izvjestaj.webp",
+      "featured_source_size_mb": 0.295,
+      "featured_article_size_mb": 0.16
     },
     {
       "id": "4964",
@@ -1052,7 +1276,11 @@
       "url": "novosti/napustio-nas-je-cuco.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Napustio nas je Darko Cucančić Cuco, Velebitaš, špiljar, gorski spašavatelj ...",
-      "media_count": 13
+      "media_count": 13,
+      "featured_article_image": "assets/legacy-wordpress-featured/2022/07/4964-napustio-nas-je-cuco.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2022/07/4964-napustio-nas-je-cuco.webp",
+      "featured_source_size_mb": 0.075,
+      "featured_article_size_mb": 0.042
     },
     {
       "id": "4951",
@@ -1067,7 +1295,11 @@
       "url": "novosti/speleoloska-ekspedicija-nedam-2022.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Poziv na speleološku ekspediciju na području Hajdučkih kukova - NP Sjeverni Velebit",
-      "media_count": 2
+      "media_count": 2,
+      "featured_article_image": "assets/legacy-wordpress-featured/2022/06/4951-speleoloska-ekspedicija-nedam-2022.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2022/06/4951-speleoloska-ekspedicija-nedam-2022.webp",
+      "featured_source_size_mb": 1.165,
+      "featured_article_size_mb": 0.613
     },
     {
       "id": "4907",
@@ -1083,7 +1315,11 @@
       "url": "novosti/dosao-je-i-taj-dan.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Kakve veze imaju gulaš, varivo i Šolta? Zašto smo se vukli kao žvakaće gume? I što je na sve to rekao Gabriel Garcia Marquez, pročitajte u nastavku",
-      "media_count": 32
+      "media_count": 32,
+      "featured_article_image": "assets/legacy-wordpress-featured/2022/05/4907-dosao-je-i-taj-dan.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2022/05/4907-dosao-je-i-taj-dan.webp",
+      "featured_source_size_mb": 1.624,
+      "featured_article_size_mb": 0.423
     },
     {
       "id": "4859",
@@ -1098,7 +1334,11 @@
       "url": "novosti/4859.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Kaže lokalna pjesma: \"Jezerane tri jame bezdane, a Stajnica jama bezdanica\". Jedna od te tri bila je domaćin polaznicima 52. speleološke škole. Njeno ime je Rokina bezdana i osim što je poznata po Čovječjoj ribici,…",
-      "media_count": 32
+      "media_count": 32,
+      "featured_article_image": "assets/legacy-wordpress-featured/2022/04/4859-4859.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2022/04/4859-4859.webp",
+      "featured_source_size_mb": 2.175,
+      "featured_article_size_mb": 0.508
     },
     {
       "id": "4831",
@@ -1113,7 +1353,11 @@
       "url": "novosti/ponorac-i-naucena-lekcija.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Treći izlet ovogodišnje speleološke škole odveo nas je na Ponorac. Radost iščekivanja učenja tehnika kretanja kroz potopljeni špiljski objekt uvećale su i zimske radosti- kiša i snijeg.",
-      "media_count": 20
+      "media_count": 20,
+      "featured_article_image": "assets/legacy-wordpress-featured/2022/04/4831-ponorac-i-naucena-lekcija.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2022/04/4831-ponorac-i-naucena-lekcija.webp",
+      "featured_source_size_mb": 2.172,
+      "featured_article_size_mb": 0.484
     },
     {
       "id": "4812",
@@ -1128,7 +1372,11 @@
       "url": "novosti/koka-na-krosnji.html",
       "preserved_existing_modern_page": false,
       "excerpt": "\"A sada, nakon toliko godina, pitam se: gdje sam bio upravo tada, u to vrijeme? Sjećanje ne koristi dovoljno, osobito kada se radi o datumima. Ali srećom postoje knjige zapisa djelatnosti Speleološkog odsjeka PDS…",
-      "media_count": 2
+      "media_count": 2,
+      "featured_article_image": "assets/legacy-wordpress-featured/2022/04/4812-koka-na-krosnji.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2022/04/4812-koka-na-krosnji.webp",
+      "featured_source_size_mb": 1.019,
+      "featured_article_size_mb": 0.284
     },
     {
       "id": "4764",
@@ -1144,7 +1392,11 @@
       "url": "novosti/2-vikend-speleoloske-skole-sov.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Školica napreduje punom parom. Drugi vikend je za nama, a odnio nas je sa Žice pravo na Gorsko zrcalo",
-      "media_count": 15
+      "media_count": 15,
+      "featured_article_image": "assets/legacy-wordpress-featured/2022/03/4764-2-vikend-speleoloske-skole-sov.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2022/03/4764-2-vikend-speleoloske-skole-sov.webp",
+      "featured_source_size_mb": 0.045,
+      "featured_article_size_mb": 0.041
     },
     {
       "id": "4737",
@@ -1159,7 +1411,11 @@
       "url": "novosti/prvi-izlet-52-speleoloske-skole.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Veselo i sa voljom krenula je 52. po redu velebitaška speleološka škola. Iz pera prve ruke jedne školarke pročitajte kako su se proveli na izletu u Tounju i kako je velebitaški duh među školarcima inspirirao još jednu…",
-      "media_count": 7
+      "media_count": 7,
+      "featured_article_image": "assets/legacy-wordpress-featured/2022/03/4737-prvi-izlet-52-speleoloske-skole.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2022/03/4737-prvi-izlet-52-speleoloske-skole.webp",
+      "featured_source_size_mb": 0.332,
+      "featured_article_size_mb": 0.044
     },
     {
       "id": "4705",
@@ -1174,7 +1430,11 @@
       "url": "novosti/promocija-novog-velebitena.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Promocija novog Velebitena!",
-      "media_count": 1
+      "media_count": 1,
+      "featured_article_image": "assets/legacy-wordpress-featured/2022/01/4705-promocija-novog-velebitena.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2022/01/4705-promocija-novog-velebitena.webp",
+      "featured_source_size_mb": 1.699,
+      "featured_article_size_mb": 0.153
     },
     {
       "id": "4672",
@@ -1189,7 +1449,11 @@
       "url": "novosti/speleoloski-pocetak-godine-u-istri.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Nakon cijelog tjedna promišljanja kuda bi, vikend iza Nove godine raspoložena ekipa iz SK HAD, SD Pazin, SD Proteus i SO Velebit otišla je na Ćićariju, u špilju Golubinku.",
-      "media_count": 10
+      "media_count": 10,
+      "featured_article_image": "assets/legacy-wordpress-featured/2022/01/4672-speleoloski-pocetak-godine-u-istri.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2022/01/4672-speleoloski-pocetak-godine-u-istri.webp",
+      "featured_source_size_mb": 0.17,
+      "featured_article_size_mb": 0.094
     },
     {
       "id": "4638",
@@ -1205,7 +1469,11 @@
       "url": "novosti/52-speleoloska-skola.html",
       "preserved_existing_modern_page": false,
       "excerpt": "'Ajmo curice, ajmo dječaci, studenti, đaci, mili policajci! počinju prijave za novu speleološku školicu - već 52. po redu. Sve što vas zanima pročitajte u nastavku i požurite - broj prijava je ograničen, a gužva je…",
-      "media_count": 5
+      "media_count": 5,
+      "featured_article_image": "assets/legacy-wordpress-featured/2022/01/4638-52-speleoloska-skola.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2022/01/4638-52-speleoloska-skola.webp",
+      "featured_source_size_mb": 0.21,
+      "featured_article_size_mb": 0.117
     },
     {
       "id": "4575",
@@ -1221,7 +1489,11 @@
       "url": "novosti/produzeni-vikend-u-jsc-ulaz-kita.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Produženi vikend raspoložena ekipa provela je u JSC - istraživajući u Kiti. Što su napravili, koliko su se zablatili, nasmrzavali i što sve još proživjeli - pročitajte Karmeninoj priči i Marininom Dnevniku istraživanja",
-      "media_count": 15
+      "media_count": 15,
+      "featured_article_image": "assets/legacy-wordpress-featured/2021/06/4575-produzeni-vikend-u-jsc-ulaz-kita.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2021/06/4575-produzeni-vikend-u-jsc-ulaz-kita.webp",
+      "featured_source_size_mb": 0.397,
+      "featured_article_size_mb": 0.104
     },
     {
       "id": "4549",
@@ -1236,7 +1508,11 @@
       "url": "novosti/ekspedicija-nedam-2021.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Ovogodišnja ekspedicija održat će se u razdoblju 17.07.-01.08.2021. na području NP Sjeverni Velebit. Primarni cilj ekspedicije je istraživanje iza sifona jame Nedam koji je preronjen tijekom prošlogodišnje ekspedicije.",
-      "media_count": 1
+      "media_count": 1,
+      "featured_article_image": "assets/legacy-wordpress-featured/2020/08/4549-ekspedicija-nedam-2021.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2020/08/4549-ekspedicija-nedam-2021.webp",
+      "featured_source_size_mb": 0.063,
+      "featured_article_size_mb": 0.063
     },
     {
       "id": "4498",
@@ -1251,7 +1527,11 @@
       "url": "novosti/nacrt-i-morfologija-spilje-munizabe.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Uz priloženi nacrt, pročitajte opis morfologije Munižabe, kao i cjeloviti popis naziva njenih dijelova...",
-      "media_count": 18
+      "media_count": 18,
+      "featured_article_image": "assets/legacy-wordpress-featured/2021/04/4498-nacrt-i-morfologija-spilje-munizabe.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2021/04/4498-nacrt-i-morfologija-spilje-munizabe.webp",
+      "featured_source_size_mb": 0.461,
+      "featured_article_size_mb": 0.079
     },
     {
       "id": "4385",
@@ -1266,7 +1546,11 @@
       "url": "novosti/munizaba-pregled-istrazivanja.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Pregled istraživanja SOV u Munižabi od 1998-2024.",
-      "media_count": 83
+      "media_count": 83,
+      "featured_article_image": "assets/legacy-wordpress-featured/2021/04/4385-munizaba-pregled-istrazivanja.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2021/04/4385-munizaba-pregled-istrazivanja.webp",
+      "featured_source_size_mb": 0.132,
+      "featured_article_size_mb": 0.051
     },
     {
       "id": "4349",
@@ -1281,7 +1565,11 @@
       "url": "novosti/nastavak-istrazivanja-u-jsc.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Izlet prije dva vikenda u KUV nam je zaigrao maštu nakon što smo stali usred penja u kanalu Mic - Mic",
-      "media_count": 16
+      "media_count": 16,
+      "featured_article_image": "assets/legacy-wordpress-featured/2021/03/4349-nastavak-istrazivanja-u-jsc.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2021/03/4349-nastavak-istrazivanja-u-jsc.webp",
+      "featured_source_size_mb": 4.239,
+      "featured_article_size_mb": 0.545
     },
     {
       "id": "4335",
@@ -1296,7 +1584,11 @@
       "url": "novosti/projekt-novi-fosili-poziv-clanovima-so-pdsv.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Projekt “Novi fosili” je projekt prikupljanja i stvaranja baza fotografija starih članova radi njihovog očuvanja te njihovog “oživljavanja”. O čemu je točno riječ?",
-      "media_count": 5
+      "media_count": 5,
+      "featured_article_image": "assets/legacy-wordpress-featured/2021/03/4335-projekt-novi-fosili-poziv-clanovima-so-pdsv.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2021/03/4335-projekt-novi-fosili-poziv-clanovima-so-pdsv.webp",
+      "featured_source_size_mb": 0.921,
+      "featured_article_size_mb": 0.057
     },
     {
       "id": "4318",
@@ -1311,7 +1603,11 @@
       "url": "novosti/velebitasi-u-mic-po-mic-penju.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Još za Novu godinu 20./21. smo u Velebitu planirali istraživanje u Kiti (JS Crnopac), međutim potres na području Sisačko-Moslavačke županije nam je u bitnome poremetio planove i svi smo pohrlili rušiti dimnjake.",
-      "media_count": 11
+      "media_count": 11,
+      "featured_article_image": "assets/legacy-wordpress-featured/2021/03/4318-velebitasi-u-mic-po-mic-penju.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2021/03/4318-velebitasi-u-mic-po-mic-penju.webp",
+      "featured_source_size_mb": 0.973,
+      "featured_article_size_mb": 0.057
     },
     {
       "id": "4293",
@@ -1326,7 +1622,11 @@
       "url": "novosti/speleoskolica-kao-san.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Cijela školica mi se sad čini kao neki san, ali pogotovo taj vikend o kojem sad pišem. Jame Norvežanka i Dvaput je dvaput. Upečatile su mi se u pamćenje neke jako bajkovite situacije, sve ostalo je malo blurry, ilitiga…",
-      "media_count": 10
+      "media_count": 10,
+      "featured_article_image": "assets/legacy-wordpress-featured/2021/03/4293-speleoskolica-kao-san.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2021/03/4293-speleoskolica-kao-san.webp",
+      "featured_source_size_mb": 0.425,
+      "featured_article_size_mb": 0.355
     },
     {
       "id": "4272",
@@ -1342,7 +1642,11 @@
       "url": "novosti/o-uzetu-uzetima-i-uzadi.html",
       "preserved_existing_modern_page": false,
       "excerpt": "O kokoši i jajetu ste svi čuli. Da li se u speleologiji prije govorilo uže, štrik ili špaga također je pitanje za sebe. Za one koji žele znati kako se uže provlači kroz gramatiku, čitajte u nastavku",
-      "media_count": 3
+      "media_count": 3,
+      "featured_article_image": "assets/legacy-wordpress-featured/2021/03/4272-o-uzetu-uzetima-i-uzadi.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2021/03/4272-o-uzetu-uzetima-i-uzadi.webp",
+      "featured_source_size_mb": 0.025,
+      "featured_article_size_mb": 0.015
     },
     {
       "id": "4230",
@@ -1358,7 +1662,11 @@
       "url": "novosti/krece-51-zagrebacka-speleoloska-skola.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Eto, prvih pola stoljeća speleoloških škola (pola stoljeća, eeeeej!) je za nama, krećemo u drugu polovicu, s voljom i na vrijeme! Na vama je samo da budete brzi, ako mislite biti veliki dio malenog kruga pravih…",
-      "media_count": 3
+      "media_count": 3,
+      "featured_article_image": "assets/legacy-wordpress-featured/2021/02/4230-krece-51-zagrebacka-speleoloska-skola.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2021/02/4230-krece-51-zagrebacka-speleoloska-skola.webp",
+      "featured_source_size_mb": 0.168,
+      "featured_article_size_mb": 0.085
     },
     {
       "id": "4175",
@@ -1373,7 +1681,11 @@
       "url": "novosti/stupina-jama.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Stupina jama najdublja je jama Gorskog kotara. Istraživana je u razdoblju od 1992-1995. godine. No njena laka pristupačnost dovela je do onečišćenja te posljedičnog zatrpavanja prolaza u veliku vertikalu, na dubini od…",
-      "media_count": 16
+      "media_count": 16,
+      "featured_article_image": "assets/legacy-wordpress-featured/2021/01/4175-stupina-jama.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2021/01/4175-stupina-jama.webp",
+      "featured_source_size_mb": 0.376,
+      "featured_article_size_mb": 0.042
     },
     {
       "id": "4160",
@@ -1388,7 +1700,11 @@
       "url": "novosti/velebiten-br-54.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Inače odurnu godinu završili smo sa nečim lijepim. Izašao je 54. broj Velebitena!",
-      "media_count": 1
+      "media_count": 1,
+      "featured_article_image": "assets/legacy-wordpress-featured/2021/01/4160-velebiten-br-54.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2021/01/4160-velebiten-br-54.webp",
+      "featured_source_size_mb": 0.506,
+      "featured_article_size_mb": 0.198
     },
     {
       "id": "4135",
@@ -1403,7 +1719,11 @@
       "url": "novosti/spiljari-na-sv-brdu-i-u-jami-dusa-na-crnopcu.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Speleolozi SO Velebita, jedan član SO Mihovila te alpinisti iz AO Matice, dva zagrebačka i šibenski odsjek, imali su priliku družiti se u planinama. Plan je bio da matičari vode velebitaše na brdo a velebitaši matičare…",
-      "media_count": 14
+      "media_count": 14,
+      "featured_article_image": "assets/legacy-wordpress-featured/2020/12/4135-spiljari-na-sv-brdu-i-u-jami-dusa-na-crnopcu.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2020/12/4135-spiljari-na-sv-brdu-i-u-jami-dusa-na-crnopcu.webp",
+      "featured_source_size_mb": 1.06,
+      "featured_article_size_mb": 0.06
     },
     {
       "id": "4119",
@@ -1418,7 +1738,11 @@
       "url": "novosti/speleolosko-planinarski-logor-za-djecu.html",
       "preserved_existing_modern_page": false,
       "excerpt": "I ove je godine je organiziran Speleološko-planinarski logor za djecu u organizaciji PDS Velebit i SD Velebit. Smještaj kampa je bio, kao i prošle godine, u Lomskoj dulibi pored planinarskog skloništa.",
-      "media_count": 12
+      "media_count": 12,
+      "featured_article_image": "assets/legacy-wordpress-featured/2020/11/4119-speleolosko-planinarski-logor-za-djecu.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2020/11/4119-speleolosko-planinarski-logor-za-djecu.webp",
+      "featured_source_size_mb": 2.307,
+      "featured_article_size_mb": 0.214
     },
     {
       "id": "4086",
@@ -1433,7 +1757,11 @@
       "url": "novosti/pocinje-50-speleoskola.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Nakon više mjeseci odgode, napokon krećemo sa speleološkom školom! Znamo da nestrpljive školarce i buduće speleološke pripravnike već svrbe tabani...",
-      "media_count": 3
+      "media_count": 3,
+      "featured_article_image": "assets/legacy-wordpress-featured/2020/09/4086-pocinje-50-speleoskola.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2020/09/4086-pocinje-50-speleoskola.webp",
+      "featured_source_size_mb": 0.316,
+      "featured_article_size_mb": 0.099
     },
     {
       "id": "4064",
@@ -1448,7 +1776,11 @@
       "url": "novosti/4064.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Završetkom speleološke ekspedicije \"Nedam 2020\" sveli su se i računi u obliku izvješća za Facebook i naš portal :)",
-      "media_count": 9
+      "media_count": 9,
+      "featured_article_image": "assets/legacy-wordpress-featured/2020/08/4064-4064.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2020/08/4064-4064.webp",
+      "featured_source_size_mb": 0.05,
+      "featured_article_size_mb": 0.035
     },
     {
       "id": "4044",
@@ -1463,7 +1795,11 @@
       "url": "novosti/novosti-iz-jame-nedam.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Naramak friških vijesti sa ekspedicije na Sj. Velebitu :)",
-      "media_count": 8
+      "media_count": 8,
+      "featured_article_image": "assets/legacy-wordpress-featured/2020/08/4044-novosti-iz-jame-nedam.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2020/08/4044-novosti-iz-jame-nedam.webp",
+      "featured_source_size_mb": 0.157,
+      "featured_article_size_mb": 0.096
     },
     {
       "id": "4032",
@@ -1494,7 +1830,11 @@
       "url": "novosti/jama-nedam-ide-dalje.html",
       "preserved_existing_modern_page": false,
       "excerpt": "U razdoblju 21.-28.6.2020. g. održana su istraživanja u jami Nedam na Hajdučkim kukovima na Sjevernom Velebitu. Lipanjskim istraživanjem Nedam je s dubinom od 1143 m postala treća jama po dubini u RH!",
-      "media_count": 28
+      "media_count": 28,
+      "featured_article_image": "assets/legacy-wordpress-featured/2020/07/3965-jama-nedam-ide-dalje.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2020/07/3965-jama-nedam-ide-dalje.webp",
+      "featured_source_size_mb": 0.024,
+      "featured_article_size_mb": 0.015
     },
     {
       "id": "3934",
@@ -1509,7 +1849,11 @@
       "url": "novosti/nedam-predakcija-predakcije.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Početak lipnja bio je savršen za predakciju na jami Nedam. Uz malo neugodnih i upozoravajućih vodenih iznenađenja na -600 metara, napravljen je dobar dio posla, o kojem je već i pjesma napisana",
-      "media_count": 19
+      "media_count": 19,
+      "featured_article_image": "assets/legacy-wordpress-featured/2020/06/3934-nedam-predakcija-predakcije.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2020/06/3934-nedam-predakcija-predakcije.webp",
+      "featured_source_size_mb": 0.078,
+      "featured_article_size_mb": 0.096
     },
     {
       "id": "3905",
@@ -1525,7 +1869,11 @@
       "url": "novosti/velebitasi-na-plitvicama.html",
       "preserved_existing_modern_page": false,
       "excerpt": "U razdoblju od 22.-24. svibnja 2020.g. skupina velebitaša je, treći vikend zaredom, posjetilo i istraživalo speleološke objekte na području Nacionalnog parka Plitvička jezera. Istraživanja se provode u sklopu projekta…",
-      "media_count": 16
+      "media_count": 16,
+      "featured_article_image": "assets/legacy-wordpress-featured/2020/05/3905-velebitasi-na-plitvicama.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2020/05/3905-velebitasi-na-plitvicama.webp",
+      "featured_source_size_mb": 0.238,
+      "featured_article_size_mb": 0.2
     },
     {
       "id": "3872",
@@ -1540,7 +1888,11 @@
       "url": "novosti/speleoloski-susreti-na-plitvicama.html",
       "preserved_existing_modern_page": false,
       "excerpt": "U sklopu projekta kojeg je raspisala Javna ustanova NP Plitvička jezera, i uz pomoć LIDAR tehnologije, veći broj speleoloških društava i klubova započeo je sa istraživanjem i evidentiranjem speleoloških objekata na…",
-      "media_count": 23
+      "media_count": 23,
+      "featured_article_image": "assets/legacy-wordpress-featured/2020/05/3872-speleoloski-susreti-na-plitvicama.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2020/05/3872-speleoloski-susreti-na-plitvicama.webp",
+      "featured_source_size_mb": 0.921,
+      "featured_article_size_mb": 0.464
     },
     {
       "id": "3824",
@@ -1555,7 +1907,11 @@
       "url": "novosti/jama-patkov-gust-sjeverni-velebit.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Jamu je 2. kolovoza 1997. godine prilikom rekognosciranja terena pronašao član Speleološkog odsjeka Velebit Damir Lacković. Jama je istražena do dubine -553 m, te je i dvadeset i tri godine nakon otkrića treća po…",
-      "media_count": 21
+      "media_count": 21,
+      "featured_article_image": "assets/legacy-wordpress-featured/2020/04/3824-jama-patkov-gust-sjeverni-velebit.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2020/04/3824-jama-patkov-gust-sjeverni-velebit.webp",
+      "featured_source_size_mb": 0.109,
+      "featured_article_size_mb": 0.053
     },
     {
       "id": "3804",
@@ -1570,7 +1926,11 @@
       "url": "novosti/jama-pod-kamenitim-vratima.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Jama pod Kamenitim vratima istražena 1980. godine. Iako je poznato da velike objekte treba istraživati na ekspedicijski način, međutim, zbog moderne opreme i uigrane ekipe odlučeno je da se primijeni jurišni način…",
-      "media_count": 3
+      "media_count": 3,
+      "featured_article_image": "assets/legacy-wordpress-featured/2020/04/3804-jama-pod-kamenitim-vratima.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2020/04/3804-jama-pod-kamenitim-vratima.webp",
+      "featured_source_size_mb": 0.225,
+      "featured_article_size_mb": 0.174
     },
     {
       "id": "3727",
@@ -1585,7 +1945,11 @@
       "url": "novosti/dachstein-mammuthohle-zimska-speleologija.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Dobri kontakti i suradnja sa austrijskim špiljarima rezultirali su sa nekoliko novogodišnjih istraživanja u trećoj najduljoj austrijskoj špilji",
-      "media_count": 55
+      "media_count": 55,
+      "featured_article_image": "assets/legacy-wordpress-featured/2020/04/3727-dachstein-mammuthohle-zimska-speleologija.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2020/04/3727-dachstein-mammuthohle-zimska-speleologija.webp",
+      "featured_source_size_mb": 1.438,
+      "featured_article_size_mb": 0.135
     },
     {
       "id": "3592",
@@ -1600,7 +1964,11 @@
       "url": "novosti/voronya-2009.html",
       "preserved_existing_modern_page": false,
       "excerpt": "U razdoblju od 23. listopada do 18. studenog 2009. godine članovi speleološkog odsjeka PDS Velebit, Komisije za speleologiju HPS i članovi HGSS Robert Erhardt i Darko Bakšić sudjelovali su na ekspediciji u najdublju…",
-      "media_count": 111
+      "media_count": 111,
+      "featured_article_image": "assets/legacy-wordpress-featured/2020/04/3592-voronya-2009.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2020/04/3592-voronya-2009.webp",
+      "featured_source_size_mb": 0.192,
+      "featured_article_size_mb": 0.081
     },
     {
       "id": "3454",
@@ -1615,7 +1983,11 @@
       "url": "novosti/kuba-put-u-proslost.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Iako su ritmovi ovog najvećeg karipskog otoka razapetog između ostataka hladnoga rata i neminovne modernizacije već odavno osvojili našu svakodnevicu, prava se Kuba, nenašminkana i neuređena (no daleko zanimljivija) i…",
-      "media_count": 36
+      "media_count": 36,
+      "featured_article_image": "assets/legacy-wordpress-featured/2020/04/3454-kuba-put-u-proslost.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2020/04/3454-kuba-put-u-proslost.webp",
+      "featured_source_size_mb": 0.324,
+      "featured_article_size_mb": 0.143
     },
     {
       "id": "3443",
@@ -1630,7 +2002,11 @@
       "url": "novosti/speleoloska-ekspedicija-kuba-2004-2005.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Vrlo je lako bilo probuditi našu radoznalost: pokoja priča, mnoštvo fotografija i već smo se nestrpljivo pripremali za speleološku ekspediciju \"Cuba 2004/05»\". Tropski krš kojim je prekriven veliki dio otoka i 11.000…",
-      "media_count": 67
+      "media_count": 67,
+      "featured_article_image": "assets/legacy-wordpress-featured/2020/04/3443-speleoloska-ekspedicija-kuba-2004-2005.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2020/04/3443-speleoloska-ekspedicija-kuba-2004-2005.webp",
+      "featured_source_size_mb": 0.18,
+      "featured_article_size_mb": 0.075
     },
     {
       "id": "3431",
@@ -1645,7 +2021,11 @@
       "url": "novosti/zivi-svijet-i-osnovni-pojmovi-u-speleologiji.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Biospeleologija je sintetska znanost koja u sebi sjedinjuje u prvom redu dvije osnovne znanstvene discipline: biologiju i speleologiju. Iz tog je razloga biospeleologu pri istraživanju potrebno poznavanje ekologije,…",
-      "media_count": 2
+      "media_count": 2,
+      "featured_article_image": "assets/legacy-wordpress-featured/2020/04/3431-zivi-svijet-i-osnovni-pojmovi-u-speleologiji.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2020/04/3431-zivi-svijet-i-osnovni-pojmovi-u-speleologiji.webp",
+      "featured_source_size_mb": 0.463,
+      "featured_article_size_mb": 0.232
     },
     {
       "id": "3402",
@@ -1660,7 +2040,11 @@
       "url": "novosti/pijavica-croatobranchus-mestrovi.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Pijavica Croatobranchus mestrovi stigobiontni je organizam koji živi isključivo u podzemnim vodama i potpuno je prilagođena životu u podzemlju. Do sada je pronađena samo u četiri duboke jame na sjevernom Velebitu: u…",
-      "media_count": 14
+      "media_count": 14,
+      "featured_article_image": "assets/legacy-wordpress-featured/2020/04/3402-pijavica-croatobranchus-mestrovi.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2020/04/3402-pijavica-croatobranchus-mestrovi.webp",
+      "featured_source_size_mb": 0.085,
+      "featured_article_size_mb": 0.062
     },
     {
       "id": "3323",
@@ -1675,7 +2059,11 @@
       "url": "novosti/sistem-bc-4-mala-boka.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Već dugi niz godina traju kontakti članova SO PDS Velebit sa speleolozima iz Slovenije koji istražuju na području Kanina. Jedan od takvih kontakata 2011. urodio je idejom o posjeti i savladavanju traverze u sustavu BC-4…",
-      "media_count": 26
+      "media_count": 26,
+      "featured_article_image": "assets/legacy-wordpress-featured/2020/04/3323-sistem-bc-4-mala-boka.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2020/04/3323-sistem-bc-4-mala-boka.webp",
+      "featured_source_size_mb": 0.107,
+      "featured_article_size_mb": 0.059
     },
     {
       "id": "3302",
@@ -1690,7 +2078,11 @@
       "url": "novosti/glavu-gore-nema-predaje.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Malo o tome kako se naš speleološki odsjek snalazi u ovim vremenima. Da niste možda posumnjali? :)",
-      "media_count": 17
+      "media_count": 17,
+      "featured_article_image": "assets/legacy-wordpress-featured/2020/04/3302-glavu-gore-nema-predaje.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2020/04/3302-glavu-gore-nema-predaje.webp",
+      "featured_source_size_mb": 0.047,
+      "featured_article_size_mb": 0.036
     },
     {
       "id": "3293",
@@ -1705,7 +2097,11 @@
       "url": "novosti/odgovorno-i-u-prirodu-za-vrijeme-pandemije.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Prazne škole, vrtići, zatvoreni lokali... uz lijepo i toplo vrijeme učinilo je da se dosta nas odlučilo dane provesti u prirodi. No, da ni to nije potpuno bezopasno pročitajte u apelu i preporuci HGSS-a",
-      "media_count": 1
+      "media_count": 1,
+      "featured_article_image": "assets/legacy-wordpress-featured/2020/03/3293-odgovorno-i-u-prirodu-za-vrijeme-pandemije.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2020/03/3293-odgovorno-i-u-prirodu-za-vrijeme-pandemije.webp",
+      "featured_source_size_mb": 0.037,
+      "featured_article_size_mb": 0.023
     },
     {
       "id": "3286",
@@ -1735,7 +2131,11 @@
       "url": "novosti/3234.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Dobra vijest za špiljski sustav ispod grada Ogulina: Poljakov prolaz je ponovo otvoren. Nakon 85 godina ponovo dokumentiran Poljakov prolaz - spoj Đulinog ponora i špilje Medvedice koji je ključan za protok velikih voda…",
-      "media_count": 2
+      "media_count": 2,
+      "featured_article_image": "assets/legacy-wordpress-featured/2020/02/3234-3234.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2020/02/3234-3234.webp",
+      "featured_source_size_mb": 1.833,
+      "featured_article_size_mb": 0.214
     },
     {
       "id": "3109",
@@ -1750,7 +2150,11 @@
       "url": "novosti/2019-a-godina-na-nasem-portalu.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Kopanje kroz statističke podatke u godini dana može izgledati kao na gornjoj slici. Najčešće rezultira životno bitnim podacima poput traženih riječi, broja pročitanih tekstova i td. ...",
-      "media_count": 5
+      "media_count": 5,
+      "featured_article_image": "assets/legacy-wordpress-featured/2020/01/3109-2019-a-godina-na-nasem-portalu.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2020/01/3109-2019-a-godina-na-nasem-portalu.webp",
+      "featured_source_size_mb": 0.198,
+      "featured_article_size_mb": 0.031
     },
     {
       "id": "3082",
@@ -1765,7 +2169,11 @@
       "url": "novosti/izborna-skupstina-sov.html",
       "preserved_existing_modern_page": false,
       "excerpt": "U petak, 17. siječnja 2020. održana je Izborna skupština SOV-a, a kako to već priliči izbornim skupštinama izabrano je i novo vodstvo Odsjeka.",
-      "media_count": 9
+      "media_count": 9,
+      "featured_article_image": "assets/legacy-wordpress-featured/2020/01/3082-izborna-skupstina-sov.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2020/01/3082-izborna-skupstina-sov.webp",
+      "featured_source_size_mb": 1.58,
+      "featured_article_size_mb": 0.097
     },
     {
       "id": "3051",
@@ -1781,7 +2189,11 @@
       "url": "novosti/50-zagrebacka-speleoloska-skola.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Došli smo i do nje. Jubilarna 50. Zagrebačka speleološka škola. Ako ste zainteresirani, pogledajte što vas tamo čeka",
-      "media_count": 18
+      "media_count": 18,
+      "featured_article_image": "assets/legacy-wordpress-featured/2020/01/3051-50-zagrebacka-speleoloska-skola.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2020/01/3051-50-zagrebacka-speleoloska-skola.webp",
+      "featured_source_size_mb": 0.373,
+      "featured_article_size_mb": 0.19
     },
     {
       "id": "3036",
@@ -1796,7 +2208,11 @@
       "url": "novosti/novi-velebiten-2.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Draga nacijo, iz tiska je izašao 53. broj našeg godišnjaka - Velebitena! Treba li što više reći o tome? Dakako da treba, ali to pročitajte u nastavku",
-      "media_count": 3
+      "media_count": 3,
+      "featured_article_image": "assets/legacy-wordpress-featured/2019/11/3036-novi-velebiten-2.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2019/11/3036-novi-velebiten-2.webp",
+      "featured_source_size_mb": 0.893,
+      "featured_article_size_mb": 0.087
     },
     {
       "id": "3013",
@@ -1811,7 +2227,11 @@
       "url": "novosti/radne-akcije-na-ratkovom-sklonistu.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Lijepo vrijeme iskorišteno je u proteklih par vikenada kako bi se obnovilo i dotjeralo Ratkovo sklonište. Pililo se, farbalo, zabijalo, popravljalo,",
-      "media_count": 12
+      "media_count": 12,
+      "featured_article_image": "assets/legacy-wordpress-featured/2019/10/3013-radne-akcije-na-ratkovom-sklonistu.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2019/10/3013-radne-akcije-na-ratkovom-sklonistu.webp",
+      "featured_source_size_mb": 0.61,
+      "featured_article_size_mb": 0.148
     },
     {
       "id": "2856",
@@ -1826,7 +2246,11 @@
       "url": "novosti/divovski-ledeni-svijet.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Već par godina planiramo put u Eisriesenwelt ponad mjesta Werfena u Austriji, i sad je konačno došlo vrijeme za to, doslovce pred kraj sezone jer je špilja za javnost otvorena tek od svibnja do listopada.",
-      "media_count": 83
+      "media_count": 83,
+      "featured_article_image": "assets/legacy-wordpress-featured/2019/10/2856-divovski-ledeni-svijet.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2019/10/2856-divovski-ledeni-svijet.webp",
+      "featured_source_size_mb": 2.096,
+      "featured_article_size_mb": 0.184
     },
     {
       "id": "2741",
@@ -1841,7 +2265,11 @@
       "url": "novosti/speleoloska-ekspedicija-sov-kina-1988.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Šestero velebitaša i velebitašica prije točno 31 godinu odvažili su se na speleološku ekspediciju u daleku Kinu",
-      "media_count": 54
+      "media_count": 54,
+      "featured_article_image": "assets/legacy-wordpress-featured/2019/10/2741-speleoloska-ekspedicija-sov-kina-1988.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2019/10/2741-speleoloska-ekspedicija-sov-kina-1988.webp",
+      "featured_source_size_mb": 1.396,
+      "featured_article_size_mb": 0.665
     },
     {
       "id": "2719",
@@ -1856,7 +2284,11 @@
       "url": "novosti/jama-nedam-nova-hrvatska-tisucica.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Jedva da je prošlo sedam dana od istraživanja jame Nedam u kojem se stalo pred vertikalom na dubini od -920 metara i razumljivo da je speleološki i istraživački poriv bio toliki da se čim prije \"sjuri i zakuca\" ime…",
-      "media_count": 4
+      "media_count": 4,
+      "featured_article_image": "assets/legacy-wordpress-featured/2019/09/2719-jama-nedam-nova-hrvatska-tisucica.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2019/09/2719-jama-nedam-nova-hrvatska-tisucica.webp",
+      "featured_source_size_mb": 2.158,
+      "featured_article_size_mb": 0.166
     },
     {
       "id": "2700",
@@ -1871,7 +2303,11 @@
       "url": "novosti/2700.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Još jednim vikend istraživanjem u jami Nedam dosegnuta je nova dubina od -921 m i duljina od 1827m! Jama završava vertikalom od barem 30m tako da je tisućica „Nadomak“. Paralelno istražen je i upitnik na -670m nakon…",
-      "media_count": 8
+      "media_count": 8,
+      "featured_article_image": "assets/legacy-wordpress-featured/2019/09/2700-2700.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2019/09/2700-2700.webp",
+      "featured_source_size_mb": 0.671,
+      "featured_article_size_mb": 0.14
     },
     {
       "id": "2670",
@@ -1901,7 +2337,11 @@
       "url": "novosti/nedam-je-pokleknula.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Jama Nedam, radnog naziva SOV 34 donedavno bila je davni, zaboravljeni san Velebitaša. Donedavno, jer odsada je to tema o kojoj ćemo često pričati...",
-      "media_count": 15
+      "media_count": 15,
+      "featured_article_image": "assets/legacy-wordpress-featured/2019/06/2651-nedam-je-pokleknula.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2019/06/2651-nedam-je-pokleknula.webp",
+      "featured_source_size_mb": 0.081,
+      "featured_article_size_mb": 0.024
     },
     {
       "id": "2639",
@@ -1917,7 +2357,11 @@
       "url": "novosti/mandelaja.html",
       "preserved_existing_modern_page": false,
       "excerpt": "u turobna vremena višetjednih neprestanih kiša i sivila, u nenadano sunčano subotnje jutro, našli smo se nas nekoliko kako bi se ukrcali na vlak za Oštarije, „kao nekada špiljari prije nego što su nabavili aute...“.",
-      "media_count": 7
+      "media_count": 7,
+      "featured_article_image": "assets/legacy-wordpress-featured/2019/06/2639-mandelaja.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2019/06/2639-mandelaja.webp",
+      "featured_source_size_mb": 1.933,
+      "featured_article_size_mb": 0.491
     },
     {
       "id": "2615",
@@ -1932,7 +2376,11 @@
       "url": "novosti/t2-ili-kako-to-madari-rade.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Naša vrijedna arhivarka Marina posjetila je bratsku i prijateljsku nam mađarsku speleološku zajednicu i tamo postala prva Hrvatica koja je završila T2 seminar",
-      "media_count": 19
+      "media_count": 19,
+      "featured_article_image": "assets/legacy-wordpress-featured/2019/05/2615-t2-ili-kako-to-madari-rade.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2019/05/2615-t2-ili-kako-to-madari-rade.webp",
+      "featured_source_size_mb": 0.169,
+      "featured_article_size_mb": 0.027
     },
     {
       "id": "2598",
@@ -1947,7 +2395,11 @@
       "url": "novosti/interview-marko-rakovac.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Tsvetan Kosturkov za web bugarskog speleološkog kluba \"Под Ръбъ\" (Ispod ruba) napravio je interview sa tajnikom SO PDS Velebit Markom Rakovcem",
-      "media_count": 8
+      "media_count": 8,
+      "featured_article_image": "assets/legacy-wordpress-featured/2019/05/2598-interview-marko-rakovac.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2019/05/2598-interview-marko-rakovac.webp",
+      "featured_source_size_mb": 0.101,
+      "featured_article_size_mb": 0.095
     },
     {
       "id": "2549",
@@ -1962,7 +2414,11 @@
       "url": "novosti/2549.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Što je povezalo ovu ''tramvaj populaciju'' na jednom mjestu? Kakva je to ljudska sorta koju zanimaju špilje, jame, ponori, bezdani - mjesta u koja svjetlost ne dopire, za koja se smatra da su dom sveg zlog što ovaj…",
-      "media_count": 33
+      "media_count": 33,
+      "featured_article_image": "assets/legacy-wordpress-featured/2019/05/2549-2549.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2019/05/2549-2549.webp",
+      "featured_source_size_mb": 0.139,
+      "featured_article_size_mb": 0.161
     },
     {
       "id": "2443",
@@ -1977,7 +2433,11 @@
       "url": "novosti/izlet-speleoskole-na-ponorac.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Kad te priroda počasti suncem, toplinom, kišom, tučom i hladnoćom, onda znaš da je bilo dobro.",
-      "media_count": 22
+      "media_count": 22,
+      "featured_article_image": "assets/legacy-wordpress-featured/2019/05/2443-izlet-speleoskole-na-ponorac.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2019/05/2443-izlet-speleoskole-na-ponorac.webp",
+      "featured_source_size_mb": 1.59,
+      "featured_article_size_mb": 0.494
     },
     {
       "id": "2429",
@@ -1992,7 +2452,11 @@
       "url": "novosti/speleologija-2-izdanje.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Drugo i prošireno izdanje hrvatske ali i svjetske speleološke enciklopedije! Što je novoga i gdje nabaviti pročitajte ovdje",
-      "media_count": 1
+      "media_count": 1,
+      "featured_article_image": "assets/legacy-wordpress-featured/2019/04/2429-speleologija-2-izdanje.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2019/04/2429-speleologija-2-izdanje.webp",
+      "featured_source_size_mb": 1.648,
+      "featured_article_size_mb": 0.185
     },
     {
       "id": "2391",
@@ -2008,7 +2472,11 @@
       "url": "novosti/tounjcica-speleoronjenjem-spojena-sa-spiljom-u-kamenolomu-tounj.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Špilja Tounjčica tehnikom speleoronjenja spojena je sa Mamutovim jezerom u Špilji u kamenolomu Tounj",
-      "media_count": 15
+      "media_count": 15,
+      "featured_article_image": "assets/legacy-wordpress-featured/2019/04/2391-tounjcica-speleoronjenjem-spojena-sa-spiljom-u-kamenolomu-tounj.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2019/04/2391-tounjcica-speleoronjenjem-spojena-sa-spiljom-u-kamenolomu-tounj.webp",
+      "featured_source_size_mb": 1.043,
+      "featured_article_size_mb": 0.179
     },
     {
       "id": "2357",
@@ -2023,7 +2491,11 @@
       "url": "novosti/kaos-u-krslji.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Špiljski sustav Panjkov ponor-Muškinje nakon podosta godina opet je bio domaćin masovnije posjete velebitaša i to sa svrhom.",
-      "media_count": 19
+      "media_count": 19,
+      "featured_article_image": "assets/legacy-wordpress-featured/2019/03/2357-kaos-u-krslji.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2019/03/2357-kaos-u-krslji.webp",
+      "featured_source_size_mb": 0.859,
+      "featured_article_size_mb": 0.108
     },
     {
       "id": "2339",
@@ -2038,7 +2510,11 @@
       "url": "novosti/mora-li-svaki-izlet-biti-speleoloski-da-bi-bio-dobar.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Ili, kako te puknuti amortizeri dovedu do masovnog policijskog legitimiranja na autoputu, nakon čega se rezignirana guma odluči ispuhati pri brzini od 120 km/h",
-      "media_count": 11
+      "media_count": 11,
+      "featured_article_image": "assets/legacy-wordpress-featured/2019/03/2339-mora-li-svaki-izlet-biti-speleoloski-da-bi-bio-dobar.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2019/03/2339-mora-li-svaki-izlet-biti-speleoloski-da-bi-bio-dobar.webp",
+      "featured_source_size_mb": 0.907,
+      "featured_article_size_mb": 0.187
     },
     {
       "id": "2320",
@@ -2053,7 +2529,11 @@
       "url": "novosti/samo-pedalaj.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Iza devet sela, preko brda i planina, dovaljao se ženski novovalni haiku. Pive orošene od znoja ohladila je Cetina voda.",
-      "media_count": 15
+      "media_count": 15,
+      "featured_article_image": "assets/legacy-wordpress-featured/2019/03/2320-samo-pedalaj.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2019/03/2320-samo-pedalaj.webp",
+      "featured_source_size_mb": 0.516,
+      "featured_article_size_mb": 0.174
     },
     {
       "id": "2257",
@@ -2068,7 +2548,11 @@
       "url": "novosti/godisnja-skupstina-so-velebit.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Početak godine i fašničko vrijeme su termini za redovnu skupštinu našeg odsjeka. A ona nam uvijek izgleda veselo, što zbog ića i pića, a što zbog maškara...",
-      "media_count": 1
+      "media_count": 1,
+      "featured_article_image": "assets/legacy-wordpress-featured/2019/03/2257-godisnja-skupstina-so-velebit.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2019/03/2257-godisnja-skupstina-so-velebit.webp",
+      "featured_source_size_mb": 2.001,
+      "featured_article_size_mb": 0.198
     },
     {
       "id": "2241",
@@ -2083,7 +2567,11 @@
       "url": "novosti/gameboskop-iz-zafrkancije-u-legendu.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Kako je nastala riječ GAMEBOSKOP koju često čujemo na speleološkim i alpinističkim izletima, što je to i čemu služi pojašnjava nam istaknuti alpinist Vladimir - Dado Mesarić u izvornom tekstu kojeg prenosimo:",
-      "media_count": 6
+      "media_count": 6,
+      "featured_article_image": "assets/legacy-wordpress-featured/2019/02/2241-gameboskop-iz-zafrkancije-u-legendu.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2019/02/2241-gameboskop-iz-zafrkancije-u-legendu.webp",
+      "featured_source_size_mb": 0.078,
+      "featured_article_size_mb": 0.075
     },
     {
       "id": "2226",
@@ -2098,7 +2586,11 @@
       "url": "novosti/izlozba-fotografija-pds-velebit.html",
       "preserved_existing_modern_page": false,
       "excerpt": "PDS Velebit organizira izložbu fotografija na kojoj će se prezentirati amaterska fotografija i rad sva tri odsjeka, a sa ciljem promoviranja Velebita i prikupljanja sredstava za otkup prostora. Više o tome",
-      "media_count": 1
+      "media_count": 1,
+      "featured_article_image": "assets/legacy-wordpress-featured/2019/01/2226-izlozba-fotografija-pds-velebit.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2019/01/2226-izlozba-fotografija-pds-velebit.webp",
+      "featured_source_size_mb": 0.995,
+      "featured_article_size_mb": 0.193
     },
     {
       "id": "2197",
@@ -2113,7 +2605,11 @@
       "url": "novosti/2197.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Kada po šumi umjesto srna ili medvjeda susrećeš razne natpise, trakice, neorijentirane policajce i svašta nešto - jedna pjesmica ti odmah padne na pamet...",
-      "media_count": 12
+      "media_count": 12,
+      "featured_article_image": "assets/legacy-wordpress-featured/2019/01/2197-2197.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2019/01/2197-2197.webp",
+      "featured_source_size_mb": 1.232,
+      "featured_article_size_mb": 0.278
     },
     {
       "id": "2173",
@@ -2128,7 +2624,11 @@
       "url": "novosti/nova-godina-u-kiti-ili-netko-nas-sabotira.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Poučak: kada u jamu uneseš konjske pljeskavice i ukulele, Kita se produlji preko 37 kilometara. Više o tom poučku:",
-      "media_count": 19
+      "media_count": 19,
+      "featured_article_image": "assets/legacy-wordpress-featured/2019/01/2173-nova-godina-u-kiti-ili-netko-nas-sabotira.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2019/01/2173-nova-godina-u-kiti-ili-netko-nas-sabotira.webp",
+      "featured_source_size_mb": 1.389,
+      "featured_article_size_mb": 0.354
     },
     {
       "id": "2165",
@@ -2144,7 +2644,11 @@
       "url": "novosti/49-zagrebacka-speleoloska-skola.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Uskoro kreće 49. zagrebačka speleološka škola! Zauzmite svoje mjesto na vrijeme i postanite istraživačem posljednjih tajni ove Zemlje!",
-      "media_count": 1
+      "media_count": 1,
+      "featured_article_image": "assets/legacy-wordpress-featured/2019/01/2165-49-zagrebacka-speleoloska-skola.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2019/01/2165-49-zagrebacka-speleoloska-skola.webp",
+      "featured_source_size_mb": 1.464,
+      "featured_article_size_mb": 0.151
     },
     {
       "id": "2135",
@@ -2159,7 +2663,11 @@
       "url": "novosti/crtice-sa-skupa.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Malo o skupu, u nekoliko rečenica, par sličica i koji filmić. Za one koji su željeli biti tamo, a nisu mogli. Patite, jer bilo je odlično :)",
-      "media_count": 8
+      "media_count": 8,
+      "featured_article_image": "assets/legacy-wordpress-featured/2018/11/2135-crtice-sa-skupa.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2018/11/2135-crtice-sa-skupa.webp",
+      "featured_source_size_mb": 0.24,
+      "featured_article_size_mb": 0.07
     },
     {
       "id": "2111",
@@ -2174,7 +2682,11 @@
       "url": "novosti/balada-o-slusnom-aparaticu-i-usponu-na-mont-blanc-2-dio.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Drugi dio Balade o slušnom aparatiću i usponu na krov Europe - Mont Blanc",
-      "media_count": 14
+      "media_count": 14,
+      "featured_article_image": "assets/legacy-wordpress-featured/2018/11/2111-balada-o-slusnom-aparaticu-i-usponu-na-mont-blanc-2-dio.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2018/11/2111-balada-o-slusnom-aparaticu-i-usponu-na-mont-blanc-2-dio.webp",
+      "featured_source_size_mb": 2.216,
+      "featured_article_size_mb": 0.376
     },
     {
       "id": "2100",
@@ -2189,7 +2701,11 @@
       "url": "novosti/2100.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Otvaranjem dviju izložbi počeo tjedan speleologije u Ogulinu. Izložbe su uvod ovogodišnjem Skupu speleologa i događanjima za građanstvo povodom istog.",
-      "media_count": 9
+      "media_count": 9,
+      "featured_article_image": "assets/legacy-wordpress-featured/2018/11/2100-2100.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2018/11/2100-2100.webp",
+      "featured_source_size_mb": 1.923,
+      "featured_article_size_mb": 0.113
     },
     {
       "id": "2071",
@@ -2204,7 +2720,11 @@
       "url": "novosti/balada-o-slusnom-aparaticu-i-usponu-na-mont-blanc-1-dio.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Kakva je poveznica između dvoje ljudi koji su se penjali na Mt. Blanc u razmaku od gotovo 60 godina? Samo jedna mala stvar: slušni aparatić",
-      "media_count": 12
+      "media_count": 12,
+      "featured_article_image": "assets/legacy-wordpress-featured/2018/11/2071-balada-o-slusnom-aparaticu-i-usponu-na-mont-blanc-1-dio.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2018/11/2071-balada-o-slusnom-aparaticu-i-usponu-na-mont-blanc-1-dio.webp",
+      "featured_source_size_mb": 0.11,
+      "featured_article_size_mb": 0.092
     },
     {
       "id": "2055",
@@ -2219,7 +2739,11 @@
       "url": "novosti/seseljevac.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Ima jedna stara poslovica; kartu čitaj, a seljaka pitaj. U ovom slučaju isplatilo se i upitati i šumara u nasumično zaustavljenom autu. Više o tome kroz priče Maka i Lička",
-      "media_count": 11
+      "media_count": 11,
+      "featured_article_image": "assets/legacy-wordpress-featured/2018/11/2055-seseljevac.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2018/11/2055-seseljevac.webp",
+      "featured_source_size_mb": 0.619,
+      "featured_article_size_mb": 0.154
     },
     {
       "id": "2033",
@@ -2234,7 +2758,11 @@
       "url": "novosti/istrazivanje-pod-meduzom-kg-dp.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Kako je precizan nacrt potaknuo ekipu na istraživanje, a bušilica postala leteća mašina i sve jugu unatoč - pročitajte u nastavku",
-      "media_count": 15
+      "media_count": 15,
+      "featured_article_image": "assets/legacy-wordpress-featured/2018/11/2033-istrazivanje-pod-meduzom-kg-dp.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2018/11/2033-istrazivanje-pod-meduzom-kg-dp.webp",
+      "featured_source_size_mb": 0.449,
+      "featured_article_size_mb": 0.148
     },
     {
       "id": "2023",
@@ -2249,7 +2777,11 @@
       "url": "novosti/izlet-na-glogovo.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Moja mater te po špilji traži, zna di radiš i di se krećeš, zna sva mista di ideš navečer. Ne moreš joj pobić'... :)",
-      "media_count": 8
+      "media_count": 8,
+      "featured_article_image": "assets/legacy-wordpress-featured/2018/11/2023-izlet-na-glogovo.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2018/11/2023-izlet-na-glogovo.webp",
+      "featured_source_size_mb": 0.578,
+      "featured_article_size_mb": 0.128
     },
     {
       "id": "2014",
@@ -2264,7 +2796,11 @@
       "url": "novosti/sestorka-u-bunjevcu-bunovcu.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Kroz listopad i rujan speleološki odsjek je napravio nekoliko posjeta ponoru Bunovac, najdubljoj jami NP Paklenica, sa ciljem monitoringa i 3D snimanja.",
-      "media_count": 4
+      "media_count": 4,
+      "featured_article_image": "assets/legacy-wordpress-featured/2018/10/2014-sestorka-u-bunjevcu-bunovcu.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2018/10/2014-sestorka-u-bunjevcu-bunovcu.webp",
+      "featured_source_size_mb": 0.163,
+      "featured_article_size_mb": 0.1
     },
     {
       "id": "1988",
@@ -2279,7 +2815,11 @@
       "url": "novosti/vjezba-zagreb-2018.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Odrađena je još jedna vježba postrojbi CZ pod nazivom \"Zagreb 2018\" u kojoj su speleolozi opet imali svoj dan. Neki u podrumu, neki u šahtu, a neki i u čamcu...",
-      "media_count": 21
+      "media_count": 21,
+      "featured_article_image": "assets/legacy-wordpress-featured/2018/10/1988-vjezba-zagreb-2018.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2018/10/1988-vjezba-zagreb-2018.webp",
+      "featured_source_size_mb": 0.296,
+      "featured_article_size_mb": 0.275
     },
     {
       "id": "1972",
@@ -2294,7 +2834,11 @@
       "url": "novosti/medunarodna-speleospasilacka-vjezba-u-skalarjevom-breznu.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Na međunarodnoj vježbi speleospašavanja u organizaciji slovenske Jamarske reševalne službe sudjelovali su i dva člana našeg speleološkog odsjeka.",
-      "media_count": 11
+      "media_count": 11,
+      "featured_article_image": "assets/legacy-wordpress-featured/2018/10/1972-medunarodna-speleospasilacka-vjezba-u-skalarjevom-breznu.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2018/10/1972-medunarodna-speleospasilacka-vjezba-u-skalarjevom-breznu.webp",
+      "featured_source_size_mb": 0.662,
+      "featured_article_size_mb": 0.168
     },
     {
       "id": "1961",
@@ -2309,7 +2853,11 @@
       "url": "novosti/kita-u-rujnu.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Svako novo istraživanje Kite donese i neke nove spoznaje. Jedna od njih je: \"najedi se u Zvonimiru prije ulaska tako da ne moraš u bivku\". A koje su druge, pročitajte u nastavku...",
-      "media_count": 6
+      "media_count": 6,
+      "featured_article_image": "assets/legacy-wordpress-featured/2018/09/1961-kita-u-rujnu.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2018/09/1961-kita-u-rujnu.webp",
+      "featured_source_size_mb": 0.436,
+      "featured_article_size_mb": 0.119
     },
     {
       "id": "1943",
@@ -2324,7 +2872,11 @@
       "url": "novosti/fosilijada-2018.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Svi smo mi fosili, neki već sad, a neki će to tek postati. A biti velebitaški fosil... to je posebna kategorija. Relikt poput čovječje ribice.",
-      "media_count": 11
+      "media_count": 11,
+      "featured_article_image": "assets/legacy-wordpress-featured/2018/09/1943-fosilijada-2018.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2018/09/1943-fosilijada-2018.webp",
+      "featured_source_size_mb": 0.179,
+      "featured_article_size_mb": 0.065
     },
     {
       "id": "1934",
@@ -2354,7 +2906,11 @@
       "url": "novosti/plava-jakna.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Ulazim u helikopter i za tren-dva smo na ulazu u Riesending-Schachthohle, najdublju jamu bavarskih Alpa. Taj isti dan sam \"trebao\" biti na faksu i konačno pisati taj ispit za koji sam se pripremao skoro dva mjeseca.…",
-      "media_count": 1
+      "media_count": 1,
+      "featured_article_image": "assets/legacy-wordpress-featured/2018/05/1927-plava-jakna.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2018/05/1927-plava-jakna.webp",
+      "featured_source_size_mb": 0.133,
+      "featured_article_size_mb": 0.078
     },
     {
       "id": "1922",
@@ -2369,7 +2925,11 @@
       "url": "novosti/glazba-i-kamenje-nemoguci-razgovori.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Još su stari Grci kucajući po sigama ustanovili da one šuplje daju određeni zvuk. Neki ljudima će one i dalje zvučati šuplje, dok (nama) speleolozima te iste sige kroz tminu špilja prostiru tonove spojene u melodiju.",
-      "media_count": 3
+      "media_count": 3,
+      "featured_article_image": "assets/legacy-wordpress-featured/2018/05/1922-glazba-i-kamenje-nemoguci-razgovori.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2018/05/1922-glazba-i-kamenje-nemoguci-razgovori.webp",
+      "featured_source_size_mb": 0.988,
+      "featured_article_size_mb": 0.205
     },
     {
       "id": "1903",
@@ -2384,7 +2944,11 @@
       "url": "novosti/prvo-pa-kita.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Ne pijem, ne pušim, ne psujem. Jedan jedini, porok si mi ti. Što me Kito iz svog srca tjeraš van, kad ja ne bih još ako ne moram",
-      "media_count": 17
+      "media_count": 17,
+      "featured_article_image": "assets/legacy-wordpress-featured/2018/05/1903-prvo-pa-kita.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2018/05/1903-prvo-pa-kita.webp",
+      "featured_source_size_mb": 1.414,
+      "featured_article_size_mb": 0.135
     },
     {
       "id": "1871",
@@ -2400,7 +2964,11 @@
       "url": "novosti/zavrsila-48-zagrebacka-speleoloska-skola.html",
       "preserved_existing_modern_page": false,
       "excerpt": "I još jedna škola dođe kraju! Ovoga puta 48. po redu. Novi speleološki pripravnici, osim špagom po dupetu, dobili su i uvjerenja o zvanju, a kako je to sve proteklo u Radićevoj 23, pročitajte i pogledajte u nastavku.",
-      "media_count": 26
+      "media_count": 26,
+      "featured_article_image": "assets/legacy-wordpress-featured/2018/04/1871-zavrsila-48-zagrebacka-speleoloska-skola.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2018/04/1871-zavrsila-48-zagrebacka-speleoloska-skola.webp",
+      "featured_source_size_mb": 0.135,
+      "featured_article_size_mb": 0.106
     },
     {
       "id": "1850",
@@ -2415,7 +2983,11 @@
       "url": "novosti/in-memoriam-zoran-stipetic-patak-1960-1996.html",
       "preserved_existing_modern_page": false,
       "excerpt": "SO PDS Velebit bez Patka neće biti isti, ali je njegovom zaslugom postao drugačiji nego li ga pamte brojne generacije koje su u njemu prošle svoja mladenačka iskustva, veselja i radosti.",
-      "media_count": 6
+      "media_count": 6,
+      "featured_article_image": "assets/legacy-wordpress-featured/2018/03/1850-in-memoriam-zoran-stipetic-patak-1960-1996.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2018/03/1850-in-memoriam-zoran-stipetic-patak-1960-1996.webp",
+      "featured_source_size_mb": 0.05,
+      "featured_article_size_mb": 0.007
     },
     {
       "id": "1840",
@@ -2430,7 +3002,11 @@
       "url": "novosti/cetvrti-tjedan-planinarstva-i-penjanja-u-sloveniji.html",
       "preserved_existing_modern_page": false,
       "excerpt": "U sklopu međunarodnog projekta \"Penjanje za sve\" održanog u Nordijskom centru Planica u Sloveniji, sudjelovao je i velebitaški dvojac Stipe i Raki. Kakva su iskustva stekli, pročitajte u nastavku",
-      "media_count": 6
+      "media_count": 6,
+      "featured_article_image": "assets/legacy-wordpress-featured/2018/03/1840-cetvrti-tjedan-planinarstva-i-penjanja-u-sloveniji.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2018/03/1840-cetvrti-tjedan-planinarstva-i-penjanja-u-sloveniji.webp",
+      "featured_source_size_mb": 0.667,
+      "featured_article_size_mb": 0.133
     },
     {
       "id": "1825",
@@ -2445,7 +3021,11 @@
       "url": "novosti/zimska-posla.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Snijeg bio veoma mokar i težak, ali ipak smo bili brzi. Spuštanje na skijama nije bilo lako, no svi smo ga obavili bez većih problema. Neke daske su lagano stradale, ali glavno da su noge čitave",
-      "media_count": 5
+      "media_count": 5,
+      "featured_article_image": "assets/legacy-wordpress-featured/2018/03/1825-zimska-posla.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2018/03/1825-zimska-posla.webp",
+      "featured_source_size_mb": 0.502,
+      "featured_article_size_mb": 0.17
     },
     {
       "id": "1813",
@@ -2460,7 +3040,11 @@
       "url": "novosti/odrzana-godisnja-skupstina-sov.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Početak godine uvijek je rezerviran za službeni osvrt na rad u protekloj. Uz zadovoljenje svih statističkih potreba, izabrali smo i novo vodstvo Odsjeka",
-      "media_count": 11
+      "media_count": 11,
+      "featured_article_image": "assets/legacy-wordpress-featured/2018/03/1813-odrzana-godisnja-skupstina-sov.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2018/03/1813-odrzana-godisnja-skupstina-sov.webp",
+      "featured_source_size_mb": 0.075,
+      "featured_article_size_mb": 0.058
     },
     {
       "id": "1807",
@@ -2475,7 +3059,11 @@
       "url": "novosti/odrzani-ispiti-za-stjecanje-naziva-speleolog.html",
       "preserved_existing_modern_page": false,
       "excerpt": "U prostorijama HGSS Stanice Zagreb, Bliznec b.b. 27. siječnja 2018. godine je održan speleološki ispit Komisije za speleologiju HPS na kojima su provjerena teorijska i praktična znanja za speleološki naziv Speleolog.…",
-      "media_count": 1
+      "media_count": 1,
+      "featured_article_image": "assets/legacy-wordpress-featured/2018/01/1807-odrzani-ispiti-za-stjecanje-naziva-speleolog.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2018/01/1807-odrzani-ispiti-za-stjecanje-naziva-speleolog.webp",
+      "featured_source_size_mb": 3.833,
+      "featured_article_size_mb": 0.218
     },
     {
       "id": "1797",
@@ -2490,7 +3078,11 @@
       "url": "novosti/upisi-na-48-zagrebacku-speleolosku-skolu.html",
       "preserved_existing_modern_page": false,
       "excerpt": "U tijeku su upisi na novu speleološku školu SO PDS Velebit. Više informacija",
-      "media_count": 3
+      "media_count": 3,
+      "featured_article_image": "assets/legacy-wordpress-featured/2018/01/1797-upisi-na-48-zagrebacku-speleolosku-skolu.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2018/01/1797-upisi-na-48-zagrebacku-speleolosku-skolu.webp",
+      "featured_source_size_mb": 1.362,
+      "featured_article_size_mb": 0.528
     },
     {
       "id": "1769",
@@ -2505,7 +3097,11 @@
       "url": "novosti/docek-nove-u-kiti.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Ako te putem na Crnopac prati divlji zec, Kita će se produljiti za 33 metra.",
-      "media_count": 9
+      "media_count": 9,
+      "featured_article_image": "assets/legacy-wordpress-featured/2018/01/1769-docek-nove-u-kiti.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2018/01/1769-docek-nove-u-kiti.webp",
+      "featured_source_size_mb": 0.436,
+      "featured_article_size_mb": 0.135
     },
     {
       "id": "1754",
@@ -2520,7 +3116,11 @@
       "url": "novosti/vikend-u-zracku-nade-ii.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Četir' djeve i jedan vitez dojahaše podno Kastva grada. Vjetar silni i kiša pusta ne učini im straha. Ali zato zima gladna nauči ih pameti...",
-      "media_count": 7
+      "media_count": 7,
+      "featured_article_image": "assets/legacy-wordpress-featured/2017/12/1754-vikend-u-zracku-nade-ii.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2017/12/1754-vikend-u-zracku-nade-ii.webp",
+      "featured_source_size_mb": 0.688,
+      "featured_article_size_mb": 0.156
     },
     {
       "id": "1704",
@@ -2535,7 +3135,11 @@
       "url": "novosti/128-istrazivanje-kite-iliti-34-282-m.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Prosinački put u Kitu započeo je pivom i žicanjem šećera za kuhano vino. Ipak je predbožićno vrijeme.",
-      "media_count": 14
+      "media_count": 14,
+      "featured_article_image": "assets/legacy-wordpress-featured/2017/12/1704-128-istrazivanje-kite-iliti-34-282-m.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2017/12/1704-128-istrazivanje-kite-iliti-34-282-m.webp",
+      "featured_source_size_mb": 0.019,
+      "featured_article_size_mb": 0.012
     },
     {
       "id": "1674",
@@ -2551,7 +3155,11 @@
       "url": "novosti/kako-smo-se-dobro-proveli-na-skupu-speleologa.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Priča sa dvoumljenjem da li smo bili na Skupu speleologa ili srednjoškolskoj ekskurziji. Kako god, bilo nam je zabavno. :)",
-      "media_count": 20
+      "media_count": 20,
+      "featured_article_image": "assets/legacy-wordpress-featured/2017/11/1674-kako-smo-se-dobro-proveli-na-skupu-speleologa.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2017/11/1674-kako-smo-se-dobro-proveli-na-skupu-speleologa.webp",
+      "featured_source_size_mb": 0.615,
+      "featured_article_size_mb": 0.241
     },
     {
       "id": "1648",
@@ -2566,7 +3174,11 @@
       "url": "novosti/hrtici-u-beogradu.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Kad za nečiji rođendan potegneš 450 kilometara, onda je jasno da je riječ o speleologu, dobrom prijatelju koji je napunio pedeset (barem toliko priznaje)",
-      "media_count": 19
+      "media_count": 19,
+      "featured_article_image": "assets/legacy-wordpress-featured/2017/11/1648-hrtici-u-beogradu.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2017/11/1648-hrtici-u-beogradu.webp",
+      "featured_source_size_mb": 0.607,
+      "featured_article_size_mb": 0.203
     },
     {
       "id": "1588",
@@ -2581,7 +3193,11 @@
       "url": "novosti/bavarski-dvorci-na-velebitaski.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Postoji uzrečica; kada vidiš da netko priča sam sa sobom - pusti ga. Ili je lud ili gradi kuću. Ako je k tome još i kralj, onda nastaju dvorci iz bajke.",
-      "media_count": 42
+      "media_count": 42,
+      "featured_article_image": "assets/legacy-wordpress-featured/2017/11/1588-bavarski-dvorci-na-velebitaski.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2017/11/1588-bavarski-dvorci-na-velebitaski.webp",
+      "featured_source_size_mb": 0.583,
+      "featured_article_size_mb": 0.248
     },
     {
       "id": "1571",
@@ -2596,7 +3212,11 @@
       "url": "novosti/svi-putevi-vode-u-burinku.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Nismo se okupali, nismo našli upitnik, nismo imali šta širiti, nismo čak ni nacrtali ništa. Ali smo \"naboli\" pravi put.",
-      "media_count": 9
+      "media_count": 9,
+      "featured_article_image": "assets/legacy-wordpress-featured/2017/11/1571-svi-putevi-vode-u-burinku.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2017/11/1571-svi-putevi-vode-u-burinku.webp",
+      "featured_source_size_mb": 0.747,
+      "featured_article_size_mb": 0.148
     },
     {
       "id": "1503",
@@ -2611,7 +3231,11 @@
       "url": "novosti/tri-gracije-u-bocnom-kanalu.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Kad se spomene odlazak na fotkanje u špilji, prva misao je kako je to jedan light izlet, opušten i sa malo tereta na leđima. Gotovo kao pješačenje u kroksama po pitoresknoj livadi. Aha.",
-      "media_count": 16
+      "media_count": 16,
+      "featured_article_image": "assets/legacy-wordpress-featured/2017/10/1503-tri-gracije-u-bocnom-kanalu.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2017/10/1503-tri-gracije-u-bocnom-kanalu.webp",
+      "featured_source_size_mb": 0.759,
+      "featured_article_size_mb": 0.331
     },
     {
       "id": "1473",
@@ -2626,7 +3250,11 @@
       "url": "novosti/usrani-izlet-u-dulu-medvedicu.html",
       "preserved_existing_modern_page": false,
       "excerpt": "U narodnim predanjima vjeruje se da ako te ptica posere, pratit će te sreća. Vrijedi li slično u špilji, još nije evidentirano kroz ikakva predanja. Sve do sad.",
-      "media_count": 8
+      "media_count": 8,
+      "featured_article_image": "assets/legacy-wordpress-featured/2017/10/1473-usrani-izlet-u-dulu-medvedicu.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2017/10/1473-usrani-izlet-u-dulu-medvedicu.webp",
+      "featured_source_size_mb": 0.475,
+      "featured_article_size_mb": 0.173
     },
     {
       "id": "1433",
@@ -2641,7 +3269,11 @@
       "url": "novosti/nas-tri-same.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Kad sve krene \"kao po loju\" onda obično krene i po Murphyevom zakonu. Prvo se u meandru zaglavila jedna, a zatim i druga. Kako su naše tri cure prošle kroz istraživanje SAME, čitajte u nastavku...",
-      "media_count": 10
+      "media_count": 10,
+      "featured_article_image": "assets/legacy-wordpress-featured/2017/10/1433-nas-tri-same.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2017/10/1433-nas-tri-same.webp",
+      "featured_source_size_mb": 0.864,
+      "featured_article_size_mb": 0.411
     },
     {
       "id": "1382",
@@ -2656,7 +3288,11 @@
       "url": "novosti/oprosti-za-kung-fu.html",
       "preserved_existing_modern_page": false,
       "excerpt": "2017-a godina obilježena je vježbama Civilne zaštite grada Zagreba, a kako smo kao speleolozi SO Velebita vrlo aktivno uključeni u te postrojbe voljom i brojem, red je napisati i koju riječ o tome. E sad, postoji muka…",
-      "media_count": 20
+      "media_count": 20,
+      "featured_article_image": "assets/legacy-wordpress-featured/2017/10/1382-oprosti-za-kung-fu.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2017/10/1382-oprosti-za-kung-fu.webp",
+      "featured_source_size_mb": 15.366,
+      "featured_article_size_mb": 0.228
     },
     {
       "id": "1350",
@@ -2671,7 +3307,11 @@
       "url": "novosti/kitarenje-u-prozi.html",
       "preserved_existing_modern_page": false,
       "excerpt": "U listopadu smo opet malo posjetili Crnopac i famoznu Kitu. Mjerilo se, skupljalo uzorke, i naravno istraživalo, a sve to je bila prilika i friškim pripravnicima da prvi put nakon škole osjete... (hm..) ... čari ove…",
-      "media_count": 4
+      "media_count": 4,
+      "featured_article_image": "assets/legacy-wordpress-featured/2017/10/1350-kitarenje-u-prozi.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2017/10/1350-kitarenje-u-prozi.webp",
+      "featured_source_size_mb": 0.922,
+      "featured_article_size_mb": 0.148
     },
     {
       "id": "1239",
@@ -2686,7 +3326,11 @@
       "url": "novosti/promocija-knjige-speleologija.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Pisana jednostavnim i razumljivim izričajem knjiga u pedeset poglavlja obrađuje povijesne, tehničke, sigurnosne, fizikalne, biološke, geološke i još brojne teme usko vezane uz speleologiju. Bogato je ilustrirana na 733…",
-      "media_count": 17
+      "media_count": 17,
+      "featured_article_image": "assets/legacy-wordpress-featured/2017/09/1239-promocija-knjige-speleologija.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2017/09/1239-promocija-knjige-speleologija.webp",
+      "featured_source_size_mb": 0.13,
+      "featured_article_size_mb": 0.082
     },
     {
       "id": "1153",
@@ -2701,7 +3345,11 @@
       "url": "novosti/kise-i-suncanice.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Problematiku moguće zamjene speleologa sa natrpanim ruksacima, transportkama i pokojom najlon -vrećicom sa kakvom skupinom Kurda, riješavamo prijavom našeg boravka na tom mjestu nadležnoj graničnoj policiji.",
-      "media_count": 25
+      "media_count": 25,
+      "featured_article_image": "assets/legacy-wordpress-featured/2017/09/1153-kise-i-suncanice.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2017/09/1153-kise-i-suncanice.webp",
+      "featured_source_size_mb": 0.539,
+      "featured_article_size_mb": 0.169
     },
     {
       "id": "1120",
@@ -2716,7 +3364,11 @@
       "url": "novosti/muda-ipak-nisu-nalik-kiti.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Mislila sam da će Muda biti više manje nalik Kiti, međutim iznenadila sam se koliko je jama vertikalna.",
-      "media_count": 19
+      "media_count": 19,
+      "featured_article_image": "assets/legacy-wordpress-featured/2017/08/1120-muda-ipak-nisu-nalik-kiti.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2017/08/1120-muda-ipak-nisu-nalik-kiti.webp",
+      "featured_source_size_mb": 1.565,
+      "featured_article_size_mb": 0.252
     },
     {
       "id": "1027",
@@ -2732,7 +3384,11 @@
       "url": "novosti/kako-sam-planinario-u-visokim-tatrima.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Nalijećem na grupu promatrača životinja koji za potreba parka obavljaju monitoring divljači. Čude se što sam bauljam Tatrima pogotovo kad sam im iznio svoj plan. Jedan od njih me upitao - Sve ćeš to proći na noge? Da, a…",
-      "media_count": 13
+      "media_count": 13,
+      "featured_article_image": "assets/legacy-wordpress-featured/2017/07/1027-kako-sam-planinario-u-visokim-tatrima.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2017/07/1027-kako-sam-planinario-u-visokim-tatrima.webp",
+      "featured_source_size_mb": 0.187,
+      "featured_article_size_mb": 0.029
     },
     {
       "id": "1004",
@@ -2747,7 +3403,11 @@
       "url": "novosti/slovacka-2017-izvjestaj.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Zaronom na -1320 m dubine Slovačka jama dostigla je francusku Goufree Berger, prvu tisuću na Svijetu, postajući tako 25 najdublja jama Svijeta.",
-      "media_count": 8
+      "media_count": 8,
+      "featured_article_image": "assets/legacy-wordpress-featured/2017/07/1004-slovacka-2017-izvjestaj.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2017/07/1004-slovacka-2017-izvjestaj.webp",
+      "featured_source_size_mb": 0.493,
+      "featured_article_size_mb": 0.094
     },
     {
       "id": "951",
@@ -2762,7 +3422,11 @@
       "url": "novosti/njegov-tata-je-imao-kuburu.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Puno vremena je Filac posvetio tom poslu, a zabio je samo jedan jedini klin (od njih stotinu) – za probu u kamenu stubu u Rubetićevoj. Klin smo izvadili da bi proučili deformaciju vrha, ali rupa je još i danas vidljiva.",
-      "media_count": 6
+      "media_count": 6,
+      "featured_article_image": "assets/legacy-wordpress-featured/2017/06/951-njegov-tata-je-imao-kuburu.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2017/06/951-njegov-tata-je-imao-kuburu.webp",
+      "featured_source_size_mb": 0.44,
+      "featured_article_size_mb": 0.065
     },
     {
       "id": "850",
@@ -2778,7 +3442,11 @@
       "url": "novosti/maroko-u-mom-oku.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Na kraju smo došli na sam ulaz u rudnik i tamo pitali kako dalje, a odgovor je bio jako dobar - „Natrag istom cestom 180 km, pa okolo“.",
-      "media_count": 14
+      "media_count": 14,
+      "featured_article_image": "assets/legacy-wordpress-featured/2017/06/850-maroko-u-mom-oku.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2017/06/850-maroko-u-mom-oku.webp",
+      "featured_source_size_mb": 0.343,
+      "featured_article_size_mb": 0.128
     },
     {
       "id": "819",
@@ -2793,7 +3461,11 @@
       "url": "novosti/nove-sov-majice.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Stigle su nam nove SOV Majice!",
-      "media_count": 6
+      "media_count": 6,
+      "featured_article_image": "assets/legacy-wordpress-featured/2017/06/819-nove-sov-majice.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2017/06/819-nove-sov-majice.webp",
+      "featured_source_size_mb": 0.119,
+      "featured_article_size_mb": 0.029
     },
     {
       "id": "767",
@@ -2808,7 +3480,11 @@
       "url": "novosti/velebitaski-hipiji-na-cvjetnom.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Već drugi viseći performans SOV-ovaca na zagrebačkom Cvjetnom trgu, u sklopu Cest is D'best-a, okupio je ekipu koja sa hippie generacijom ima dodira kao i Dikan Radeljak sa starijim komadima.",
-      "media_count": 11
+      "media_count": 11,
+      "featured_article_image": "assets/legacy-wordpress-featured/2017/06/767-velebitaski-hipiji-na-cvjetnom.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2017/06/767-velebitaski-hipiji-na-cvjetnom.webp",
+      "featured_source_size_mb": 0.07,
+      "featured_article_size_mb": 0.015
     },
     {
       "id": "747",
@@ -2823,7 +3499,11 @@
       "url": "novosti/psece-muke-po-glogovu.html",
       "preserved_existing_modern_page": false,
       "excerpt": "U rano jutro probudili su nas psi. Oni koji su već bili na Glogovu upoznati su sa situacijom, a one koji nisu, nije mogao pripremiti ni nadasve motivirajući e-mail Ane Bakšić: „Nemojte se uplašiti ogromnih pasa koji će…",
-      "media_count": 8
+      "media_count": 8,
+      "featured_article_image": "assets/legacy-wordpress-featured/2017/06/747-psece-muke-po-glogovu.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2017/06/747-psece-muke-po-glogovu.webp",
+      "featured_source_size_mb": 0.331,
+      "featured_article_size_mb": 0.164
     },
     {
       "id": "736",
@@ -2838,7 +3518,11 @@
       "url": "novosti/slovacka-jama-2017.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Nastavak dugogodišnjeg istraživanja u Slovačkoj jami ove godine planiran je u dva termina. Prvi termin od 22. lipnja do 6. srpnja 2017. godine kada bi se nastojalo jamu postaviti do dna (-1320m) te drugi termin kada je…",
-      "media_count": 2
+      "media_count": 2,
+      "featured_article_image": "assets/legacy-wordpress-featured/2017/06/736-slovacka-jama-2017.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2017/06/736-slovacka-jama-2017.webp",
+      "featured_source_size_mb": 0.138,
+      "featured_article_size_mb": 0.046
     },
     {
       "id": "726",
@@ -2853,7 +3537,11 @@
       "url": "novosti/ekspedicija-rozanski-kukovi-2017.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Speleološki odsjek PDS Velebit i Speleološko društvo Velebit u suradnji s Komisijom za speleologiju Hrvatskog planinarskog saveza i Zagrebačkim speleološkim savezom će ovoga ljeta organizirati nekoliko speleoloških…",
-      "media_count": 1
+      "media_count": 1,
+      "featured_article_image": "assets/legacy-wordpress-featured/2017/06/726-ekspedicija-rozanski-kukovi-2017.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2017/06/726-ekspedicija-rozanski-kukovi-2017.webp",
+      "featured_source_size_mb": 0.063,
+      "featured_article_size_mb": 0.01
     },
     {
       "id": "277",
@@ -2898,7 +3586,11 @@
       "url": "novosti/brezno-rumenega-maka.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Kako provesti Božić a ne prejedati se \"kod svojih\" a da svejedno budeš u društvu \"svojih\"? Okreneš nekoliko brojeva i dogovoriš speleo istraživanje...",
-      "media_count": 4
+      "media_count": 4,
+      "featured_article_image": "assets/legacy-wordpress-featured/2017/05/234-brezno-rumenega-maka.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2017/05/234-brezno-rumenega-maka.webp",
+      "featured_source_size_mb": 4.177,
+      "featured_article_size_mb": 0.26
     },
     {
       "id": "542",
@@ -2913,7 +3605,11 @@
       "url": "novosti/47-zagrebacka-speleoskola.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Još jedna speleološka škola iznjedrila je dvadeset novih speleoloških pripravnika kojima će od sada i zauvijek pisati da su Velebitaši. Sa velikim \"V\".",
-      "media_count": 2
+      "media_count": 2,
+      "featured_article_image": "assets/legacy-wordpress-featured/2017/05/542-47-zagrebacka-speleoskola.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2017/05/542-47-zagrebacka-speleoskola.webp",
+      "featured_source_size_mb": 0.248,
+      "featured_article_size_mb": 0.071
     },
     {
       "id": "798",
@@ -2928,7 +3624,11 @@
       "url": "novosti/prvi-izlet-nakon-skole-a-nema-luke-da-sastavi-tekst.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Piše: Nikolina Buljan Čudno je to, kada stojiš na deset metara od jame odmah ti netko od instruktora viče da se slučajno ne približavaš, jer što?! Upravo si se mislio lasta stilom baciti na glavu dolje? Ali kada hodaš…",
-      "media_count": 4
+      "media_count": 4,
+      "featured_article_image": "assets/legacy-wordpress-featured/2017/06/798-prvi-izlet-nakon-skole-a-nema-luke-da-sastavi-tekst.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2017/06/798-prvi-izlet-nakon-skole-a-nema-luke-da-sastavi-tekst.webp",
+      "featured_source_size_mb": 0.165,
+      "featured_article_size_mb": 0.194
     },
     {
       "id": "540",
@@ -2943,7 +3643,11 @@
       "url": "novosti/46-zagrebacka-speleoskola.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Upisavši speleološku školu, nisam ni sanjala kako će nekoliko vikenda promijeniti moj pogled na svijet, kako će srušiti predrasude o drugima i istinski me promijeniti. Sve je započelo prvim sastankom, mnoštvom…",
-      "media_count": 2
+      "media_count": 2,
+      "featured_article_image": "assets/legacy-wordpress-featured/2017/05/540-46-zagrebacka-speleoskola.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2017/05/540-46-zagrebacka-speleoskola.webp",
+      "featured_source_size_mb": 0.277,
+      "featured_article_size_mb": 0.103
     },
     {
       "id": "676",
@@ -2958,7 +3662,11 @@
       "url": "novosti/rokina-bezdana-ispit-speleoloske-skole-2015.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Vremenska prognoza je obećavala dobru priču završnog izleta na Rokinu bezdanu i ispita za speleološke pripravnike 45. Velebitaške speleoškole. U kratkim crtama sažela bi se u samo dvije riječi – kišno i hladno. O nekom…",
-      "media_count": 29
+      "media_count": 29,
+      "featured_article_image": "assets/legacy-wordpress-featured/2017/06/676-rokina-bezdana-ispit-speleoloske-skole-2015.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2017/06/676-rokina-bezdana-ispit-speleoloske-skole-2015.webp",
+      "featured_source_size_mb": 0.089,
+      "featured_article_size_mb": 0.078
     },
     {
       "id": "538",
@@ -2973,7 +3681,11 @@
       "url": "novosti/45-zagrebacka-speleoskola.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Upravo je to lijepo vrijeme meni jedinom izazivalo glavobolju, jer tko će natjerat 20 mladih ljudi da nešto radi, a vani proljetno sunce, Korana taman za kupanje, na vatrici se krčka gulaš, u hladnoj špilji hlade se…",
-      "media_count": 1
+      "media_count": 1,
+      "featured_article_image": "assets/legacy-wordpress-featured/2017/05/538-45-zagrebacka-speleoskola.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2017/05/538-45-zagrebacka-speleoskola.webp",
+      "featured_source_size_mb": 0.055,
+      "featured_article_size_mb": 0.048
     },
     {
       "id": "656",
@@ -2988,7 +3700,11 @@
       "url": "novosti/gorsko-zrcalo-nekad-i-danas.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Piše: Stjepan Dubac Gorsko zrcalo je nezaobilazna destinacija većine zagrebačkih speleoloških škola. Upravo na Zrcalu mnoge generacije špiljara napravile su prve korake prema gore i dolje, po prvi put se upoznali s…",
-      "media_count": 6
+      "media_count": 6,
+      "featured_article_image": "assets/legacy-wordpress-featured/2017/06/656-gorsko-zrcalo-nekad-i-danas.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2017/06/656-gorsko-zrcalo-nekad-i-danas.webp",
+      "featured_source_size_mb": 0.163,
+      "featured_article_size_mb": 0.182
     },
     {
       "id": "649",
@@ -3003,7 +3719,11 @@
       "url": "novosti/1959-prvo-ronjenje-u-spilji-u-hrvatskoj.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Napisao: Hrvoje Malinar “Joe” Razni motivi mogu ponukati čovjeka na neki neobičan pothvat. Tako je bilo i s mojim ronjenjem sifona u špilji Veternici kod Zagreba. Do te davne 1959. godine još se nitko u Hrvatskoj nije…",
-      "media_count": 25
+      "media_count": 25,
+      "featured_article_image": "assets/legacy-wordpress-featured/2017/06/649-1959-prvo-ronjenje-u-spilji-u-hrvatskoj.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2017/06/649-1959-prvo-ronjenje-u-spilji-u-hrvatskoj.webp",
+      "featured_source_size_mb": 0.798,
+      "featured_article_size_mb": 0.102
     },
     {
       "id": "601",
@@ -3018,7 +3738,11 @@
       "url": "novosti/sa-snijegom-u-noci-u-avatar-cu-poci.html",
       "preserved_existing_modern_page": false,
       "excerpt": "Piše: Marko Rakovac Foto: Marko Rakovac, Matea Talaja Za vrijeme ekspedicije “Lukina jama 2010.” godine (u organizaciji PDS Velebit) jamu Avatar su prilikom dana odmora i rekognosciranja terena pronašli engleski i…",
-      "media_count": 15
+      "media_count": 15,
+      "featured_article_image": "assets/legacy-wordpress-featured/2014/10/601-sa-snijegom-u-noci-u-avatar-cu-poci.webp",
+      "featured_thumb_image": "assets/legacy-wordpress-thumbs/2014/10/601-sa-snijegom-u-noci-u-avatar-cu-poci.webp",
+      "featured_source_size_mb": 0.08,
+      "featured_article_size_mb": 0.034
     }
   ],
   "skipped_pages": [

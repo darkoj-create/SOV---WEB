@@ -1,3 +1,9 @@
+
+## v6.1.44d — WordPress featured media
+- Dodane optimizirane naslovne slike za stare WordPress objave.
+- Vijesti arhiva više nema prazne kartice za većinu uvezenih starih objava.
+- Originalni TAR i pune galerije nisu dodani u build.
+
 ## v5.59.8 — User approval sync fix
 
 ## v5.59.11 — Oružarstvo health + fastload
