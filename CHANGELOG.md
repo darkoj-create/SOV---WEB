@@ -1,4 +1,10 @@
 
+## v6.1.44g — Typography polish
+- Added conservative system typography override.
+- Standardized UI, article and native zapisnici font rendering.
+- No remote fonts and no bundled font files.
+
+
 ## v6.1.44d — WordPress featured media
 - Dodane optimizirane naslovne slike za stare WordPress objave.
 - Vijesti arhiva više nema prazne kartice za većinu uvezenih starih objava.
@@ -560,3 +566,8 @@ Dodani pravi HTML fajlovi:
 - Web tracking viewer sada primarno čita field events i fallbacka na izlete.
 - Android tracking kartica dobiva izbor moda i intervale koji štede bateriju.
 - Home login ikonica dodatno popravljena da bude klikabilna iznad home sadržaja.
+
+## v6.1.44f — Documents page cleanup
+- Simplified `dokumenti.html` into a clean hub: native zapisnici, najave, skupštine, upute.
+- Removed duplicate legacy document cards from the main view while keeping old pages in the build for compatibility.
+- No database, APK, Izleti, Oružarstvo, Arhivar or Karta changes.
