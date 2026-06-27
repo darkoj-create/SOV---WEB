@@ -1,8 +1,8 @@
 {
   "app": "SOV web",
-  "version": "6.1.45m",
+  "version": "6.1.45o",
   "versionName": "v6.1.44c-wordpress-text-import-preserve-current-public",
-  "build": "sov-web-build-v6.1.45m-oruzarstvo-loading-responsive-fix",
+  "build": "sov-web-build-v6.1.45o-oruzarstvo-clean-no-pending",
   "createdAt": "2026-06-24T17:03:11.259951Z",
   "cacheBust": "6144c-wxr-text-preserve-current",
   "base": "sov-web-build-v6.1.45l-oruzarstvo-merge-osobna-srt.zip",
@@ -18,6 +18,6 @@
     "BUILD_VERSION.txt",
     "update.json"
   ],
-  "notes": "Oružarstvo posudbe redesigned as cart/request/issue/return webshop workflow; no database schema changes.",
+  "notes": "Clean oruzarstvo.html: removed legacy layered boot scripts and local data/manifest fetch dependency; single Supabase REST catalog request with abort timeout.",
   "requiredSql": "SUPABASE_ORUZARSTVO_LOANS_MATERIALIZER_v6_1_45b.sql"
 }
