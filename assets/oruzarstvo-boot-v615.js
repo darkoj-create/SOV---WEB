@@ -1,7 +1,7 @@
 /* SOV Oružarstvo catalog loader v6.1.43 */
 (function(){
   'use strict';
-  const BUILD='6.1.43-prerelease-polish';
+  const BUILD='6.1.45m-static-fallback-responsive-fix';
   const MIN_ROWS=20;
   const LIVE_TIMEOUT=65000;
   const RETRY_MS=4500;
@@ -173,14 +173,34 @@
     setMiniStatus('ok',`${source} · ${countData(norm)} stavki`);
     return true;
   }
-  async function loadLiveStrict(){
-    if(!(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.loadAllData)){
-      renderLoading('Katalog trenutno nije dostupan.','Pokušaj ponovno za nekoliko minuta.'); return false;
+  async function loadStaticFallback(){
+    const paths=['data/oruzarstvo-xls-canonical-v6.1.5.json','data/oruzarstvo-data.json','data/oruzarstvo-data-v1-model.json'];
+    for(const path of paths){
+      try{
+        const res=await Promise.race([fetch(path,{cache:'no-store'}),timeout(2600,null)]);
+        if(!res||!res.ok) continue;
+        const data=await res.json();
+        if(hasRows(data)) return applyData(data,'Evidencija opreme');
+      }catch(e){ console.warn('armory static fallback skipped',path,e?.message||e); }
     }
-    const live=await Promise.race([SOVArmoryDB.loadAllData({force:true,strictLive:true}),timeout(LIVE_TIMEOUT,{__timeout:true})]);
-    if(live&&live.__timeout){renderLoading('Katalog se još učitava…','Osvježi stranicu za koju minutu.');return false;}
-    if(hasRows(live)) return applyData(live,'Evidencija opreme');
-    renderLoading('Katalog još nije spreman.','Osvježi stranicu za koju minutu.'); return false;
+    return false;
+  }
+
+  async function loadLiveStrict(){
+    if(window.DATA && hasRows(window.DATA)) return applyData(window.DATA,'Evidencija opreme');
+    if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.loadAllData){
+      const cachedOrLive=await Promise.race([SOVArmoryDB.loadAllData({force:false,strictLive:false}),timeout(5200,{__timeout:true})]);
+      if(hasRows(cachedOrLive)){
+        // prikaz odmah, a refresh neka ide u pozadini bez blokiranja kataloga
+        setTimeout(()=>{try{SOVArmoryDB.loadAllData({force:true,background:true}).then(fresh=>{if(hasRows(fresh))applyData(fresh,'Evidencija opreme');}).catch(()=>{});}catch(e){}},250);
+        return applyData(cachedOrLive,'Evidencija opreme');
+      }
+      const live=await Promise.race([SOVArmoryDB.loadAllData({force:true,strictLive:true}),timeout(9000,{__timeout:true})]);
+      if(hasRows(live)) return applyData(live,'Evidencija opreme');
+    }
+    const staticOk=await loadStaticFallback();
+    if(staticOk) return true;
+    renderLoading('Katalog trenutno nije dostupan.','Pokušaj ponovno za nekoliko minuta.'); return false;
   }
   async function pollLive(){
     attempt += 1; renderLoading('Učitavam katalog opreme…','Katalog će se prikazati čim evidencija bude spremna.');
