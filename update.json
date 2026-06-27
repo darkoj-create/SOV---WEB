@@ -1,12 +1,12 @@
 {
   "app": "SOV web",
-  "version": "6.1.45b",
+  "version": "6.1.45c",
   "versionName": "v6.1.44c-wordpress-text-import-preserve-current-public",
-  "build": "sov-web-build-v6.1.45b-system-status-loans-hotfix",
+  "build": "sov-web-build-v6.1.45c-oruzarstvo-ui-polish",
   "createdAt": "2026-06-24T17:03:11.259951Z",
   "cacheBust": "6144c-wxr-text-preserve-current",
-  "base": "sov-web-build-v6.1.43e-smart-location-future-trips.zip",
-  "requiresSql": true,
+  "base": "sov-web-build-v6.1.45b-system-status-loans-hotfix.zip",
+  "requiresSql": false,
   "releaseType": "wordpress-text-import-preserve-current-public",
   "changedFiles": [
     "vijesti.html",
