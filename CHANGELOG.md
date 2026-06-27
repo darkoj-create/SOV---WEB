@@ -1,11 +1,3 @@
-## v6.1.45g — Oružarstvo full UX remake
-
-- Full user-facing UX remake for `oruzarstvo.html`.
-- Catalog behaves like a webshop: categories, search, item cards, cart drawer, checkout.
-- “Zatraži” now clearly adds to cart only; sending happens from checkout.
-- My requests shown as order/status cards.
-- Mobile-first polish, sticky cart button, cleaner icons/sizing.
-
 
 ## v6.1.44h — SEO foundation + no raw zapisnici docs
 - Dodan robots.txt, sitemap.xml, site.webmanifest.
