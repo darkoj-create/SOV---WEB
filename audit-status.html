@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>SOV Audit i uređaji</title>
+<title>Audit log + korisnički uređaji — SOV Velebit</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/supabase-config.js"></script>
 <script src="assets/auth.js"></script>
@@ -15,7 +15,7 @@
     .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:18px}.kpi{font-size:30px;font-weight:800}.muted{color:#94a3b8}table{width:100%;border-collapse:collapse;margin-top:12px}td,th{padding:11px;border-bottom:1px solid rgba(148,163,184,.18);text-align:left}th{color:#cbd5e1}.pill{display:inline-flex;padding:8px 12px;border-radius:999px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.35);color:#bbf7d0;font-weight:700}
   </style>
 <link href="assets/sov-foundation-v55822.css" rel="stylesheet"/><link href="assets/sov-shell-v55825.css" rel="stylesheet"/><link href="assets/sov-polish-v55826.css" rel="stylesheet"/><link href="assets/sov-typography-v6144g.css" rel="stylesheet"/>
-</head>
+<meta content="Admin pregled za novu SOV identity/sync kičmu. SQL v5.35 dodaje sov_audit_log , proširuje uređaje i priprema centralni sync health bez diranja baze objekata." name="description"/><meta content="noindex,nofollow,noarchive" name="robots"/><link href="https://so-velebit.hr/audit-status.html" rel="canonical"/><meta content="Speleološki odsjek Velebit" property="og:site_name"/><meta content="hr_HR" property="og:locale"/><meta content="website" property="og:type"/><meta content="Audit log + korisnički uređaji — SOV Velebit" property="og:title"/><meta content="Admin pregled za novu SOV identity/sync kičmu. SQL v5.35 dodaje sov_audit_log , proširuje uređaje i priprema centralni sync health bez diranja baze objekata." property="og:description"/><meta content="https://so-velebit.hr/audit-status.html" property="og:url"/><meta content="https://so-velebit.hr/assets/sov-logo.png" property="og:image"/><meta content="summary_large_image" name="twitter:card"/><meta content="Audit log + korisnički uređaji — SOV Velebit" name="twitter:title"/><meta content="Admin pregled za novu SOV identity/sync kičmu. SQL v5.35 dodaje sov_audit_log , proširuje uređaje i priprema centralni sync health bez diranja baze objekata." name="twitter:description"/><meta content="https://so-velebit.hr/assets/sov-logo.png" name="twitter:image"/><meta content="#0b0f14" name="theme-color"/></head>
 <body>
 <main>
 <p><a href="dashboard.html">← Dashboard</a></p>
@@ -48,5 +48,5 @@
   document.getElementById('kpi-audit').textContent = s.audit ?? 0;
   })();
 </script>
-<script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script defer="" src="assets/sov-polish-v55826.js"></script><script defer src="assets/sov-version.js?v=6.1.5"></script><script defer src="assets/sov-client-logger.js?v=6.1.31"></script></body>
+<script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script defer="" src="assets/sov-polish-v55826.js"></script><script defer="" src="assets/sov-version.js?v=6.1.5"></script><script defer="" src="assets/sov-client-logger.js?v=6.1.31"></script></body>
 </html>

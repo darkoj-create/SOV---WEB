@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1" name="viewport"/>
-<title>Predane jame — SOV Arhivar</title>
+<title>Predane jame — SOV Velebit</title>
 <link href="assets/site.css" rel="stylesheet"/>
 <link href="assets/arhivar-submissions.css?v=6.0.9" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -12,9 +12,9 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="assets/supabase-config.js"></script>
 <script src="assets/auth.js"></script>
-<link href="assets/sov-foundation-v55822.css" rel="stylesheet"/><link href="assets/sov-shell-v55825.css" rel="stylesheet"/><link href="assets/sov-polish-v55826.css" rel="stylesheet"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap" rel="stylesheet"/><link href="assets/sov-wow-v6.css" rel="stylesheet"/><link href="assets/sov-wow-app-v6.css" rel="stylesheet"/><link href="assets/arhivar-submissions-v609.css" rel="stylesheet"/>
+<link href="assets/sov-foundation-v55822.css" rel="stylesheet"/><link href="assets/sov-shell-v55825.css" rel="stylesheet"/><link href="assets/sov-polish-v55826.css" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;display=swap" rel="stylesheet"/><link href="assets/sov-wow-v6.css" rel="stylesheet"/><link href="assets/sov-wow-app-v6.css" rel="stylesheet"/><link href="assets/arhivar-submissions-v609.css" rel="stylesheet"/>
 <link href="assets/sov-typography-v6144g.css" rel="stylesheet"/>
-</head>
+<meta content="Arhivar inbox review Predane jame Ovdje dolaze nove jame koje članovi šalju iz Karte/Baze. Arhivar pregleda zapisnik, fotke, nacrt, KML/GPX i TopoDroid paket, pa…" name="description"/><meta content="noindex,nofollow,noarchive" name="robots"/><link href="https://so-velebit.hr/arhivar-predane-jame.html" rel="canonical"/><meta content="Speleološki odsjek Velebit" property="og:site_name"/><meta content="hr_HR" property="og:locale"/><meta content="website" property="og:type"/><meta content="Predane jame — SOV Velebit" property="og:title"/><meta content="Arhivar inbox review Predane jame Ovdje dolaze nove jame koje članovi šalju iz Karte/Baze. Arhivar pregleda zapisnik, fotke, nacrt, KML/GPX i TopoDroid paket, pa…" property="og:description"/><meta content="https://so-velebit.hr/arhivar-predane-jame.html" property="og:url"/><meta content="https://so-velebit.hr/assets/sov-logo.png" property="og:image"/><meta content="summary_large_image" name="twitter:card"/><meta content="Predane jame — SOV Velebit" name="twitter:title"/><meta content="Arhivar inbox review Predane jame Ovdje dolaze nove jame koje članovi šalju iz Karte/Baze. Arhivar pregleda zapisnik, fotke, nacrt, KML/GPX i TopoDroid paket, pa…" name="twitter:description"/><meta content="https://so-velebit.hr/assets/sov-logo.png" name="twitter:image"/><meta content="#0b0f14" name="theme-color"/></head>
 <body class="arhivar-submissions as-clean">
 <header class="as-top">
 <a class="as-brand" href="arhivar-dashboard.html"><span class="as-mark">SOV</span><span><b>Predane jame</b><small>review · falinke · approve u bazu</small></span></a>
@@ -40,19 +40,18 @@
 <button class="as-btn" id="exportAllXlsxBtn" type="button">Excel sve</button>
 </div>
 </section>
-
-<section class="as-workflow-stats" aria-label="Sažetak workflowa">
-  <div class="as-stat"><b id="statSubmitted">0</b><span>Čeka review</span></div>
-  <div class="as-stat"><b id="statNeeds">0</b><span>Fali nešto</span></div>
-  <div class="as-stat"><b id="statApproved">0</b><span>Odobreno</span></div>
-  <div class="as-stat"><b id="statRejected">0</b><span>Odbijeno</span></div>
+<section aria-label="Sažetak workflowa" class="as-workflow-stats">
+<div class="as-stat"><b id="statSubmitted">0</b><span>Čeka review</span></div>
+<div class="as-stat"><b id="statNeeds">0</b><span>Fali nešto</span></div>
+<div class="as-stat"><b id="statApproved">0</b><span>Odobreno</span></div>
+<div class="as-stat"><b id="statRejected">0</b><span>Odbijeno</span></div>
 </section>
-<section class="as-pipeline" aria-label="Brzi status filter">
-  <button type="button" data-pipe="submitted" class="active">Čeka review</button>
-  <button type="button" data-pipe="needs_changes">Fali nešto</button>
-  <button type="button" data-pipe="approved">Odobreno</button>
-  <button type="button" data-pipe="rejected">Odbijeno</button>
-  <button type="button" data-pipe="all">Sve</button>
+<section aria-label="Brzi status filter" class="as-pipeline">
+<button class="active" data-pipe="submitted" type="button">Čeka review</button>
+<button data-pipe="needs_changes" type="button">Fali nešto</button>
+<button data-pipe="approved" type="button">Odobreno</button>
+<button data-pipe="rejected" type="button">Odbijeno</button>
+<button data-pipe="all" type="button">Sve</button>
 </section>
 <section class="as-mini-flow">
 <div><b>1</b><span>Korisnik preda jamu</span></div>
@@ -80,5 +79,5 @@
 </section>
 </main>
 <script src="assets/arhivar-submissions-review.js?v=6.0.9"></script>
-<script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script defer="" src="assets/sov-polish-v55826.js"></script><script defer src="assets/sov-wow-v6.js?v=6.1.5"></script><script defer src="assets/sov-version.js?v=6.1.5"></script><script defer src="assets/sov-client-logger.js?v=6.1.31"></script></body>
+<script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script defer="" src="assets/sov-polish-v55826.js"></script><script defer="" src="assets/sov-wow-v6.js?v=6.1.5"></script><script defer="" src="assets/sov-version.js?v=6.1.5"></script><script defer="" src="assets/sov-client-logger.js?v=6.1.31"></script></body>
 </html>

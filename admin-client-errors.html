@@ -1,9 +1,10 @@
 <!DOCTYPE html>
+
 <html lang="hr">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Greške korisnika — SOV Cloud</title>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>Greške korisnika — SOV Velebit</title>
 <link href="assets/site.css" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/supabase-config.js"></script>
@@ -16,22 +17,22 @@
 <link href="assets/sov-shell-v55825.css" rel="stylesheet"/>
 <link href="assets/sov-polish-v55826.css" rel="stylesheet"/>
 <link href="assets/sov-typography-v6144g.css" rel="stylesheet"/>
-</head>
+<meta content="Pregled zadnjih grešaka iz weba i Android aplikacije. Ovo služi da vidiš gdje korisnici zapinju bez nagađanja." name="description"/><meta content="noindex,nofollow,noarchive" name="robots"/><link href="https://so-velebit.hr/admin-client-errors.html" rel="canonical"/><meta content="Speleološki odsjek Velebit" property="og:site_name"/><meta content="hr_HR" property="og:locale"/><meta content="website" property="og:type"/><meta content="Greške korisnika — SOV Velebit" property="og:title"/><meta content="Pregled zadnjih grešaka iz weba i Android aplikacije. Ovo služi da vidiš gdje korisnici zapinju bez nagađanja." property="og:description"/><meta content="https://so-velebit.hr/admin-client-errors.html" property="og:url"/><meta content="https://so-velebit.hr/assets/sov-logo.png" property="og:image"/><meta content="summary_large_image" name="twitter:card"/><meta content="Greške korisnika — SOV Velebit" name="twitter:title"/><meta content="Pregled zadnjih grešaka iz weba i Android aplikacije. Ovo služi da vidiš gdje korisnici zapinju bez nagađanja." name="twitter:description"/><meta content="https://so-velebit.hr/assets/sov-logo.png" name="twitter:image"/><meta content="#0b0f14" name="theme-color"/></head>
 <body>
 <div class="wrap">
 <header class="top"><a class="brand" href="dashboard.html"><div class="mark">SOV</div><div><strong>SOV Cloud</strong><small class="muted">Greške korisnika</small></div></a><nav class="nav"><a href="dashboard.html">Dashboard</a><a href="sync-status.html">Sync status</a><a href="audit-status.html">Audit</a></nav></header>
 <section class="hero"><div class="eyebrow">Webmaster / Admin</div><h1>Greške korisnika</h1><p class="muted">Pregled zadnjih grešaka iz weba i Android aplikacije. Ovo služi da vidiš gdje korisnici zapinju bez nagađanja.</p></section>
 <section class="card">
-  <div class="filters">
-    <select class="select" id="platform"><option value="">Sve platforme</option><option value="web">Web</option><option value="android">Android</option></select>
-    <select class="select" id="severity"><option value="">Sve razine</option><option value="fatal">Fatal</option><option value="error">Error</option><option value="warning">Warning</option><option value="info">Info</option></select>
-    <select class="select" id="limit"><option value="50">50</option><option value="100" selected>100</option><option value="250">250</option><option value="500">500</option></select>
-    <button class="btn primary" id="reloadBtn">Osvježi</button>
-    <button class="btn" id="testBtn">Pošalji test log</button>
-  </div>
-  <div class="grid"><div class="mini"><b id="kTotal">—</b><span>ukupno</span></div><div class="mini"><b id="kFatal">—</b><span>fatal</span></div><div class="mini"><b id="kAndroid">—</b><span>android</span></div><div class="mini"><b id="kWeb">—</b><span>web</span></div></div>
-  <div id="status" class="muted">Učitavam…</div>
-  <div id="list"></div>
+<div class="filters">
+<select class="select" id="platform"><option value="">Sve platforme</option><option value="web">Web</option><option value="android">Android</option></select>
+<select class="select" id="severity"><option value="">Sve razine</option><option value="fatal">Fatal</option><option value="error">Error</option><option value="warning">Warning</option><option value="info">Info</option></select>
+<select class="select" id="limit"><option value="50">50</option><option selected="" value="100">100</option><option value="250">250</option><option value="500">500</option></select>
+<button class="btn primary" id="reloadBtn">Osvježi</button>
+<button class="btn" id="testBtn">Pošalji test log</button>
+</div>
+<div class="grid"><div class="mini"><b id="kTotal">—</b><span>ukupno</span></div><div class="mini"><b id="kFatal">—</b><span>fatal</span></div><div class="mini"><b id="kAndroid">—</b><span>android</span></div><div class="mini"><b id="kWeb">—</b><span>web</span></div></div>
+<div class="muted" id="status">Učitavam…</div>
+<div id="list"></div>
 </section>
 </div>
 <script>
@@ -62,7 +63,7 @@ document.getElementById('reloadBtn').addEventListener('click',loadErrors);
 document.getElementById('testBtn').addEventListener('click',async()=>{ if(window.SOVClientLogger){ await SOVClientLogger.warn('admin-client-errors:test','Test zapis iz admin ekrana',{source:'manual'}); } loadErrors(); });
 document.addEventListener('DOMContentLoaded',loadErrors);
 </script>
-<script defer src="assets/sov-client-logger.js?v=6.1.31"></script>
-<script defer src="assets/sov-foundation-v55822.js"></script><script defer src="assets/sov-shell-v55825.js"></script><script defer src="assets/sov-polish-v55826.js"></script>
+<script defer="" src="assets/sov-client-logger.js?v=6.1.31"></script>
+<script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script defer="" src="assets/sov-polish-v55826.js"></script>
 </body>
 </html>

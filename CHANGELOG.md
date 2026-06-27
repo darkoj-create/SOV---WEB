@@ -1,4 +1,12 @@
 
+## v6.1.44h — SEO foundation + no raw zapisnici docs
+- Dodan robots.txt, sitemap.xml, site.webmanifest.
+- Dodani meta title/description, canonical, OG/Twitter preview i JSON-LD za javne stranice i novosti.
+- Admin/cloud/private stranice označene kao noindex.
+- Uklonjeno 288 raw zapisničkih DOCX/DOC/ODT dokumenata iz builda; zapisnici su native DB sadržaj.
+- Stare DOCX arhiva stranice preusmjeravaju na zapisnici-native.html.
+
+
 ## v6.1.44g — Typography polish
 - Added conservative system typography override.
 - Standardized UI, article and native zapisnici font rendering.

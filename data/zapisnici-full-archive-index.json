@@ -1,38 +1,5 @@
 {
-  "collection": "zapisnici_sastanaka_full_archive",
-  "version": "6.1.10",
-  "mode": "hybrid-db-storage-with-static-preview",
-  "targetYears": "1960-2026",
-  "storageBucket": "sov-documents",
-  "sqlTable": "sov_document_archive",
-  "staticPreviewPacks": [
-    {
-      "label": "Aktualni zapisnici (2026)",
-      "years": [
-        2026
-      ],
-      "manifest": "data/zapisnici-2026.json",
-      "page": "zapisnici-aktualni-2026.html"
-    },
-    {
-      "label": "Arhiva zapisnika (2017-2022)",
-      "years": [
-        2017,
-        2018,
-        2019,
-        2020,
-        2021,
-        2022
-      ],
-      "manifest": "data/zapisnici-2017-2022.json",
-      "page": "zapisnici-arhiva-2017-2022.html"
-    }
-  ],
-  "recommendedStorageLayout": "zapisnici/{year}/{safe-filename}",
-  "notes": [
-    "Do not put the full 1960-2026 archive inside the web ZIP.",
-    "Upload files to Supabase Storage bucket sov-documents, then insert metadata into sov_document_archive.",
-    "The full archive page loads SQL first and falls back to current static manifests until the database is populated."
-  ],
-  "generatedAt": "2026-06-04T09:55:00Z"
+  "build": "v6.1.44h",
+  "status": "native_zapisnici_migrated",
+  "message": "Raw DOCX/DOC/ODT zapisnici are not bundled in the web build. Use Supabase meeting_minutes and zapisnici-native.html."
 }

@@ -1,0 +1,18 @@
+{
+  "name": "Speleološki odsjek Velebit",
+  "short_name": "SOV Velebit",
+  "description": "Speleološki odsjek Velebit — speleologija, istraživanja, speleoškola i arhiva.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#05090b",
+  "theme_color": "#0b0f14",
+  "icons": [
+    {
+      "src": "/assets/sov-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "lang": "hr-HR"
+}
