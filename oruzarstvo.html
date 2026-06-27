@@ -1375,7 +1375,7 @@ body.armory-master-active .filters .quick-packs,body.armory-master-active .filte
     const all=rows();
     const item=all.find(r=>String(r._id)===String(rawId)||String(r.sku||'')===String(rawId)||String(r.legacy_id||'')===String(rawId)||String(r.name||'')===String(rawId));
     if(!item){toast('Nisam našao artikl.');return;}
-    const req={id:'REQ-'+Date.now(),created_at:new Date().toISOString(),user:(window.CURRENT_USER&& (CURRENT_USER.full_name||CURRENT_USER.email))||'Član',email:(window.CURRENT_USER&&CURRENT_USER.email)||'',trip:'Zahtjev iz kataloga',from:new Date().toISOString().slice(0,10),to:'',note:'Zatraženo iz kataloga',status:'pending',items:[{id:item._id,name:item._name,quantity:1}]};
+    const req={id:'REQ-'+Date.now(),created_at:new Date().toISOString(),user:(window.CURRENT_USER&& (window.CURRENT_USER.full_name||window.CURRENT_USER.email))||'Član',email:(window.CURRENT_USER&&window.CURRENT_USER.email)||'',trip:'Zahtjev iz kataloga',from:new Date().toISOString().slice(0,10),to:'',note:'Zatraženo iz kataloga',status:'pending',items:[{id:item.id,name:item.name,quantity:1}]};
     let savedRemote=false;
     try{ if(window.SOVArmoryDB&&SOVArmoryDB.configured&&SOVArmoryDB.configured()&&SOVArmoryDB.createRequest){ const saved=await SOVArmoryDB.createRequest(req); req.id=saved.id||req.id; req.created_at=saved.created_at||req.created_at; req.status=saved.status||req.status; savedRemote=true; }}catch(e){warn('create request remote failed',e);}
     try{ const local=JSON.parse(localStorage.getItem('sov_equipment_requests')||'[]'); if(!local.some(r=>String(r.id)===String(req.id))) local.unshift(req); localStorage.setItem('sov_equipment_requests',JSON.stringify(local)); window.DB_REQUESTS=local; try{DB_REQUESTS=local;}catch(e){} }catch(e){}
