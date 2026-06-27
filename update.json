@@ -1,11 +1,11 @@
 {
   "app": "SOV web",
-  "version": "6.1.45d",
+  "version": "6.1.45l",
   "versionName": "v6.1.44c-wordpress-text-import-preserve-current-public",
-  "build": "sov-web-build-v6.1.45d-armory-loan-shop-workflow",
+  "build": "sov-web-build-v6.1.45l-oruzarstvo-merge-osobna-srt",
   "createdAt": "2026-06-24T17:03:11.259951Z",
   "cacheBust": "6144c-wxr-text-preserve-current",
-  "base": "sov-web-build-v6.1.45b-system-status-loans-hotfix.zip",
+  "base": "sov-web-build-v6.1.45k-oruzarstvo-osobna-oprema-srt-category.zip",
   "requiresSql": false,
   "releaseType": "wordpress-text-import-preserve-current-public",
   "changedFiles": [
