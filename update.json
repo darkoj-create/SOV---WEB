@@ -1,8 +1,8 @@
 {
   "app": "SOV web",
-  "version": "6.1.45c",
+  "version": "6.1.45d",
   "versionName": "v6.1.44c-wordpress-text-import-preserve-current-public",
-  "build": "sov-web-build-v6.1.45c-oruzarstvo-ui-polish",
+  "build": "sov-web-build-v6.1.45d-armory-loan-shop-workflow",
   "createdAt": "2026-06-24T17:03:11.259951Z",
   "cacheBust": "6144c-wxr-text-preserve-current",
   "base": "sov-web-build-v6.1.45b-system-status-loans-hotfix.zip",
@@ -18,12 +18,6 @@
     "BUILD_VERSION.txt",
     "update.json"
   ],
-  "notes": [
-    "Current homepage and existing image-rich news cards remain as they were.",
-    "Existing public pages like O nama, Povijest, Speleoškola, Velebitaški duh, Pročelništvo and Velebiten were not overwritten by WordPress page export.",
-    "Only missing WordPress posts were added as clean text article pages.",
-    "No legacy image/media bulk import; no 2GB Git push.",
-    "No SQL, Izleti, Oružarstvo, Arhivar, Karta, role, login or APK compatibility changes."
-  ],
+  "notes": "Oružarstvo posudbe redesigned as cart/request/issue/return webshop workflow; no database schema changes.",
   "requiredSql": "SUPABASE_ORUZARSTVO_LOANS_MATERIALIZER_v6_1_45b.sql"
 }
