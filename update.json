@@ -1,12 +1,12 @@
 {
   "app": "SOV web",
-  "version": "6.1.44c",
+  "version": "6.1.45b",
   "versionName": "v6.1.44c-wordpress-text-import-preserve-current-public",
-  "build": "sov-web-build-v6.1.44c-wordpress-text-import-preserve-current-public",
+  "build": "sov-web-build-v6.1.45b-system-status-loans-hotfix",
   "createdAt": "2026-06-24T17:03:11.259951Z",
   "cacheBust": "6144c-wxr-text-preserve-current",
   "base": "sov-web-build-v6.1.43e-smart-location-future-trips.zip",
-  "requiresSql": false,
+  "requiresSql": true,
   "releaseType": "wordpress-text-import-preserve-current-public",
   "changedFiles": [
     "vijesti.html",
@@ -24,5 +24,6 @@
     "Only missing WordPress posts were added as clean text article pages.",
     "No legacy image/media bulk import; no 2GB Git push.",
     "No SQL, Izleti, Oružarstvo, Arhivar, Karta, role, login or APK compatibility changes."
-  ]
+  ],
+  "requiredSql": "SUPABASE_ORUZARSTVO_LOANS_MATERIALIZER_v6_1_45b.sql"
 }

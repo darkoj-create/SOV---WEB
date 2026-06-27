@@ -787,6 +787,11 @@
       await patchItemCounters(client,it,-q,q);
     }
     await updateRequestStatus(id,'issued');
+    try{
+      await client.rpc('sov_armory_materialize_loan_from_request',{p_request_id:id});
+    }catch(e){
+      console.warn('loan materializer rpc skipped:', e.message||e);
+    }
     return true;
   }
   async function returnRequestItems(id,rows,note,req){
