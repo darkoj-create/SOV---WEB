@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+
+<html lang="hr">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>Predane jame — SOV Velebit</title>
+<link href="assets/site.css" rel="stylesheet"/>
+<link href="assets/arhivar-submissions.css?v=6.0.9" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="assets/supabase-config.js"></script>
+<script src="assets/auth.js"></script>
+<link href="assets/sov-foundation-v55822.css" rel="stylesheet"/><link href="assets/sov-shell-v55825.css" rel="stylesheet"/><link href="assets/sov-polish-v55826.css" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;display=swap" rel="stylesheet"/><link href="assets/sov-wow-v6.css" rel="stylesheet"/><link href="assets/sov-wow-app-v6.css" rel="stylesheet"/><link href="assets/arhivar-submissions-v609.css" rel="stylesheet"/>
+<link href="assets/sov-typography-v6144g.css" rel="stylesheet"/>
+<meta content="Arhivar inbox review Predane jame Ovdje dolaze nove jame koje članovi šalju iz Karte/Baze. Arhivar pregleda zapisnik, fotke, nacrt, KML/GPX i TopoDroid paket, pa…" name="description"/><meta content="noindex,nofollow,noarchive" name="robots"/><link href="https://so-velebit.hr/arhivar-predane-jame.html" rel="canonical"/><meta content="Speleološki odsjek Velebit" property="og:site_name"/><meta content="hr_HR" property="og:locale"/><meta content="website" property="og:type"/><meta content="Predane jame — SOV Velebit" property="og:title"/><meta content="Arhivar inbox review Predane jame Ovdje dolaze nove jame koje članovi šalju iz Karte/Baze. Arhivar pregleda zapisnik, fotke, nacrt, KML/GPX i TopoDroid paket, pa…" property="og:description"/><meta content="https://so-velebit.hr/arhivar-predane-jame.html" property="og:url"/><meta content="https://so-velebit.hr/assets/sov-logo.png" property="og:image"/><meta content="summary_large_image" name="twitter:card"/><meta content="Predane jame — SOV Velebit" name="twitter:title"/><meta content="Arhivar inbox review Predane jame Ovdje dolaze nove jame koje članovi šalju iz Karte/Baze. Arhivar pregleda zapisnik, fotke, nacrt, KML/GPX i TopoDroid paket, pa…" name="twitter:description"/><meta content="https://so-velebit.hr/assets/sov-logo.png" name="twitter:image"/><meta content="#0b0f14" name="theme-color"/><link href="assets/arhivar-simplify-v6145ad.css" rel="stylesheet"/>
+</head>
+<body class="arhivar-submissions as-clean">
+<header class="as-top">
+<a class="as-brand" href="arhivar-dashboard.html"><span class="as-mark">SOV</span><span><b>Predane jame</b><small>review · falinke · approve u bazu</small></span></a>
+<nav class="as-nav">
+<a href="dashboard.html">Dashboard</a>
+<a href="arhivar-dashboard.html">Arhivar</a>
+<a href="arhivar.html">Uređivanje arhive</a>
+<a class="active" href="arhivar-predane-jame.html">Predane jame</a>
+<a href="arhivar-izvoz.html">Izvoz</a>
+<a data-logout="" href="login.html">Odjava</a>
+</nav>
+</header>
+<main class="as-shell">
+<section class="as-hero clean-hero">
+<div>
+<p class="as-eyebrow">Arhivar inbox <span class="as-badge submitted">review</span></p>
+<h1>Predane jame</h1>
+<p>Ovdje dolaze nove jame koje članovi šalju iz Karte/Baze. Arhivar pregleda zapisnik, fotke, nacrt, KML/GPX i TopoDroid paket, pa odobri u bazu ili jasno označi što fali.</p>
+</div>
+<div class="as-actions hero-actions">
+<button class="as-btn primary" id="refreshBtn">Osvježi</button>
+<a class="as-btn" href="predaj-novu-jamu.html">Predaj jamu</a>
+<button class="as-btn" id="exportAllXlsxBtn" type="button">Excel sve</button>
+</div>
+</section>
+<section aria-label="Sažetak workflowa" class="as-workflow-stats">
+<div class="as-stat"><b id="statSubmitted">0</b><span>Čeka review</span></div>
+<div class="as-stat"><b id="statNeeds">0</b><span>Fali nešto</span></div>
+<div class="as-stat"><b id="statApproved">0</b><span>Odobreno</span></div>
+<div class="as-stat"><b id="statRejected">0</b><span>Odbijeno</span></div>
+</section>
+<section aria-label="Brzi status filter" class="as-pipeline">
+<button class="active" data-pipe="submitted" type="button">Čeka review</button>
+<button data-pipe="needs_changes" type="button">Fali nešto</button>
+<button data-pipe="approved" type="button">Odobreno</button>
+<button data-pipe="rejected" type="button">Odbijeno</button>
+<button data-pipe="all" type="button">Sve</button>
+</section>
+<section class="as-mini-flow">
+<div><b>1</b><span>Korisnik preda jamu</span></div>
+<div><b>2</b><span>Arhivar pregleda privitke</span></div>
+<div><b>3</b><span>Approve ili “fali nešto”</span></div>
+</section>
+<section class="as-grid reviewer-grid">
+<div class="as-panel list-panel">
+<div class="panel-headline"><div><h2>Inbox predaja</h2><p class="as-muted">Lijevo su predaje, desno detalj i akcije. Na mobitelu prvo odaberi predaju pa skrolaj na detalj.</p></div></div>
+<div class="as-toolbar compact-toolbar">
+<input class="as-input" id="q" placeholder="Traži naziv, mjesto, autora..."/>
+<select class="as-select" id="filter">
+<option value="submitted">Čeka review</option>
+<option value="needs_changes">Fali nešto</option>
+<option value="approved">Odobreno</option>
+<option value="rejected">Odbijeno</option>
+<option value="all">Sve</option>
+</select>
+</div>
+<div class="as-list" id="submissionList"><div class="as-empty">Učitavam...</div></div>
+</div>
+<aside class="as-detail detail-stack">
+<div class="as-panel" id="detailPanel"><div class="as-empty">Odaberi predanu jamu.</div></div>
+</aside>
+</section>
+</main>
+<script src="assets/arhivar-submissions-review.js?v=6.0.9"></script>
+<script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script defer="" src="assets/sov-polish-v55826.js"></script><script defer="" src="assets/sov-wow-v6.js?v=6.1.5"></script><script defer="" src="assets/sov-version.js?v=6.1.5"></script><script defer="" src="assets/sov-client-logger.js?v=6.1.31"></script><script src="assets/arhivar-simplify-v6145ad.js?v=6.1.45ad"></script>
+</body>
+</html>

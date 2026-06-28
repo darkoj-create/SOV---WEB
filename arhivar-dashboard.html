@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SOV Arhivar — radni ekran</title>
+<link rel="stylesheet" href="assets/site.css">
+<link rel="stylesheet" href="assets/sov-foundation-v55822.css">
+<link rel="stylesheet" href="assets/sov-shell-v55825.css">
+<link rel="stylesheet" href="assets/sov-polish-v55826.css">
+<link rel="stylesheet" href="assets/arhivar-simplify-v6145ad.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/supabase-config.js"></script>
+<script src="assets/auth.js"></script>
+<meta name="robots" content="noindex,nofollow,noarchive">
+</head>
+<body class="sov-workbench-shell">
+<nav class="sov-arhivar-nav" aria-label="Arhivar navigacija">
+  <a class="brand active" href="arhivar-dashboard.html"><span>SOV Arhivar</span><small>jedan radni ekran</small></a>
+  <a href="#predaje" data-work-tab="predaje">Predaje</a>
+  <a href="#arhiva" data-work-tab="arhiva">Arhiva</a>
+  <a href="#izvoz" data-work-tab="izvoz">Izvoz</a>
+  <a href="arhivar-zahvati.html">Zahvati</a>
+  <a href="topodroid.html">Nacrti</a>
+  <a href="karta.html">Karta objekata</a>
+  <span class="spacer"></span>
+  <span class="muted">osnovno odmah · napredno po potrebi</span>
+  <a href="dashboard.html">Dashboard</a>
+  <a data-logout href="login.html">Odjava</a>
+</nav>
+<main class="sov-workbench-main">
+  <section class="sov-workbench-hero">
+    <div>
+      <h1>Arhivar, bez lutanja.</h1>
+      <p>Tri glavna posla su sada na jednom mjestu: predaje članova, uređivanje postojeće arhive i izvoz. Zahvati i nacrti ostaju dostupni kao pomoćne radnje.</p>
+    </div>
+  </section>
+
+  <div class="sov-tabbar" role="tablist" aria-label="Arhivarski radni tabovi">
+    <button type="button" data-tab="predaje" class="active">Predaje</button>
+    <button type="button" data-tab="arhiva">Arhiva</button>
+    <button type="button" data-tab="izvoz">Izvoz</button>
+  </div>
+
+  <section class="sov-export-grid" id="exportIntro" hidden>
+    <article class="sov-export-card">
+      <h3>Što izvozim?</h3>
+      <p>Koristi jedan izvoz za sve: trenutni filter, odabrani objekt, sve ili predaje po statusu.</p>
+      <select id="sovExportScopePreview" aria-label="Što izvozim">
+        <option>Trenutni filter</option>
+        <option>Odabrani objekt</option>
+        <option>Sve</option>
+        <option>Po statusu predaje</option>
+      </select>
+    </article>
+    <article class="sov-export-card">
+      <h3>Format</h3>
+      <p>Format biraš u izvoznom modulu: CSV, XLS, PDF, XML ili ZIP paket.</p>
+      <select id="sovExportFormatPreview" aria-label="Format izvoza">
+        <option>CSV</option><option>XLS</option><option>PDF</option><option>XML</option><option>ZIP</option>
+      </select>
+    </article>
+  </section>
+
+  <div class="sov-frame-wrap">
+    <iframe id="sovArhivarFrame" class="sov-frame" title="Arhivar radni modul" src="arhivar-predane-jame.html?embedded=1"></iframe>
+  </div>
+</main>
+<script>
+(async function(){
+  if(window.SOVAuth&&SOVAuth.requireArchive){ const ok=await SOVAuth.requireArchive(); if(!ok)return; }
+  const frame=document.getElementById('sovArhivarFrame');
+  const exportIntro=document.getElementById('exportIntro');
+  const tabs={predaje:'arhivar-predane-jame.html?embedded=1',arhiva:'arhivar.html?embedded=1',izvoz:'arhivar-izvoz.html?embedded=1'};
+  function setTab(name){
+    if(!tabs[name])name='predaje';
+    document.querySelectorAll('[data-tab],[data-work-tab]').forEach(b=>b.classList.toggle('active',(b.dataset.tab||b.dataset.workTab)===name));
+    exportIntro.hidden=name!=='izvoz';
+    if(frame.getAttribute('src')!==tabs[name]) frame.src=tabs[name];
+    if(location.hash!=='#'+name) history.replaceState(null,'','#'+name);
+  }
+  document.querySelectorAll('[data-tab],[data-work-tab]').forEach(b=>b.addEventListener('click',e=>{e.preventDefault();setTab(b.dataset.tab||b.dataset.workTab);}));
+  setTab((location.hash||'#predaje').slice(1));
+})();
+</script>
+</body>
+</html>
