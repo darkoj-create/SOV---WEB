@@ -56,6 +56,21 @@
       "source": "/novosti",
       "destination": "/vijesti.html",
       "permanent": false
+    },
+    {
+      "source": "/Karta.html",
+      "destination": "/karta.html",
+      "permanent": false
+    },
+    {
+      "source": "/Karta",
+      "destination": "/karta.html",
+      "permanent": false
+    },
+    {
+      "source": "/karta",
+      "destination": "/karta.html",
+      "permanent": false
     }
   ],
   "rewrites": [
