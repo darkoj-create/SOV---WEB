@@ -1,94 +1,10 @@
 {
-  "headers": [
-    {
-      "source": "/update.json",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-store"
-        }
-      ]
-    },
-    {
-      "source": "/VERSION.txt",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-store"
-        }
-      ]
-    },
-    {
-      "source": "/BUILD_VERSION.txt",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-store"
-        }
-      ]
-    },
-    {
-      "source": "/sync-status.html",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/dashboard.html",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/login.html",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/admin-users.html",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/role-manager.html",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/oruzarstvo.html",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/tracking.html",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, must-revalidate"
-        }
-      ]
-    }
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/o-nama", "destination": "/o-drustvu.html" },
+    { "source": "/o-nama/", "destination": "/o-drustvu.html" },
+    { "source": "/prijava", "destination": "/dashboard.html" },
+    { "source": "/novosti", "destination": "/vijesti.html" }
   ]
 }
