@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+
+<html lang="hr">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Jedno mjesto za provjeru synca. — SOV Velebit</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&amp;display=swap" rel="stylesheet"/>
+<style>
+    :root{--bg:#07100d;--card:#0d1a16;--card2:#10221d;--line:rgba(255,255,255,.10);--text:#eef8f2;--muted:#a9bdb4;--lime:#d7f66f;--teal:#83e6c2;--blue:#78d7ff;--red:#ff7a7a;--amber:#ffd36f;--shadow:0 24px 80px rgba(0,0,0,.40)}
+    *{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:radial-gradient(circle at top left,rgba(131,230,194,.15),transparent 36%),radial-gradient(circle at 80% 12%,rgba(120,215,255,.12),transparent 30%),var(--bg);color:var(--text)}
+    a{color:inherit}.shell{width:min(1180px,calc(100% - 28px));margin:0 auto;padding:24px 0 44px}.top{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:22px}.brand{display:flex;align-items:center;gap:12px;text-decoration:none}.mark{width:46px;height:46px;border-radius:16px;background:linear-gradient(135deg,var(--lime),var(--teal));color:#111;display:grid;place-items:center;font-weight:950;box-shadow:0 14px 40px rgba(215,246,111,.14)}.brand strong{display:block}.brand small{color:var(--muted);font-weight:800}.nav{display:flex;gap:8px;flex-wrap:wrap}.nav a{padding:10px 13px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--line);text-decoration:none;font-weight:900;font-size:13px}.nav a.primary{background:linear-gradient(135deg,var(--lime),var(--teal));color:#111;border:0}.hero{border:1px solid rgba(255,255,255,.12);border-radius:34px;background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.035));box-shadow:var(--shadow);padding:28px;margin-bottom:18px}.eyebrow{display:inline-flex;gap:8px;align-items:center;padding:8px 11px;border-radius:999px;background:rgba(215,246,111,.12);border:1px solid rgba(215,246,111,.25);color:#eaffb3;font-weight:950;font-size:12px;text-transform:uppercase;letter-spacing:.06em}.hero h1{font-size:clamp(34px,5vw,64px);line-height:.95;margin:18px 0 12px}.hero p{color:var(--muted);max-width:820px;font-size:16px;line-height:1.6}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}.btn{border:0;border-radius:999px;padding:12px 15px;font-weight:950;cursor:pointer;background:linear-gradient(135deg,var(--lime),var(--teal));color:#111;text-decoration:none}.btn.secondary{background:rgba(255,255,255,.07);color:var(--text);border:1px solid var(--line)}.btn:disabled{opacity:.55;cursor:not-allowed}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px}.card{border:1px solid var(--line);border-radius:26px;background:rgba(13,26,22,.82);box-shadow:0 18px 60px rgba(0,0,0,.24);padding:18px;min-height:150px}.card.big{grid-column:span 2}.card h2{margin:0 0 10px;font-size:18px}.metric{font-size:34px;font-weight:950;letter-spacing:-.04em}.muted{color:var(--muted);font-size:13px;line-height:1.45}.status{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:950;border:1px solid var(--line);background:rgba(255,255,255,.05)}.dot{width:9px;height:9px;border-radius:999px;background:#8b98a0}.ok .dot{background:var(--teal)}.warn .dot{background:var(--amber)}.bad .dot{background:var(--red)}.split{display:grid;grid-template-columns:1fr 1fr;gap:12px}.line{height:1px;background:var(--line);margin:13px 0}.kv{display:grid;grid-template-columns:160px 1fr;gap:8px;font-size:13px;margin:8px 0}.kv b{color:#dceee6}.kv span{color:var(--muted);overflow-wrap:anywhere}.log{max-height:320px;overflow:auto;background:rgba(0,0,0,.22);border:1px solid var(--line);border-radius:18px;padding:12px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;color:#cfe1da;white-space:pre-wrap}.tiny{font-size:11px;color:var(--muted)}.pill{display:inline-flex;padding:4px 8px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.05);font-size:11px;font-weight:950;color:#ddf7ec}.manual{padding:18px;border-radius:24px;background:rgba(255,255,255,.055);border:1px solid var(--line);line-height:1.55}.manual h3{margin:0 0 8px}.manual code{background:rgba(0,0,0,.28);border:1px solid var(--line);border-radius:8px;padding:2px 5px;color:#eaffb3}.footer{margin-top:18px;color:var(--muted);font-size:12px;text-align:center}.hidden{display:none!important}
+    @media(max-width:920px){.grid{grid-template-columns:1fr}.card.big{grid-column:auto}.split{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}.kv{grid-template-columns:1fr}.hero{border-radius:26px}.card{border-radius:22px}}
+  </style>
+<link href="assets/sov-foundation-v55822.css" rel="stylesheet"/><link href="assets/sov-shell-v55825.css" rel="stylesheet"/><link href="assets/sov-polish-v55826.css" rel="stylesheet"/><link href="assets/sov-typography-v6144g.css" rel="stylesheet"/>
+<meta content="Provjeri sve System health Nacrti Izleti Supabase Oružarstvo Vijesti Predane jame Karta Tracking DB cleanup" name="description"/><meta content="noindex,nofollow,noarchive" name="robots"/><link href="https://so-velebit.hr/sync-status.html" rel="canonical"/><meta content="Speleološki odsjek Velebit" property="og:site_name"/><meta content="hr_HR" property="og:locale"/><meta content="website" property="og:type"/><meta content="Jedno mjesto za provjeru synca. — SOV Velebit" property="og:title"/><meta content="Provjeri sve System health Nacrti Izleti Supabase Oružarstvo Vijesti Predane jame Karta Tracking DB cleanup" property="og:description"/><meta content="https://so-velebit.hr/sync-status.html" property="og:url"/><meta content="https://so-velebit.hr/assets/sov-logo.png" property="og:image"/><meta content="summary_large_image" name="twitter:card"/><meta content="Jedno mjesto za provjeru synca. — SOV Velebit" name="twitter:title"/><meta content="Provjeri sve System health Nacrti Izleti Supabase Oružarstvo Vijesti Predane jame Karta Tracking DB cleanup" name="twitter:description"/><meta content="https://so-velebit.hr/assets/sov-logo.png" name="twitter:image"/><meta content="#0b0f14" name="theme-color"/></head>
+<body>
+<div class="shell">
+<header class="top">
+<a class="brand" href="dashboard.html"><div class="mark">SOV</div><div><strong>SOV Sync</strong><small>ekosustav status · v6.1.4</small></div></a>
+<nav class="nav"><a href="dashboard.html">Dashboard</a><a href="karta.html">Karta</a><a href="arhivar-dashboard.html">Arhivar</a><a href="news-editor.html">Vijesti CMS</a><a href="role-manager.html">Role</a><a class="primary" href="sync-status.html">SOV Sync</a></nav>
+</header>
+<section class="hero">
+<span class="eyebrow">SOV ekosustav · admin kontrolna ploča</span>
+<h1>Jedno mjesto za provjeru synca.</h1>
+<p>Ova stranica je usklađena s web buildom v6.1.4. Oružarstvo ima single boot: lokalni JSON odmah, Supabase refresh u pozadini. Prvo čita centralni Supabase RPC <code>sov_system_health()</code>, a zatim po potrebi detaljne fallback provjere: karta/baza objekata, puni detail objekta, nacrti, izleti, Oružarstvo, Field Tracking Lite, Trip Assets/paketi za teren, role, novosti CMS, user predaje članaka, arhivarske predaje i Webmaster-only zaštitu. Ne mijenja podatke.</p>
+<div class="actions">
+<button class="btn" id="runAllBtn">Provjeri sve</button>
+<button class="btn secondary" id="runSystemBtn">System health</button>
+<button class="btn secondary" id="runDrawingsBtn">Nacrti</button>
+<button class="btn secondary" id="runTripsBtn">Izleti</button>
+<button class="btn secondary" id="runSupabaseBtn">Supabase</button>
+<button class="btn secondary" id="runArmoryBtn">Oružarstvo</button>
+<button class="btn secondary" id="runNewsBtn">Vijesti</button>
+<button class="btn secondary" id="runSubmissionsBtn">Predane jame</button>
+<button class="btn secondary" id="runMapBtn">Karta</button>
+<button class="btn secondary" id="runTrackingBtn">Tracking</button>
+<button class="btn secondary" id="runDbCleanupBtn">DB cleanup</button>
+</div>
+</section>
+<section class="grid">
+<article class="card">
+<div class="status" id="versionStatus"><span class="dot"></span><span>Version contract</span></div>
+<h2>Build / cache disciplina</h2>
+<div class="metric" id="versionMetric">6.1.4</div>
+<div class="kv"><b>update.json</b><span id="versionManifest">Čeka provjeru</span></div>
+<div class="kv"><b>Build</b><span id="versionBuild">sov-web-build-v6.1.4-premium-dashboard-hotfix</span></div>
+<div class="kv"><b>Cache</b><span id="versionCache">no-store / no-cache</span></div>
+</article>
+<article class="card big">
+<div class="status" id="systemHealthStatus"><span class="dot"></span><span>System health RPC</span></div>
+<h2>SOV system health</h2>
+<div class="split">
+<div>
+<div class="metric" id="systemHealthMetric">—</div>
+<div class="kv"><b>RPC</b><span id="systemHealthRpc">sov_system_health()</span></div>
+<div class="kv"><b>Checked</b><span id="systemHealthCheckedAt">—</span></div>
+<div class="kv"><b>Identity</b><span id="systemHealthIdentity">—</span></div>
+</div>
+<div>
+<div class="kv"><b>Oružarstvo</b><span id="systemHealthArmory">—</span></div>
+<div class="kv"><b>Predane jame</b><span id="systemHealthSubmissions">—</span></div>
+<div class="kv"><b>Storage</b><span id="systemHealthStorage">—</span></div>
+<div class="kv"><b>Napomena</b><span id="systemHealthNote">Centralni semafor, detalji ispod.</span></div>
+</div>
+</div>
+</article>
+<article class="card big">
+<div class="status" id="dbCleanupStatus"><span class="dot"></span><span>Database cleanup</span></div>
+<h2>Database cleanup phase 1</h2>
+<div class="split">
+<div>
+<div class="metric" id="dbCleanupMetric">—</div>
+<div class="kv"><b>RPC</b><span id="dbCleanupRpc">sov_database_cleanup_health()</span></div>
+<div class="kv"><b>Registry</b><span id="dbCleanupRegistry">—</span></div>
+<div class="kv"><b>Releases</b><span id="dbCleanupReleases">—</span></div>
+</div>
+<div>
+<div class="kv"><b>Taxonomy</b><span id="dbCleanupTaxonomy">—</span></div>
+<div class="kv"><b>Audit</b><span id="dbCleanupAudit">—</span></div>
+<div class="kv"><b>Storage</b><span id="dbCleanupStorage">—</span></div>
+<div class="kv"><b>Policy</b><span id="dbCleanupPolicy">Safe additive · no drops/renames/type changes</span></div>
+</div>
+</div>
+</article>
+<article class="card">
+<div class="status" id="overallStatus"><span class="dot"></span><span>Čeka provjeru</span></div>
+<h2>Opći status</h2>
+<div class="metric" id="overallMetric">—</div>
+<p class="muted" id="overallText">Klikni “Provjeri sve”.</p>
+</article>
+<article class="card">
+<div class="status" id="drawingsStatus"><span class="dot"></span><span>Nacrti</span></div>
+<h2>Drive nacrti index</h2>
+<div class="metric" id="drawingsCount">—</div>
+<div class="kv"><b>GS verzija</b><span id="drawingsVersion">—</span></div>
+<div class="kv"><b>Zadnji index</b><span id="drawingsBuiltAt">—</span></div>
+<div class="kv"><b>Endpoint</b><span id="drawingsEndpoint">—</span></div>
+</article>
+<article class="card">
+<div class="status" id="tripsStatus"><span class="dot"></span><span>Izleti</span></div>
+<h2>Izleti GS</h2>
+<div class="metric" id="tripsCount">—</div>
+<div class="kv"><b>Akcija</b><span id="tripsAction">listTrips</span></div>
+<div class="kv"><b>Endpoint</b><span id="tripsEndpoint">—</span></div>
+</article>
+<article class="card">
+<div class="status" id="newsStatus"><span class="dot"></span><span>Vijesti</span></div>
+<h2>Vijesti CMS</h2>
+<div class="metric" id="newsCount">—</div>
+<div class="kv"><b>Objavljeno</b><span id="newsPublishedCount">—</span></div>
+<div class="kv"><b>Draft/skriveno</b><span id="newsDraftCount">—</span></div>
+<div class="kv"><b>Storage</b><span id="newsStorageStatus">sov-news bucket</span></div>
+</article>
+<article class="card">
+<div class="status" id="submissionsStatus"><span class="dot"></span><span>Predane jame</span></div>
+<h2>Arhivarske predaje</h2>
+<div class="metric" id="submissionsCount">—</div>
+<div class="kv"><b>Pending / review</b><span id="submissionsPending">—</span></div>
+<div class="kv"><b>Approved</b><span id="submissionsApproved">—</span></div>
+<div class="kv"><b>Privitci</b><span id="submissionFilesCount">—</span></div>
+<div class="kv"><b>Formular</b><span>predaj-novu-jamu.html</span></div>
+<div class="kv"><b>Export</b><span>XLSX / CSV / XML / ZIP</span></div>
+</article>
+<article class="card">
+<div class="status" id="mapStatus"><span class="dot"></span><span>Karta</span></div>
+<h2>Karta / baza objekata</h2>
+<div class="metric" id="mapObjectsCount">—</div>
+<div class="kv"><b>Izvor</b><span id="mapSourceLabel">sov_map_objects_page() / sov_arhivar_worklist</span></div>
+<div class="kv"><b>Stranica</b><span>karta.html</span></div>
+</article>
+<article class="card">
+<div class="status" id="trackingStatus"><span class="dot"></span><span>Tracking</span></div>
+<h2>Field Tracking Lite</h2>
+<div class="metric" id="trackingSessionsCount">—</div>
+<div class="kv"><b>Aktivni teamovi</b><span id="trackingTeamsCount">—</span></div>
+<div class="kv"><b>Aktivne session</b><span id="trackingActiveCount">—</span></div>
+<div class="kv"><b>Točke 24h</b><span id="trackingPoints24h">—</span></div>
+<div class="kv"><b>Web viewer</b><span>tracking.html</span></div>
+</article>
+<article class="card big">
+<div class="status" id="armoryStatus"><span class="dot"></span><span>Oružarstvo</span></div>
+<h2>Oružarstvo / oprema health</h2>
+<div class="split">
+<div>
+<div class="metric" id="armoryCatalogCount">—</div>
+<div class="kv"><b>Grouped katalog</b><span id="armoryGroupedCount">—</span></div>
+<div class="kv"><b>Raw katalog</b><span id="armoryRawCount">—</span></div>
+<div class="kv"><b>Items / ropes / pieces</b><span id="armoryBaseCounts">—</span></div>
+<div class="kv"><b>Static JSON</b><span id="armoryStaticStatus">—</span></div>
+</div>
+<div>
+<div class="kv"><b>Otvoreni zahtjevi</b><span id="armoryOpenRequests">—</span></div>
+<div class="kv"><b>Lokacije</b><span id="armoryLocationsCount">—</span></div>
+<div class="kv"><b>Manifest</b><span id="armoryManifestStatus">—</span></div>
+<div class="kv"><b>Stranice</b><span>oruzarstvo.html · oruzar-master.html</span></div>
+<div class="kv"><b>Loader</b><span id="armoryLoaderStatus">single boot v6.1.4 · ne čeka Supabase</span></div>
+</div>
+</div>
+<div class="line"></div>
+<p class="muted" id="armoryHealthText">Provjerava se RPC <code>sov_oruzarstvo_health()</code>, zatim direktni table/view fallback. Ako ovo crveni, /oruzarstvo.html radi iz statičkog fallbacka.</p>
+</article>
+<article class="card big">
+<div class="status" id="supabaseStatus"><span class="dot"></span><span>Supabase</span></div>
+<h2>Supabase cache, role i baza</h2>
+<div class="split">
+<div>
+<div class="kv"><b>Nacrti u Supabaseu</b><span id="sbDrawingsCount">—</span></div>
+<div class="kv"><b>Verified / auto</b><span id="sbDrawingsAuto">—</span></div>
+<div class="kv"><b>Possible / partial</b><span id="sbDrawingsPartial">—</span></div>
+<div class="kv"><b>Objekti staging/live</b><span id="sbObjectsCount">—</span></div>
+</div>
+<div>
+<div class="kv"><b>Profili</b><span id="sbProfilesCount">—</span></div>
+<div class="kv"><b>Admin</b><span id="sbRoleAdmin">—</span></div>
+<div class="kv"><b>Editor / Arhivar</b><span id="sbRoleStaff">—</span></div>
+<div class="kv"><b>Oružari</b><span id="sbRoleOruzar">—</span></div>
+<div class="kv"><b>Trenutna rola</b><span data-user-role="">—</span></div>
+</div>
+</div>
+<div class="line"></div>
+<p class="muted">Read-only provjere. Ako neka tablica vrati <code>n/a</code>, to obično znači da SQL migracija još nije pokrenuta ili RLS ne dopušta admin read.</p>
+</article>
+<article class="card">
+<h2>Build verzije</h2>
+<div class="kv"><b>Web</b><span>v6.1.4 Database cleanup phase 1 + system health center</span></div>
+<div class="kv"><b>News CMS SQL</b><span>postojeći sov_news RPC/storage bez nove migracije</span></div>
+<div class="kv"><b>Arhivar SQL</b><span>submissions + workflow + XLSX export provjere</span></div>
+<div class="kv"><b>System SQL</b><span>SUPABASE_SOV_SYSTEM_HEALTH_v6_0_5.sql + postojeći Oružarstvo/submissions health RPC-i</span></div>
+<div class="kv"><b>Admin APK source</b><span>v1.4.13.7 arhivar submissions</span></div>
+</article>
+<article class="card big">
+<h2>Pravilo za buduće buildove</h2>
+<div class="manual">
+<h3>sync-status.html je dio builda</h3>
+<p>Od v6.1.4 ova stranica se ažurira uz svaki relevantan web build: verzija, novi moduli, SQL potrebe, forma predaja, endpointi, centralni system health RPC i DB cleanup registry. Tehnički status ostaje samo Webmasteru.</p>
+<p>Dashboard preview je samo vizualni filter na dashboardu. Ne mijenja stvarne role i ne daje pristup zaštićenim stranicama.</p>
+</div>
+</article>
+<article class="card big">
+<h2>Detalji zadnje provjere</h2>
+<div class="log" id="logBox">Čeka provjeru...</div>
+</article>
+</section>
+<div class="footer">SOV web v6.1.4 · sync-status.html · webmaster read-only kontrolna ploča</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/supabase-config.js"></script>
+<script src="assets/auth.js"></script>
+<script>
+    const state = {version:false,system:false,drawings:false,trips:false,supabase:false,armory:false,news:false,submissions:false,map:false,tracking:false,dbcleanup:false};
+    const $ = (id)=>document.getElementById(id);
+    function now(){ return new Date().toLocaleString('hr-HR'); }
+    function log(msg, data){ const box=$('logBox'); const line='['+now()+'] '+msg+(data?'\n'+JSON.stringify(data,null,2):''); box.textContent = (box.textContent==='Čeka provjeru...'?'':box.textContent+'\n\n') + line; box.scrollTop=box.scrollHeight; }
+    function setStatus(id, kind, text){ const el=$(id); if(!el)return; el.classList.remove('ok','warn','bad'); if(kind)el.classList.add(kind); const span=el.querySelector('span:last-child'); if(span)span.textContent=text; }
+    function safeEndpoint(url){ return String(url||'').replace(/(AKfycb)[A-Za-z0-9_\-]+/,'$1…'); }
+    function endpointWithAction(base, params){ const u=new URL(base); Object.keys(params||{}).forEach(k=>u.searchParams.set(k, params[k])); return u.toString(); }
+    async function fetchJson(url, ms=18000){ const ctrl=new AbortController(); const t=setTimeout(()=>ctrl.abort(),ms); try{ const r=await fetch(url,{cache:'no-store',signal:ctrl.signal}); const txt=await r.text(); let j=null; try{j=JSON.parse(txt)}catch(e){throw new Error('Nije JSON: '+txt.slice(0,180));} if(!r.ok) throw new Error('HTTP '+r.status); return j; } finally{ clearTimeout(t); } }
+
+
+    function hCount(obj){
+      if(obj===null || obj===undefined) return '—';
+      if(typeof obj==='number' || typeof obj==='string') return String(obj);
+      if(typeof obj==='object'){
+        if(obj.count!==undefined && obj.count!==null) return String(obj.count);
+        if(obj.ok===false && obj.error) return 'ERR · '+obj.error;
+        if(obj.exists===false) return 'MISSING';
+      }
+      return '—';
+    }
+    function hOk(obj){
+      if(!obj) return false;
+      if(obj.ok===false) return false;
+      if(obj.exists===false) return false;
+      return true;
+    }
+    function bucketOk(obj){
+      if(!obj) return false;
+      if(obj.count!==undefined) return Number(obj.count)>0;
+      if(obj.storage_bucket && obj.storage_bucket.count!==undefined) return Number(obj.storage_bucket.count)>0;
+      return hOk(obj);
+    }
+    async function checkSystemHealth(){
+      setStatus('systemHealthStatus','warn','Provjeravam system health...');
+      const sb=window.SOVAuth&&SOVAuth.getClient&&SOVAuth.getClient();
+      if(!sb){
+        setStatus('systemHealthStatus','bad','Supabase nije konfiguriran');
+        $('systemHealthMetric').textContent='OFF';
+        $('systemHealthNote').textContent='Nema Supabase clienta; detaljni fallbackovi mogu raditi samo za static/GS.';
+        state.system=false;
+        return {ok:false,error:'no supabase'};
+      }
+      const {data,error}=await sb.rpc('sov_system_health');
+      if(error){
+        setStatus('systemHealthStatus','bad','RPC nije dostupan');
+        $('systemHealthMetric').textContent='SQL';
+        $('systemHealthRpc').textContent='sov_system_health() · nedostaje ili RLS/grant problem';
+        $('systemHealthNote').textContent=error.message||String(error);
+        state.system=false;
+        throw error;
+      }
+      window.SOV_SYSTEM_HEALTH=data;
+      const identity=data.identity||{};
+      const armory=data.armory||{};
+      const submissions=data.submissions||{};
+      const storage=data.storage||{};
+      const profiles=hCount(identity.profiles);
+      const authUsers=hCount(identity.auth_users);
+      const pending=hCount(identity.pending_profiles);
+      const armoryCount=armory.grouped_catalog!==undefined ? armory.grouped_catalog : (armory.grouped_catalog && armory.grouped_catalog.count);
+      let storageOkCount=0;
+      ['sov_news','speleo_submissions','sov_trip_files','sov_trip_assets'].forEach(k=>{ if(bucketOk(storage[k])) storageOkCount++; });
+      const moduleChecks=[
+        profiles!=='MISSING' && profiles!=='—',
+        hOk(data.roles && data.roles.permissions),
+        armory && armory.ok!==false,
+        submissions && submissions.ok!==false,
+        storageOkCount>=2,
+        hOk(data.archive && data.archive.staging_objects),
+        hOk(data.trips && data.trips.trips),
+        hOk(data.tracking && data.tracking.sessions),
+        hOk(data.news && data.news.rows)
+      ];
+      const okCount=moduleChecks.filter(Boolean).length;
+      $('systemHealthMetric').textContent=okCount+'/9';
+      $('systemHealthRpc').textContent='sov_system_health() · OK';
+      $('systemHealthCheckedAt').textContent=data.checked_at||'—';
+      $('systemHealthIdentity').textContent='auth '+authUsers+' / profiles '+profiles+' / pending '+pending;
+      $('systemHealthArmory').textContent=(armory.ok===false?'problem':'OK')+' · katalog '+(armory.grouped_catalog ?? armory.raw_catalog ?? '—');
+      $('systemHealthSubmissions').textContent=(submissions.ok===false?'problem':'OK')+' · '+JSON.stringify(submissions).slice(0,90);
+      $('systemHealthStorage').textContent=storageOkCount+'/4 bucket provjere OK';
+      $('systemHealthNote').textContent=okCount===9?'Centralni health zelen. Detaljne kartice ispod su dodatna dijagnostika.':'Centralni health djelomičan; pogledaj crvene detalje i SQL patch.';
+      setStatus('systemHealthStatus',okCount>=7?'ok':(okCount>0?'warn':'bad'),okCount>=7?'System health OK':'System health djelomičan');
+      state.system=okCount>=7;
+      log('System health',data);
+      return data;
+    }
+
+    async function checkDrawings(){
+      const endpoint=window.SOV_DRAWINGS_SYNC_ENDPOINT||''; $('drawingsEndpoint').textContent=safeEndpoint(endpoint)||'Nije podešen';
+      if(!endpoint){ setStatus('drawingsStatus','bad','Nacrti endpoint fali'); throw new Error('SOV_DRAWINGS_SYNC_ENDPOINT nije podešen'); }
+      setStatus('drawingsStatus','warn','Provjeravam nacrte...');
+      const stats=await fetchJson(endpointWithAction(endpoint,{action:'stats'}),20000);
+      if(!stats.ok){
+        $('drawingsCount').textContent='0'; $('drawingsVersion').textContent=stats.version||'—'; $('drawingsBuiltAt').textContent='Index nije izgrađen';
+        setStatus('drawingsStatus','warn','Index nije izgrađen'); log('Nacrti stats traže rebuild',stats); state.drawings=false; return stats;
+      }
+      $('drawingsCount').textContent=String(stats.totalCount||stats.count||0); $('drawingsVersion').textContent=stats.version||'—'; $('drawingsBuiltAt').textContent=stats.indexBuiltAt||'—';
+      const okVersion=String(stats.version||'').includes('fast-search');
+      setStatus('drawingsStatus', okVersion?'ok':'warn', okVersion?'Nacrti OK':'Nacrti rade, ali verzija nije očekivana');
+      state.drawings=!!stats.ok; log('Nacrti stats OK',stats); return stats;
+    }
+
+    async function checkTrips(){
+      const endpoint=window.SOV_TRIPS_WEBAPP_URL||''; $('tripsEndpoint').textContent=safeEndpoint(endpoint)||'Nije podešen';
+      if(!endpoint){ setStatus('tripsStatus','bad','Izleti endpoint fali'); throw new Error('SOV_TRIPS_WEBAPP_URL nije podešen'); }
+      setStatus('tripsStatus','warn','Provjeravam izlete...');
+      const j=await fetchJson(endpointWithAction(endpoint,{action:'listTrips'}),18000);
+      const arr = Array.isArray(j.trips)?j.trips:(Array.isArray(j.data)?j.data:(Array.isArray(j.items)?j.items:[]));
+      const ok = !!(j.ok !== false);
+      $('tripsCount').textContent=String(arr.length || j.count || 0);
+      setStatus('tripsStatus', ok?'ok':'bad', ok?'Izleti OK':'Izleti greška');
+      state.trips=ok; log('Izleti listTrips',j); return j;
+    }
+
+    async function countTable(sb, table, filter){
+      try{ let q=sb.from(table).select('*',{count:'exact',head:true}); if(filter) q=filter(q); const {count,error}=await q; if(error) return {ok:false,error:error.message,count:null}; return {ok:true,count:count||0}; }catch(e){ return {ok:false,error:e.message,count:null}; }
+    }
+
+    async function checkMap(){
+      setStatus('mapStatus','warn','Provjeravam kartu...');
+      const sb=window.SOVAuth&&SOVAuth.getClient&&SOVAuth.getClient(); if(!sb){ setStatus('mapStatus','bad','Supabase fali'); throw new Error('Supabase client nije dostupan'); }
+      let result={ok:false,count:null,error:null,source:'sov_map_objects_page() / sov_arhivar_worklist'};
+      try{
+        let rows=[], offset=0, step=1000;
+        while(offset<100000){
+          const res=await sb.rpc('sov_map_objects_page',{p_offset:offset,p_limit:step});
+          if(res.error) throw res.error;
+          const part=Array.isArray(res.data?.rows)?res.data.rows:(Array.isArray(res.data)?res.data:[]);
+          rows=rows.concat(part);
+          if(part.length<step) break;
+          offset+=step;
+        }
+        result.ok=true; result.count=rows.length;
+      }catch(e){
+        const c=await countTable(sb,'speleo_objects_staging');
+        result={ok:c.ok,count:c.count,error:c.error||e.message,source:'speleo_objects_staging fallback'};
+      }
+      $('mapObjectsCount').textContent=result.ok?String(result.count):'n/a';
+      $('mapSourceLabel').textContent=result.source;
+      setStatus('mapStatus',result.ok?'ok':'bad',result.ok?'Karta OK':'Karta/baza problem'); state.map=!!result.ok; log('Karta / baza objekata',result); return result;
+    }
+
+    function countValue(x){ return x && x.ok ? Number(x.count||0) : 0; }
+
+
+    async function checkArmoryStaticJson(){
+      try{
+        const ctrl=new AbortController(); const t=setTimeout(()=>ctrl.abort(),3000);
+        const res=await fetch('data/oruzarstvo-data.json?health=605',{cache:'no-store',signal:ctrl.signal});
+        clearTimeout(t);
+        if(!res.ok) return {ok:false,error:'HTTP '+res.status,count:0};
+        const json=await res.json();
+        const count=(Array.isArray(json.items)?json.items.length:0)+(Array.isArray(json.ropes)?json.ropes.length:0)+(Array.isArray(json.pieces)?json.pieces.length:0);
+        return {ok:count>0,count,source:(json.summary&&json.summary.source)||'data/oruzarstvo-data.json'};
+      }catch(e){ return {ok:false,error:e.message||String(e),count:0}; }
+    }
+
+    async function checkArmory(){
+      setStatus('armoryStatus','warn','Provjeravam Oružarstvo...');
+      const staticJson=await checkArmoryStaticJson();
+      if($('armoryStaticStatus')) $('armoryStaticStatus').textContent=staticJson.ok?(staticJson.count+' stavki · OK'):(('n/a · '+staticJson.error));
+      if($('armoryLoaderStatus')) $('armoryLoaderStatus').textContent='single boot v6.1.4 · static first · live background';
+      const sb=window.SOVAuth&&SOVAuth.getClient&&SOVAuth.getClient();
+      if(!sb){ const ok=!!staticJson.ok; setStatus('armoryStatus',ok?'warn':'bad',ok?'Static JSON OK, Supabase off':'Supabase nije konfiguriran'); state.armory=ok; return {ok,error:'no supabase',staticJson}; }
+      let rpc=null;
+      try{
+        const res=await sb.rpc('sov_oruzarstvo_health');
+        if(!res.error && res.data) rpc=res.data;
+        else if(res.error) log('Oružarstvo health RPC nije dostupan, idem na table fallback', res.error);
+      }catch(e){ log('Oružarstvo health RPC exception, idem na table fallback', {message:e.message||String(e)}); }
+      const grouped=await countTable(sb,'sov_equipment_app_catalog_grouped');
+      const raw=await countTable(sb,'sov_equipment_app_catalog');
+      const items=await countTable(sb,'equipment_items');
+      const ropes=await countTable(sb,'equipment_ropes');
+      const pieces=await countTable(sb,'equipment_pieces');
+      const locs=await countTable(sb,'equipment_locations');
+      const reqAll=await countTable(sb,'equipment_requests');
+      const reqOpen=await countTable(sb,'equipment_requests',q=>q.in('status',['pending','issued','partial_return','approved','prepared','reserved']));
+      const manifest=await countTable(sb,'sov_equipment_catalog_manifest');
+      const rpcTables=(rpc&&rpc.tables)||{};
+      const groupedCount=Number(rpcTables.grouped_catalog ?? countValue(grouped));
+      const rawCount=Number(rpcTables.raw_catalog ?? countValue(raw));
+      const itemCount=Number(rpcTables.equipment_items ?? countValue(items));
+      const ropeCount=Number(rpcTables.equipment_ropes ?? countValue(ropes));
+      const pieceCount=Number(rpcTables.equipment_pieces ?? countValue(pieces));
+      const locationsCount=Number(rpcTables.equipment_locations ?? countValue(locs));
+      const openRequests=Number((rpc&&rpc.open_requests) ?? countValue(reqOpen));
+      const totalCatalog=groupedCount || rawCount || (itemCount+ropeCount+pieceCount);
+      $('armoryCatalogCount').textContent=String(totalCatalog || 0);
+      $('armoryGroupedCount').textContent=grouped.ok||rpc?String(groupedCount):'n/a · '+grouped.error;
+      $('armoryRawCount').textContent=raw.ok||rpc?String(rawCount):'n/a · '+raw.error;
+      $('armoryBaseCounts').textContent=[itemCount+' items', ropeCount+' ropes', pieceCount+' pieces'].join(' / ');
+      $('armoryOpenRequests').textContent=reqOpen.ok||rpc?String(openRequests):'n/a · '+reqOpen.error;
+      $('armoryLocationsCount').textContent=locs.ok||rpc?String(locationsCount):'n/a · '+locs.error;
+      $('armoryManifestStatus').textContent=(manifest.ok||rpc)?((manifest.ok?manifest.count:rpcTables.manifest)||0)+' row · cache key v6.1.4':'n/a · '+manifest.error;
+      const ok=(totalCatalog>0 && (grouped.ok || raw.ok || items.ok || rpc)) || !!staticJson.ok;
+      $('armoryHealthText').textContent=ok?'Oružarstvo ima čitljiv katalog. /oruzarstvo.html sada hardboot učita lokalni JSON prije Supabasea, pa SQL/RLS više ne može zablokirati prikaz.':'Oružarstvo DB health nije OK. Ako je Static JSON zelen, katalog svejedno radi iz lokalnog JSON-a dok se SQL/RLS ne popravi.';
+      setStatus('armoryStatus',ok?'ok':'bad',ok?'Oružarstvo OK':'Oružarstvo DB problem');
+      state.armory=!!ok;
+      const result={ok,staticJson,rpc,grouped,raw,items,ropes,pieces,locs,reqAll,reqOpen,manifest,totalCatalog}; log('Oružarstvo health',result); return result;
+    }
+
+    async function checkSupabase(){
+      setStatus('supabaseStatus','warn','Provjeravam Supabase...');
+      const sb=window.SOVAuth&&SOVAuth.getClient&&SOVAuth.getClient();
+      if(!sb){ setStatus('supabaseStatus','bad','Supabase nije konfiguriran'); throw new Error('Supabase client nije dostupan'); }
+      const drawings=await countTable(sb,'speleo_object_drawings');
+      const auto=await countTable(sb,'speleo_object_drawings',q=>q.in('match_status',['auto_matched','verified']));
+      const partial=await countTable(sb,'speleo_object_drawings',q=>q.in('match_status',['partial_match','possible','unmatched']));
+      let objects=await countTable(sb,'speleo_objects_live_sql');
+      if(!objects.ok) objects=await countTable(sb,'speleo_objects_staging');
+      const profiles=await countTable(sb,'profiles');
+      const admins=await countTable(sb,'profiles',q=>q.eq('role','admin'));
+      const webmasters=await countTable(sb,'profiles',q=>q.eq('role','webmaster'));
+      const editors=await countTable(sb,'profiles',q=>q.in('role',['editor','arhivar']));
+      const oruzars=await countTable(sb,'profiles',q=>q.eq('role','oruzar'));
+      $('sbDrawingsCount').textContent=drawings.ok?drawings.count:'n/a · '+drawings.error;
+      $('sbDrawingsAuto').textContent=auto.ok?auto.count:'n/a';
+      $('sbDrawingsPartial').textContent=partial.ok?partial.count:'n/a';
+      $('sbObjectsCount').textContent=objects.ok?objects.count:'n/a · '+objects.error;
+      $('sbProfilesCount').textContent=profiles.ok?profiles.count:'n/a';
+      $('sbRoleAdmin').textContent=admins.ok?admins.count:'n/a';
+      $('sbRoleStaff').textContent=editors.ok?editors.count:'n/a';
+      if($('sbRoleOruzar')) $('sbRoleOruzar').textContent=oruzars.ok?oruzars.count:'n/a';
+      const ok=drawings.ok || objects.ok || profiles.ok;
+      setStatus('supabaseStatus',ok?'ok':'bad',ok?'Supabase OK':'Supabase greška'); state.supabase=ok;
+      const result={drawings,auto,partial,objects,profiles,admins,webmasters,editors,oruzars}; log('Supabase counts',result); return result;
+    }
+
+    async function checkTracking(){
+      const sb=window.SOVAuth&&SOVAuth.getClient&&SOVAuth.getClient(); if(!sb){ setStatus('trackingStatus','bad','Supabase nije konfiguriran'); return {ok:false}; }
+      setStatus('trackingStatus','warn','Provjeravam tracking...');
+      const res=await sb.from('sov_tracking_sync_status').select('*').maybeSingle();
+      if(res.error){
+        $('trackingSessionsCount').textContent='—'; $('trackingActiveCount').textContent='—'; $('trackingPoints24h').textContent='—';
+        setStatus('trackingStatus','warn','Tracking SQL nije pokrenut');
+        log('Field Tracking Lite nije dostupan', res.error);
+        state.tracking=false; return {ok:false,error:res.error};
+      }
+      const d=res.data||{};
+      $('trackingSessionsCount').textContent=String(d.sessions_total??0);
+      if($('trackingTeamsCount')) $('trackingTeamsCount').textContent=String(d.field_events_active??d.field_events_total??0);
+      $('trackingActiveCount').textContent=String(d.sessions_active??0);
+      $('trackingPoints24h').textContent=String(d.points_24h??0);
+      setStatus('trackingStatus','ok','Tracking SQL OK · paketi za teren: sov_trip_assets_active');
+      state.tracking=true; log('Field Tracking Lite', d); return {ok:true,data:d};
+    }
+
+    async function checkNews(){
+      setStatus('newsStatus','warn','Provjeravam vijesti...');
+      const sb=window.SOVAuth&&SOVAuth.getClient&&SOVAuth.getClient(); if(!sb){ setStatus('newsStatus','bad','Supabase fali'); throw new Error('Supabase client nije dostupan'); }
+      const all=await countTable(sb,'sov_news');
+      const published=await countTable(sb,'sov_news',q=>q.eq('published',true));
+      const drafts=await countTable(sb,'sov_news',q=>q.eq('published',false));
+      let storage={ok:false,error:null,data:null};
+      try{
+        const res=await sb.rpc('sov_news_storage_status');
+        if(res.error) storage={ok:false,error:res.error.message,data:null};
+        else storage={ok:!!(res.data&&res.data.exists&&res.data.public),error:null,data:res.data};
+      }catch(e){ storage={ok:false,error:e.message,data:null}; }
+      $('newsCount').textContent=all.ok?all.count:'n/a'; $('newsPublishedCount').textContent=published.ok?published.count:'n/a'; $('newsDraftCount').textContent=drafts.ok?drafts.count:'n/a';
+      const st=$('newsStorageStatus');
+      if(st){ st.textContent=storage.ok ? 'sov-news OK · public read · authenticated upload' : ('sov-news storage treba provjeru · '+(storage.error||'policy nije potvrđen')); }
+      const ok=all.ok && storage.ok; setStatus('newsStatus',ok?'ok':(all.ok?'warn':'bad'),ok?'Vijesti CMS + Storage OK':(all.ok?'Vijesti rade, Storage treba provjeru':'sov_news nije dostupan')); state.news=ok; const result={all,published,drafts,storage}; log('Vijesti CMS',result); return result;
+    }
+    async function checkSubmissions(){
+      setStatus('submissionsStatus','warn','Provjeravam predane jame...');
+      const sb=window.SOVAuth&&SOVAuth.getClient&&SOVAuth.getClient(); if(!sb){ setStatus('submissionsStatus','bad','Supabase fali'); throw new Error('Supabase client nije dostupan'); }
+      try{
+        const rpc=await sb.rpc('sov_speleo_submissions_health');
+        if(!rpc.error && rpc.data){
+          const d=rpc.data;
+          $('submissionsCount').textContent=String(d.submissions??0); $('submissionsPending').textContent=String(d.pending??0); $('submissionsApproved').textContent=String(d.approved??0); $('submissionFilesCount').textContent=String(d.files??0);
+          const ok=!!d.ok; setStatus('submissionsStatus',ok?'ok':'warn',ok?'Predane jame OK · form + XLSX':'Predane jame djelomično OK'); state.submissions=ok; log('Arhivarske predaje RPC health',d); return d;
+        }
+      }catch(e){ log('sov_speleo_submissions_health nije dostupan, fallback na table counts',{error:e.message}); }
+      const all=await countTable(sb,'speleo_object_submissions');
+      const pending=await countTable(sb,'speleo_object_submissions',q=>q.in('status',['submitted','pending','needs_changes','review']));
+      const approved=await countTable(sb,'speleo_object_submissions',q=>q.eq('status','approved'));
+      const files=await countTable(sb,'speleo_object_submission_files');
+      $('submissionsCount').textContent=all.ok?all.count:'n/a'; $('submissionsPending').textContent=pending.ok?pending.count:'n/a'; $('submissionsApproved').textContent=approved.ok?approved.count:'n/a'; $('submissionFilesCount').textContent=files.ok?files.count:'n/a';
+      const ok=all.ok; setStatus('submissionsStatus',ok?'ok':'bad',ok?'Predane jame OK · table fallback':'submission tablice nisu dostupne'); state.submissions=ok; const result={all,pending,approved,files}; log('Arhivarske predaje fallback',result); return result;
+    }
+
+
+    async function checkDatabaseCleanup(){
+      setStatus('dbCleanupStatus','warn','Provjeravam DB cleanup...');
+      const sb=window.SOVAuth&&SOVAuth.getClient&&SOVAuth.getClient();
+      if(!sb){ setStatus('dbCleanupStatus','bad','Supabase fali'); state.dbcleanup=false; return {ok:false,error:'no supabase'}; }
+      try{
+        const {data,error}=await sb.rpc('sov_database_cleanup_health');
+        if(error) throw error;
+        const d=data||{};
+        const missing=Array.isArray(d.missing_required)?d.missing_required:[];
+        const ok=!!d.ok && missing.length===0;
+        $('dbCleanupMetric').textContent=ok?'OK':'CHECK';
+        $('dbCleanupRpc').textContent='sov_database_cleanup_health() · OK';
+        $('dbCleanupRegistry').textContent=String(d.registry_objects??'—')+' objekata';
+        $('dbCleanupReleases').textContent=String(d.registered_releases??'—')+' release zapisa';
+        $('dbCleanupTaxonomy').textContent=String(d.armory_taxonomy_rows??'—')+' kategorija';
+        $('dbCleanupAudit').textContent=String(d.audit_rows??0)+' audit događaja';
+        $('dbCleanupStorage').textContent=String(d.known_storage_buckets??'—')+' poznata bucketa';
+        $('dbCleanupPolicy').textContent=d.policy||'Safe additive cleanup';
+        setStatus('dbCleanupStatus',ok?'ok':'warn',ok?'DB cleanup baza OK':'DB cleanup djelomičan');
+        state.dbcleanup=ok;
+        log('Database cleanup health',d);
+        return d;
+      }catch(e){
+        $('dbCleanupMetric').textContent='SQL';
+        $('dbCleanupRpc').textContent='sov_database_cleanup_health() · nedostaje ili grant/RLS problem';
+        $('dbCleanupPolicy').textContent=e.message||String(e);
+        setStatus('dbCleanupStatus','bad','DB cleanup SQL nije pokrenut');
+        state.dbcleanup=false;
+        log('Database cleanup health error',{error:e.message||String(e)});
+        return {ok:false,error:e.message||String(e)};
+      }
+    }
+
+    async function checkVersionContract(){
+      setStatus('versionStatus','warn','Provjeravam verziju...');
+      try{
+        const res=await fetch('update.json?cb='+Date.now(),{cache:'no-store'});
+        if(!res.ok) throw new Error('HTTP '+res.status);
+        const m=await res.json();
+        const ok=m.version==='6.1.4' && String(m.cacheBust)==='614';
+        $('versionManifest').textContent=(m.version||'n/a')+' · '+(m.versionName||m.build||'');
+        $('versionBuild').textContent=m.build||'n/a';
+        $('versionCache').textContent=ok?'OK · update.json no-store, ops pages no-cache':'Mismatch · update.json/cacheBust ne odgovara očekivanom buildu';
+        setStatus('versionStatus',ok?'ok':'bad',ok?'Build verzija OK':'Build/cache mismatch');
+        state.version=ok;
+        log('Version contract',m);
+        return {ok,manifest:m};
+      }catch(e){
+        $('versionManifest').textContent='GREŠKA · '+(e.message||e);
+        setStatus('versionStatus','bad','update.json nije čitljiv');
+        state.version=false;
+        return {ok:false,error:e.message||String(e)};
+      }
+    }
+
+    function updateOverall(){ const ok=[state.version,state.system,state.dbcleanup,state.drawings,state.trips,state.supabase,state.armory,state.news,state.submissions,state.map,state.tracking].filter(Boolean).length; $('overallMetric').textContent=ok+'/11'; if(ok===11){setStatus('overallStatus','ok','Sve osnovno OK');$('overallText').textContent='Version contract, centralni system health, DB cleanup registry, nacrti, izleti, Supabase, Oružarstvo, vijesti, predane jame, karta, tracking i paketi za teren odgovaraju.'} else if(ok>0){setStatus('overallStatus','warn','Djelomično OK');$('overallText').textContent='Neki moduli rade, neke treba provjeriti.'} else {setStatus('overallStatus','bad','Nije OK');$('overallText').textContent='Ni jedan osnovni modul nije potvrđen.'}}
+    async function runOne(fn){ try{await fn()}catch(e){log('Greška: '+(e.message||e));} updateOverall(); }
+    async function runAll(){ $('logBox').textContent=''; Object.keys(state).forEach(k=>state[k]=false); await runOne(checkVersionContract); await runOne(checkSystemHealth); await runOne(checkDatabaseCleanup); await runOne(checkDrawings); await runOne(checkTrips); await runOne(checkSupabase); await runOne(checkArmory); await runOne(checkNews); await runOne(checkSubmissions); await runOne(checkMap); await runOne(checkTracking); updateOverall(); }
+    document.addEventListener('DOMContentLoaded',async()=>{
+      if(window.SOVAuth&&SOVAuth.requireWebmaster){ const ok=await SOVAuth.requireWebmaster(); if(!ok)return; }
+      $('drawingsEndpoint').textContent=safeEndpoint(window.SOV_DRAWINGS_SYNC_ENDPOINT||''); $('tripsEndpoint').textContent=safeEndpoint(window.SOV_TRIPS_WEBAPP_URL||'');
+      $('runAllBtn').onclick=runAll; if($('runSystemBtn')) $('runSystemBtn').onclick=()=>runOne(checkSystemHealth); $('runDrawingsBtn').onclick=()=>runOne(checkDrawings); $('runTripsBtn').onclick=()=>runOne(checkTrips); $('runSupabaseBtn').onclick=()=>runOne(checkSupabase); if($('runArmoryBtn')) $('runArmoryBtn').onclick=()=>runOne(checkArmory); $('runNewsBtn').onclick=()=>runOne(checkNews); $('runSubmissionsBtn').onclick=()=>runOne(checkSubmissions); if($('runMapBtn')) $('runMapBtn').onclick=()=>runOne(checkMap); if($('runTrackingBtn')) $('runTrackingBtn').onclick=()=>runOne(checkTracking); if($('runDbCleanupBtn')) $('runDbCleanupBtn').onclick=()=>runOne(checkDatabaseCleanup);
+      setTimeout(runAll,500);
+    });
+  </script>
+<script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script>console.info("SOV sync v6.1.4: premium dashboard + sync status active.");</script><script defer="" src="assets/sov-polish-v55826.js"></script><script defer="" src="assets/sov-version.js?v=6.1.5"></script><script defer="" src="assets/sov-client-logger.js?v=6.1.31"></script></body>
+</html>

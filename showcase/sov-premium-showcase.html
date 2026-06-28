@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+
+<html lang="hr">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Iz podzemlja, s terena i iz društva. — SOV Velebit</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=Inter:wght@400;500;700;800;900&amp;display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#05090b; --text:#f6faf6; --muted:#aebdb9; --line:rgba(255,255,255,.12);
+  --lime:#d7f66f; --teal:#83e6c2; --gold:#e8c987; --blue:#78d7ff;
+  --display:"Bricolage Grotesque",Inter,system-ui,sans-serif;
+  --ease:cubic-bezier(.22,1,.36,1);
+  --photo1:linear-gradient(135deg,#0c2a26,#06181f 60%,#0a1410),radial-gradient(circle at 30% 20%,rgba(131,230,194,.4),transparent 50%);
+  --photo2:linear-gradient(135deg,#1a2410,#0a1410),radial-gradient(circle at 70% 30%,rgba(215,246,111,.35),transparent 55%);
+  --photo3:linear-gradient(135deg,#10202a,#06121a),radial-gradient(circle at 40% 70%,rgba(120,215,255,.3),transparent 55%);
+  --photo4:linear-gradient(135deg,#241a10,#140e08),radial-gradient(circle at 60% 40%,rgba(232,201,135,.34),transparent 55%);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:Inter,system-ui,sans-serif;color:var(--text);background:var(--bg);overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body::before{content:"";position:fixed;inset:0;z-index:-3;pointer-events:none;
+  background:radial-gradient(circle at 14% 0%,rgba(215,246,111,.10),transparent 31%),
+  radial-gradient(circle at 82% 4%,rgba(120,215,255,.10),transparent 28%),
+  linear-gradient(180deg,#05090b,#071012 42%,#05090b)}
+body::after{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;opacity:.045;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+a{color:inherit;text-decoration:none}
+.wrap{width:min(1180px,calc(100% - 40px));margin:auto}
+
+.wow-progress{position:fixed;top:0;left:0;height:3px;width:0;z-index:9000;
+  background:linear-gradient(90deg,var(--lime),var(--teal),var(--blue));box-shadow:0 0 18px rgba(215,246,111,.55)}
+
+.demo-flag{position:fixed;left:14px;bottom:14px;z-index:9001;font-size:11px;font-weight:800;letter-spacing:.04em;
+  padding:8px 13px;border-radius:999px;background:rgba(5,9,11,.85);border:1px solid var(--line);color:var(--gold);backdrop-filter:blur(10px)}
+
+/* nav */
+.topbar{position:sticky;top:0;z-index:50;backdrop-filter:blur(20px) saturate(140%);
+  background:linear-gradient(180deg,rgba(3,5,7,.92),rgba(3,5,7,.74));border-bottom:1px solid rgba(255,255,255,.07)}
+.nav{max-width:1280px;margin:auto;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.brand{display:flex;align-items:center;gap:12px;font-weight:900}
+.brand .dot{width:42px;height:42px;border-radius:50%;background:radial-gradient(circle at 30% 30%,var(--teal),#06121a);
+  box-shadow:0 0 0 1px rgba(255,255,255,.22),0 0 26px rgba(131,230,194,.3);display:grid;place-items:center;font-size:18px}
+.brand small{display:block;color:var(--lime);font-size:11px;letter-spacing:.14em;font-weight:900}
+.navlinks{display:flex;gap:8px;flex-wrap:wrap}
+.navlinks a{position:relative;padding:9px 15px;border-radius:999px;background:rgba(255,255,255,.04);
+  border:1px solid var(--line);font-weight:800;font-size:13px;transition:.2s var(--ease)}
+.navlinks a::before{content:"";position:absolute;left:15px;right:15px;bottom:6px;height:2px;background:var(--lime);
+  transform:scaleX(0);transform-origin:left;transition:transform .3s var(--ease);border-radius:2px}
+.navlinks a:hover{background:rgba(215,246,111,.1);border-color:rgba(215,246,111,.34);transform:translateY(-1px)}
+.navlinks a:hover::before{transform:scaleX(1)}
+.navlinks a.login{background:rgba(232,201,135,.1);border-color:rgba(232,201,135,.4);color:var(--gold)}
+
+/* hero */
+.hero{position:relative;min-height:84vh;display:flex;align-items:flex-end;overflow:hidden;isolation:isolate;
+  background:linear-gradient(110deg,rgba(3,7,9,.88),rgba(3,7,9,.4) 60%,rgba(3,7,9,.15)),var(--photo1)}
+.hero::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:200px;
+  background:linear-gradient(0deg,var(--bg),transparent);z-index:0}
+.aurora{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity .6s ease}
+.aurora.is-live{opacity:1}
+.aurora::before{content:"";position:absolute;width:46vmax;height:46vmax;border-radius:50%;
+  left:var(--x,50%);top:var(--y,40%);transform:translate(-50%,-50%);filter:blur(6px);
+  background:radial-gradient(circle,rgba(215,246,111,.18),rgba(131,230,194,.09) 38%,transparent 64%);
+  transition:left .18s ease,top .18s ease}
+.hero-inner{position:relative;z-index:1;width:min(1180px,calc(100% - 48px));margin:auto;padding:120px 0 78px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;
+  border:1px solid rgba(215,246,111,.3);background:rgba(215,246,111,.08);color:#e9ffd0;
+  font-size:12px;font-weight:900;letter-spacing:.13em;text-transform:uppercase}
+.hero h1{font-family:var(--display);font-weight:800;font-size:clamp(48px,8vw,104px);line-height:.9;
+  letter-spacing:-.055em;margin:20px 0 16px;max-width:920px;text-wrap:balance;text-shadow:0 12px 60px rgba(0,0,0,.55)}
+.hero .sub{max-width:680px;color:#e6efef;font-size:clamp(16px,2vw,20px);line-height:1.6;
+  padding:16px 20px;border-radius:22px;border:1px solid var(--line);
+  background:linear-gradient(90deg,rgba(5,10,11,.7),rgba(5,10,11,.2));backdrop-filter:blur(10px)}
+.cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:15px 24px;border-radius:999px;font-weight:900;
+  transition:.25s var(--ease);min-height:52px}
+.btn.primary{background:linear-gradient(135deg,var(--lime),var(--teal));color:#07100d;box-shadow:0 18px 50px rgba(215,246,111,.26)}
+.btn.primary:hover{filter:brightness(1.05);box-shadow:0 22px 60px rgba(215,246,111,.4)}
+.btn.ghost{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16)}
+.btn.ghost:hover{border-color:rgba(215,246,111,.4);transform:translateY(-2px)}
+.btn span{transition:transform .3s var(--ease)}
+.btn.primary:hover span{transform:translateX(5px)}
+
+.hero-stats{display:flex;flex-wrap:wrap;gap:14px;margin-top:34px}
+.stat{flex:1 1 130px;min-width:120px;padding:16px 18px;border-radius:20px;border:1px solid var(--line);
+  background:linear-gradient(150deg,rgba(255,255,255,.07),rgba(255,255,255,.025));backdrop-filter:blur(10px)}
+.stat b{display:block;font-family:var(--display);font-weight:800;font-size:clamp(26px,3.4vw,40px);line-height:1;letter-spacing:-.04em;
+  background:linear-gradient(120deg,var(--lime),var(--teal));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.stat span{display:block;margin-top:7px;color:var(--gold);font-size:12px;font-weight:700;line-height:1.3}
+
+/* sections */
+section{position:relative}
+.head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin:0 0 26px}
+.head h2{font-family:var(--display);font-weight:800;font-size:clamp(32px,5vw,58px);letter-spacing:-.05em;margin:0;position:relative;display:inline-block}
+.head h2::after{content:"";position:absolute;left:0;bottom:-10px;height:4px;width:0;border-radius:999px;
+  background:linear-gradient(90deg,var(--lime),var(--teal));transition:width .9s var(--ease) .2s}
+[data-reveal].is-in .head h2::after,.head.is-in h2::after{width:64px}
+.head p{max-width:560px;color:var(--muted);margin:0;line-height:1.5}
+
+/* expedition banner */
+.exped{width:min(1220px,calc(100% - 40px));margin:34px auto 0;border-radius:30px;overflow:hidden;position:relative;
+  border:1px solid var(--line);min-height:280px;
+  background:linear-gradient(110deg,rgba(3,7,9,.7),transparent),var(--photo2);
+  display:flex;align-items:flex-end;box-shadow:0 30px 90px rgba(0,0,0,.4)}
+.exped img{display:none}
+.exped .copy{padding:34px}
+.exped .copy strong{font-family:var(--display);font-size:clamp(24px,3.2vw,40px);letter-spacing:-.04em;display:block;max-width:560px;line-height:1.04}
+.exped .copy em{font-style:normal;color:var(--muted);display:block;margin-top:8px}
+.exped .cta{position:absolute;right:18px;bottom:18px;padding:13px 18px;border-radius:999px;font-weight:900;
+  background:linear-gradient(135deg,var(--lime),var(--teal));color:#07100d;animation:pulse 2.6s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 14px 40px rgba(0,0,0,.32)}50%{box-shadow:0 14px 50px rgba(215,246,111,.45)}}
+
+/* news */
+.news{padding:80px 0 30px}
+.lead-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:18px}
+.stack{display:grid;gap:18px}
+.card{position:relative;overflow:hidden;border-radius:26px;border:1px solid var(--line);
+  background:linear-gradient(145deg,rgba(255,255,255,.075),rgba(255,255,255,.03));
+  box-shadow:0 16px 54px rgba(0,0,0,.24);transition:transform .35s var(--ease),box-shadow .35s var(--ease),border-color .3s ease;display:flex;flex-direction:column}
+.card::after{content:"";position:absolute;top:0;left:-120%;width:55%;height:100%;z-index:2;transform:skewX(-18deg);
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.16),transparent);transition:left .8s var(--ease);pointer-events:none}
+.card:hover::after{left:140%}
+.card:hover{transform:translateY(-6px);border-color:rgba(215,246,111,.4);box-shadow:0 30px 80px rgba(0,0,0,.5),0 0 0 1px rgba(215,246,111,.18)}
+.card .img{height:230px;background-size:cover;background-position:center;transition:transform .5s ease,filter .5s ease}
+.card:hover .img{transform:scale(1.04);filter:saturate(1.15)}
+.card .copy{padding:22px;display:flex;flex-direction:column;gap:8px}
+.meta{display:inline-flex;gap:6px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-weight:900;color:var(--gold)}
+.card .copy strong{font-family:var(--display);font-size:22px;letter-spacing:-.02em;line-height:1.08}
+.card.featured .img{height:340px}
+.card.featured .copy strong{font-size:30px}
+.card .copy em{font-style:normal;color:#c5d2d0;line-height:1.5;font-size:14px}
+.card.side{flex-direction:row}
+.card.side .img{width:130px;height:auto;min-height:118px;flex:0 0 130px}
+.card.side .copy{padding:15px}
+.card.side .copy strong{font-size:17px}.card.side .copy em{display:none}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px}
+
+/* gallery */
+.galband{padding:70px 0}
+.photos{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:170px;gap:14px}
+.tile{border-radius:22px;border:1px solid var(--line);background-size:cover;background-position:center;position:relative;overflow:hidden;
+  transition:transform .4s var(--ease)}
+.tile:hover{transform:scale(1.02)}
+.tile span{position:absolute;left:14px;bottom:12px;font-weight:900;font-size:14px;text-shadow:0 2px 12px rgba(0,0,0,.7)}
+.tile.big{grid-column:span 2;grid-row:span 2}
+
+/* contact + links */
+.cols{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.minicard{padding:24px;border-radius:24px;border:1px solid var(--line);
+  background:linear-gradient(145deg,rgba(255,255,255,.07),rgba(255,255,255,.025));transition:.3s var(--ease)}
+.minicard:hover{transform:translateY(-5px);border-color:rgba(215,246,111,.34)}
+.minicard .lab{font-size:12px;text-transform:uppercase;letter-spacing:.13em;color:var(--lime);font-weight:900}
+.minicard strong{display:block;margin-top:10px;font-size:18px}
+.minicard a{color:var(--gold)}
+.band{padding:70px 0}
+
+.footer{border-top:1px solid rgba(255,255,255,.08);color:#8fa09c;padding:40px 0;margin-top:40px;text-align:center}
+
+[data-reveal]{opacity:0;transform:translateY(30px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+[data-reveal].is-in{opacity:1;transform:none}
+[data-reveal-stagger]>*{opacity:0;transform:translateY(26px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
+[data-reveal-stagger].is-in>*{opacity:1;transform:none}
+
+.wow-ready .hero .eyebrow,.wow-ready .hero h1,.wow-ready .hero .sub,.wow-ready .hero .cta-row,.wow-ready .hero .hero-stats{animation:rise .9s var(--ease) both}
+.wow-ready .hero h1{animation-delay:.08s}.wow-ready .hero .sub{animation-delay:.18s}
+.wow-ready .hero .cta-row{animation-delay:.28s}.wow-ready .hero .hero-stats{animation-delay:.38s}
+@keyframes rise{from{opacity:0;transform:translateY(26px);filter:blur(6px)}to{opacity:1;transform:none;filter:blur(0)}}
+
+::selection{background:rgba(215,246,111,.32);color:#fff}
+*::-webkit-scrollbar{width:11px}*::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--lime),var(--teal));border-radius:999px;border:3px solid transparent;background-clip:padding-box}
+
+@media(max-width:900px){.lead-grid,.grid,.photos,.cols{grid-template-columns:1fr}.card.side{flex-direction:column}.card.side .img{width:100%;height:170px}.tile.big{grid-column:span 1;grid-row:span 1}.head{flex-direction:column;align-items:flex-start}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}[data-reveal],[data-reveal-stagger]>*{opacity:1!important;transform:none!important}.head h2::after{width:64px}}
+</style>
+<meta content="Novosti · Speleološki odsjek PDS Velebit Iz podzemlja, s terena i iz društva. Najnovije objave, speleoškola, istraživanja, ekspedicije i Velebitaški duh —…" name="description"/><meta content="noindex,nofollow,noarchive" name="robots"/><link href="https://so-velebit.hr/showcase/sov-premium-showcase.html" rel="canonical"/><meta content="Speleološki odsjek Velebit" property="og:site_name"/><meta content="hr_HR" property="og:locale"/><meta content="website" property="og:type"/><meta content="Iz podzemlja, s terena i iz društva. — SOV Velebit" property="og:title"/><meta content="Novosti · Speleološki odsjek PDS Velebit Iz podzemlja, s terena i iz društva. Najnovije objave, speleoškola, istraživanja, ekspedicije i Velebitaški duh —…" property="og:description"/><meta content="https://so-velebit.hr/showcase/sov-premium-showcase.html" property="og:url"/><meta content="https://so-velebit.hr/assets/sov-logo.png" property="og:image"/><meta content="summary_large_image" name="twitter:card"/><meta content="Iz podzemlja, s terena i iz društva. — SOV Velebit" name="twitter:title"/><meta content="Novosti · Speleološki odsjek PDS Velebit Iz podzemlja, s terena i iz društva. Najnovije objave, speleoškola, istraživanja, ekspedicije i Velebitaški duh —…" name="twitter:description"/><meta content="https://so-velebit.hr/assets/sov-logo.png" name="twitter:image"/><meta content="#0b0f14" name="theme-color"/></head>
+<body>
+<div class="wow-progress" id="prog"></div>
+<div class="demo-flag">DEMO · v6.0 WOW layer · slike i vijesti uživo dolaze iz Supabase/CDN</div>
+<header class="topbar"><nav class="nav">
+<a class="brand" href="#"><span class="dot">⛰</span><span>SOV Velebit<small>SPELEOLOŠKI ODSJEK</small></span></a>
+<div class="navlinks">
+<a href="#novosti">Novosti</a><a href="#">O nama</a><a href="#">Speleoškola</a>
+<a href="#">Pridruži nam se</a><a class="login" href="#">SOV Cloud</a>
+</div>
+</nav></header>
+<section class="hero" id="hero">
+<div class="aurora" id="aurora"></div>
+<div class="hero-inner">
+<span class="eyebrow">Novosti · Speleološki odsjek PDS Velebit</span>
+<h1>Iz podzemlja, s terena i iz društva.</h1>
+<p class="sub">Najnovije objave, speleoškola, istraživanja, ekspedicije i Velebitaški duh — kronološki, jasno i u stilu SOV-a.</p>
+<div class="cta-row">
+<a class="btn primary" href="#">Pridruži nam se <span>→</span></a>
+<a class="btn ghost" href="#">SOV Cloud</a>
+</div>
+<div class="hero-stats" id="stats"></div>
+</div>
+</section>
+<section class="exped" data-reveal="">
+<div class="copy"><strong>Speleološka ekspedicija Sjeverni Velebit 2026</strong>
+<em>Hajdučki i Rožanski kukovi · 25.07.–09.08.2026. · prijave otvorene</em></div>
+<a class="cta" href="#">Prijavi se na ekspediciju</a>
+</section>
+<main class="news wrap" id="novosti">
+<div class="head" data-reveal=""><h2>Najnovije</h2></div>
+<div class="lead-grid">
+<a class="card featured" data-reveal="">
+<div class="img" style="background:var(--photo1)"></div>
+<div class="copy"><span class="meta">Ekspedicije · 25.07.2026.</span>
+<strong>Speleološka ekspedicija Sjeverni Velebit 2026</strong>
+<em>SO PDS Velebit poziva na ekspediciju u Hajdučkim i Rožanskim kukovima. Prijave otvorene do 20. 7.</em></div>
+</a>
+<div class="stack">
+<a class="card side" data-reveal="right"><div class="img" style="background:var(--photo2)"></div>
+<div class="copy"><span class="meta">Speleoškola · 07.05.2026.</span><strong>Put do Velebitaškog duha</strong></div></a>
+<a class="card side" data-reveal="right"><div class="img" style="background:var(--photo3)"></div>
+<div class="copy"><span class="meta">Speleoškola · 05.05.2026.</span><strong>Pa po užetu dol' pa gor'!</strong></div></a>
+<a class="card side" data-reveal="right"><div class="img" style="background:var(--photo4)"></div>
+<div class="copy"><span class="meta">Speleoškola · 28.04.2026.</span><strong>Spust u jamu</strong></div></a>
+</div>
+</div>
+<div class="grid" data-reveal-stagger="">
+<a class="card"><div class="img" style="background:var(--photo3)"></div><div class="copy"><span class="meta">Speleoškola · 20.01.2026.</span><strong>56. Zagrebačka speleoškola</strong><em>Eto nas opet! Prijavi se prije nego se mjesta popune.</em></div></a>
+<a class="card"><div class="img" style="background:var(--photo4)"></div><div class="copy"><span class="meta">Velebiten · 15.12.2025.</span><strong>Novi Velebiten!</strong><em>Pregršt priča iz planinarstva i speleologije.</em></div></a>
+<a class="card"><div class="img" style="background:var(--photo1)"></div><div class="copy"><span class="meta">Istraživanja · 06.11.2025.</span><strong>Duman, obećana zemlja</strong><em>Crnopac, Olga i obećanje — nikad ništa jednostavno.</em></div></a>
+<a class="card"><div class="img" style="background:var(--photo2)"></div><div class="copy"><span class="meta">Ekologija · 13.10.2025.</span><strong>Žumberački odred za čistoću</strong><em>Očišćeno 6 speleoloških objekata u PP Žumberak.</em></div></a>
+<a class="card"><div class="img" style="background:var(--photo3)"></div><div class="copy"><span class="meta">Istraživanja · 02.10.2025.</span><strong>Izlet iz snova</strong><em>Kanal buja na sve strane i završava dvoranom s krateom.</em></div></a>
+<a class="card"><div class="img" style="background:var(--photo4)"></div><div class="copy"><span class="meta">Ekspedicije · 26.08.2025.</span><strong>Fugro, QGIS, Orux!</strong><em>Sjeverni Velebit 2025 priveden kraju — suma-sumarum.</em></div></a>
+</div>
+</main>
+<section class="galband wrap">
+<div class="head" data-reveal=""><h2>Galerija</h2><p>Fotografije s terena, speleoškole, ekspedicija i društvenih akcija.</p></div>
+<div class="photos" data-reveal-stagger="">
+<a class="tile big" style="background:var(--photo1)"><span>Speleoškola i tehnike</span></a>
+<a class="tile" style="background:var(--photo2)"><span>Duman</span></a>
+<a class="tile" style="background:var(--photo3)"><span>Sjeverni Velebit</span></a>
+<a class="tile" style="background:var(--photo4)"><span>Po užetu</span></a>
+<a class="tile" style="background:var(--photo1)"><span>Terihaj</span></a>
+</div>
+</section>
+<section class="band wrap">
+<div class="head" data-reveal=""><h2>Kontakt</h2><p>Za informacije o radu odsjeka, sastancima i speleoškoli.</p></div>
+<div class="cols" data-reveal-stagger="">
+<div class="minicard"><span class="lab">Pročelnik</span><strong><a href="#">procelniksov@gmail.com</a></strong></div>
+<div class="minicard"><span class="lab">Tajnik</span><strong><a href="#">sovelebit@gmail.com</a></strong></div>
+<div class="minicard"><span class="lab">Adresa</span><strong>Klaićeva 42, Zagreb</strong></div>
+<div class="minicard"><span class="lab">Otvoreno srijedom</span><strong>20:00 – 23:00</strong></div>
+</div>
+</section>
+<footer class="footer">Speleološki odsjek PDS Velebit · Zagreb · <span style="color:var(--lime)">premium showcase v6.0</span></footer>
+<script>
+(function(){
+  var R=matchMedia("(prefers-reduced-motion:reduce)").matches, FINE=matchMedia("(hover:hover) and (pointer:fine)").matches;
+  /* progress */
+  var bar=document.getElementById("prog"),raf;
+  function up(){var h=document.documentElement,m=(h.scrollHeight-h.clientHeight)||1;bar.style.width=Math.min(100,(h.scrollTop/m*100))+"%";raf=null}
+  addEventListener("scroll",function(){if(!raf)raf=requestAnimationFrame(up)},{passive:true});up();
+  /* aurora */
+  if(FINE&&!R){var h=document.getElementById("hero"),a=document.getElementById("aurora");
+    h.addEventListener("pointermove",function(e){var r=h.getBoundingClientRect();a.style.setProperty("--x",(e.clientX-r.left)/r.width*100+"%");a.style.setProperty("--y",(e.clientY-r.top)/r.height*100+"%");a.classList.add("is-live")});
+    h.addEventListener("pointerleave",function(){a.classList.remove("is-live")});}
+  /* stats */
+  var S=[{n:1954,raw:1,l:"prva speleo sekcija u Velebitu"},{n:56,l:"zagrebačkih speleoškola"},{n:1500,s:"+",l:"istraženih objekata u bazi"},{n:70,s:" god.",l:"terena i ekspedicija"}];
+  var box=document.getElementById("stats");
+  S.forEach(function(x){var d=document.createElement("div");d.className="stat";d.innerHTML="<b data-t='"+x.n+"' data-s='"+(x.s||"")+"' data-r='"+(x.raw?1:0)+"'>0</b><span>"+x.l+"</span>";box.appendChild(d)});
+  box.querySelectorAll("b").forEach(function(el){var t=+el.dataset.t,s=el.dataset.s,raw=el.dataset.r=="1";
+    if(R){el.textContent=(raw?t:t.toLocaleString("hr-HR"))+s;return}
+    var st=null;function step(ts){st=st||ts;var p=Math.min(1,(ts-st)/1500),e=1-Math.pow(1-p,3),v=Math.round(t*e);el.textContent=(raw?v:v.toLocaleString("hr-HR"))+s;if(p<1)requestAnimationFrame(step)}requestAnimationFrame(step)});
+  /* reveal */
+  var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add("is-in");io.unobserve(en.target)}})},{threshold:.12,rootMargin:"0px 0px -8% 0px"});
+  document.querySelectorAll("[data-reveal],[data-reveal-stagger]").forEach(function(el){if(R)el.classList.add("is-in");else io.observe(el)});
+  /* magnetic */
+  if(FINE&&!R)document.querySelectorAll(".btn.primary,.exped .cta").forEach(function(b){
+    b.addEventListener("pointermove",function(e){var r=b.getBoundingClientRect();b.style.transform="translate("+((e.clientX-r.left-r.width/2)/r.width*10).toFixed(1)+"px,"+((e.clientY-r.top-r.height/2)/r.height*8).toFixed(1)+"px)"});
+    b.addEventListener("pointerleave",function(){b.style.transform=""})});
+  requestAnimationFrame(function(){document.body.classList.add("wow-ready")});
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+v5.43 Oružarstvo canonical sorting/grouping. Run SUPABASE_ORUZARSTVO_APP_CATALOG_v5_43_CANONICAL_SORT_GROUPS.sql.

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="hr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SOV Cloud · Status sustava</title>
+  <link rel="icon" href="/assets/sov-logo.png" />
+  <style>
+    :root{--bg:#06110f;--card:rgba(12,31,28,.92);--line:rgba(167,243,208,.18);--text:#ecfdf5;--muted:#a7b7b1;--mint:#83e6c2;--green:#22c55e;--warn:#f59e0b;--bad:#fb7185;--shadow:0 24px 80px rgba(0,0,0,.38)}
+    *{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at 20% 0%,rgba(34,197,94,.16),transparent 34%),radial-gradient(circle at 88% 18%,rgba(45,212,191,.14),transparent 30%),var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;min-height:100vh}
+    a{color:inherit} .wrap{width:min(1120px,calc(100% - 32px));margin:0 auto;padding:24px 0 64px} .top{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:22px}
+    .brand{display:flex;align-items:center;gap:12px;text-decoration:none;border-radius:999px;padding:8px 12px 8px 8px;background:rgba(255,255,255,.055);border:1px solid var(--line)} .brand img{width:42px;height:42px;border-radius:999px;object-fit:cover;background:#fff} .brand b{display:block;font-size:14px} .brand span{display:block;color:var(--muted);font-size:12px;margin-top:1px}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end} .pill{border:1px solid var(--line);border-radius:999px;padding:10px 14px;text-decoration:none;background:rgba(255,255,255,.055);font-weight:800;color:#d1fae5} .pill:hover{background:rgba(131,230,194,.14);border-color:rgba(131,230,194,.42)} .pill.primary{background:linear-gradient(135deg,rgba(34,197,94,.22),rgba(45,212,191,.16));color:#ecfdf5}
+    .pill:focus-visible,.brand:focus-visible{outline:3px solid rgba(131,230,194,.72);outline-offset:3px}
+    .hero{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:30px;padding:28px;background:linear-gradient(135deg,rgba(20,83,45,.92),rgba(8,47,73,.78));box-shadow:var(--shadow);margin-bottom:18px} .hero:after{content:"";position:absolute;inset:auto -80px -120px auto;width:320px;height:320px;background:radial-gradient(circle,rgba(131,230,194,.22),transparent 66%)} .eyebrow{text-transform:uppercase;letter-spacing:.14em;color:#bbf7d0;font-size:12px;font-weight:900;margin:0 0 10px} h1{font-size:clamp(34px,6vw,64px);line-height:.94;margin:0 0 10px;letter-spacing:-.055em} .lead{max-width:760px;color:#d1fae5;font-size:clamp(16px,2vw,19px);line-height:1.55;margin:0}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:16px} .card{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:20px;box-shadow:0 18px 60px rgba(0,0,0,.24)} .card h2{font-size:20px;margin:0 0 12px} .row{display:flex;justify-content:space-between;gap:16px;border-top:1px solid rgba(255,255,255,.075);padding:11px 0} .row:first-of-type{border-top:0} .row span{color:var(--muted)} .row b{text-align:right;word-break:break-word} .ok{color:#86efac} .warn{color:#fbbf24} .soft{color:var(--muted);line-height:1.55} .badge{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:8px 11px;border:1px solid rgba(134,239,172,.25);background:rgba(34,197,94,.1);color:#d1fae5;font-weight:800;font-size:13px}
+    @media(max-width:760px){.top{align-items:flex-start;flex-direction:column}.actions{width:100%;justify-content:flex-start}.grid{grid-template-columns:1fr}.hero{padding:22px}.brand{width:100%}}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header class="top" aria-label="SOV Cloud status header">
+      <a class="brand" href="/index.html" aria-label="SOV javna naslovnica"><img src="/assets/sov-logo.png" alt="SOV logo"><span><b>Speleološki odsjek Velebit</b><span>SOV Cloud · status sustava</span></span></a>
+      <nav class="actions" aria-label="Navigacija statusa"><a class="pill primary" href="/dashboard.html">Dashboard</a><a class="pill" href="/index.html">Javni sajt</a></nav>
+    </header>
+    <section class="hero">
+      <p class="eyebrow">SOV Ecosystem</p>
+      <h1>Status sustava</h1>
+      <p class="lead">Kontrolni ekran za web, APK i backend contract. Ova stranica je fizički prisutna i na clean URL rutama, bez ovisnosti o JS loaderu.</p>
+    </section>
+    <section class="grid" aria-label="Status kartice">
+      <article class="card"><span class="badge">● Aktivno</span><h2 style="margin-top:14px">Web build</h2><div class="row"><span>Web</span><b>6.1.45u-system-status-hard-page</b></div><div class="row"><span>Ruta</span><b>/system-status</b></div><div class="row"><span>Fallback</span><b>/system-status.html</b></div></article>
+      <article class="card"><h2>Backend</h2><div class="row"><span>Supabase project</span><b>ncomefzkuixyfixisrhi</b></div><div class="row"><span>Backend contract</span><b>2026.06.27</b></div><div class="row"><span>APK target</span><b>1.4.28-ecosystem-baseline</b></div></article>
+      <article class="card"><h2>Rute koje moraju raditi</h2><div class="row"><span>Clean URL</span><b>/system-status</b></div><div class="row"><span>HTML file</span><b>/system-status.html</b></div><div class="row"><span>Alias</span><b>/sov-system-status</b></div><div class="row"><span>Alias</span><b>/status</b></div></article>
+      <article class="card"><h2>Napomena</h2><p class="soft">Ako se na Vercelu i dalje vidi 404, deploy nije pokupio ovaj paket ili je deployan krivi folder. U ovom ZIP-u status stranica postoji kao pravi HTML file i kao index u folderima za fallback.</p></article>
+    </section>
+  </main>
+</body>
+</html>

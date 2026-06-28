@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+
+<html lang="hr">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
+<title>Jednostavno prati ekipu na terenu — SOV Velebit</title>
+<link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/supabase-config.js"></script>
+<script src="assets/auth.js"></script>
+<link href="assets/site.css" rel="stylesheet"/>
+<link href="assets/sov-foundation-v55822.css" rel="stylesheet"/>
+<link href="assets/sov-shell-v55825.css" rel="stylesheet"/>
+<link href="assets/sov-polish-v55826.css" rel="stylesheet"/>
+<link href="assets/sov-tracking-lite.css?v=6.1.26" rel="stylesheet"/>
+<link href="assets/sov-typography-v6144g.css" rel="stylesheet"/>
+<meta content="Lite auto ping 60–120 s · minimalna baterija Ruta / GPX 15–30 s · gušći trag i GPX Otvori team Kod ekipe: —" name="description"/><meta content="noindex,nofollow,noarchive" name="robots"/><link href="https://so-velebit.hr/tracking.html" rel="canonical"/><meta content="Speleološki odsjek Velebit" property="og:site_name"/><meta content="hr_HR" property="og:locale"/><meta content="website" property="og:type"/><meta content="Jednostavno prati ekipu na terenu — SOV Velebit" property="og:title"/><meta content="Lite auto ping 60–120 s · minimalna baterija Ruta / GPX 15–30 s · gušći trag i GPX Otvori team Kod ekipe: —" property="og:description"/><meta content="https://so-velebit.hr/tracking.html" property="og:url"/><meta content="https://so-velebit.hr/assets/sov-logo.png" property="og:image"/><meta content="summary_large_image" name="twitter:card"/><meta content="Jednostavno prati ekipu na terenu — SOV Velebit" name="twitter:title"/><meta content="Lite auto ping 60–120 s · minimalna baterija Ruta / GPX 15–30 s · gušći trag i GPX Otvori team Kod ekipe: —" name="twitter:description"/><meta content="https://so-velebit.hr/assets/sov-logo.png" name="twitter:image"/><meta content="#0b0f14" name="theme-color"/></head>
+<body class="sov-tracking-page" data-sov-page="tracking">
+<div class="tracking-app">
+<header class="tracking-top">
+<a aria-label="Povratak na SOV dashboard" class="tracking-brand" href="dashboard.html">
+<div class="tracking-mark">SOV</div>
+<div><b>Field Tracking</b><small>izlet · team · zadnje pozicije</small></div>
+</a>
+<nav aria-label="Navigacija" class="tracking-actions">
+<a class="tracking-btn ghost" href="dashboard.html">Dashboard</a>
+<a class="tracking-btn ghost" href="izleti.html">Izleti</a>
+<a class="tracking-btn ghost" href="karta.html">Karta</a>
+<button class="tracking-btn primary" id="refreshBtn" type="button">Osvježi</button>
+</nav>
+</header>
+<main class="tracking-page-shell">
+<section aria-labelledby="trackingTitle" class="tracking-hero-card">
+<div>
+<p class="tracking-eyebrow">SOV Field Tracking Lite</p>
+<h1 id="trackingTitle">Jednostavno prati ekipu na terenu</h1>
+<p>Odaberi izlet i team, zatim prati zadnje poznate pozicije članova na karti.</p>
+</div>
+<div class="tracking-disclaimer">1. Odaberi izlet · 2. Odaberi team · 3. Prati pozicije na karti</div>
+</section>
+<section aria-label="Odabir izleta i teama" class="tracking-control-strip">
+<div class="tracking-step">
+<span class="tracking-step-no">1</span>
+<label for="tripSelect"><b>Izlet</b><small>odaberi izlet</small></label>
+<select aria-label="Izlet" class="tracking-select" id="tripSelect"></select>
+</div>
+<div class="tracking-step">
+<span class="tracking-step-no">2</span>
+<label for="teamSelect"><b>Team</b><small>odaberi team</small></label>
+<select aria-label="Team" class="tracking-select" id="teamSelect"></select>
+</div>
+<div class="tracking-step tracking-step-actions">
+<span class="tracking-step-no">3</span>
+<label><b>Pregled</b><small>otvori kartu</small></label>
+<button class="tracking-btn primary" id="watchBtn" type="button">Prati na karti</button>
+</div>
+</section>
+<section aria-label="Team akcije" class="tracking-quick-actions">
+<details class="tracking-action-card" id="newTeamDetails">
+<summary><span>➕ Dodaj team</span><small>otvori novi team za odabrani izlet</small></summary>
+<div class="tracking-action-body">
+<div class="tracking-mode-grid">
+<label class="tracking-mode"><input checked="" name="defaultMode" type="radio" value="lite"/><b>Lite auto ping</b><span>60–120 s · minimalna baterija</span></label>
+<label class="tracking-mode"><input name="defaultMode" type="radio" value="route"/><b>Ruta / GPX</b><span>15–30 s · gušći trag i GPX</span></label>
+</div>
+<input class="tracking-input" id="createTerrainTitle" placeholder="Naziv teama, npr. Ekipa A">
+<input class="tracking-input" id="createTerrainLocation" placeholder="Lokacija / napomena, opcionalno">
+<button class="tracking-btn primary full" id="createTerrainBtn" type="button">Otvori team</button>
+<div class="tracking-code" id="joinCodeOut">Kod ekipe: —</div>
+</input></input></div>
+</details>
+<details class="tracking-action-card">
+<summary><span>🔑 Pridruži se kodom</span><small>za članove koji ulaze u team</small></summary>
+<div class="tracking-action-body tracking-join-row">
+<input class="tracking-input" id="joinCodeInput" maxlength="12" placeholder="Kod ekipe, npr. A1B2C3"/>
+<button class="tracking-btn" id="joinTerrainBtn" type="button">Pridruži me</button>
+</div>
+</details>
+</section>
+<section class="tracking-live-shell">
+<div class="tracking-map-card">
+<div class="tracking-map" id="trackingMap"></div>
+<div class="tracking-map-status" id="trackingStatus">Učitavam…</div>
+</div>
+<aside class="tracking-side">
+<div class="tracking-card compact">
+<div class="tracking-side-head">
+<div><h2>Članovi</h2><p id="currentSelectionLabel">Odaberi izlet i team.</p></div>
+<select aria-label="Period" class="tracking-select small" id="hoursSelect">
+<option value="2">2 h</option>
+<option selected="" value="6">6 h</option>
+<option value="12">12 h</option>
+<option value="24">24 h</option>
+<option value="0">sve</option>
+</select>
+</div>
+<div class="tracking-kpis">
+<div class="tracking-kpi"><b id="kpiTeams">—</b><span>teamova</span></div>
+<div class="tracking-kpi"><b id="kpiPeople">—</b><span>članova</span></div>
+<div class="tracking-kpi"><b id="kpiOnline">—</b><span>online</span></div>
+<div class="tracking-kpi"><b id="kpiPoints">—</b><span>točaka</span></div>
+</div>
+</div>
+<div class="tracking-card compact">
+<div class="tracking-side-head">
+<h2>Ekipa na terenu</h2>
+<button class="tracking-btn" id="exportBtn" type="button">GPX</button>
+</div>
+<div class="tracking-status-list" id="peopleList"><div class="tracking-empty">Odaberi team i klikni “Prati na karti”.</div></div>
+</div>
+</aside>
+</section>
+</main>
+</div>
+<script src="assets/sov-shell-v55825.js"></script>
+<script src="assets/sov-polish-v55826.js"></script>
+<script src="assets/sov-tracking-lite.js?v=6.0.9"></script>
+<script defer="" src="assets/sov-version.js?v=6.1.5"></script><script defer="" src="assets/sov-client-logger.js?v=6.1.31"></script></body>
+</html>

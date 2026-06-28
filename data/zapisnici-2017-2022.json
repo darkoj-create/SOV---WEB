@@ -1,0 +1,5 @@
+{
+  "build": "v6.1.44h",
+  "status": "native_zapisnici_migrated",
+  "message": "Raw DOCX/DOC/ODT zapisnici are not bundled in the web build. Use Supabase meeting_minutes and zapisnici-native.html."
+}
