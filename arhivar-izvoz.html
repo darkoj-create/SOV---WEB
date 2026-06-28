@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+
+<html lang="hr">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>Izvoz predaja i paketa — SOV Velebit</title>
+<link href="assets/site.css" rel="stylesheet"/>
+<link href="assets/arhivar-submissions.css?v=5.58.26" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="assets/supabase-config.js"></script>
+<script src="assets/auth.js"></script>
+<link href="assets/sov-foundation-v55822.css" rel="stylesheet"/><link href="assets/sov-shell-v55825.css" rel="stylesheet"/><link href="assets/sov-polish-v55826.css" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;display=swap" rel="stylesheet"/><link href="assets/sov-wow-v6.css" rel="stylesheet"/><link href="assets/sov-wow-app-v6.css" rel="stylesheet"/><link href="assets/sov-typography-v6144g.css" rel="stylesheet"/>
+<meta content="Izvoz / paketi Arhivar Izvoz predaja i paketa Za katastar, lokalnu arhivu ili ručnu obradu. Odaberi status, učitaj pregled, pa izvezi CSV/XML ili ZIP paket s…" name="description"/><meta content="noindex,nofollow,noarchive" name="robots"/><link href="https://so-velebit.hr/arhivar-izvoz.html" rel="canonical"/><meta content="Speleološki odsjek Velebit" property="og:site_name"/><meta content="hr_HR" property="og:locale"/><meta content="website" property="og:type"/><meta content="Izvoz predaja i paketa — SOV Velebit" property="og:title"/><meta content="Izvoz / paketi Arhivar Izvoz predaja i paketa Za katastar, lokalnu arhivu ili ručnu obradu. Odaberi status, učitaj pregled, pa izvezi CSV/XML ili ZIP paket s…" property="og:description"/><meta content="https://so-velebit.hr/arhivar-izvoz.html" property="og:url"/><meta content="https://so-velebit.hr/assets/sov-logo.png" property="og:image"/><meta content="summary_large_image" name="twitter:card"/><meta content="Izvoz predaja i paketa — SOV Velebit" name="twitter:title"/><meta content="Izvoz / paketi Arhivar Izvoz predaja i paketa Za katastar, lokalnu arhivu ili ručnu obradu. Odaberi status, učitaj pregled, pa izvezi CSV/XML ili ZIP paket s…" name="twitter:description"/><meta content="https://so-velebit.hr/assets/sov-logo.png" name="twitter:image"/><meta content="#0b0f14" name="theme-color"/></head>
+<body class="arhivar-submissions as-clean">
+<header class="as-top">
+<a class="as-brand" href="arhivar-dashboard.html"><span class="as-mark">SOV</span><span><b>Arhivarski izvoz</b><small>CSV · XML · ZIP paketi</small></span></a>
+<nav class="as-nav">
+<a href="dashboard.html">Dashboard</a>
+<a href="arhivar-dashboard.html">Arhivar</a>
+<a href="arhivar.html">Uređivanje arhive</a>
+<a href="arhivar-predane-jame.html">Predane jame</a>
+<a class="active" href="arhivar-izvoz.html">Izvoz</a>
+<a data-logout="" href="login.html">Odjava</a>
+</nav>
+</header>
+<main class="as-shell">
+<section class="as-hero clean-hero">
+<div>
+<p class="as-eyebrow">Izvoz / paketi <span class="as-badge submitted">Arhivar</span></p>
+<h1>Izvoz predaja i paketa</h1>
+<p>Za katastar, lokalnu arhivu ili ručnu obradu. Odaberi status, učitaj pregled, pa izvezi CSV/XML ili ZIP paket s manifestom i privitcima.</p>
+</div>
+<div class="as-actions hero-actions">
+<button class="as-btn primary" onclick="SOVArchiveExport.exportCsv()">CSV</button>
+<button class="as-btn" onclick="SOVArchiveExport.exportXml()">XML</button>
+<button class="as-btn warn" onclick="SOVArchiveExport.exportZip()">ZIP paket</button>
+</div>
+</section>
+<section class="as-panel export-panel">
+<div class="panel-headline"><div><h2>Što izvozim?</h2><p class="as-muted">Ovaj izvoz je za predane jame i njihove privitke. Izvoz postojeće arhive radi se direktno u “Uređivanje arhive”.</p></div></div>
+<div class="as-toolbar compact-toolbar">
+<select class="as-select" id="exportFilter">
+<option value="approved">Samo odobrene</option>
+<option value="submitted">Čekaju review</option>
+<option value="needs_changes">Fali nešto</option>
+<option value="all">Sve predaje</option>
+</select>
+<button class="as-btn primary" onclick="SOVArchiveExport.load()">Učitaj pregled</button>
+</div>
+<div class="as-muted export-status" id="exportStats">Nije učitano.</div>
+<div class="as-list export-list" id="exportList"></div>
+</section>
+</main>
+<script src="assets/arhivar-export.js?v=5.58.26"></script>
+<script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script defer="" src="assets/sov-polish-v55826.js"></script><script defer="" src="assets/sov-wow-v6.js?v=6.1.5"></script><script defer="" src="assets/sov-version.js?v=6.1.5"></script><script defer="" src="assets/sov-client-logger.js?v=6.1.31"></script></body>
+</html>
