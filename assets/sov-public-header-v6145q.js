@@ -28,7 +28,7 @@
     document.querySelectorAll('a[href]').forEach(a=>{
       const h=(a.getAttribute('href')||'').trim();
       if(h==='/o-nama'||h==='o-nama'||h==='o-nama.html'||h==='/o-nama/') a.setAttribute('href','o-drustvu.html');
-      if(h==='login.html') a.setAttribute('href','dashboard.html');
+      if(h==='login.html') a.setAttribute('href','login.html');
     });
   }
   function installHeader(){

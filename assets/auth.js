@@ -15,7 +15,7 @@
   const REGISTERED_PAGES = new Set([
     'dashboard.html','karta.html','pregled-baze.html','izleti.html','izleti-cloud.html','kalendar-izleta.html',
     'dokumentacija.html','dokumenti.html','pregled-zapisnika.html','zapisnici-skupstine.html','zapisnici-aktualni-2026.html','zapisnici-arhiva-2017-2022.html','zapisnici-cijela-arhiva.html','zapisnici-import.html','zapisnici-najave.html','novi-zapisnik.html',
-    'speleo-zapisnik.html','topodroid.html','napisi-clanak.html','predaj-novu-jamu.html','arhivar-dashboard.html','arhivar.html','arhivar-zahvati.html','arhivar-predane-jame.html','arhivar-izvoz.html','speleo-sql-safe.html','speleo-sql-edit-sandbox.html','speleo-sql-compare.html','speleo-sql-object-hub.html','speleo-sql-promote.html','speleo-sql-go-live.html','oruzarstvo.html','oruzarstvo-import.html','oruzar-master-notes.html','oruzar-master-inventura.html','oruzar-master-inventar.html','oruzar-master-posudbe.html','oruzar-master.html','admin-users.html','admin-notifications.html','role-manager.html','news-editor.html','sync-status.html','audit-status.html'
+    'speleo-zapisnik.html','topodroid.html','napisi-clanak.html','predaj-novu-jamu.html','arhivar-dashboard.html','arhivar.html','arhivar-zahvati.html','arhivar-predane-jame.html','arhivar-izvoz.html','speleo-sql-safe.html','speleo-sql-edit-sandbox.html','speleo-sql-compare.html','speleo-sql-object-hub.html','speleo-sql-promote.html','speleo-sql-go-live.html','oruzarstvo.html','oruzarstvo-import.html','oruzar-master-notes.html','oruzar-master-inventura.html','oruzar-master-inventar.html','oruzar-master-posudbe.html','oruzar-master.html','admin-users.html','admin-notifications.html','role-manager.html','news-editor.html','sync-status.html','audit-status.html','system-status.html','sov-system-status.html','status.html'
   ]);
   const ROLE_LABELS = {webmaster:'Sustav',admin:'Upravljanje',editor:'Urednik',oruzar:'Oružar',arhivar:'Arhivar',user:'Član'};
   const ADMIN_ROLES = ['webmaster','admin'];
@@ -46,7 +46,65 @@
   let permissionCache = null;
   let readyPromise = null;
 
-  function pageName(){ return (location.pathname.split('/').pop() || 'index.html').toLowerCase(); }
+  
+function pageName(){
+    const rawPath = (location.pathname || '/').replace(/\/+/g,'/').toLowerCase();
+    let name = rawPath.split('/').filter(Boolean).pop() || 'index.html';
+    const cleanAliases = {
+      'dashboard':'dashboard.html',
+      'karta':'karta.html',
+      'pregled-baze':'pregled-baze.html',
+      'izleti':'izleti.html',
+      'izleti-cloud':'izleti-cloud.html',
+      'kalendar-izleta':'kalendar-izleta.html',
+      'dokumentacija':'dokumentacija.html',
+      'dokumenti':'dokumenti.html',
+      'pregled-zapisnika':'pregled-zapisnika.html',
+      'zapisnici-skupstine':'zapisnici-skupstine.html',
+      'zapisnici-aktualni-2026':'zapisnici-aktualni-2026.html',
+      'zapisnici-arhiva-2017-2022':'zapisnici-arhiva-2017-2022.html',
+      'zapisnici-cijela-arhiva':'zapisnici-cijela-arhiva.html',
+      'zapisnici-import':'zapisnici-import.html',
+      'zapisnici-najave':'zapisnici-najave.html',
+      'novi-zapisnik':'novi-zapisnik.html',
+      'speleo-zapisnik':'speleo-zapisnik.html',
+      'topodroid':'topodroid.html',
+      'napisi-clanak':'napisi-clanak.html',
+      'predaj-novu-jamu':'predaj-novu-jamu.html',
+      'arhivar-dashboard':'arhivar-dashboard.html',
+      'arhivar':'arhivar.html',
+      'arhivar-zahvati':'arhivar-zahvati.html',
+      'arhivar-predane-jame':'arhivar-predane-jame.html',
+      'arhivar-izvoz':'arhivar-izvoz.html',
+      'speleo-sql-safe':'speleo-sql-safe.html',
+      'speleo-sql-edit-sandbox':'speleo-sql-edit-sandbox.html',
+      'speleo-sql-compare':'speleo-sql-compare.html',
+      'speleo-sql-object-hub':'speleo-sql-object-hub.html',
+      'speleo-sql-promote':'speleo-sql-promote.html',
+      'speleo-sql-go-live':'speleo-sql-go-live.html',
+      'oruzarstvo':'oruzarstvo.html',
+      'oruzarstvo-import':'oruzarstvo-import.html',
+      'oruzar-master-notes':'oruzar-master-notes.html',
+      'oruzar-master-inventura':'oruzar-master-inventura.html',
+      'oruzar-master-inventar':'oruzar-master-inventar.html',
+      'oruzar-master-posudbe':'oruzar-master-posudbe.html',
+      'oruzar-master':'oruzar-master.html',
+      'admin-users':'admin-users.html',
+      'admin-notifications':'admin-notifications.html',
+      'role-manager':'role-manager.html',
+      'sync-status':'sync-status.html',
+      'audit-status':'audit-status.html',
+      'system-status':'system-status.html',
+      'sov-system-status':'sov-system-status.html',
+      'status':'status.html',
+      'inventura':'inventura.html'
+    };
+    if(name === 'index.html'){
+      const parent = rawPath.split('/').filter(Boolean).slice(-2,-1)[0] || '';
+      if(cleanAliases[parent]) return cleanAliases[parent];
+    }
+    return cleanAliases[name] || name;
+  }
   function isConfigured(){
     return !!(window.SOV_SUPABASE_URL && window.SOV_SUPABASE_ANON_KEY &&
       !String(window.SOV_SUPABASE_URL).includes('PASTE_') && !String(window.SOV_SUPABASE_ANON_KEY).includes('PASTE_'));
@@ -345,7 +403,7 @@
     const p = pageName();
     if(!REGISTERED_PAGES.has(p)){ await renderUserBadge(); return; }
     if(p === 'admin-users.html' || p === 'admin-notifications.html') await requireAdmin();
-    else if(p === 'role-manager.html' || p === 'sync-status.html' || p === 'audit-status.html' || p.startsWith('speleo-sql-')) await requireWebmaster();
+    else if(p === 'role-manager.html' || p === 'sync-status.html' || p === 'audit-status.html' || p === 'system-status.html' || p === 'sov-system-status.html' || p === 'status.html' || p.startsWith('speleo-sql-')) await requireWebmaster();
     else if(p === 'news-editor.html') await requireEditor();
     else if(p === 'napisi-clanak.html' || p === 'predaj-novu-jamu.html') await requireApproved();
     else if(p === 'oruzarstvo.html') await requireApproved();

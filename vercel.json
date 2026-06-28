@@ -10,7 +10,12 @@
     { "source": "/status/", "destination": "/system-status.html" },
     { "source": "/o-nama", "destination": "/o-drustvu.html" },
     { "source": "/o-nama/", "destination": "/o-drustvu.html" },
-    { "source": "/prijava", "destination": "/dashboard.html" },
+    { "source": "/prijava", "destination": "/login.html" },
+    { "source": "/prijava/", "destination": "/login.html" },
+    { "source": "/login", "destination": "/login.html" },
+    { "source": "/login/", "destination": "/login.html" },
+    { "source": "/clanska-zona", "destination": "/login.html" },
+    { "source": "/clanska-zona/", "destination": "/login.html" },
     { "source": "/novosti", "destination": "/vijesti.html" }
   ]
 }
