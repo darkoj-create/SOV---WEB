@@ -17,13 +17,14 @@
 <link href="assets/sov-wow-v6.css" rel="stylesheet"/>
 <link href="assets/sov-wow-app-v6.css" rel="stylesheet"/>
 <link href="assets/sov-form-v609.css" rel="stylesheet"/>
-<link href="assets/sov-submission-ux-v6145aa.css" rel="stylesheet"/>
+<link href="assets/sov-submission-ux-v6145ac.css" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/supabase-config.js"></script>
 <script src="assets/auth.js"></script>
 <link href="assets/sov-typography-v6144g.css" rel="stylesheet"/>
 <meta content="noindex,nofollow,noarchive" name="robots"/><link href="https://so-velebit.hr/predaj-novu-jamu.html" rel="canonical"/><meta content="Speleološki odsjek Velebit" property="og:site_name"/><meta content="hr_HR" property="og:locale"/><meta content="website" property="og:type"/><meta content="Predaj novu jamu Arhivaru. — SOV Velebit" property="og:title"/><meta content="SOV Cloud formular za predaju nove jame Arhivaru." property="og:description"/><meta content="https://so-velebit.hr/predaj-novu-jamu.html" property="og:url"/><meta content="https://so-velebit.hr/assets/sov-logo.png" property="og:image"/><meta content="summary_large_image" name="twitter:card"/><meta content="Predaj novu jamu Arhivaru. — SOV Velebit" name="twitter:title"/><meta content="SOV Cloud formular za predaju nove jame Arhivaru." name="twitter:description"/><meta content="https://so-velebit.hr/assets/sov-logo.png" name="twitter:image"/><meta content="#0b0f14" name="theme-color"/></head>
 <body class="sov-form-page">
+
 <header class="sf-top">
 <a class="sf-brand" href="dashboard.html"><img alt="SOV" loading="lazy" src="assets/brand/sov-round-logo.png"/><span><b>SOV Cloud</b><small>Predaja nove jame</small></span></a>
 <nav aria-label="SOV Cloud navigacija" class="sf-nav">
@@ -34,135 +35,143 @@
 <a data-logout="" href="login.html">Odjava</a>
 </nav>
 </header>
-<main class="sf-shell">
-<section class="sf-hero">
-<div class="sf-hero-main">
-<span class="sf-eyebrow">SOV Cloud · formular v6.0.9</span>
-<h1>Predaj novu jamu Arhivaru.</h1>
-<p class="sf-lead">Ovo je web formular umjesto rasutih poruka i Google Forma. Predaja ide u <b>Arhivarski inbox</b>, a objekt se tek nakon arhivarskog approvea upisuje u bazu.</p>
-<div aria-label="Predajni flow" class="sf-flow">
-<div><b>1</b><span>Ispuni zapisnik i koordinate</span></div>
-<div><b>2</b><span>Dodaj nacrt, fotke, KML/GPX</span></div>
-<div><b>3</b><span>Arhivar approve / fali nešto</span></div>
-</div>
-</div>
-<aside class="sf-side-card">
-<h2>Što je obavezno?</h2>
-<p>Naziv objekta, barem jedan opisni blok i koordinate ili KML/GPX. Sve ostalo možeš poslati kao dodatak, a Arhivar označava što fali.</p>
-<div class="sf-badges"><span class="sf-badge ok">spremanje u inbox</span><span class="sf-badge">Excel export</span><span class="sf-badge">privitci</span></div>
-</aside>
+<main class="sf-shell sf-simple-submit">
+<section class="sf-hero sf-hero-simple">
+  <div class="sf-hero-main">
+    <span class="sf-eyebrow">SOV Cloud · brza predaja objekta</span>
+    <h1>Predaj novu jamu Arhivaru.</h1>
+    <p class="sf-lead">Dovoljno je par osnovnih stvari — Arhivar će ti javiti ako nešto fali.</p>
+  </div>
 </section>
-<section aria-label="Lokalni draft i sigurnost predaje" class="sf-draft-tools">
-<div><b>Autosave je uključen.</b><br/><small id="draftInfo">Promjene se spremaju lokalno u browser, bez diranja baze dok ne klikneš Predaj Arhivaru.</small></div>
-<div class="sf-actions"><button class="sf-btn" id="downloadDraftBtn" type="button">Preuzmi skicu JSON</button></div>
+
+<section aria-label="Lokalni draft i sigurnost predaje" class="sf-draft-tools sf-draft-simple">
+  <div><b>Skica se sprema automatski.</b><br/><small id="draftInfo">Promjene su lokalno u browseru dok ne klikneš Predaj Arhivaru.</small></div>
+  <div class="sf-actions"><button class="sf-btn" id="downloadDraftBtn" type="button">Preuzmi skicu JSON</button></div>
 </section>
-<section aria-label="Sažetak workflowa" class="sf-step-summary">
-<div class="sf-step-card"><b>1</b> Osnovno <span>naziv, tip, mjesto</span></div>
-<div class="sf-step-card"><b>2</b> Lokacija <span>WGS/HTRS ili KML/GPX</span></div>
-<div class="sf-step-card"><b>3</b> Zapisnik <span>pristup, opis, oprema</span></div>
-<div class="sf-step-card"><b>4</b> Inbox <span>Arhivar pregleda i exporta</span></div>
-</section>
-<div class="sf-grid">
-<aside aria-label="Sekcije formulara" class="sf-progress">
-<a href="#osnovno">Osnovno <small>naziv/tip</small></a>
-<a href="#lokacija">Lokacija <small>WGS/HTRS</small></a>
-<a href="#mjere">Mjere <small>dubina/duljina</small></a>
-<a href="#tekst">Opis <small>zapisnik</small></a>
-<a href="#privitci">Privitci <small>nacrti/fotke</small></a>
-<a href="#predaja">Predaja <small>spremi</small></a>
-</aside>
+
 <form autocomplete="off" id="newCaveForm" novalidate>
-<section class="sf-panel" id="osnovno">
-<h2>Osnovni podaci</h2>
-<p>Minimalni identitet objekta. Ako nisi siguran u tip/status, ostavi napomenu.</p>
-<div class="sf-form-grid">
-<label class="sf-field">Naziv objekta <span class="req">*</span><input name="object_name" placeholder="npr. Jama pod..." required=""/></label>
-<label class="sf-field">Tip objekta<select name="object_type"><option value="jama">Jama</option><option value="spilja">Špilja</option><option value="ponor">Ponor</option><option value="izvor">Izvor</option><option value="kaverna">Kaverna</option><option value="drugo">Drugo / nepoznato</option></select></label>
-<label class="sf-field">Županija<input name="county"/></label>
-<label class="sf-field">Općina / grad<input name="municipality"/></label>
-<label class="sf-field">Najbliže mjesto<input name="nearest_place"/></label>
-<label class="sf-field">Lokalitet / mikrolokacija<input name="locality"/></label>
-<label class="sf-field">Je li već u katastru?<select name="cadastre_hint"><option value="nije_poznato">Ne znam</option><option value="nije_u_katastru">Nije u katastru</option><option value="vjerojatno_u_katastru">Vjerojatno jest</option><option value="duplicirani_objekt">Možda je duplikat</option></select></label>
-<label class="sf-field">Pločica / oznaka na terenu<input name="plate_code" placeholder="ako postoji"/></label>
-<label class="sf-field">Kontakt mobitel predavatelja<input inputmode="tel" name="submitter_phone" placeholder="opcionalno"/></label>
-<label class="sf-field">Ekipa / društvo<input name="team" placeholder="npr. SOV, SO Dubovac..."/></label>
-</div>
-</section>
-<section class="sf-panel" id="lokacija">
-<h2>Lokacija i koordinate</h2>
-<p>Unesi WGS84 ili HTRS96/TM. Ako ne znaš, priloži KML/GPX u privitcima.</p>
-<div class="sf-form-grid">
-<label class="sf-field">WGS84 lat<input inputmode="decimal" name="lat" placeholder="44.123456"/></label>
-<label class="sf-field">WGS84 lon<input inputmode="decimal" name="lon" placeholder="15.123456"/></label>
-<label class="sf-field">HTRS96/TM E / X<input name="htrs_x"/></label>
-<label class="sf-field">HTRS96/TM N / Y<input name="htrs_y"/></label>
-<label class="sf-field">Nadmorska visina ulaza, m<input inputmode="decimal" name="entrance_altitude_m"/></label>
-<label class="sf-field">Izvor koordinata<select name="coordinate_source"><option value="">Odaberi ako znaš</option><option value="gps_mobitel">GPS / mobitel</option><option value="garmin_suunto">Garmin / Suunto / uređaj</option><option value="karta_procjena">Procjena s karte</option><option value="dgu_qgis">DGU / QGIS</option><option value="topodroid">TopoDroid / survey</option><option value="drugo">Drugo</option></select></label>
-</div>
-</section>
-<section class="sf-panel" id="mjere">
-<h2>Mjere, autori i istraživanje</h2>
-<p>Ovdje ide ono što bi inače završilo u Google Form retku.</p>
-<div class="sf-form-grid">
-<label class="sf-field">Dubina, m<input inputmode="decimal" name="depth_m"/></label>
-<label class="sf-field">Duljina, m<input inputmode="decimal" name="length_m"/></label>
-<label class="sf-field">Datum istraživanja<input name="survey_date" type="date"/></label>
-<label class="sf-field">Mjerenje / istraživači<input name="surveyors" placeholder="tko je mjerio / istraživao"/></label>
-<label class="sf-field wide">Nacrtali / obradili<input name="drawn_by" placeholder="autori nacrta, obrada, datum"/></label>
-</div>
-<div aria-label="Očekivane falinke" class="sf-checks">
-<label><input name="missing_expected" type="checkbox" value="koordinate"/> Koordinate nisu sigurne</label>
-<label><input name="missing_expected" type="checkbox" value="nacrt"/> Nema nacrta</label>
-<label><input name="missing_expected" type="checkbox" value="fotka"/> Nema fotke</label>
-<label><input name="missing_expected" type="checkbox" value="pločica"/> Nema pločice</label>
-<label><input name="missing_expected" type="checkbox" value="ponoviti_nacrt"/> Treba ponoviti nacrt</label>
-</div>
-</section>
-<section class="sf-panel" id="tekst">
-<h2>Zapisnik / opis</h2>
-<p>Ne mora biti savršeno. Bitno je da Arhivar dobije cjelinu: pristup, opis, povijest, opasnosti i napomene.</p>
-<div class="sf-form-grid">
-<label class="sf-field wide">Pristup <span class="req">*</span><textarea name="access_description" placeholder="Kako se dolazi do objekta, orijentiri, parking, pristupni smjer..."></textarea></label>
-<label class="sf-field wide">Opis / tehnički opis <span class="req">*</span><textarea name="technical_description" placeholder="Ulaz, vertikale, kanali, meandri, sifoni, nastavci, oprema..."></textarea></label>
-<label class="sf-field wide">Istraživanje / povijest / kontekst<textarea name="research_history" placeholder="Tko, kada, što je napravljeno, poveznice s ranijim istraživanjima..."></textarea></label>
-<label class="sf-field wide">Hidrologija / morfologija / geologija<textarea name="morphology_hydrology"></textarea></label>
-<label class="sf-field wide">Opasnosti / zaštita<textarea name="hazards_protection" placeholder="Nestabilno kamenje, CO2, voda, zaštićene vrste, oprez..."></textarea></label>
-<label class="sf-field wide">Biologija / arheologija / paleontologija<textarea name="biology_archaeology"></textarea></label>
-<label class="sf-field wide">Oprema potrebna za ponavljanje<textarea name="equipment_note" placeholder="užad, spitovi, sidrišta, neopren, čamac..."></textarea></label>
-<label class="sf-field wide">Dodatne napomene<textarea name="notes"></textarea></label>
-</div>
-</section>
-<section class="sf-panel" id="privitci">
-<h2>Privitci</h2>
-<p>Fotke, nacrti, KML/GPX i TopoDroid idu u isti paket predaje. Arhivar ih kasnije može skinuti kao ZIP ili exportati tablicu.</p>
-<div class="sf-files">
-<label class="sf-field sf-filebox">Fotografije<input accept="image/*" multiple="" name="photos" type="file"/><span class="sf-hint">JPG/PNG/WebP, više komada.</span></label>
-<label class="sf-field sf-filebox">Nacrti<input accept=".pdf,.jpg,.jpeg,.png,.webp,.tif,.tiff,.svg" multiple="" name="drawings" type="file"/><span class="sf-hint">PDF, slike, TIF/TIFF.</span></label>
-<label class="sf-field sf-filebox">KML / KMZ točka<input accept=".kml,.kmz" name="kml" type="file"/><span class="sf-hint">Ako koordinate nisu unesene ručno.</span></label>
-<label class="sf-field sf-filebox">GPX trag<input accept=".gpx" name="gpx" type="file"/><span class="sf-hint">Pristup, track ili waypointi.</span></label>
-<label class="sf-field sf-filebox">TopoDroid / survey paket<input accept=".zip,.th,.th2,.tdr,.tro" multiple="" name="topodroid" type="file"/><span class="sf-hint">ZIP ili TopoDroid datoteke.</span></label>
-<label class="sf-field sf-filebox">Ostalo<input multiple="" name="other_files" type="file"/><span class="sf-hint">Dodatni dokumenti.</span></label>
-</div>
-</section>
-<section class="sf-panel" id="predaja">
-<h2>Spremi u Arhivarski inbox</h2>
-<p>Predaja se sprema kao <b>submitted</b>. Arhivar ju vidi u <code>arhivar-predane-jame.html</code>, može označiti falinke, odobriti u bazu ili exportati u Excel.</p>
-<label class="sf-field wide"><span><input name="confirm_accuracy" type="checkbox"/> Potvrđujem da podatke predajem u dobroj vjeri i da smiju ići Arhivaru na obradu.</span></label>
-<div class="sf-actions">
-<button class="sf-btn primary" data-submit-btn="" type="submit">Predaj Arhivaru</button>
-<button class="sf-btn" id="saveDraftBtn" type="button">Spremi skicu</button>
-<button class="sf-btn warn" id="clearDraftBtn" type="button">Obriši skicu</button>
-<a class="sf-btn" data-role-archive="" href="arhivar-predane-jame.html">Otvori inbox</a>
-</div>
-<div class="sf-upload-progress" id="uploadProgress"><div class="sf-upload-bar"><span data-progress-bar=""></span></div><small data-progress-label="">Čekam upload...</small></div>
-<div class="sf-status ok" id="successBox" style="display:none"><b>Predaja spremljena.</b> ID: <code id="successId"></code> · <a href="arhivar-predane-jame.html">Otvori Arhivarski inbox</a></div>
-<div class="sf-status" id="submitStatus">Spremno za unos.</div>
-</section>
+  <section class="sf-panel sf-required-panel" id="obavezno">
+    <div class="sf-section-kicker">Obavezno</div>
+    <h2>Brza predaja</h2>
+    <p>Ovo je dovoljno za početak. Neobavezne detalje možeš dodati odmah ili kasnije kroz dogovor s Arhivarom.</p>
+    <div class="sf-form-grid sf-quick-grid">
+      <label class="sf-field wide">Naziv objekta <span class="req">*</span><input name="object_name" placeholder="npr. Jama pod..." required=""/></label>
+      <label class="sf-field">Tip objekta<select name="object_type"><option value="jama">Jama</option><option value="spilja">Špilja</option><option value="ponor">Ponor</option><option value="izvor">Izvor</option><option value="kaverna">Kaverna</option><option value="drugo">Drugo / nepoznato</option></select></label>
+    </div>
+
+    <div class="sf-mini-block" id="lokacija">
+      <div class="sf-mini-head"><b>Lokacija <span class="req">*</span></b><small>Unesi WGS84 koordinate ili priloži KML/GPX.</small></div>
+      <div class="sf-form-grid sf-location-grid">
+        <label class="sf-field">WGS84 lat<input inputmode="decimal" name="lat" placeholder="44.123456"/></label>
+        <label class="sf-field">WGS84 lon<input inputmode="decimal" name="lon" placeholder="15.123456"/></label>
+        <label class="sf-field sf-filebox">KML / KMZ<input accept=".kml,.kmz" name="kml" type="file"/><span class="sf-hint">Ako nemaš ručne koordinate.</span></label>
+        <label class="sf-field sf-filebox">GPX<input accept=".gpx" name="gpx" type="file"/><span class="sf-hint">Trag, waypoint ili pristup.</span></label>
+      </div>
+      <button class="sf-link-btn" data-toggle-target="htrsExtras" type="button">Imam HTRS96/TM koordinate</button>
+      <div class="sf-form-grid sf-collapsed" id="htrsExtras">
+        <label class="sf-field">HTRS96/TM E / X<input name="htrs_x"/></label>
+        <label class="sf-field">HTRS96/TM N / Y<input name="htrs_y"/></label>
+        <label class="sf-field">Izvor koordinata<select name="coordinate_source"><option value="">Odaberi ako znaš</option><option value="gps_mobitel">GPS / mobitel</option><option value="garmin_suunto">Garmin / Suunto / uređaj</option><option value="karta_procjena">Procjena s karte</option><option value="dgu_qgis">DGU / QGIS</option><option value="topodroid">TopoDroid / survey</option><option value="drugo">Drugo</option></select></label>
+        <label class="sf-field">Nadmorska visina ulaza, m<input inputmode="decimal" name="entrance_altitude_m"/></label>
+      </div>
+    </div>
+
+    <div class="sf-form-grid">
+      <label class="sf-field wide">Pristup <span class="req">*</span><textarea name="access_description" placeholder="Kako se dolazi do objekta, orijentiri, parking, pristupni smjer..."></textarea></label>
+      <label class="sf-field wide">Opis / tehnički opis <span class="req">*</span><textarea name="technical_description" placeholder="Ulaz, vertikale, kanali, meandri, sifoni, nastavci, oprema..."></textarea></label>
+    </div>
+
+    <div class="sf-mini-block" id="privitci">
+      <div class="sf-mini-head"><b>Fotke / nacrt</b><small>Nije uvjet za slanje, ali puno pomaže Arhivaru.</small></div>
+      <div class="sf-files sf-files-quick">
+        <label class="sf-field sf-filebox">Fotke<input accept="image/*" multiple="" name="photos" type="file"/><span class="sf-hint">JPG/PNG/WebP.</span></label>
+        <label class="sf-field sf-filebox">Nacrt / skica<input accept=".pdf,.jpg,.jpeg,.png,.webp,.tif,.tiff,.svg" multiple="" name="drawings" type="file"/><span class="sf-hint">PDF, slika, TIF/TIFF.</span></label>
+      </div>
+    </div>
+
+    <button class="sf-more-toggle" id="moreDetailsBtn" type="button" aria-expanded="false" aria-controls="optionalDetails">Dodaj više detalja <span>(nije obavezno)</span></button>
+  </section>
+
+  <section class="sf-panel sf-optional-panel sf-collapsed" id="optionalDetails">
+    <div class="sf-section-kicker muted">Neobavezno — pomaže Arhivaru</div>
+    <h2>Dodatni detalji</h2>
+    <p>Ovo nisu uvjeti za predaju. Upisuj samo ono što znaš.</p>
+
+    <details class="sf-details" open>
+      <summary>Mjesto, status i kontakt</summary>
+      <div class="sf-form-grid">
+        <label class="sf-field">Županija<input name="county"/></label>
+        <label class="sf-field">Općina / grad<input name="municipality"/></label>
+        <label class="sf-field">Najbliže mjesto<input name="nearest_place"/></label>
+        <label class="sf-field">Lokalitet / mikrolokacija<input name="locality"/></label>
+        <label class="sf-field">Je li već u katastru?<select name="cadastre_hint"><option value="nije_poznato">Ne znam</option><option value="nije_u_katastru">Nije u katastru</option><option value="vjerojatno_u_katastru">Vjerojatno jest</option><option value="duplicirani_objekt">Možda je duplikat</option></select></label>
+        <label class="sf-field">Pločica / oznaka na terenu<input name="plate_code" placeholder="ako postoji"/></label>
+        <label class="sf-field">Kontakt mobitel predavatelja<input inputmode="tel" name="submitter_phone" placeholder="opcionalno"/></label>
+        <label class="sf-field">Ekipa / društvo<input name="team" placeholder="npr. SOV, SO Dubovac..."/></label>
+      </div>
+    </details>
+
+    <details class="sf-details">
+      <summary>Mjere, datum i autori</summary>
+      <div class="sf-form-grid">
+        <label class="sf-field">Dubina, m<input inputmode="decimal" name="depth_m"/></label>
+        <label class="sf-field">Duljina, m<input inputmode="decimal" name="length_m"/></label>
+        <label class="sf-field">Datum istraživanja<input name="survey_date" type="date"/></label>
+        <label class="sf-field">Mjerenje / istraživači<input name="surveyors" placeholder="tko je mjerio / istraživao"/></label>
+        <label class="sf-field wide">Nacrtali / obradili<input name="drawn_by" placeholder="autori nacrta, obrada, datum"/></label>
+      </div>
+    </details>
+
+    <details class="sf-details">
+      <summary>Što fali / treba provjeriti?</summary>
+      <div aria-label="Očekivane falinke" class="sf-checks sf-checks-compact">
+        <label><input name="missing_expected" type="checkbox" value="koordinate"/> Koordinate nisu sigurne</label>
+        <label><input name="missing_expected" type="checkbox" value="nacrt"/> Nema nacrta</label>
+        <label><input name="missing_expected" type="checkbox" value="fotka"/> Nema fotke</label>
+        <label><input name="missing_expected" type="checkbox" value="pločica"/> Nema pločice</label>
+        <label><input name="missing_expected" type="checkbox" value="ponoviti_nacrt"/> Treba ponoviti nacrt</label>
+      </div>
+    </details>
+
+    <details class="sf-details">
+      <summary>Dodatni opisni blokovi</summary>
+      <div class="sf-form-grid">
+        <label class="sf-field wide">Istraživanje / povijest / kontekst<textarea name="research_history" placeholder="Tko, kada, što je napravljeno, poveznice s ranijim istraživanjima..."></textarea></label>
+        <label class="sf-field wide">Hidrologija / morfologija / geologija<textarea name="morphology_hydrology"></textarea></label>
+        <label class="sf-field wide">Opasnosti / zaštita<textarea name="hazards_protection" placeholder="Nestabilno kamenje, CO2, voda, zaštićene vrste, oprez..."></textarea></label>
+        <label class="sf-field wide">Biologija / arheologija / paleontologija<textarea name="biology_archaeology"></textarea></label>
+        <label class="sf-field wide">Oprema potrebna za ponavljanje<textarea name="equipment_note" placeholder="užad, spitovi, sidrišta, neopren, čamac..."></textarea></label>
+        <label class="sf-field wide">Dodatne napomene<textarea name="notes"></textarea></label>
+      </div>
+    </details>
+
+    <details class="sf-details">
+      <summary>Dodatni privitci</summary>
+      <div class="sf-files">
+        <label class="sf-field sf-filebox">TopoDroid / survey paket<input accept=".zip,.th,.th2,.tdr,.tro" multiple="" name="topodroid" type="file"/><span class="sf-hint">ZIP ili TopoDroid datoteke.</span></label>
+        <label class="sf-field sf-filebox">Ostalo<input multiple="" name="other_files" type="file"/><span class="sf-hint">Dodatni dokumenti.</span></label>
+      </div>
+    </details>
+  </section>
+
+  <section class="sf-panel sf-submit-panel" id="predaja">
+    <h2>Predaja Arhivaru</h2>
+    <p>Predaja ide u Arhivarski inbox. Objekt se tek nakon odobrenja upisuje u bazu.</p>
+    <label class="sf-field wide"><span><input name="confirm_accuracy" type="checkbox"/> Potvrđujem da podatke predajem u dobroj vjeri i da smiju ići Arhivaru na obradu.</span></label>
+    <div class="sf-actions">
+      <button class="sf-btn primary" data-submit-btn="" type="submit">Predaj Arhivaru</button>
+      <button class="sf-btn" id="saveDraftBtn" type="button">Spremi skicu</button>
+      <button class="sf-btn warn" id="clearDraftBtn" type="button">Obriši skicu</button>
+      <a class="sf-btn" data-role-archive="" href="arhivar-predane-jame.html">Otvori inbox</a>
+    </div>
+    <div class="sf-upload-progress" id="uploadProgress"><div class="sf-upload-bar"><span data-progress-bar=""></span></div><small data-progress-label="">Čekam upload...</small></div>
+    <div class="sf-status ok" id="successBox" style="display:none"><b>Predaja spremljena.</b> ID: <code id="successId"></code> · <a href="arhivar-predane-jame.html">Otvori Arhivarski inbox</a></div>
+    <div class="sf-status" id="submitStatus">Spremno za unos.</div>
+  </section>
 </form>
-</div>
-<footer class="sf-footer">SOV web v6.1.45aa · predaj-novu-jamu.html</footer>
+<footer class="sf-footer">SOV web v6.1.45ac · predaj-novu-jamu.html</footer>
 </main>
-<script src="assets/sov-submission-page-v6145aa.js?v=6.1.45aa"></script>
+<script src="assets/sov-submission-page-v6145ac.js?v=6.1.45ac"></script>
 <script defer="" src="assets/sov-foundation-v55822.js"></script>
 <script defer="" src="assets/sov-shell-v55825.js"></script>
 <script defer="" src="assets/sov-polish-v55826.js"></script>
