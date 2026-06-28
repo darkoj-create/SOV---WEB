@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="hr">
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="refresh" content="1; url=karta.html">
+  <title>Karta objekata — preusmjeravanje</title>
+  <style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#07110d;color:#e8fff3;font-family:system-ui,-apple-system,Segoe UI,sans-serif}a{color:#7cffb2;font-weight:800}.box{max-width:520px;padding:28px;border:1px solid rgba(124,255,178,.28);border-radius:24px;background:rgba(8,20,15,.86);box-shadow:0 24px 80px rgba(0,0,0,.35)}</style>
+</head>
+<body>
+  <main class="box">
+    <h1>Otvaram kartu objekata…</h1>
+    <p>Ako se ne otvori automatski, klikni <a id="kartaLink" href="karta.html">karta.html</a>.</p>
+  </main>
+  <script>
+    (function(){
+      const target = 'karta.html' + window.location.search + window.location.hash;
+      const path = window.location.pathname.toLowerCase();
+      document.getElementById('kartaLink').setAttribute('href', target);
+      if (!path.endsWith('/karta.html') && !path.endsWith('karta.html')) {
+        window.setTimeout(function(){ window.location.replace(target); }, 50);
+      }
+    })();
+  </script>
+</body>
+</html>
