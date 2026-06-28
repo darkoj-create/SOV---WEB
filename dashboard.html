@@ -34,24 +34,24 @@ body.dashboard-page .profile-chip {
 body.dashboard-page header.sov-top .sov-nav {
   margin-left: auto;
 }
-body.dashboard-page header.sov-top .sov-nav a:not([href="dashboard.html"]):not([data-logout]) {
+body.dashboard-page header.sov-top .sov-nav a:not(.public-home):not([data-logout]) {
   display: none !important;
 }
 
 </style>
 <link href="assets/sov-foundation-v55822.css" rel="stylesheet"/><link href="assets/sov-shell-v55825.css" rel="stylesheet"/><link href="assets/sov-polish-v55826.css" rel="stylesheet"/><link href="assets/sov-dashboard-clean-v55910.css" rel="stylesheet"/><link href="assets/sov-dashboard-clean-v609.css" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;display=swap" rel="stylesheet"/><link href="assets/sov-wow-v6.css" rel="stylesheet"/><link href="assets/sov-wow-app-v6.css" rel="stylesheet"/><link href="assets/sov-dashboard-premium-v614.css" rel="stylesheet"/><link href="assets/sov-typography-v6144g.css" rel="stylesheet"/>
-<meta content="Najvažnije stvari su odmah gore: karta, izleti, oprema i predaja nove jame. Prikaz se automatski prilagođava tvojem pristupu." name="description"/><meta content="noindex,nofollow,noarchive" name="robots"/><link href="https://so-velebit.hr/dashboard.html" rel="canonical"/><meta content="Speleološki odsjek Velebit" property="og:site_name"/><meta content="hr_HR" property="og:locale"/><meta content="website" property="og:type"/><meta content="Jednostavan ulaz u SOV sustav." property="og:title"/><meta content="Najvažnije stvari su odmah gore: karta, izleti, oprema i predaja nove jame. Prikaz se automatski prilagođava tvojem pristupu." property="og:description"/><meta content="https://so-velebit.hr/dashboard.html" property="og:url"/><meta content="https://so-velebit.hr/assets/sov-logo.png" property="og:image"/><meta content="summary_large_image" name="twitter:card"/><meta content="Jednostavan ulaz u SOV sustav." name="twitter:title"/><meta content="Najvažnije stvari su odmah gore: karta, izleti, oprema i predaja nove jame. Prikaz se automatski prilagođava tvojem pristupu." name="twitter:description"/><meta content="https://so-velebit.hr/assets/sov-logo.png" name="twitter:image"/><meta content="#0b0f14" name="theme-color"/></head>
+<link href="assets/sov-dashboard-daily-v6145s.css" rel="stylesheet"/>
+<meta content="Brzi ulaz u SOV Cloud module." name="description"/><meta content="noindex,nofollow,noarchive" name="robots"/><link href="https://so-velebit.hr/dashboard.html" rel="canonical"/><meta content="Speleološki odsjek Velebit" property="og:site_name"/><meta content="hr_HR" property="og:locale"/><meta content="website" property="og:type"/><meta content="Jednostavan ulaz u SOV sustav." property="og:title"/><meta content="Brzi ulaz u SOV Cloud module." property="og:description"/><meta content="https://so-velebit.hr/dashboard.html" property="og:url"/><meta content="https://so-velebit.hr/assets/sov-logo.png" property="og:image"/><meta content="summary_large_image" name="twitter:card"/><meta content="Jednostavan ulaz u SOV sustav." name="twitter:title"/><meta content="Brzi ulaz u SOV Cloud module." name="twitter:description"/><meta content="https://so-velebit.hr/assets/sov-logo.png" name="twitter:image"/><meta content="#0b0f14" name="theme-color"/></head>
 <body class="sov-premium dashboard-page">
 <div class="sov-shell">
-<header class="sov-top">
-<a class="sov-brand" href="dashboard.html">
-<div class="sov-mark">SOV</div>
-<div><strong>Speleološki odsjek Velebit</strong><small>SOV Cloud</small></div>
+<header class="sov-top sov-dashboard-top" data-dashboard-header="daily">
+<a class="sov-brand sov-dashboard-brand" href="index.html" aria-label="Otvori javnu naslovnicu SOV-a">
+<img class="sov-brand-logo" src="assets/sov-logo.png" alt="Speleološki odsjek Velebit" loading="eager" decoding="async"/>
+<div class="sov-brand-copy"><strong>SOV Cloud</strong><small>Članski dashboard</small></div>
 </a>
-<nav aria-label="Korisnički izbornik" class="sov-nav">
-<!-- UI FIX v6.1.32: korisnički portal gore ima samo povratak na home i odjavu -->
-<a class="primary" href="dashboard.html">Home</a>
-<a data-logout="" href="index.html">Odjava</a>
+<nav aria-label="Korisnički izbornik" class="sov-nav sov-dashboard-nav">
+<a class="primary public-home" href="index.html">Javni sajt</a>
+<a class="logout-link" data-logout="" href="index.html">Odjava</a>
 </nav>
 </header>
 <main>
@@ -59,8 +59,8 @@ body.dashboard-page header.sov-top .sov-nav a:not([href="dashboard.html"]):not([
 <div class="sov-hero-grid">
 <div class="v609-hero-copy">
 <span class="sov-eyebrow">SOV Cloud</span>
-<h1>Jednostavan ulaz u SOV sustav.</h1>
-<p>Najvažnije stvari su odmah gore: karta, izleti, oprema i predaja nove jame. Prikaz se automatski prilagođava tvojem pristupu.</p>
+<h1>Dashboard</h1>
+<p>Brzi ulaz u članske alate.</p>
 <div class="v609-action-row">
 <a class="sov-btn main" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster" href="karta.html">Otvori kartu →</a>
 <a class="sov-btn" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster" href="predaj-novu-jamu.html">Predaj novu jamu</a>
@@ -75,13 +75,11 @@ body.dashboard-page header.sov-top .sov-nav a:not([href="dashboard.html"]):not([
 <div class="v609-status-item"><span>Pristup</span><b data-dash-role="">—</b></div>
 <div class="v609-status-item"><span>Status računa</span><b data-auth-status="">—</b></div>
 </div>
-<p class="v609-subtle-note" data-access-summary="">Učitavam prava…</p>
 </aside>
 </div>
 </section>
 <div class="v609-zone-head" data-section="personal">
-<div><h2>Moje stvari</h2><p>Član vidi samo ono što treba za normalno korištenje: teren, izlete, opremu i predaje.</p></div>
-<span class="v609-zone-tag">čisto korisničko sučelje</span>
+<div><h2>Moje stvari</h2></div>
 </div>
 <section aria-label="Moje stvari" class="sov-grid v609-grid-primary">
 <a class="sov-module v609-module" data-dash-visible="user,editor,oruzar,arhivar,admin,webmaster" href="karta.html" style="--accent:rgba(120,215,255,.18)">
@@ -107,8 +105,7 @@ body.dashboard-page header.sov-top .sov-nav a:not([href="dashboard.html"]):not([
 </a>
 </section>
 <div class="v609-zone-head" data-dash-visible="oruzar,arhivar,editor,admin,webmaster" data-section="internal" hidden="">
-<div><h2>Radni alati</h2><p>Ovdje su alati za tvoje zaduženje.</p></div>
-<span class="v609-zone-tag">Oružar · Arhivar · Urednik</span>
+<div><h2>Radni alati</h2></div>
 </div>
 <section aria-label="Interni moduli" class="sov-grid v609-grid-role" data-dash-visible="oruzar,arhivar,editor,admin,webmaster" hidden="">
 <a class="sov-module v609-module" data-dash-ability="armory" data-dash-visible="oruzar,admin,webmaster" data-role-armory="" hidden="" href="oruzar-master.html" style="--accent:rgba(255,191,107,.2)">
@@ -189,8 +186,8 @@ body.dashboard-page header.sov-top .sov-nav a:not([href="dashboard.html"]):not([
         if(statusEl) statusEl.textContent=(profile&&profile.status==='approved')?'odobren':((profile&&profile.status)||'—');
         const summary=document.querySelector('[data-access-summary]');
         if(summary){
-          const shown=Array.from(document.querySelectorAll('.v609-grid-primary [data-dash-visible]')).filter(el=>!el.classList.contains('is-preview-hidden')).map(el=>el.querySelector('h3')&&el.querySelector('h3').textContent).filter(Boolean);
-          summary.textContent=shown.length?'Dostupno: '+shown.join(', ')+'.':'Nema dostupnih korisničkih modula za ovu rolu.';
+          summary.textContent='';
+          summary.hidden=true;
         }
         document.body.classList.add('role-ui-ready');
       }
@@ -237,7 +234,7 @@ setTimeout(function() {
             nav.setAttribute('aria-label','Korisnički izbornik');
             header.appendChild(nav);
           }
-          nav.innerHTML = '<a class="primary" href="dashboard.html">Home</a><a data-logout="" href="index.html">Odjava</a>';
+          nav.innerHTML = '<a class="primary public-home" href="index.html">Javni sajt</a><a class="logout-link" data-logout="" href="index.html">Odjava</a>';
           header.querySelectorAll('.sov-chip,.user-chip,.profile-chip,[data-user-name],[data-user-role]').forEach(function(el){
             if(!el.closest('nav.sov-nav')) el.remove();
           });
