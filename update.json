@@ -1,8 +1,8 @@
 {
   "app": "SOV web",
-  "version": "6.1.45o",
+  "version": "6.1.45p",
   "versionName": "v6.1.44c-wordpress-text-import-preserve-current-public",
-  "build": "sov-web-build-v6.1.45o-oruzarstvo-clean-no-pending",
+  "build": "sov-web-build-v6.1.45p-oruzarstvo-human-language-polish",
   "createdAt": "2026-06-24T17:03:11.259951Z",
   "cacheBust": "6144c-wxr-text-preserve-current",
   "base": "sov-web-build-v6.1.45l-oruzarstvo-merge-osobna-srt.zip",

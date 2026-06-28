@@ -57,7 +57,7 @@
     const s=String(raw||'').trim();
     if(!s) return 'Ostalo';
     const exact={
-      'Karabineri i spojnice':'Karabineri',
+      'Karabineri':'Karabineri',
       'Sidrišne pločice':'Pločice',
       'Bušilice, baterije i svrdla':'Bušilice i baterije',
       'Transportne vreće i drybagovi':'Transportke',
@@ -90,11 +90,11 @@
       'Koloture i traxioni':'Ostalo',
       'Akcijska oprema':'Ostalo',
       'Rescue spuštalice':'Ostalo',
-      'Spojni i okretni elementi':'Ostalo',
+      'Karabineri / ostalo':'Ostalo',
       'Rigging plate / PAW':'Ostalo',
       'Penjalice i blokeri':'Ostalo',
       'Pojasevi i prsni navezi':'Ostalo',
-      'Spojni elementi osobni':'Ostalo',
+      'Karabineri / ostalo':'Ostalo',
       'Spuštalice':'Ostalo',
       'Kacige':'Ostalo',
       'Pupci i lanyardi':'Ostalo'
