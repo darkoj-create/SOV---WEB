@@ -19,9 +19,20 @@
   </style>
 <link href="assets/mobile.css" rel="stylesheet"/>
 <link href="assets/sov-inbox.css?v=4.90" rel="stylesheet"/><link href="assets/sov-foundation-v55822.css" rel="stylesheet"/><link href="assets/sov-shell-v55825.css" rel="stylesheet"/><link href="assets/sov-polish-v55826.css" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;display=swap" rel="stylesheet"/><link href="assets/sov-wow-v6.css" rel="stylesheet"/><link href="assets/sov-wow-app-v6.css" rel="stylesheet"/><link href="assets/sov-typography-v6144g.css" rel="stylesheet"/>
+<link rel="stylesheet" href="assets/sov-member-header-v6145ai.css">
 <meta content="Dokumenti / zapisnici Novi zapisnik Editor za sastanak koji sam povlači datum, vodi korisnika kroz stalne sekcije i iz previewa šalje zapisnik uredniku kao DOCX." name="description"/><meta content="noindex,nofollow,noarchive" name="robots"/><link href="https://so-velebit.hr/novi-zapisnik.html" rel="canonical"/><meta content="Speleološki odsjek Velebit" property="og:site_name"/><meta content="hr_HR" property="og:locale"/><meta content="website" property="og:type"/><meta content="Novi zapisnik — SOV Velebit" property="og:title"/><meta content="Dokumenti / zapisnici Novi zapisnik Editor za sastanak koji sam povlači datum, vodi korisnika kroz stalne sekcije i iz previewa šalje zapisnik uredniku kao DOCX." property="og:description"/><meta content="https://so-velebit.hr/novi-zapisnik.html" property="og:url"/><meta content="https://so-velebit.hr/assets/sov-logo.png" property="og:image"/><meta content="summary_large_image" name="twitter:card"/><meta content="Novi zapisnik — SOV Velebit" name="twitter:title"/><meta content="Dokumenti / zapisnici Novi zapisnik Editor za sastanak koji sam povlači datum, vodi korisnika kroz stalne sekcije i iz previewa šalje zapisnik uredniku kao DOCX." name="twitter:description"/><meta content="https://so-velebit.hr/assets/sov-logo.png" name="twitter:image"/><meta content="#0b0f14" name="theme-color"/></head>
 <body>
-<header class="top wrap"><a class="brand" href="index.html"><div class="mark">SOV</div><div><strong>Speleološki odsjek Velebit</strong><small>Zagreb</small></div></a><nav class="nav"><a href="dashboard.html">SOV Cloud</a><a href="dokumenti.html">Dokumenti</a><a href="pregled-zapisnika.html">Pregled zapisnika</a></nav></header>
+<header class="sov-member-top" data-sov-member-header>
+  <a class="sov-member-brand" href="dashboard.html" aria-label="Povratak na članski dashboard">
+    <img class="sov-member-logo" src="assets/sov-logo.png" alt="SOV" loading="eager" decoding="async">
+    <span class="sov-member-brand-text"><strong>SOV Cloud</strong><small>Članski prostor</small></span>
+  </a>
+  <nav class="sov-member-nav" aria-label="Glavna članska navigacija">
+    <a class="sov-member-link" href="index.html">Javni sajt</a>
+    <a class="sov-member-link" href="dashboard.html">Dashboard</a>
+    <a class="sov-member-link sov-member-logout" href="index.html" data-logout>Odjava</a>
+  </nav>
+</header>
 <main class="rec-shell">
 <section class="rec-hero">
 <div><div class="eyebrow">Dokumenti / zapisnici</div><h1>Novi zapisnik</h1><p>Editor za sastanak koji sam povlači datum, vodi korisnika kroz stalne sekcije i iz previewa šalje zapisnik uredniku kao DOCX.</p></div>
@@ -82,5 +93,5 @@ function load(){ $('date').value=todayHr(); try{const d=JSON.parse(localStorage.
 ['title','lead','recorder','speleIzleti','iniIzleti','najave','razno'].forEach(id=>$(id).addEventListener('input',render));
 $('previewBtn').onclick=render; $('saveBtn').onclick=saveDraft; $('sendBtn').onclick=send; load();
 </script>
-<script src="assets/sov-inbox.js?v=4.90"></script><script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script defer="" src="assets/sov-polish-v55826.js"></script><script defer="" src="assets/sov-wow-v6.js?v=6.1.5"></script><script defer="" src="assets/sov-version.js?v=6.1.5"></script><script defer="" src="assets/sov-client-logger.js?v=6.1.31"></script></body>
+<script src="assets/sov-inbox.js?v=4.90"></script><script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script defer="" src="assets/sov-polish-v55826.js"></script><script defer="" src="assets/sov-wow-v6.js?v=6.1.5"></script><script defer="" src="assets/sov-version.js?v=6.1.45ai"></script><script defer="" src="assets/sov-client-logger.js?v=6.1.31"></script></body>
 </html>

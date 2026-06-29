@@ -17,11 +17,19 @@
   </style>
 <link href="assets/mobile.css" rel="stylesheet"/>
 <link href="assets/sov-foundation-v55822.css" rel="stylesheet"/><link href="assets/sov-shell-v55825.css" rel="stylesheet"/><link href="assets/sov-polish-v55826.css" rel="stylesheet"/><link href="assets/sov-typography-v6144g.css" rel="stylesheet"/>
+<link rel="stylesheet" href="assets/sov-member-header-v6145ai.css">
 <meta content="Jedno mjesto za korisnike, role i permissione koje će kasnije čitati unified/admin APK. Ovdje ne diramo SQL bazu objekata — samo profiles i sov_role_permissions ." name="description"/><meta content="noindex,nofollow,noarchive" name="robots"/><link href="https://so-velebit.hr/role-manager.html" rel="canonical"/><meta content="Speleološki odsjek Velebit" property="og:site_name"/><meta content="hr_HR" property="og:locale"/><meta content="website" property="og:type"/><meta content="Role manager · Webmaster — SOV Velebit" property="og:title"/><meta content="Jedno mjesto za korisnike, role i permissione koje će kasnije čitati unified/admin APK. Ovdje ne diramo SQL bazu objekata — samo profiles i sov_role_permissions ." property="og:description"/><meta content="https://so-velebit.hr/role-manager.html" property="og:url"/><meta content="https://so-velebit.hr/assets/sov-logo.png" property="og:image"/><meta content="summary_large_image" name="twitter:card"/><meta content="Role manager · Webmaster — SOV Velebit" name="twitter:title"/><meta content="Jedno mjesto za korisnike, role i permissione koje će kasnije čitati unified/admin APK. Ovdje ne diramo SQL bazu objekata — samo profiles i sov_role_permissions ." name="twitter:description"/><meta content="https://so-velebit.hr/assets/sov-logo.png" name="twitter:image"/><meta content="#0b0f14" name="theme-color"/></head>
 <body>
-<header class="top wrap">
-<a class="brand" href="dashboard.html"><div class="mark">SOV</div><div><strong>SOV Cloud</strong><small>Role manager · Webmaster</small></div></a>
-<nav class="nav"><a href="dashboard.html">Dashboard</a><a href="admin-users.html">Korisnici</a><a href="sync-status.html">SOV Sync</a><a data-logout="" href="login.html">Odjava</a></nav>
+<header class="sov-member-top" data-sov-member-header>
+  <a class="sov-member-brand" href="dashboard.html" aria-label="Povratak na članski dashboard">
+    <img class="sov-member-logo" src="assets/sov-logo.png" alt="SOV" loading="eager" decoding="async">
+    <span class="sov-member-brand-text"><strong>SOV Cloud</strong><small>Članski prostor</small></span>
+  </a>
+  <nav class="sov-member-nav" aria-label="Glavna članska navigacija">
+    <a class="sov-member-link" href="index.html">Javni sajt</a>
+    <a class="sov-member-link" href="dashboard.html">Dashboard</a>
+    <a class="sov-member-link sov-member-logout" href="index.html" data-logout>Odjava</a>
+  </nav>
 </header>
 <main class="page">
 <section class="hero">
@@ -209,5 +217,5 @@ document.addEventListener('DOMContentLoaded', async()=>{
   refreshAll();
 });
 </script>
-<script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script defer="" src="assets/sov-polish-v55826.js"></script><script defer="" src="assets/sov-version.js?v=6.1.5"></script><script defer="" src="assets/sov-client-logger.js?v=6.1.31"></script></body>
+<script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script defer="" src="assets/sov-polish-v55826.js"></script><script defer="" src="assets/sov-version.js?v=6.1.45ai"></script><script defer="" src="assets/sov-client-logger.js?v=6.1.31"></script></body>
 </html>

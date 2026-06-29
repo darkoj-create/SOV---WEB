@@ -9,25 +9,24 @@
 <link rel="stylesheet" href="assets/sov-shell-v55825.css">
 <link rel="stylesheet" href="assets/sov-polish-v55826.css">
 <link rel="stylesheet" href="assets/arhivar-simplify-v6145ad.css">
+<link rel="stylesheet" href="assets/sov-member-header-v6145ai.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/supabase-config.js"></script>
 <script src="assets/auth.js"></script>
 <meta name="robots" content="noindex,nofollow,noarchive">
 </head>
 <body class="sov-workbench-shell">
-<nav class="sov-arhivar-nav" aria-label="Arhivar navigacija">
-  <a class="brand active" href="arhivar-dashboard.html"><span>SOV Arhivar</span><small>jedan radni ekran</small></a>
-  <a href="#predaje" data-work-tab="predaje">Predaje</a>
-  <a href="#arhiva" data-work-tab="arhiva">Arhiva</a>
-  <a href="#izvoz" data-work-tab="izvoz">Izvoz</a>
-  <a href="arhivar-zahvati.html">Zahvati</a>
-  <a href="topodroid.html">Nacrti</a>
-  <a href="karta.html">Karta objekata</a>
-  <span class="spacer"></span>
-  <span class="muted">osnovno odmah · napredno po potrebi</span>
-  <a href="dashboard.html">Dashboard</a>
-  <a data-logout href="login.html">Odjava</a>
-</nav>
+<header class="sov-member-top" data-sov-member-header>
+  <a class="sov-member-brand" href="dashboard.html" aria-label="Povratak na članski dashboard">
+    <img class="sov-member-logo" src="assets/sov-logo.png" alt="SOV" loading="eager" decoding="async">
+    <span class="sov-member-brand-text"><strong>SOV Cloud</strong><small>Članski prostor</small></span>
+  </a>
+  <nav class="sov-member-nav" aria-label="Glavna članska navigacija">
+    <a class="sov-member-link" href="index.html">Javni sajt</a>
+    <a class="sov-member-link" href="dashboard.html">Dashboard</a>
+    <a class="sov-member-link sov-member-logout" href="index.html" data-logout>Odjava</a>
+  </nav>
+</header>
 <main class="sov-workbench-main">
   <section class="sov-workbench-hero">
     <div>

@@ -7,21 +7,21 @@
   <meta name="robots" content="noindex,nofollow" />
   <link rel="icon" href="/assets/sov-logo.png" />
   <link rel="stylesheet" href="/assets/sov-system-status-wow-v6145v.css?v=6.1.45v" />
+<link rel="stylesheet" href="assets/sov-member-header-v6145ai.css">
 </head>
 <body>
   <main class="sov-status-wrap">
-    <header class="sov-status-top" aria-label="SOV Cloud status header">
-      <a class="sov-status-brand" href="/index.html" aria-label="SOV javna naslovnica">
-        <img src="/assets/sov-logo.png" alt="SOV logo" />
-        <span><b>Speleološki odsjek Velebit</b><span>SOV Cloud · admin status</span></span>
-      </a>
-      <nav class="sov-status-nav" aria-label="Navigacija statusa">
-        <a class="sov-pill primary" href="/dashboard.html">Dashboard</a>
-        <a class="sov-pill" href="/index.html">Javni sajt</a>
-        <button class="sov-pill" id="refresh-status" type="button">Osvježi</button>
-        <button class="sov-pill danger" type="button" onclick="window.SOVAuth ? window.SOVAuth.logout() : location.href='/index.html'">Odjava</button>
-      </nav>
-    </header>
+    <header class="sov-member-top" data-sov-member-header>
+  <a class="sov-member-brand" href="dashboard.html" aria-label="Povratak na članski dashboard">
+    <img class="sov-member-logo" src="assets/sov-logo.png" alt="SOV" loading="eager" decoding="async">
+    <span class="sov-member-brand-text"><strong>SOV Cloud</strong><small>Članski prostor</small></span>
+  </a>
+  <nav class="sov-member-nav" aria-label="Glavna članska navigacija">
+    <a class="sov-member-link" href="index.html">Javni sajt</a>
+    <a class="sov-member-link" href="dashboard.html">Dashboard</a>
+    <a class="sov-member-link sov-member-logout" href="index.html" data-logout>Odjava</a>
+  </nav>
+</header>
 
     <section class="sov-status-hero" aria-labelledby="status-title">
       <div class="sov-hero-grid">

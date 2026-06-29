@@ -15,21 +15,32 @@
 <script src="assets/supabase-config.js"></script>
 <script src="assets/auth.js"></script>
 <link href="assets/sov-foundation-v55822.css" rel="stylesheet"/><link href="assets/sov-shell-v55825.css" rel="stylesheet"/><link href="assets/sov-polish-v55826.css" rel="stylesheet"/><link href="assets/sov-typography-v6144g.css" rel="stylesheet"/>
+<link rel="stylesheet" href="assets/sov-member-header-v6145ai.css">
 <meta content="Vijesti i urednik Sve postojeće novosti i članski draftovi žive u bazi. Urednik može uređivati tekst, fotke, galerije i status objave." name="description"/><meta content="noindex,nofollow,noarchive" name="robots"/><link href="https://so-velebit.hr/news-editor.html" rel="canonical"/><meta content="Speleološki odsjek Velebit" property="og:site_name"/><meta content="hr_HR" property="og:locale"/><meta content="website" property="og:type"/><meta content="Vijesti i urednik — SOV Velebit" property="og:title"/><meta content="Vijesti i urednik Sve postojeće novosti i članski draftovi žive u bazi. Urednik može uređivati tekst, fotke, galerije i status objave." property="og:description"/><meta content="https://so-velebit.hr/news-editor.html" property="og:url"/><meta content="https://so-velebit.hr/assets/sov-logo.png" property="og:image"/><meta content="summary_large_image" name="twitter:card"/><meta content="Vijesti i urednik — SOV Velebit" name="twitter:title"/><meta content="Vijesti i urednik Sve postojeće novosti i članski draftovi žive u bazi. Urednik može uređivati tekst, fotke, galerije i status objave." name="twitter:description"/><meta content="https://so-velebit.hr/assets/sov-logo.png" name="twitter:image"/><meta content="#0b0f14" name="theme-color"/></head>
 <body>
 <main class="editor-shell">
-<header class="top">
-<a class="brand" href="dashboard.html"><span class="brand-mark">SOV</span><span><strong>SOV Cloud</strong><br/><small>Urednik vijesti</small></span></a>
-<div>
-<h1>Vijesti i urednik</h1>
-<p>Sve postojeće novosti i članski draftovi žive u bazi. Urednik može uređivati tekst, fotke, galerije i status objave.</p>
-</div>
-<div class="top-actions">
-<a class="btn secondary" href="index.html">Javne novosti</a>
-<a class="btn secondary" href="vijesti.html">Vijesti stranica</a>
-<button class="btn" id="newBtn">+ Nova vijest</button>
-</div>
+<header class="sov-member-top" data-sov-member-header>
+  <a class="sov-member-brand" href="dashboard.html" aria-label="Povratak na članski dashboard">
+    <img class="sov-member-logo" src="assets/sov-logo.png" alt="SOV" loading="eager" decoding="async">
+    <span class="sov-member-brand-text"><strong>SOV Cloud</strong><small>Članski prostor</small></span>
+  </a>
+  <nav class="sov-member-nav" aria-label="Glavna članska navigacija">
+    <a class="sov-member-link" href="index.html">Javni sajt</a>
+    <a class="sov-member-link" href="dashboard.html">Dashboard</a>
+    <a class="sov-member-link sov-member-logout" href="index.html" data-logout>Odjava</a>
+  </nav>
 </header>
+<section class="top news-editor-intro" aria-label="Urednik vijesti">
+  <div>
+    <h1>Vijesti i urednik</h1>
+    <p>Sve postojeće novosti i članski draftovi žive u bazi. Urednik može uređivati tekst, fotke, galerije i status objave.</p>
+  </div>
+  <div class="top-actions">
+    <a class="btn secondary" href="index.html">Javne novosti</a>
+    <a class="btn secondary" href="vijesti.html">Vijesti stranica</a>
+    <button class="btn" id="newBtn">+ Nova vijest</button>
+  </div>
+</section>
 <section class="layout">
 <aside class="panel">
 <div class="panel-head"><h2>Baza vijesti</h2><button class="btn secondary" id="refreshBtn">Osvježi</button></div>

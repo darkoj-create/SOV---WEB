@@ -8,7 +8,8 @@
   <meta name="robots" content="noindex,nofollow,noarchive" />
   <link rel="stylesheet" href="assets/site.css" />
   <link rel="stylesheet" href="assets/sov-typography-v6144g.css" />
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="assets/sov-member-header-v6145ai.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="assets/supabase-config.js?v=6.1.45af"></script>
   <script src="assets/auth.js?v=6.1.45af"></script>
   <style>
@@ -18,10 +19,17 @@
 </head>
 <body>
 <div class="page">
-  <header class="top">
-    <a class="brand" href="dashboard.html"><span class="mark">SOV</span><span><b>SOV Cloud</b><small>Oprema</small></span></a>
-    <nav class="nav"><a href="dashboard.html">Početna</a><a href="karta.html">Baza</a><a href="kalendar-izleta.html">Izleti</a><a class="primary" href="oruzarstvo.html">Oprema</a><a id="oruzarAdminLink" href="oruzar-master.html" hidden>Oružarski dio</a></nav>
-  </header>
+  <header class="sov-member-top" data-sov-member-header>
+  <a class="sov-member-brand" href="dashboard.html" aria-label="Povratak na članski dashboard">
+    <img class="sov-member-logo" src="assets/sov-logo.png" alt="SOV" loading="eager" decoding="async">
+    <span class="sov-member-brand-text"><strong>SOV Cloud</strong><small>Članski prostor</small></span>
+  </a>
+  <nav class="sov-member-nav" aria-label="Glavna članska navigacija">
+    <a class="sov-member-link" href="index.html">Javni sajt</a>
+    <a class="sov-member-link" href="dashboard.html">Dashboard</a>
+    <a class="sov-member-link sov-member-logout" href="index.html" data-logout>Odjava</a>
+  </nav>
+</header>
 
   <section class="hero">
     <div><div class="eyebrow">SOV oprema</div><h1>Oprema za izlet</h1><p>Odaberi opremu za izlet i pošalji zahtjev oružaru. Oružar će potvrditi izdavanje.</p></div>

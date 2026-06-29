@@ -13,10 +13,11 @@ function isArhivar(){return Object.prototype.hasOwnProperty.call(PAGES,page())}
 function el(html){const t=document.createElement('template');t.innerHTML=html.trim();return t.content.firstElementChild}
 function nav(){
  if(!isArhivar())return;
+ if(document.querySelector('.sov-member-top'))return;
  const embedded=new URLSearchParams(location.search).has('embedded');
  if(embedded){document.body.classList.add('sov-arhivar-embedded');return;}
  const p=page();
- const n=el(`<nav class="sov-arhivar-nav" aria-label="Arhivar navigacija"><a class="brand" href="arhivar-dashboard.html"><span>SOV Arhivar</span><small>jedan radni ekran</small></a><a data-tab="Predaje" href="arhivar-dashboard.html#predaje">Predaje</a><a data-tab="Arhiva" href="arhivar-dashboard.html#arhiva">Arhiva</a><a data-tab="Izvoz" href="arhivar-dashboard.html#izvoz">Izvoz</a><a href="arhivar-zahvati.html">Zahvati</a><a href="topodroid.html">Nacrti</a><a href="karta.html">Karta objekata</a><span class="spacer"></span><span class="muted">osnovno odmah · napredno po potrebi</span><a href="dashboard.html">Dashboard</a><a data-logout href="login.html">Odjava</a></nav>`);
+ const n=el(`<header class="sov-member-top" data-sov-member-header><a class="sov-member-brand" href="dashboard.html" aria-label="Povratak na članski dashboard"><img class="sov-member-logo" src="assets/sov-logo.png" alt="SOV" loading="eager" decoding="async"><span class="sov-member-brand-text"><strong>SOV Cloud</strong><small>Članski prostor</small></span></a><nav class="sov-member-nav" aria-label="Glavna članska navigacija"><a class="sov-member-link" href="index.html">Javni sajt</a><a class="sov-member-link" href="dashboard.html">Dashboard</a><a class="sov-member-link sov-member-logout" href="index.html" data-logout>Odjava</a></nav></header>`);
  const current=PAGES[p];
  n.querySelectorAll('a').forEach(a=>{ if(a.dataset.tab===current || (p==='arhivar-zahvati.html'&&a.textContent.trim()==='Zahvati') || (p==='topodroid.html'&&a.textContent.trim()==='Nacrti')) a.classList.add('active'); });
  const first=document.body.firstElementChild;

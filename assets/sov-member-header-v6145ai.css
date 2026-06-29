@@ -1,0 +1,67 @@
+/* SOV v6.1.45ai — jedinstveni članski toolbar. */
+.sov-member-top{
+  width:min(1180px,calc(100% - 32px));
+  margin:16px auto 18px;
+  padding:12px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  border:1px solid rgba(167,243,208,.18);
+  border-radius:24px;
+  background:linear-gradient(135deg,rgba(8,24,22,.92),rgba(7,16,18,.82));
+  box-shadow:0 20px 70px rgba(0,0,0,.28);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+}
+.sov-member-brand{
+  min-width:0;
+  display:flex;
+  align-items:center;
+  gap:11px;
+  color:#ecfdf5;
+  text-decoration:none;
+  border-radius:18px;
+}
+.sov-member-logo{
+  width:42px;
+  height:42px;
+  flex:0 0 auto;
+  border-radius:999px;
+  object-fit:cover;
+  background:#fff;
+  box-shadow:0 8px 24px rgba(0,0,0,.24);
+}
+.sov-member-brand-text{display:flex;flex-direction:column;gap:1px;min-width:0;line-height:1.1}
+.sov-member-brand-text strong{font-size:14px;font-weight:950;letter-spacing:.01em;white-space:nowrap;color:#f4fff8}
+.sov-member-brand-text small{font-size:12px;font-weight:750;color:#a7b7b1;white-space:nowrap}
+.sov-member-nav{display:flex;align-items:center;justify-content:flex-end;gap:9px;flex-wrap:wrap}
+.sov-member-link{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:38px;
+  padding:9px 13px;
+  border-radius:999px;
+  border:1px solid rgba(167,243,208,.18);
+  background:rgba(255,255,255,.055);
+  color:#dffaf0;
+  text-decoration:none;
+  font-weight:900;
+  font-size:13px;
+  line-height:1;
+  white-space:nowrap;
+}
+.sov-member-link:hover{background:rgba(131,230,194,.14);border-color:rgba(131,230,194,.42);color:#fff}
+.sov-member-link:focus-visible,.sov-member-brand:focus-visible{outline:3px solid rgba(131,230,194,.72);outline-offset:3px}
+.sov-member-logout{color:#ffe1e5;border-color:rgba(251,113,133,.28);background:rgba(251,113,133,.08)}
+.sov-member-logout:hover{background:rgba(251,113,133,.16);border-color:rgba(251,113,133,.48)}
+body.sov-arhivar-embedded .sov-member-top{display:none!important}
+@media(max-width:760px){
+  .sov-member-top{width:min(100% - 20px,1180px);margin:10px auto 14px;align-items:stretch;flex-direction:column;border-radius:20px;padding:10px}
+  .sov-member-brand{width:100%}
+  .sov-member-nav{width:100%;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+  .sov-member-link{width:100%;padding:10px 8px;font-size:12px}
+  .sov-member-brand-text strong{font-size:13px}
+  .sov-member-brand-text small{font-size:11px}
+}
