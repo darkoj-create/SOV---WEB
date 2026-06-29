@@ -1,3 +1,9 @@
+# sov-web-build-v6.1.45ah-gmail-trip-visibility-status-fix
+
+- Fix za odobravanje Gmail/zapisnik najava u Izlete: `visibility='members'` sada se normalizira u `club` prije upisa u `sov_trips`.
+- Dodana je i normalizacija `status` vrijednosti da se izbjegne sljedeći isti tip check-constraint greške.
+- SQL je uključen u `SUPABASE_SOV_GMAIL_TRIP_VISIBILITY_STATUS_FIX_v6_1_45ah.sql` i već je primijenjen na live Supabase.
+
 # sov-web-build-v6.1.45ag-gmail-trip-category-approval-fix
 
 - Fix: odobravanje izleta iz Gmail/native zapisnika više ne puca na `sov_trips_trip_category_check`.

@@ -12,6 +12,8 @@
   }
   function clean(v){return String(v==null?'':v).trim()}
   function normalizeTripCategory(s){const raw=clean(s);const k=raw.toLowerCase().replace(/[čć]/g,'c').replace(/[š]/g,'s').replace(/[ž]/g,'z').replace(/[đ]/g,'d');if(k.includes('seminar'))return 'Seminar';if(k.includes('skupstin'))return 'Skupština';if(k.includes('skup'))return 'Skup';if(k.includes('ekspedic')||k.includes('expedic'))return 'Ekspedicija';if(k.includes('invent'))return 'Inventura';if(k.includes('predav'))return 'Predavanje';return 'Izlet'}
+  function normalizeTripVisibility(s){const raw=clean(s);const k=raw.toLowerCase().replace(/[čć]/g,'c').replace(/[š]/g,'s').replace(/[ž]/g,'z').replace(/[đ]/g,'d');if(['public','javno','javna','open','otvoreno','otvorena'].includes(k))return 'public';if(['private','privatno','privatna','hidden','skriveno','skrivena','draft'].includes(k))return 'private';return 'club'}
+  function normalizeTripStatus(s){const raw=clean(s);const k=raw.toLowerCase().replace(/[čć]/g,'c').replace(/[š]/g,'s').replace(/[ž]/g,'z').replace(/[đ]/g,'d');if(['draft','nacrt'].includes(k))return 'draft';if(['active','aktivan','u tijeku','u_tijeku'].includes(k))return 'active';if(['done','finished','zavrseno','zavrsen','odrzano','odradeno'].includes(k))return 'done';if(['cancelled','canceled','otkazano','otkazan'].includes(k))return 'cancelled';if(['archived','arhivirano','arhiviran'].includes(k))return 'archived';return 'planned'}
   function isoDate(v){
     const s=clean(v); if(!s) return new Date().toISOString().slice(0,10);
     let m=s.match(/^(\d{4})-(\d{2})-(\d{2})/); if(m) return `${m[1]}-${m[2]}-${m[3]}`;
@@ -43,8 +45,8 @@
       maxLat: row.max_lat ?? meta.maxLat ?? null,
       minLon: row.min_lon ?? meta.minLon ?? null,
       maxLon: row.max_lon ?? meta.maxLon ?? null,
-      status: row.status || 'planned',
-      visibility: row.visibility || 'club',
+      status: normalizeTripStatus(row.status || meta.status || 'planned'),
+      visibility: normalizeTripVisibility(row.visibility || meta.visibility || 'club'),
       trip_category: normalizeTripCategory(row.trip_category || meta.trip_category || meta.category || row.category || row.tripType || row.event_type || row.objective || 'Izlet')
     };
   }
@@ -147,6 +149,8 @@
     if(payload.rasporedUrl) meta.rasporedUrl=payload.rasporedUrl;
     const tripCategory = normalizeTripCategory(payload.trip_category || payload.category || payload.event_type || payload.type || payload.goal || 'Izlet');
     meta.trip_category = tripCategory;
+    meta.visibility = normalizeTripVisibility(payload.visibility || 'club');
+    meta.status = normalizeTripStatus(payload.status || 'planned');
     const start=isoDate(payload.date || payload.from || payload.start_date);
     let end=isoDate(payload.endDate || payload.to || payload.end_date || start);
     const range=clean(payload.date).split(/\s+-\s+/);
@@ -158,8 +162,8 @@
       location_name:clean(payload.location),
       objective:clean(payload.goal),
       description:clean(payload.description),
-      status: clean(payload.status) || 'planned',
-      visibility: clean(payload.visibility) || 'club',
+      status: normalizeTripStatus(payload.status || 'planned'),
+      visibility: normalizeTripVisibility(payload.visibility || 'club'),
       trip_category: tripCategory,
       min_lat: null,
       max_lat: null,
@@ -207,8 +211,8 @@
       location_name: row.location_name,
       objective: row.objective,
       description: row.description,
-      status: row.status || 'planned',
-      visibility: row.visibility || 'club',
+      status: normalizeTripStatus(row.status || meta.status || 'planned'),
+      visibility: normalizeTripVisibility(row.visibility || meta.visibility || 'club'),
       meta: row.meta || {}
     };
   }
@@ -268,6 +272,11 @@
   async function updateTrip(id, patch){
     const c=sb(); if(!c) throw new Error('Supabase nije konfiguriran.');
     const full={...patch, updated_at:new Date().toISOString()};
+    if(Object.prototype.hasOwnProperty.call(full,'trip_category')) full.trip_category=normalizeTripCategory(full.trip_category);
+    if(Object.prototype.hasOwnProperty.call(full,'category')) full.category=normalizeTripCategory(full.category);
+    if(Object.prototype.hasOwnProperty.call(full,'visibility')) full.visibility=normalizeTripVisibility(full.visibility);
+    if(Object.prototype.hasOwnProperty.call(full,'status')) full.status=normalizeTripStatus(full.status);
+    if(full.meta){ full.meta={...full.meta}; if(full.trip_category) full.meta.trip_category=full.trip_category; if(full.visibility) full.meta.visibility=full.visibility; if(full.status) full.meta.status=full.status; }
 
     const rpc=await c.rpc('sov_save_trip', {p_trip_id:id, p_payload:full});
     if(!rpc.error) return rpc.data || full;
