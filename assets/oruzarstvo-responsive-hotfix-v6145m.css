@@ -1,0 +1,28 @@
+
+/* v6.1.45m: responsive + catalog never blocks on wide fixed columns */
+html,body{max-width:100%;overflow-x:hidden!important;}
+.armory-shell,main,.armory-layout,.panel,.armory-hero,.command-strip{max-width:100%!important;box-sizing:border-box!important;}
+.armory-layout{display:grid!important;grid-template-columns:minmax(230px,280px) minmax(0,1fr)!important;gap:16px!important;align-items:start!important;}
+.armory-layout>.panel{min-width:0!important;}
+.filters{position:sticky;top:12px;align-self:start;}
+#catalog{min-width:0!important;overflow:hidden!important;}
+.user-category-grid,.grid-list,.user-subcat-list,.sov-srt-product-grid{min-width:0!important;}
+.item-card,.user-category-card,.user-subcat-card{min-width:0!important;overflow-wrap:anywhere!important;}
+.drawer{max-width:min(420px,calc(100vw - 18px))!important;right:9px!important;}
+@media(max-width:980px){
+  .armory-layout{grid-template-columns:1fr!important;}
+  .filters{position:relative!important;top:auto!important;order:2!important;}
+  .armory-layout>.panel:not(.filters){order:1!important;}
+  .filters .field,.quick-packs{margin-bottom:10px!important;}
+}
+@media(max-width:720px){
+  .armory-shell{padding:10px!important;}
+  .armory-top,.armory-nav,.armory-hero-inner,.command-strip,.user-catalog-head,.v607-sub-head{display:grid!important;grid-template-columns:1fr!important;gap:10px!important;}
+  .armory-nav{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+  .armory-nav a,.armory-nav button,.hero-actions .btn,.command-card,.btn{min-height:44px!important;}
+  .hero-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;}
+  .user-category-grid,.grid-list,.user-subcat-list,.sov-srt-product-grid{grid-template-columns:1fr!important;}
+  .panel{padding:14px!important;border-radius:22px!important;}
+  .armory-db-loading{padding:16px!important;border-radius:22px!important;}
+  .armory-db-loading h2{font-size:20px!important;}
+}
