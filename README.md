@@ -1,3 +1,22 @@
+# SOV web build 6.1.45af
+
+Release patch na `sov-web-build-v6.1.45ae-oruzarstvo-microcopy-safety.zip`.
+
+Što je sređeno:
+
+- Usklađeni su `VERSION.txt`, `BUILD_VERSION.txt`, `update.json` i `assets/sov-version.js` na `6.1.45af`.
+- Oružarski glavni dashboard dobio je jasne vizualne kartice i smislene ikone: posudbe, povrat stare opreme, inventar, inventura i bilješke.
+- Članovska stranica `oruzarstvo.html` više ne prikazuje tehničke poruke tipa Supabase/build/pending; korisnik vidi normalne statuse i jasne greške.
+- Oružarski dio ima sigurnije poništavanje nakon izdavanja: `Poništi` vraća zahtjev u čekanje i pokušava vratiti premještene količine/lokacije.
+- Oružarske bilješke su preimenovane iz `Notes & Reminders` u `Bilješke i podsjetnici`.
+- Dashboard radni alati imaju manje tehničkog žargona u vidljivom tekstu.
+- Oružarski uvoz više ne izbacuje sirovi JSON u vidljivi log.
+- Posudbe koriste isti siguran flow izdavanja/povrata i kad je uključen loan-shop prikaz.
+
+SQL nije potreban za ovaj build.
+
+---
+
 # SOV web build v5.58.25
 
 Foundation refactor build za SOV Cloud web.

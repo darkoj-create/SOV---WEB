@@ -826,6 +826,31 @@
     return true;
   }
 
+  async function undoIssueRequest(id,req){
+    if(!configured()) return false;
+    const client=sb();
+    const borrower=(req&& (req.user||req.member_name||req.requester_name)) || 'Posuđivač';
+    for(const it of (req&&req.items)||[]){
+      const q=safeQuantity(it.quantity)||1;
+      await adjustItemLocation(client,it,'person','Kod '+borrower,-q);
+      await adjustItemLocation(client,it,'storage','Oružarstvo',q);
+      await patchItemCounters(client,it,q,-q);
+    }
+    try{
+      await client.from('equipment_loans').update({status:'cancelled',updated_at:new Date().toISOString(),note:'Poništeno izdavanje iz web sučelja'}).eq('request_id',id).in('status',['issued','partial_return']);
+    }catch(e){ console.warn('loan cancel skipped:', e.message||e); }
+    try{
+      const {data:loans,error}=await client.from('equipment_loans').select('id').eq('request_id',id).limit(20);
+      if(error) throw error;
+      const ids=(loans||[]).map(x=>x.id).filter(Boolean);
+      if(ids.length){
+        await client.from('equipment_loan_items').update({return_status:'cancelled',note:'Poništeno izdavanje'}).in('loan_id',ids);
+      }
+    }catch(e){ console.warn('loan item cancel skipped:', e.message||e); }
+    await updateRequestStatus(id,'pending');
+    return true;
+  }
+
   async function upsertSimpleItem(item){
     if(!configured()) return null;
     const client=sb();
@@ -964,7 +989,7 @@
     return data;
   }
 
-  window.SOVArmoryDB={configured,upsertSimpleItem,retireSimpleItem,loadArmoryNotes,saveArmoryNote,doneArmoryNote,loadRequests,createRequest,updateRequestStatus,issueRequest,returnRequestItems,importStaticData,loadAllData,loadCatalogManifest,createEquipmentItem,createEquipmentPiece,createEquipmentPieces,createRope,updateEquipmentStatus,recordLegacyReturn,addItemAndLegacyReturn};
+  window.SOVArmoryDB={configured,upsertSimpleItem,retireSimpleItem,loadArmoryNotes,saveArmoryNote,doneArmoryNote,loadRequests,createRequest,updateRequestStatus,issueRequest,undoIssueRequest,returnRequestItems,importStaticData,loadAllData,loadCatalogManifest,createEquipmentItem,createEquipmentPiece,createEquipmentPieces,createRope,updateEquipmentStatus,recordLegacyReturn,addItemAndLegacyReturn};
 
   // v5.48.1: true cache-first wrapper. The old v5.48 path still asked the manifest view
   // before returning cached data; on large Supabase views that made every page open feel like a full sync.
