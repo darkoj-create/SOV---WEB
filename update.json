@@ -1,0 +1,23 @@
+{
+  "app": "SOV web",
+  "version": "6.1.45p",
+  "versionName": "v6.1.44c-wordpress-text-import-preserve-current-public",
+  "build": "sov-web-build-v6.1.45p-oruzarstvo-human-language-polish",
+  "createdAt": "2026-06-24T17:03:11.259951Z",
+  "cacheBust": "6144c-wxr-text-preserve-current",
+  "base": "sov-web-build-v6.1.45l-oruzarstvo-merge-osobna-srt.zip",
+  "requiresSql": false,
+  "releaseType": "wordpress-text-import-preserve-current-public",
+  "changedFiles": [
+    "vijesti.html",
+    "novosti/*.html (only missing old posts)",
+    "data/legacy-wordpress-content.json",
+    "data/legacy-wordpress-media-manifest.json",
+    "index.html (small link to all posts)",
+    "VERSION.txt",
+    "BUILD_VERSION.txt",
+    "update.json"
+  ],
+  "notes": "Clean oruzarstvo.html: removed legacy layered boot scripts and local data/manifest fetch dependency; single Supabase REST catalog request with abort timeout.",
+  "requiredSql": "SUPABASE_ORUZARSTVO_LOANS_MATERIALIZER_v6_1_45b.sql"
+}
