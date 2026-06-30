@@ -1,14 +1,26 @@
 {
-  "versionCode": 900118,
-  "versionName": "1.4.29a-cloud-login-human-icon-gate",
-  "releaseName": "SOV Admin 1.4.29a — Cloud Login Human Icon Gate",
-  "apkFileName": "SOV-ADMIN-1.4.29a.apk",
-  "notes": "Cloud login gate pojačan: ako korisnik nije prijavljen i klikne Cloud, app ide na prijavu s velikom ikonom korisnika i nakon uspješne prijave automatski otvara Cloud. Dodan i hard-gate na samu Cloud rutu da se ne može zaobići. Oružarstvo sync iz 1.4.29 ostaje.",
-  "fileName": "sov-admin-v1_4_29a-cloud-login-human-icon-gate-source.zip",
-  "releaseDate": "2026-06-30",
-  "supabaseUrl": "https://ncomefzkuixyfixisrhi.supabase.co",
-  "requiresSql": "SUPABASE_ORUZARSTVO_CATEGORY_PRIORITY_ALIGN_v6_1_45ai.sql — vec primijenjeno na produkciju (nije potrebno ponovno).",
-  "firebaseProject": "sov-app-3ecd1",
-  "applicationId": "com.darko.speleov1admin",
-  "apkName": "SOV-ADMIN-1.4.29a.apk"
+  "app": "SOV web",
+  "version": "6.1.45ak",
+  "versionName": "v6.1.45ak-karta-refresh-loop-hard-fix",
+  "build": "sov-web-build-v6.1.45ak-karta-refresh-loop-hard-fix",
+  "createdAt": "2026-06-30T19:42:00+02:00",
+  "cacheBust": "6145ak-karta-refresh-loop-hard-fix",
+  "base": "sov-web-build-v6.1.45aj-trips-display-month-calendar-fix.zip",
+  "requiresSql": false,
+  "releaseType": "karta-refresh-loop-hard-fix",
+  "changedFiles": [
+    "BUILD_NOTES.md",
+    "BUILD_NOTES_v6.1.45ak_KARTA_REFRESH_LOOP_HARD_FIX.md",
+    "BUILD_VERSION.txt",
+    "README.md",
+    "VERSION.txt",
+    "assets/sov-version.js",
+    "Karta.html",
+    "KARTA.HTM",
+    "KARTA.HTML",
+    "Karta.htm",
+    "karta.htm",
+    "update.json"
+  ],
+  "notes": "Hard-fix za beskonačni refresh Karta.html: stari redirect-wrapper zamijenjen je punom kartom; dodani su uppercase/HTM kompatibilni aliasi bez meta refresha."
 }

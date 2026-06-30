@@ -1,3 +1,12 @@
+# SOV web v6.1.45ak — Karta refresh loop hard fix
+
+- `Karta.html` više nije redirect-wrapper nego puna karta.
+- Uklonjen je meta refresh/redirect loop.
+- Dodani uppercase/HTM aliasi bez redirecta za stare linkove.
+- Nema SQL-a i nema promjene poslovne logike.
+
+---
+
 # SOV web v6.1.45aj — prikaz izleta iz zapisnika u Izletima i kalendaru
 
 ## Problem

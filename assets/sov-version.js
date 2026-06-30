@@ -2,10 +2,10 @@
 // Fix: never writes textContent into <html> or <body>; older v6.1.1 could wipe the page because body.dataset.sovVersion matched [data-sov-version].
 (function(){
   'use strict';
-  const FALLBACK_VERSION='6.1.45aj';
-  const FALLBACK_CACHE='6145aj-trips-display-month-calendar-fix';
-  const FALLBACK_BUILD='sov-web-build-v6.1.45aj-trips-display-month-calendar-fix';
-  const FALLBACK_NAME='v6.1.45aj-trips-display-month-calendar-fix';
+  const FALLBACK_VERSION='6.1.45ak';
+  const FALLBACK_CACHE='6145ak-karta-refresh-loop-hard-fix';
+  const FALLBACK_BUILD='sov-web-build-v6.1.45ak-karta-refresh-loop-hard-fix';
+  const FALLBACK_NAME='v6.1.45ak-karta-refresh-loop-hard-fix';
   window.SOV_BUILD={version:FALLBACK_VERSION, versionName:FALLBACK_NAME, build:FALLBACK_BUILD, cacheBust:FALLBACK_CACHE};
   function safeSetText(sel, value){
     try{
