@@ -1,0 +1,12 @@
+SOV Admin APK 1.3.4 — Home Cloud Overhaul
+
+Changes:
+- Home screen: Izleti card replaced by Cloud card.
+- New Cloud tab/route groups Izleti, Oružarstvo and Arhiva.
+- Bottom navigation now opens Cloud instead of direct Izleti.
+- Oružarstvo and Arhiva remain read-only foundation screens.
+- No SQL/web changes.
+
+Build:
+- versionCode 900014
+- versionName 1.3.4-home-cloud-overhaul

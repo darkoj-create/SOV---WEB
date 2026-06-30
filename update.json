@@ -1,23 +1,14 @@
 {
-  "app": "SOV web",
-  "version": "6.1.45aj",
-  "versionName": "v6.1.45aj-trips-display-month-calendar-fix",
-  "build": "sov-web-build-v6.1.45aj-trips-display-month-calendar-fix",
-  "createdAt": "2026-06-30T19:25:00+02:00",
-  "cacheBust": "6145aj-trips-display-month-calendar-fix",
-  "base": "sov-web-build-v6.1.45ai-member-toolbar-unification.zip",
-  "requiresSql": false,
-  "releaseType": "trips-display-month-calendar-fix",
-  "changedFiles": [
-    "BUILD_NOTES.md",
-    "BUILD_NOTES_v6.1.45aj_TRIPS_DISPLAY_MONTH_CALENDAR_FIX.md",
-    "BUILD_VERSION.txt",
-    "README.md",
-    "VERSION.txt",
-    "assets/sov-version.js",
-    "izleti-cloud.html",
-    "kalendar-izleta.html",
-    "update.json"
-  ],
-  "notes": "Popravljen prikaz izleta odobrenih iz zapisnika: Izleti i kalendar automatski prelaze na prvi relevantni mjesec ako je tekući mjesec prazan."
+  "versionCode": 900118,
+  "versionName": "1.4.29a-cloud-login-human-icon-gate",
+  "releaseName": "SOV Admin 1.4.29a — Cloud Login Human Icon Gate",
+  "apkFileName": "SOV-ADMIN-1.4.29a.apk",
+  "notes": "Cloud login gate pojačan: ako korisnik nije prijavljen i klikne Cloud, app ide na prijavu s velikom ikonom korisnika i nakon uspješne prijave automatski otvara Cloud. Dodan i hard-gate na samu Cloud rutu da se ne može zaobići. Oružarstvo sync iz 1.4.29 ostaje.",
+  "fileName": "sov-admin-v1_4_29a-cloud-login-human-icon-gate-source.zip",
+  "releaseDate": "2026-06-30",
+  "supabaseUrl": "https://ncomefzkuixyfixisrhi.supabase.co",
+  "requiresSql": "SUPABASE_ORUZARSTVO_CATEGORY_PRIORITY_ALIGN_v6_1_45ai.sql — vec primijenjeno na produkciju (nije potrebno ponovno).",
+  "firebaseProject": "sov-app-3ecd1",
+  "applicationId": "com.darko.speleov1admin",
+  "apkName": "SOV-ADMIN-1.4.29a.apk"
 }

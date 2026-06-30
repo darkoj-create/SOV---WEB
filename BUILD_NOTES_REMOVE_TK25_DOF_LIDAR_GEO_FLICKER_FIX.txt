@@ -1,0 +1,23 @@
+SOV v1.0.166 — remove TK25/DOF LiDAR overlays + Geo Units flicker stabilization
+
+Base:
+- sov-v1.0.166-FULL-mybase-csv-import.zip
+
+Changes:
+- Removed TK25 overlay option from Maps & overlays.
+- Removed DOF LiDAR overlay option from Maps & overlays.
+- Removed unused TK25/DOF LiDAR overlay prefs/config helpers.
+- Kept Geological Units overlay as the only WMS overlay option.
+- Stabilized Geological Units overlay against redraw flicker:
+  - WmsTilesOverlay now has a stable key based on WMS source + opacity.
+  - Map overlay rebuilds keep the existing Geological Units WmsTilesOverlay when the source/opacity did not change.
+  - Geo overlay is no longer destroyed/recreated during marker/track/ruler redraws.
+  - WMS overlay redraw requests are batched instead of causing immediate invalidate storms.
+
+Not changed:
+- Base WMS/TK25 base map config.
+- SOV/Katastar/MyBase search logic.
+- MyBase KML/CSV import/export.
+- GPS spike filter.
+- Hillshade renderer.
+- Disk cache paths.

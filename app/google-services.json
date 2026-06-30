@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "538070025177",
+    "project_id": "sov-app-3ecd1",
+    "storage_bucket": "sov-app-3ecd1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:538070025177:android:1b3d4f3c3d40dbf0e54fc8",
+        "android_client_info": {
+          "package_name": "com.darko.speleov1admin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOyeIm0P0apDMaUxgds2R2j1mqCP0IctE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

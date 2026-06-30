@@ -1,0 +1,28 @@
+SOV v1.0.166 — WMS cache/thread tuning patch
+
+Base build:
+sov-v1.0.166-FULL-wms-smoothness-black-flash-fix.zip
+
+Changed files only:
+- app/src/main/java/com/darko/speleov1/util/WmsBaseTilesOverlay.kt
+- app/src/main/java/com/darko/speleov1/util/WmsTilesOverlay.kt
+- app/src/main/java/com/darko/speleov1/util/WmsPerformanceCache.kt
+
+Exact changes:
+- WmsBaseTilesOverlay memoryCache: 64MB -> 40MB
+- WmsBaseTilesOverlay viewportSnapshots: 24MB -> 16MB
+- WmsBaseTilesOverlay visibleExecutor: 7 -> 4 threads
+- WmsTilesOverlay memoryCache: 32MB -> 18MB
+- WmsPerformanceCache executor: 4 -> 2 threads
+
+Not changed:
+- URLs
+- rendering logic
+- disk cache logic
+- viewport snapshot logic
+- fallback logic
+- pending sets
+- draw() methods
+
+Build note:
+The source project is patched. The included APK, if present, is the APK from the original uploaded v1.0.166 package unless rebuilt locally in Android Studio.
