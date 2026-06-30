@@ -1,13 +1,11 @@
-# SOV web build 6.1.45ai
+# SOV web build 6.1.45aj
 
-Build: `sov-web-build-v6.1.45ai-member-toolbar-unification`
+Build: `sov-web-build-v6.1.45aj-trips-display-month-calendar-fix`
 
 ## Što je novo
 
-- Ujednačen je gornji članski toolbar na radnim modulima.
-- Toolbar sada ima samo tri akcije: **Javni sajt**, **Dashboard**, **Odjava**.
-- Logo lijevo vodi na `dashboard.html`.
-- Odjava koristi postojeći `data-logout` / `SOVAuth.logout()` mehanizam iz `assets/auth.js`.
-- Nema promjena poslovne logike, API/RPC poziva ni SQL-a.
-
-Detaljan prije/poslije pregled izmijenjenih headera: `SOV_HEADER_NAV_REPORT_v6_1_45ai.md`.
+- Popravljen je prikaz izleta odobrenih iz Gmail/native zapisnika.
+- Stranica `izleti-cloud.html` više ne ostaje prazna na tekućem mjesecu ako je prvi budući izlet u idućem mjesecu.
+- Stranica `kalendar-izleta.html` sada se nakon učitavanja automatski prebaci na mjesec prvog budućeg izleta/događaja ako u trenutnom mjesecu nema stavki.
+- Osvježavanje rasporeda vraća automatski odabir najbližeg relevantnog mjeseca.
+- Nema SQL promjena, nema promjene RPC/API ugovora i nema promjene poslovne logike odobravanja.

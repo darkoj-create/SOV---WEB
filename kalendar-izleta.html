@@ -79,7 +79,7 @@ function tripsEndpointCandidates(){
     .map(x=>clean(x)).filter(Boolean).filter(x=>{if(seen.has(x))return false; seen.add(x); return true;});
 }
 const RASPORED_WEBAPP_URL='https://script.google.com/macros/s/AKfycbxtn2jOfQjOVBlYJrl8sNKDkBfP2rpONy-lZSaySYHx0sAf72BEdPNybqc4yNvhJDsJ/exec';
-let trips=[], weatherCache={}, selectedTrip=null, calendarEvents=[], selectedCalendarDate=new Date().toISOString().slice(0,10), visibleCalendarMonth=new Date();
+let trips=[], weatherCache={}, selectedTrip=null, calendarEvents=[], selectedCalendarDate=new Date().toISOString().slice(0,10), visibleCalendarMonth=new Date(), calendarMonthManuallyChanged=false;
 const $=id=>document.getElementById(id);
 function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600)}
 function enc(v){return encodeURIComponent(v??'')}
@@ -206,7 +206,18 @@ async function loadVisibleWeather(){const visible=getFiltered().filter(t=>calend
 function getFiltered(){const q=clean($('search').value).toLowerCase(); const f=$('filter').value; return trips.filter(t=>{if(f==='upcoming'&&isPast(t))return false; if(f==='past'&&!isPast(t))return false; if(f==='mine'&&!isSigned(t))return false; const blob=[t.date,t.leader,t.location,t.description,t.goal,t.participants,t.drivers,t.weatherCity].join(' ').toLowerCase(); return !q||blob.includes(q)}).sort((a,b)=>dateKey(a)-dateKey(b))}
 function calendarIso(v){const d=parseDate(v); return d ? d.toISOString().slice(0,10) : ''}
 function calendarMonthStart(d){return new Date(d.getFullYear(), d.getMonth(), 1)}
-function shiftCalendarMonth(delta){visibleCalendarMonth=new Date(visibleCalendarMonth.getFullYear(), visibleCalendarMonth.getMonth()+delta, 1); render();}
+function calendarMonthEnd(d){return new Date(d.getFullYear(), d.getMonth()+1, 0)}
+function itemOverlapsVisibleMonth(it,d=visibleCalendarMonth){const s=itemStart(it); const e=itemEnd(it)||s; if(!s)return false; return e>=calendarMonthStart(d).toISOString().slice(0,10) && s<=calendarMonthEnd(d).toISOString().slice(0,10)}
+function setCalendarToItem(it){const iso=itemStart(it); if(!iso)return; selectedCalendarDate=iso; const d=new Date(iso+'T12:00:00'); if(!isNaN(d)) visibleCalendarMonth=new Date(d.getFullYear(),d.getMonth(),1)}
+function chooseDefaultCalendarMonth(){
+  if(calendarMonthManuallyChanged) return;
+  const all=allCalendarItems();
+  if(!all.length || all.some(it=>itemOverlapsVisibleMonth(it))) return;
+  const today=new Date().toISOString().slice(0,10);
+  const target=all.find(it=>(itemEnd(it)||itemStart(it))>=today) || all[0];
+  setCalendarToItem(target);
+}
+function shiftCalendarMonth(delta){calendarMonthManuallyChanged=true; visibleCalendarMonth=new Date(visibleCalendarMonth.getFullYear(), visibleCalendarMonth.getMonth()+delta, 1); render();}
 function allCalendarItems(){
   const tripItems=getFiltered().map(t=>({kind:'trip',date:calendarIso(t.start_date||t.startDate||clean(t.date).split(/\s+-\s+/)[0]||t.date),endDate:calendarIso(t.end_date||t.endDate||clean(t.date).split(/\s+-\s+/)[1]||t.start_date||t.startDate||t.date),category:clean(t.trip_category||t.goal||'Izlet'),title:clean(t.location)||clean(t.goal)||'Izlet',subtitle:[clean(t.goal),clean(t.leader)].filter(Boolean).join(' · '),trip:t})).filter(x=>x.date);
   const eventItems=(calendarEvents||[]).map(e=>({kind:'event',date:new Date(e.start_at||e.startAt||'').toISOString().slice(0,10),endDate:new Date(e.end_at||e.endAt||e.start_at||e.startAt||'').toISOString().slice(0,10),category:clean(e.event_type||e.eventType||'Događaj'),title:clean(e.title)||'Događaj',subtitle:[clean(e.event_type||e.eventType),clean(e.location)].filter(Boolean).join(' · '),event:e})).filter(x=>x.date && x.date!=='Invalid Date');
@@ -275,18 +286,18 @@ window.openMapForTrip=function(row){
 async function fetchTripsFromCloud(){
   const btn=$('refresh'); if(btn) btn.disabled=true;
   const cached = window.SOVTripsCloud ? window.SOVTripsCloud.loadCache() : [];
-  if(cached.length){ trips=cached.map(window.SOVTripsCloud.mapToLegacy); $('status').textContent='Prikazujem spremljeni raspored…'; render(); loadVisibleWeather(); }
+  if(cached.length){ trips=cached.map(window.SOVTripsCloud.mapToLegacy); $('status').textContent='Prikazujem spremljeni raspored…'; chooseDefaultCalendarMonth(); render(); loadVisibleWeather(); }
   try{
     if(!window.SOVTripsCloud) throw new Error('SOV Trips Cloud nije učitan');
     const rows=await window.SOVTripsCloud.listTrips();
     trips=rows.map(window.SOVTripsCloud.mapToLegacy);
     $('status').textContent='Učitano '+trips.length+' izleta.';
-    render(); loadVisibleWeather();
+    chooseDefaultCalendarMonth(); render(); loadVisibleWeather();
   }catch(e){ console.warn(e); $('status').textContent=cached.length?'Izleti se nisu osvježili. Prikazujem zadnji spremljeni raspored.':'Izleti se nisu učitali. Provjeri vezu i pokušaj ponovo.'; }
   if(btn) btn.disabled=false;
 }
-$('refresh').onclick=()=>{toast('Osvježavam izlete…'); fetchTripsFromCloud();};
-$('setTripsEndpoint').onclick=()=>{toast('Osvježavam…'); fetchTripsFromCloud();};
+$('refresh').onclick=()=>{toast('Osvježavam izlete…'); calendarMonthManuallyChanged=false; fetchTripsFromCloud();};
+$('setTripsEndpoint').onclick=()=>{toast('Osvježavam…'); calendarMonthManuallyChanged=false; fetchTripsFromCloud();};
 $('showPastTrips').onclick=()=>{ $('filter').value='past'; render(); loadVisibleWeather(); document.getElementById('tripList').scrollIntoView({behavior:'smooth',block:'start'}); toast('Prikazujem arhivu prošlih izleta.'); };
 $('search').oninput=()=>{render();loadVisibleWeather()};
 $('filter').onchange=()=>{render();loadVisibleWeather()};
@@ -311,7 +322,7 @@ async function loadCalendarEvents(){
     const now=new Date();
     const items=calendarEvents.filter(e=>!e.end_at || new Date(e.end_at)>=new Date(now.getTime()-86400000)).slice(0,12);
     if(box) box.innerHTML = items.length ? items.map(e=>`<div class="chip" style="margin:4px 4px 4px 0">🗓 ${escDate(e.start_at)} · ${escHtml(e.title||'Događaj')}</div>`).join('') : '<span>Nema dodatnih događaja.</span>';
-    render(); loadVisibleWeather();
+    chooseDefaultCalendarMonth(); render(); loadVisibleWeather();
   }catch(e){ console.warn(e); if(box) box.innerHTML='Dodatni događaji nisu učitani: '+escHtml(e.message||e); }
 }
 function escHtml(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
@@ -332,5 +343,5 @@ $('saveCalendarEvent').onclick=async()=>{
 loadCalendarEvents();
 
 </script>
-<script src="assets/sov-inbox.js?v=4.90"></script><script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script defer="" src="assets/sov-polish-v55826.js"></script><script defer="" src="assets/sov-wow-v6.js?v=6.1.12"></script><script defer="" src="assets/sov-version.js?v=6.1.45ai"></script><script defer="" src="assets/sov-client-logger.js?v=6.1.31"></script></body>
+<script src="assets/sov-inbox.js?v=4.90"></script><script defer="" src="assets/sov-foundation-v55822.js"></script><script defer="" src="assets/sov-shell-v55825.js"></script><script defer="" src="assets/sov-polish-v55826.js"></script><script defer="" src="assets/sov-wow-v6.js?v=6.1.12"></script><script defer="" src="assets/sov-version.js?v=6.1.45aj"></script><script defer="" src="assets/sov-client-logger.js?v=6.1.31"></script></body>
 </html>
