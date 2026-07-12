@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Nema interneta — SOV</title>
+  <meta name="theme-color" content="#0b0f14">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/assets/icons/sov-icon-192.png">
+  <style>
+    :root{--bg:#050807;--panel:rgba(255,255,255,.065);--line:rgba(255,255,255,.13);--text:#eef8f2;--muted:#aabbb4;--lime:#d7f66f;--teal:#83e6c2}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 80% 0,rgba(120,215,255,.16),transparent 32%),radial-gradient(circle at 10% 15%,rgba(215,246,111,.12),transparent 30%),linear-gradient(180deg,#030504,#07120f 55%,#030504);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.card{width:min(720px,100%);border:1px solid var(--line);border-radius:30px;background:var(--panel);padding:28px;box-shadow:0 24px 90px rgba(0,0,0,.38)}.mark{width:58px;height:58px;border-radius:20px;display:grid;place-items:center;background:linear-gradient(135deg,var(--lime),var(--teal));color:#101510;font-weight:1000;margin-bottom:16px}h1{margin:0 0 10px;font-size:clamp(34px,7vw,62px);line-height:.95;letter-spacing:-.06em}.muted{color:var(--muted);line-height:1.6}.btn{display:inline-flex;margin-top:16px;border-radius:999px;background:linear-gradient(135deg,var(--lime),var(--teal));color:#101510;text-decoration:none;font-weight:950;padding:12px 16px;border:0;cursor:pointer}
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="mark">SOV</div>
+    <h1>Nema interneta.</h1>
+    <p class="muted">Dostupne su samo spremljene stranice. Kad se veza vrati, osvježi stranicu za nove podatke.</p>
+    <button class="btn" onclick="location.reload()">Pokušaj ponovno</button>
+  </main>
+</body>
+</html>
