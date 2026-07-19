@@ -1,0 +1,24 @@
+@import url('/assets/sov-system-status-wow-v6145v.css?v=6.1.45v');
+
+.sov-status-grid.sov-status-grid-wide{
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+}
+.sov-status-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.sov-status-toolbar .sov-pill{font:inherit}
+.sov-crash-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:12px 0 16px}
+.sov-crash-stat{border:1px solid var(--sov-line);border-radius:18px;padding:13px;background:rgba(255,255,255,.035)}
+.sov-crash-stat span{display:block;color:var(--sov-muted);font-size:11px;text-transform:uppercase;letter-spacing:.1em;font-weight:900}
+.sov-crash-stat b{display:block;font-size:25px;letter-spacing:-.04em;margin-top:5px}
+.sov-crash-stat small{display:block;color:var(--sov-muted);font-size:11px;margin-top:4px;line-height:1.35}
+.sov-crash-table-wrap{overflow:auto;border:1px solid rgba(255,255,255,.07);border-radius:18px}
+.sov-crash-table-wrap .sov-table th:first-child,.sov-crash-table-wrap .sov-table td:first-child{padding-left:14px}
+.sov-crash-table-wrap .sov-table th:last-child,.sov-crash-table-wrap .sov-table td:last-child{padding-right:14px;text-align:left}
+.sov-crash-message{max-width:560px;white-space:normal;word-break:break-word;line-height:1.45}
+.sov-crash-meta{display:block;color:var(--sov-muted);font-size:11px;margin-top:4px}
+.sov-platform{display:inline-flex;padding:3px 7px;border-radius:999px;border:1px solid var(--sov-line);font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;background:rgba(255,255,255,.04)}
+.sov-platform.android{color:#bbf7d0;border-color:rgba(34,197,94,.28)}
+.sov-platform.web{color:#bae6fd;border-color:rgba(103,232,249,.25)}
+.sov-inline-note{margin:10px 0 0;color:var(--sov-muted);font-size:12px;line-height:1.5}
+.sov-contract-ok{color:#86efac}.sov-contract-warn{color:#fbbf24}
+@media(max-width:980px){.sov-crash-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){.sov-crash-grid{grid-template-columns:1fr}.sov-crash-message{min-width:260px}}
