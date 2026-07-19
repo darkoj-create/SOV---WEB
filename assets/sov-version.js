@@ -2,19 +2,13 @@
 // Fix: never writes textContent into <html> or <body>; older v6.1.1 could wipe the page because body.dataset.sovVersion matched [data-sov-version].
 (function(){
   'use strict';
-  const FALLBACK_VERSION='6.1.45am';
-  const FALLBACK_CACHE='6145am-nacrt-visual-v3';
-  const FALLBACK_BUILD='sov-web-build-v6.1.45am-nacrt-visual-v3';
-  const FALLBACK_NAME='v6.1.45am-nacrt-visual-v3';
+  const FALLBACK_VERSION='6.1.45an';
+  const FALLBACK_CACHE='6145an-nacrt-material-v4';
+  const FALLBACK_BUILD='sov-web-build-v6.1.45an-nacrt-material-v4';
+  const FALLBACK_NAME='v6.1.45an-nacrt-material-v4';
   window.SOV_BUILD={version:FALLBACK_VERSION, versionName:FALLBACK_NAME, build:FALLBACK_BUILD, cacheBust:FALLBACK_CACHE};
   function safeSetText(sel, value){
-    try{
-      document.querySelectorAll(sel).forEach(el=>{
-        if(!el || el===document.body || el===document.documentElement) return;
-        // Only small explicit labels should be rewritten, never layout containers.
-        el.textContent=value;
-      });
-    }catch(e){}
+    try{ document.querySelectorAll(sel).forEach(el=>{ if(!el || el===document.body || el===document.documentElement) return; el.textContent=value; }); }catch(e){}
   }
   function applyVersion(v, b, n){
     v = v || FALLBACK_VERSION; b = b || FALLBACK_BUILD; n = n || FALLBACK_NAME;
