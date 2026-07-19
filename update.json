@@ -1,21 +1,21 @@
 {
   "app": "SOV web",
-  "version": "6.1.45am",
-  "versionName": "v6.1.45am-nacrt-visual-v3",
-  "build": "sov-web-build-v6.1.45am-nacrt-visual-v3",
-  "createdAt": "2026-07-19T21:34:00+02:00",
-  "cacheBust": "6145am-nacrt-visual-v3",
-  "base": "sov-web-build-v6.1.45al-nacrt-renderer-v2",
+  "version": "6.1.45an",
+  "versionName": "v6.1.45an-nacrt-material-v4",
+  "build": "sov-web-build-v6.1.45an-nacrt-material-v4",
+  "createdAt": "2026-07-19T22:10:00+02:00",
+  "cacheBust": "6145an-nacrt-material-v4",
+  "base": "sov-web-build-v6.1.45am-nacrt-visual-v3",
   "requiresSql": false,
-  "releaseType": "nacrt-visual-v3",
+  "releaseType": "nacrt-material-v4",
   "changedFiles": [
     "nacrt.js",
-    "nacrt-v3.js",
-    "BUILD_NOTES_v6.1.45am_NACRT_VISUAL_V3.md",
+    "nacrt-v4.js",
+    "BUILD_NOTES_v6.1.45an_NACRT_MATERIAL_V4.md",
     "BUILD_VERSION.txt",
     "VERSION.txt",
     "assets/sov-version.js",
     "update.json"
   ],
-  "notes": "Nacrt Generator v3: automatske tonske ispune profila, tlocrta i presjeka, dubinsko sjenčanje, zrnata kamena tekstura, bogatiji blokovi, sipar, stupovi i ulazni simboli. Parser, geometrija, raspored i v2 naslovni blok ostaju netaknuti."
+  "notes": "Nacrt Generator v4: cave void stays white, outer terrain halo replaces incorrect interior fill, old v3 fill raster removed, header/footer cleaned, depth rounded normally. Parser, geometry and v2/v3 layout stay intact."
 }
