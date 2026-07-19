@@ -1,21 +1,23 @@
 {
   "app": "SOV web",
-  "version": "6.1.45aq",
-  "versionName": "v6.1.45aq-nacrt-symbols-polish",
-  "build": "sov-web-build-v6.1.45aq-nacrt-symbols-polish",
-  "createdAt": "2026-07-19T23:15:00+02:00",
-  "cacheBust": "6145aq-nacrt-symbols-polish",
-  "base": "sov-web-build-v6.1.45ap-nacrt-clean-official",
+  "version": "6.1.45ar",
+  "versionName": "v6.1.45ar-nacrt-semantic-v5",
+  "build": "sov-web-build-v6.1.45ar-nacrt-semantic-v5",
+  "createdAt": "2026-07-19T23:45:00+02:00",
+  "cacheBust": "6145ar-nacrt-semantic-v5",
+  "base": "sov-web-build-v6.1.45aq-nacrt-symbols-polish",
   "requiresSql": false,
-  "releaseType": "nacrt-symbols-polish",
+  "releaseType": "nacrt-semantic-v5",
   "changedFiles": [
     "nacrt.js",
-    "nacrt-symbols.js",
-    "BUILD_NOTES_v6.1.45aq_NACRT_SYMBOLS_POLISH.md",
+    "nacrt-semantic-core.js",
+    "nacrt-semantic-styles.js",
+    "nacrt-semantic-layout.js",
+    "BUILD_NOTES_v6.1.45ar_NACRT_SEMANTIC_V5.md",
     "BUILD_VERSION.txt",
     "VERSION.txt",
     "assets/sov-version.js",
     "update.json"
   ],
-  "notes": "Nacrt Generator symbols polish: lightweight SVG-only conifer trees and irregular grey rocks/debris based on actual TopoDroid points, material areas and detached tree geometry. Cave and terrain remain uncoloured; official Velebit logos and approved-user Cloud access remain active."
+  "notes": "Semantic Nacrt v5 based on Kopitarka, Kozje tajne and Ledeno gnijezdo source/PDF pairs: central TopoDroid style registry, all non-empty TDR scraps retained, semantic wall/presumed-wall/ice/pit/overhang/arrow/border rendering, meaningful debris/blocks/sand/clay/water/snow patterns, individual rocks, pebbles, snow, paleo-material, continuation and air-draught symbols, tree component detection, safe unknown-type diagnostics, and SVG-only rendering without generic cave colouring or per-pixel processing."
 }
