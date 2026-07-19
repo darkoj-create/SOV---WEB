@@ -5,7 +5,7 @@
   const $=(sel,root=document)=>root.querySelector(sel);
   const fmt=new Intl.NumberFormat('hr-HR');
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const safeNumber=v=>{const n=Number(v);return Number.isFinite(n)?n:null;};
+  const safeNumber=v=>{if(v===null||v===undefined||v==='')return null;const n=Number(v);return Number.isFinite(n)?n:null;};
   const ms=n=>`${Math.round(n)} ms`;
   const fmtDate=v=>{if(!v)return '—';const d=new Date(v);return Number.isNaN(d.getTime())?'—':d.toLocaleString('hr-HR');};
   function log(line){const el=$('#sov-status-log');if(el){el.textContent+=`[${new Date().toLocaleTimeString('hr-HR')}] ${line}\n`;el.scrollTop=el.scrollHeight;}}
@@ -98,7 +98,7 @@
     const profileCheck=await measure('Profil i rola',async()=>{if(window.SOVAuth&&window.SOVAuth.getProfile)return await window.SOVAuth.getProfile(true);const{data,error}=await sb.from('profiles').select('*').eq('id',session.user.id).maybeSingle();if(error)throw error;return data;},true);
     profile=profileCheck.data||{email:session.user.email,role:'user'};
     const role=String(profile.role||'').toLowerCase();
-    const isAdmin=['admin','webmaster'].includes(role)||String(session.user.email||'').toLowerCase()==='darko.jeras@gmail.com';
+    const isAdmin=['admin','webmaster'].includes(role);
     if(!isAdmin){setChip('#auth-chip','Nema ovlasti','bad');markScore('bad','Nema ovlasti','Status sustava je samo za Admin/Webmaster.');$('#denied-card')?.classList.remove('sov-hidden');renderChecks();renderSnapshot(profile,localManifest,{});return;}
     const live={};
     const snapshotCheck=await measure('System status RPC v2',async()=>{const{data,error}=await sb.rpc('sov_system_status_snapshot',{p_recent_limit:40});if(error)throw error;if(!data||typeof data!=='object')throw new Error('Prazan status snapshot');return data;});
