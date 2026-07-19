@@ -6,30 +6,30 @@
   <title>SOV Cloud · System status</title>
   <meta name="robots" content="noindex,nofollow" />
   <link rel="icon" href="/assets/sov-logo.png" />
-  <link rel="stylesheet" href="/assets/sov-system-status-wow-v6145v.css?v=6.1.45v" />
-<link rel="stylesheet" href="assets/sov-member-header-v6145ai.css">
+  <link rel="stylesheet" href="/assets/sov-system-status-wow-v6145au.css?v=6.1.45au" />
+  <link rel="stylesheet" href="assets/sov-member-header-v6145ai.css">
 </head>
 <body>
   <main class="sov-status-wrap">
     <header class="sov-member-top" data-sov-member-header>
-  <a class="sov-member-brand" href="dashboard.html" aria-label="Povratak na članski dashboard">
-    <img class="sov-member-logo" src="assets/sov-logo.png" alt="SOV" loading="eager" decoding="async">
-    <span class="sov-member-brand-text"><strong>SOV Cloud</strong><small>Članski prostor</small></span>
-  </a>
-  <nav class="sov-member-nav" aria-label="Glavna članska navigacija">
-    <a class="sov-member-link" href="index.html">Javni sajt</a>
-    <a class="sov-member-link" href="dashboard.html">Dashboard</a>
-    <a class="sov-member-link sov-member-logout" href="index.html" data-logout>Odjava</a>
-  </nav>
-</header>
+      <a class="sov-member-brand" href="dashboard.html" aria-label="Povratak na članski dashboard">
+        <img class="sov-member-logo" src="assets/sov-logo.png" alt="SOV" loading="eager" decoding="async">
+        <span class="sov-member-brand-text"><strong>SOV Cloud</strong><small>Članski prostor</small></span>
+      </a>
+      <nav class="sov-member-nav" aria-label="Glavna članska navigacija">
+        <a class="sov-member-link" href="index.html">Javni sajt</a>
+        <a class="sov-member-link" href="dashboard.html">Dashboard</a>
+        <a class="sov-member-link sov-member-logout" href="index.html" data-logout>Odjava</a>
+      </nav>
+    </header>
 
     <section class="sov-status-hero" aria-labelledby="status-title">
       <div class="sov-hero-grid">
         <div>
-          <p class="sov-eyebrow">Live admin dashboard</p>
+          <p class="sov-eyebrow">Live admin dashboard · observability v2</p>
           <h1 id="status-title">System status</h1>
-          <p class="sov-lead">Pravi kontrolni ekran za SOV Cloud: provjerava prijavu, live Supabase, katalog opreme, zahtjeve, posudbe i release manifest.</p>
-          <p class="sov-mobile-note">Na mobitelu skrolaj dolje za detalje i log provjera.</p>
+          <p class="sov-lead">Jedan kontrolni ekran za web, Supabase i APK: provjerava prijavu, backend contract, katalog, zahtjeve, posudbe, sigurnost te handled greške i fatalne crash reportove s Android uređaja.</p>
+          <p class="sov-mobile-note">Na mobitelu skrolaj dolje za crash reportove, detalje i log provjera.</p>
         </div>
         <aside class="sov-hero-panel" aria-label="Ukupni status">
           <div class="label">Ukupno stanje</div>
@@ -37,12 +37,15 @@
             <span id="overall-dot" class="sov-score-dot"></span>
             <div><strong id="overall-title">Provjeravam…</strong><small id="overall-subtitle">Pokrećem live provjere.</small></div>
           </div>
-          <div style="margin-top:14px"><span id="overall-chip" class="sov-status-chip">Loading</span></div>
+          <div class="sov-status-toolbar" style="margin-top:14px">
+            <span id="overall-chip" class="sov-status-chip">Loading</span>
+            <button class="sov-pill" id="refresh-status" type="button">Osvježi</button>
+          </div>
         </aside>
       </div>
     </section>
 
-    <section class="sov-status-grid" aria-label="Glavni KPI statusa">
+    <section class="sov-status-grid sov-status-grid-wide" aria-label="Glavni KPI statusa">
       <article class="sov-tile">
         <div class="sov-tile-head"><h2>Katalog opreme</h2><div class="sov-icon">🧰</div></div>
         <div id="kpi-catalog" class="sov-kpi sov-skeleton">000</div>
@@ -63,6 +66,16 @@
         <div style="margin:8px 0 12px"><span id="db-chip" class="sov-status-chip">Provjera</span></div>
         <div id="last-refresh" class="sov-kpi-sub">—</div>
       </article>
+      <article class="sov-tile">
+        <div class="sov-tile-head"><h2>APK fatal 24 h</h2><div class="sov-icon">💥</div></div>
+        <div id="kpi-android-fatal" class="sov-kpi sov-skeleton">000</div>
+        <div class="sov-kpi-sub">neuhvaćenih Android crashova</div>
+      </article>
+      <article class="sov-tile">
+        <div class="sov-tile-head"><h2>Client eventi 24 h</h2><div class="sov-icon">📡</div></div>
+        <div id="kpi-client-events" class="sov-kpi sov-skeleton">000</div>
+        <div class="sov-kpi-sub">web + Android error događaja</div>
+      </article>
     </section>
 
     <section id="login-card" class="sov-card sov-hidden" style="margin-bottom:16px">
@@ -73,7 +86,7 @@
 
     <section id="denied-card" class="sov-card sov-hidden" style="margin-bottom:16px">
       <div class="sov-card-head"><h2>Nemaš ovlasti za ovaj ekran</h2><span class="sov-status-chip bad">Forbidden</span></div>
-      <p class="sov-muted">Ovo je servisna stranica za Admin/Webmaster ulogu. Obični članovi ne trebaju vidjeti status baze, sigurnosti i deploya.</p>
+      <p class="sov-muted">Ovo je servisna stranica za Admin/Webmaster ulogu. Obični članovi ne trebaju vidjeti status baze, sigurnosti, deploya ni crash reportove.</p>
     </section>
 
     <section class="sov-main-grid">
@@ -91,6 +104,7 @@
       <aside class="sov-card">
         <h2>Brze akcije</h2>
         <div class="sov-actions">
+          <a class="sov-action" href="#client-errors"><span>APK / web crash reporti</span><b>↓</b></a>
           <a class="sov-action" href="/oruzarstvo.html"><span>Oružarstvo katalog</span><b>→</b></a>
           <a class="sov-action" href="/oruzar-master-posudbe.html"><span>Posudbe</span><b>→</b></a>
           <a class="sov-action" href="/admin-users.html"><span>Korisnici</span><b>→</b></a>
@@ -98,6 +112,30 @@
           <a class="sov-action" href="/sync-status.html"><span>Sync status</span><b>→</b></a>
         </div>
       </aside>
+    </section>
+
+    <section id="client-errors" class="sov-card" style="margin-top:16px">
+      <div class="sov-card-head">
+        <div>
+          <h2 style="margin-bottom:5px">APK i web crash reporti</h2>
+          <p id="crash-contract" class="sov-muted" style="margin:0">Učitavam observability contract…</p>
+        </div>
+        <span class="sov-status-chip">7 dana</span>
+      </div>
+      <div class="sov-crash-grid">
+        <div class="sov-crash-stat"><span>Android fatal 24 h</span><b id="crash-android-fatal">—</b><small>stvarni pad procesa</small></div>
+        <div class="sov-crash-stat"><span>Android error 24 h</span><b id="crash-android-errors">—</b><small>handled error + fatal</small></div>
+        <div class="sov-crash-stat"><span>Android unhandled 7 d</span><b id="crash-android-unhandled">—</b><small>fatalni događaji u tjednu</small></div>
+        <div class="sov-crash-stat"><span>Web fatal 24 h</span><b id="crash-web-fatal">—</b><small>neuhvaćene web greške</small></div>
+        <div class="sov-crash-stat"><span>Zadnji APK signal</span><b id="crash-last-apk">—</b><small id="crash-last-seen">—</small></div>
+      </div>
+      <div class="sov-crash-table-wrap">
+        <table class="sov-table" aria-label="Posljednji client error i crash reporti">
+          <thead><tr><th>Vrijeme</th><th>Platforma</th><th>Kontekst</th><th>Težina</th><th>Poruka</th></tr></thead>
+          <tbody id="crash-body"><tr><td colspan="5" class="sov-muted">Učitavam reportove…</td></tr></tbody>
+        </table>
+      </div>
+      <p class="sov-inline-note">Fatalni Android crash prvo se sigurno spremi na uređaj, zatim se pri sljedećem pokretanju šalje u Supabase. Firebase Crashlytics ostaje paralelni vanjski zapis; System status ne ovisi o Firebase konzoli.</p>
     </section>
 
     <section class="sov-main-grid" style="margin-top:16px">
@@ -121,9 +159,9 @@
       <article class="sov-card">
         <h2>Sigurnost / audit</h2>
         <div class="sov-row"><span>Tablice bez RLS-a</span><b id="security-rls">—</b></div>
-        <div class="sov-row"><span>Open policy procjena</span><b id="security-policies">—</b></div>
+        <div class="sov-row"><span>Anon/public write politike</span><b id="security-policies">—</b></div>
         <div class="sov-row"><span>Hardening log</span><b id="security-log">—</b></div>
-        <p class="sov-muted">Ako RLS audit pokazuje “—”, browser nema dovoljan DB uvid bez posebnog status RPC-a. Ostale provjere i dalje rade live.</p>
+        <p class="sov-muted">Brojevi dolaze iz admin-only Supabase RPC-a. Policy broj je inventar za čišćenje, ne automatska tvrdnja da je svaka politika ranjiva.</p>
       </article>
       <article class="sov-card">
         <h2>Raw snapshot</h2>
@@ -138,8 +176,8 @@
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="/assets/supabase-config.js?v=6.1.45v"></script>
-  <script src="/assets/auth.js?v=6.1.45v"></script>
-  <script src="/assets/sov-system-status-wow-v6145v.js?v=6.1.45v"></script>
+  <script src="/assets/supabase-config.js?v=6.1.45au"></script>
+  <script src="/assets/auth.js?v=6.1.45au"></script>
+  <script src="/assets/sov-system-status-wow-v6145au.js?v=6.1.45au"></script>
 </body>
 </html>
