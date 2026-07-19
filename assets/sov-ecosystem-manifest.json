@@ -1,27 +1,31 @@
 {
-  "schema_version": "1.0",
-  "release_name": "SOV Ecosystem Baseline 2026-06-27",
-  "apk_version": "1.4.28-ecosystem-baseline",
-  "apk_version_code": 900116,
-  "web_version": "6.1.45-ecosystem-baseline",
-  "backend_contract": "2026.06.27",
+  "schema_version": "2.0",
+  "release_name": "SOV Observability v2 — 2026-07-20",
+  "apk_version": "1.4.56b-crash-bridge",
+  "apk_version_code": 900159,
+  "apk_min_version": "1.4.28-ecosystem-baseline",
+  "web_version": "6.1.45au-system-status-crash-v2",
+  "backend_contract": "2026.07.20-observability-v2",
   "supabase_project_ref": "ncomefzkuixyfixisrhi",
   "supabase_project_name": "SOV-web",
   "supabase_region": "eu-west-1",
-  "required_sql_pack": "sov_ecosystem_manifest_2026_06_27",
-  "release_channel": "baseline",
+  "required_sql_pack": "sov_observability_system_status_v2",
+  "release_channel": "active",
   "notes": [
-    "Instrumentation-only baseline: no functional changes to trips, maps, armory, archive, or tracking.",
-    "Security cleanup must be applied separately after policy/function snapshot.",
-    "Offline tile ZIP URL is still external configuration and not bundled here."
+    "System status snapshot is restricted to approved Admin/Webmaster users.",
+    "Handled web and Android errors continue to use sov_log_client_error.",
+    "APK 1.4.56b buffers fatal crashes locally and uploads them at the next process start.",
+    "Firebase Crashlytics remains enabled as an independent secondary crash record.",
+    "No trip, map, archive, armory, Nacrt or tracking data model changes."
   ],
   "masters": {
-    "users_roles": "Supabase Auth + public.sov_user_profiles/safe role functions",
+    "users_roles": "Supabase Auth + public.profiles + role-gated RPCs",
     "trips": "Supabase trips + mobile feed/manifest",
     "tracking": "APK offline queue -> Supabase tracking RPCs -> web viewer",
     "armory": "Supabase equipment tables/views",
     "archive": "Supabase speleo/archive objects and submissions",
-    "documents": "Supabase DB/storage, no raw docx in web bundle",
-    "offline_maps": "hosted z/x/y.png tile ZIP + APK cache"
+    "documents": "Supabase DB/storage, no raw DOCX files in web bundle",
+    "offline_maps": "hosted tile packages + APK cache",
+    "observability": "Firebase Crashlytics + public.sov_client_error_logs + admin-only sov_system_status_snapshot"
   }
 }
