@@ -5,9 +5,9 @@
   }
 
   const KNOWN = {
-    lines: new Set(['wall','wall:presumed','wall:ice','pit','overhang','arrow','border','user']),
-    areas: new Set(['debris','blocks','sand','clay','mud','water','snow','ice']),
-    points: new Set(['blocks','rock','boulder','debris','rubble','scree','pebbles','snow','paleo-material','continuation','air-draught','entrance','section','pillar','tree','bush','plant','vegetation','conifer','label'])
+    lines: new Set(['wall','wall:presumed','wall:ice','pit','overhang','arrow','border','user','water-flow','stream','river','flow','wood','log','timber','rope','slope','gradient','crack','fissure']),
+    areas: new Set(['debris','blocks','sand','clay','mud','water','snow','ice','gravel','pebbles','cobbles','soil','earth','loam','humus','flowstone','calcite','moonmilk','formation','vegetation','grass','plant','bush','shrub','wood','log','timber','root','guano','lake','pool','sump','silt','rubble','scree','boulder','rock']),
+    points: new Set(['blocks','rock','boulder','debris','rubble','scree','pebbles','snow','paleo-material','continuation','air-draught','entrance','section','pillar','tree','bush','plant','vegetation','conifer','broadleaf','deciduous','fir','spruce','pine','shrub','label','root','wood','log','timber','water-flow','spring','resurgence','stream','stalactite','stalagmite','column','pillar-formation','crystal','guano','danger','hazard'])
   };
   const esc = v => String(v ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   const meaningful = t => !!t && ((t.lines||[]).length || (t.areas||[]).length || (t.points||[]).length || (t.stations||[]).length);
@@ -86,5 +86,5 @@
     return survey;
   };
 
-  window.SOVSemanticCore={version:'5.0',KNOWN,esc,meaningful,getExtent,makeTransform,pathData,lineTicks,arrowHead};
+  window.SOVSemanticCore={version:'6.0',KNOWN,esc,meaningful,getExtent,makeTransform,pathData,lineTicks,arrowHead};
 })();
