@@ -1,21 +1,23 @@
 {
   "app": "SOV web",
-  "version": "6.1.45as",
-  "versionName": "v6.1.45as-nacrt-pds-logo-fix",
-  "build": "sov-web-build-v6.1.45as-nacrt-pds-logo-fix",
-  "createdAt": "2026-07-20T00:10:00+02:00",
-  "cacheBust": "6145as-nacrt-pds-logo-fix",
-  "base": "sov-web-build-v6.1.45ar-nacrt-semantic-v5",
+  "version": "6.1.45at",
+  "versionName": "v6.1.45at-nacrt-corpus-style-v6",
+  "build": "sov-web-build-v6.1.45at-nacrt-corpus-style-v6",
+  "createdAt": "2026-07-20T00:35:00+02:00",
+  "cacheBust": "6145at-nacrt-corpus-style-v6",
+  "base": "sov-web-build-v6.1.45as-nacrt-pds-logo-fix",
   "requiresSql": false,
-  "releaseType": "nacrt-pds-logo-fix",
+  "releaseType": "nacrt-corpus-style-v6",
   "changedFiles": [
     "nacrt.js",
-    "nacrt-pds-logo-fix.js",
-    "BUILD_NOTES_v6.1.45as_NACRT_PDS_LOGO_FIX.md",
+    "nacrt-semantic-core.js",
+    "nacrt-corpus-style-v6.js",
+    "NACRT_STYLE_REGISTRY_V6.md",
+    "BUILD_NOTES_v6.1.45at_NACRT_CORPUS_STYLE_V6.md",
     "BUILD_VERSION.txt",
     "VERSION.txt",
     "assets/sov-version.js",
     "update.json"
   ],
-  "notes": "Corrected the right PDS Velebit logo proportions, placement and internal geometry. No parser, cave geometry, semantic style or access-control changes."
+  "notes": "Corpus-informed Nacrt style v6 based on 1,109 SOV reference pages and paired TopoDroid/PDF examples. Colour is semantic only: water blue, ice/snow cyan, vegetation green, wood brown, rocks grey, sediment print-safe. Adds wider line/area/point symbol coverage and keeps parser/geometry stable and SVG-only."
 }
