@@ -1,23 +1,21 @@
 {
   "app": "SOV web",
-  "version": "6.1.45ap",
-  "versionName": "v6.1.45ap-nacrt-clean-official",
-  "build": "sov-web-build-v6.1.45ap-nacrt-clean-official",
-  "createdAt": "2026-07-19T22:50:00+02:00",
-  "cacheBust": "6145ap-nacrt-clean-official",
-  "base": "sov-web-build-v6.1.45ao-nacrt-v4-crash-rollback",
+  "version": "6.1.45aq",
+  "versionName": "v6.1.45aq-nacrt-symbols-polish",
+  "build": "sov-web-build-v6.1.45aq-nacrt-symbols-polish",
+  "createdAt": "2026-07-19T23:15:00+02:00",
+  "cacheBust": "6145aq-nacrt-symbols-polish",
+  "base": "sov-web-build-v6.1.45ap-nacrt-clean-official",
   "requiresSql": false,
-  "releaseType": "nacrt-clean-official",
+  "releaseType": "nacrt-symbols-polish",
   "changedFiles": [
     "nacrt.js",
-    "nacrt-branding.js",
-    "assets/nacrt-sov-logo.png",
-    "assets/nacrt-pds-velebit-logo.png",
-    "BUILD_NOTES_v6.1.45ap_NACRT_CLEAN_OFFICIAL.md",
+    "nacrt-symbols.js",
+    "BUILD_NOTES_v6.1.45aq_NACRT_SYMBOLS_POLISH.md",
     "BUILD_VERSION.txt",
     "VERSION.txt",
     "assets/sov-version.js",
     "update.json"
   ],
-  "notes": "Stable clean Nacrt Generator: no generic cave colouring, official uploaded SOV and PDS Velebit logos, monochrome material patterns and speleological symbols, approved-user access guard, and automatic Nacrt Generator card on the main SOV Cloud dashboard."
+  "notes": "Nacrt Generator symbols polish: lightweight SVG-only conifer trees and irregular grey rocks/debris based on actual TopoDroid points, material areas and detached tree geometry. Cave and terrain remain uncoloured; official Velebit logos and approved-user Cloud access remain active."
 }
