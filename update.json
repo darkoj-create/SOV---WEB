@@ -1,23 +1,27 @@
 {
   "app": "SOV web",
-  "version": "6.1.45at",
-  "versionName": "v6.1.45at-nacrt-corpus-style-v6",
-  "build": "sov-web-build-v6.1.45at-nacrt-corpus-style-v6",
-  "createdAt": "2026-07-20T00:35:00+02:00",
-  "cacheBust": "6145at-nacrt-corpus-style-v6",
-  "base": "sov-web-build-v6.1.45as-nacrt-pds-logo-fix",
-  "requiresSql": false,
-  "releaseType": "nacrt-corpus-style-v6",
+  "version": "6.1.45au",
+  "versionName": "v6.1.45au-system-status-crash-v2",
+  "build": "sov-web-build-v6.1.45au-system-status-crash-v2",
+  "createdAt": "2026-07-20T01:25:00+02:00",
+  "cacheBust": "6145au-system-status-crash-v2",
+  "base": "sov-web-build-v6.1.45at-nacrt-corpus-style-v6",
+  "requiresSql": true,
+  "sqlFiles": [
+    "SUPABASE_OBSERVABILITY_SYSTEM_STATUS_V2.sql"
+  ],
+  "releaseType": "system-status-crash-v2",
   "changedFiles": [
-    "nacrt.js",
-    "nacrt-semantic-core.js",
-    "nacrt-corpus-style-v6.js",
-    "NACRT_STYLE_REGISTRY_V6.md",
-    "BUILD_NOTES_v6.1.45at_NACRT_CORPUS_STYLE_V6.md",
+    "system-status.html",
+    "assets/sov-system-status-wow-v6145au.css",
+    "assets/sov-system-status-wow-v6145au.js",
+    "assets/sov-ecosystem-manifest.json",
+    "SUPABASE_OBSERVABILITY_SYSTEM_STATUS_V2.sql",
+    "BUILD_NOTES_v6.1.45au_SYSTEM_STATUS_CRASH_V2.md",
     "BUILD_VERSION.txt",
     "VERSION.txt",
     "assets/sov-version.js",
     "update.json"
   ],
-  "notes": "Corpus-informed Nacrt style v6 based on 1,109 SOV reference pages and paired TopoDroid/PDF examples. Colour is semantic only: water blue, ice/snow cyan, vegetation green, wood brown, rocks grey, sediment print-safe. Adds wider line/area/point symbol coverage and keeps parser/geometry stable and SVG-only."
+  "notes": "Adds an Admin/Webmaster-only Supabase status snapshot, live APK/web client error KPIs, recent crash reports and release-contract alignment. Existing direct checks remain as a fallback. No trip, map, archive, armory, Nacrt or tracking data model changes."
 }
