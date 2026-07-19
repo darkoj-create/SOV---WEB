@@ -1,7 +1,7 @@
 /**
- * SOV Nacrt loader — stable clean symbols build.
- * Active stack: core + TopoDroid parser fix + renderer v2 + clean branding + symbols polish.
- * Heavy v3/v4 cave colouring layers remain disabled.
+ * SOV Nacrt loader — semantic renderer v5.
+ * Active stack: core + TopoDroid parser fix + renderer v2 + official branding + semantic SVG modules.
+ * Generic v3/v4 colouring and the older heuristic symbols layer remain disabled.
  */
 try { document.documentElement.style.visibility = 'hidden'; } catch (e) {}
 document.addEventListener('DOMContentLoaded', async () => {
@@ -14,9 +14,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 document.write(
-  '<script src="nacrt-core.js?v=6145aq"></' + 'script>' +
-  '<script src="nacrt-tdr-fix.js?v=6145aq"></' + 'script>' +
-  '<script src="nacrt-v2.js?v=6145aq"></' + 'script>' +
-  '<script src="nacrt-branding.js?v=6145aq"></' + 'script>' +
-  '<script src="nacrt-symbols.js?v=6145aq"></' + 'script>'
+  '<script src="nacrt-core.js?v=6145ar"></' + 'script>' +
+  '<script src="nacrt-tdr-fix.js?v=6145ar"></' + 'script>' +
+  '<script src="nacrt-v2.js?v=6145ar"></' + 'script>' +
+  '<script src="nacrt-branding.js?v=6145ar"></' + 'script>' +
+  '<script src="nacrt-semantic-core.js?v=6145ar"></' + 'script>' +
+  '<script src="nacrt-semantic-styles.js?v=6145ar"></' + 'script>' +
+  '<script src="nacrt-semantic-layout.js?v=6145ar"></' + 'script>'
 );
