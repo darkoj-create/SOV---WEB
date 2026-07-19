@@ -27,6 +27,7 @@
     {href:'oruzarstvo.html',label:'Oprema',roles:['user','editor','oruzar','arhivar','admin','webmaster'],group:'Osnovno'},
     {href:'dokumenti.html',label:'Dokumenti',roles:['user','editor','oruzar','arhivar','admin','webmaster'],group:'Osnovno'},
     {href:'napisi-clanak.html',label:'Napiši članak',roles:['user','editor','oruzar','arhivar','admin','webmaster'],group:'Osnovno'},
+    {href:'nacrt.html',label:'Nacrt Generator',roles:['user','editor','oruzar','arhivar','admin','webmaster'],group:'Osnovno'},
     {href:'arhivar-dashboard.html',label:'Arhivar',roles:['arhivar','admin','webmaster'],group:'Arhivar'},
     {href:'arhivar.html',label:'Uređivanje arhive',roles:['arhivar','admin','webmaster'],group:'Arhivar'},
     {href:'arhivar-predane-jame.html',label:'Predane jame',roles:['arhivar','admin','webmaster'],group:'Arhivar'},
@@ -44,7 +45,7 @@
   function pageLabel(){
     const t=(document.title||'SOV Cloud').replace(/\s*[—|·].*$/,'').trim();
     const map={
-      'karta.html':'Karta','baza.html':'Karta','oruzarstvo.html':'Oprema','oruzar-master.html':'Oružar','oruzar-master-posudbe.html':'Posudbe','oruzar-master-inventar.html':'Inventar','oruzar-master-inventura.html':'Inventura','arhivar.html':'Uređivanje arhive','arhivar-predane-jame.html':'Predane jame','arhivar-izvoz.html':'Izvoz arhive','news-editor.html':'Urednik vijesti','dokumenti.html':'Dokumenti','admin-users.html':'Korisnici','admin-notifications.html':'Obavijesti'
+      'karta.html':'Karta','baza.html':'Karta','oruzarstvo.html':'Oprema','oruzar-master.html':'Oružar','oruzar-master-posudbe.html':'Posudbe','oruzar-master-inventar.html':'Inventar','oruzar-master-inventura.html':'Inventura','arhivar.html':'Uređivanje arhive','arhivar-predane-jame.html':'Predane jame','arhivar-izvoz.html':'Izvoz arhive','news-editor.html':'Urednik vijesti','dokumenti.html':'Dokumenti','admin-users.html':'Korisnici','admin-notifications.html':'Obavijesti','nacrt.html':'Nacrt Generator'
     };
     return map[PAGE] || t || 'SOV Cloud';
   }

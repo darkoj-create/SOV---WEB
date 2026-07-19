@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Nacrt Generator — SOV Cloud</title>
+<meta name="robots" content="noindex,nofollow"/>
+<link href="assets/sov-foundation-v55822.css" rel="stylesheet"/>
+<link href="assets/sov-shell-v55825.css" rel="stylesheet"/>
+<link href="assets/sov-polish-v55826.css" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/supabase-config.js"></script>
+<script src="assets/auth.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="nacrt.js"></script>
+<style>
+:root {
+  --bg: #0b0f14; --surface: #141a22; --border: #2a3340;
+  --text: #e8ecf0; --text2: #8899aa; --accent: #d7f66f;
+  --accent2: #86c5ff; --red: #ff5555; --radius: 12px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+.container { max-width: 960px; margin: 0 auto; padding: 24px 16px; }
+
+h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 4px; }
+h1 span { color: var(--accent); }
+.subtitle { color: var(--text2); font-size: 0.85rem; margin-bottom: 20px; }
+
+/* Drop zone */
+.dropzone {
+  border: 2px dashed var(--border); border-radius: var(--radius);
+  padding: 48px 24px; text-align: center; cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  background: var(--surface);
+}
+.dropzone:hover, .dropzone.dragover {
+  border-color: var(--accent); background: rgba(215,246,111,0.04);
+}
+.dropzone-icon { font-size: 2.5rem; margin-bottom: 8px; }
+.dropzone-text { color: var(--text2); font-size: 0.9rem; }
+.dropzone-text strong { color: var(--text); }
+
+/* Status */
+.status { margin-top: 16px; padding: 12px 16px; border-radius: var(--radius); font-size: 0.85rem; display: none; }
+.status.error { display: block; background: rgba(255,85,85,0.12); color: var(--red); border: 1px solid rgba(255,85,85,0.25); }
+.status.info  { display: block; background: rgba(134,197,255,0.08); color: var(--accent2); border: 1px solid rgba(134,197,255,0.15); }
+.status.ok    { display: block; background: rgba(215,246,111,0.08); color: var(--accent); border: 1px solid rgba(215,246,111,0.15); }
+
+/* Header form */
+.form-section { margin-top: 20px; display: none; }
+.form-section.visible { display: block; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+.form-group { display: flex; flex-direction: column; gap: 3px; }
+.form-group label { font-size: 0.75rem; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; }
+.form-group input {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+  padding: 8px 10px; color: var(--text); font-size: 0.9rem; outline: none;
+}
+.form-group input:focus { border-color: var(--accent); }
+
+/* Stats bar */
+.stats-bar {
+  display: flex; gap: 16px; flex-wrap: wrap; margin: 16px 0;
+  padding: 12px 16px; background: var(--surface); border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+.stat { display: flex; flex-direction: column; }
+.stat-label { font-size: 0.7rem; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; }
+.stat-value { font-size: 1.05rem; font-weight: 600; color: var(--accent); }
+
+/* Buttons */
+.btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin: 16px 0; }
+.btn {
+  padding: 10px 20px; border: none; border-radius: 8px; font-size: 0.9rem;
+  font-weight: 600; cursor: pointer; transition: background 0.15s;
+}
+.btn-primary { background: var(--accent); color: #111; }
+.btn-primary:hover { background: #e4ff88; }
+.btn-secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+.btn-secondary:hover { background: #1e2730; }
+
+/* Preview */
+.preview-container {
+  margin-top: 16px; background: #fff; border-radius: var(--radius);
+  overflow: auto; max-height: 80vh; border: 1px solid var(--border);
+}
+.preview-container svg { display: block; width: 100%; height: auto; }
+
+/* Parse info */
+.parse-info { margin-top: 12px; font-size: 0.8rem; color: var(--text2); }
+.parse-info details { margin-top: 6px; }
+.parse-info summary { cursor: pointer; color: var(--accent2); }
+.parse-info pre {
+  margin-top: 6px; padding: 10px; background: var(--surface);
+  border-radius: 8px; overflow-x: auto; font-size: 0.78rem; color: var(--text2);
+  border: 1px solid var(--border); white-space: pre-wrap;
+}
+
+@media (max-width: 600px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .stats-bar { gap: 10px; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Nacrt <span>Generator</span></h1>
+  <p class="subtitle">TopoDroid ZIP → nacrt spilje (SVG / PNG)</p>
+
+  <div class="dropzone" id="dropzone">
+    <div class="dropzone-icon">📐</div>
+    <div class="dropzone-text">
+      <strong>Dovuci TopoDroid ZIP</strong> ovdje ili klikni za odabir<br>
+      <small>(.zip s manifest, survey.sql i .tdr datotekama)</small>
+    </div>
+    <input type="file" id="fileInput" accept=".zip" style="display:none">
+  </div>
+
+  <div class="status" id="status"></div>
+
+  <div class="form-section" id="formSection">
+    <div class="stats-bar" id="statsBar"></div>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Naziv objekta</label>
+        <input type="text" id="fTitle" placeholder="npr. Spilja s fundom">
+      </div>
+      <div class="form-group">
+        <label>Datum mjerenja</label>
+        <input type="text" id="fDate" placeholder="npr. 2026.02.01">
+      </div>
+      <div class="form-group">
+        <label>Mjerili</label>
+        <input type="text" id="fTeam" placeholder="npr. dora venio">
+      </div>
+      <div class="form-group">
+        <label>Klub</label>
+        <input type="text" id="fClub" value="SO Velebit">
+      </div>
+      <div class="form-group">
+        <label>Katastarski broj</label>
+        <input type="text" id="fCadNum" placeholder="npr. HR-1234">
+      </div>
+      <div class="form-group">
+        <label>Lokacija</label>
+        <input type="text" id="fLocation" placeholder="npr. Velebit, Hrvatska">
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" id="btnRender">Generiraj nacrt</button>
+      <button class="btn btn-secondary" id="btnSvg">Spremi SVG</button>
+      <button class="btn btn-secondary" id="btnPng">Spremi PNG</button>
+    </div>
+
+    <div class="preview-container" id="preview"></div>
+
+    <div class="parse-info" id="parseInfo"></div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const dropzone   = document.getElementById('dropzone');
+  const fileInput  = document.getElementById('fileInput');
+  const statusEl   = document.getElementById('status');
+  const formSection= document.getElementById('formSection');
+  const statsBar   = document.getElementById('statsBar');
+  const preview    = document.getElementById('preview');
+  const parseInfo  = document.getElementById('parseInfo');
+
+  let currentSurvey = null;
+  let currentSvg    = null;
+
+  // Drop zone events
+  dropzone.addEventListener('click', () => fileInput.click());
+  dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('dragover'); });
+  dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+  dropzone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropzone.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file) handleFile(file);
+  });
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files[0]) handleFile(fileInput.files[0]);
+  });
+
+  function showStatus(msg, type) {
+    statusEl.className = 'status ' + type;
+    statusEl.textContent = msg;
+  }
+
+  async function handleFile(file) {
+    if (!file.name.toLowerCase().endsWith('.zip')) {
+      showStatus('Samo ZIP datoteke su podržane.', 'error');
+      return;
+    }
+    showStatus('Parsiram ZIP...', 'info');
+    formSection.classList.remove('visible');
+    preview.innerHTML = '';
+
+    try {
+      currentSurvey = await NacrtParser.parseZip(file);
+      const s = currentSurvey;
+      const sql = s.sql;
+
+      // Populate form
+      document.getElementById('fTitle').value = s.name || '';
+      document.getElementById('fDate').value  = s.date || '';
+      document.getElementById('fTeam').value  = s.team || '';
+
+      // Stats
+      const stats = sql.stats;
+      statsBar.innerHTML = [
+        stat('Duljina', stats.duljina.toFixed(1).replace('.', ',') + ' m'),
+        stat('Horizontalna', stats.horizontalna.toFixed(1).replace('.', ',') + ' m'),
+        stat('Dubina', stats.dubina.toFixed(1).replace('.', ',') + ' m'),
+        stat('Mjerenja', sql.legs.length + ' leg' + (sql.legs.length !== 1 ? 's' : '')),
+        stat('Tlocrt', s.plan ? s.plan.stations.length + ' st, ' + s.plan.lines.length + ' ln' : '—'),
+        stat('Profil', s.profile ? s.profile.stations.length + ' st, ' + s.profile.lines.length + ' ln' : '—'),
+      ].join('');
+
+      // Parse details
+      let details = `Ime: ${s.name}\nDatum: ${s.date}\nTim: ${s.team}\n`;
+      details += `Deklinacija: ${sql.declination} (${sql.survey && sql.survey.declination === 1080 ? 'sentinel → 0' : 'set'})\n\n`;
+      details += `Legs (${sql.legs.length}):\n`;
+      sql.legs.forEach(l => details += `  ${l.fStation}→${l.tStation}: ${l.distance}m, azimut=${l.bearing}°, nagib=${l.clino}°\n`);
+      details += `\nIzbrisani (${sql.deleted.length}):\n`;
+      sql.deleted.forEach(d => details += `  ${d.fStation}→${d.tStation || '-'}: ${d.distance}m\n`);
+      details += `\nSplays: ${sql.splays.length}\n`;
+      details += `\nStanice:\n`;
+      for (const [name, c] of Object.entries(sql.stationCoords)) {
+        details += `  ${name}: E=${c.e.toFixed(3)}, N=${c.n.toFixed(3)}, Z=${c.z.toFixed(3)}\n`;
+      }
+
+      parseInfo.innerHTML = `<details><summary>Detalji parsiranja</summary><pre>${escHtml(details)}</pre></details>`;
+
+      formSection.classList.add('visible');
+      showStatus(`Uspješno parsirano: ${file.name}`, 'ok');
+
+      // Auto-render
+      doRender();
+    } catch (err) {
+      showStatus('Greška: ' + err.message, 'error');
+      console.error(err);
+    }
+  }
+
+  function doRender() {
+    if (!currentSurvey) return;
+    const opts = {
+      title: document.getElementById('fTitle').value,
+      date:  document.getElementById('fDate').value,
+      team:  document.getElementById('fTeam').value,
+      club:  document.getElementById('fClub').value,
+      cadastreNum: document.getElementById('fCadNum').value,
+      location: document.getElementById('fLocation').value
+    };
+    currentSvg = NacrtRenderer.render(currentSurvey, opts);
+    preview.innerHTML = currentSvg;
+  }
+
+  function downloadBlob(blob, name) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = name;
+    document.body.appendChild(a); a.click();
+    setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 200);
+  }
+
+  // Buttons
+  document.getElementById('btnRender').addEventListener('click', doRender);
+
+  document.getElementById('btnSvg').addEventListener('click', () => {
+    if (!currentSvg) return doRender();
+    const blob = new Blob([currentSvg], { type: 'image/svg+xml' });
+    const name = (currentSurvey ? currentSurvey.name : 'nacrt').replace(/[^a-zA-Z0-9_čćžšđČĆŽŠĐ -]/g, '_') + '.svg';
+    downloadBlob(blob, name);
+  });
+
+  document.getElementById('btnPng').addEventListener('click', () => {
+    if (!currentSvg) doRender();
+    if (!currentSvg) return;
+    // Render SVG to canvas then PNG at 2x resolution
+    const svgBlob = new Blob([currentSvg], { type: 'image/svg+xml;charset=utf-8' });
+    const url = URL.createObjectURL(svgBlob);
+    const img = new Image();
+    img.onload = () => {
+      const scale = 2;
+      const canvas = document.createElement('canvas');
+      canvas.width  = img.naturalWidth * scale;
+      canvas.height = img.naturalHeight * scale;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      canvas.toBlob(blob => {
+        const name = (currentSurvey ? currentSurvey.name : 'nacrt').replace(/[^a-zA-Z0-9_čćžšđČĆŽŠĐ -]/g, '_') + '.png';
+        downloadBlob(blob, name);
+      }, 'image/png');
+      URL.revokeObjectURL(url);
+    };
+    img.onerror = () => {
+      showStatus('PNG export greška. Pokušajte SVG.', 'error');
+      URL.revokeObjectURL(url);
+    };
+    img.src = url;
+  });
+
+  function stat(label, value) {
+    return `<div class="stat"><span class="stat-label">${label}</span><span class="stat-value">${value}</span></div>`;
+  }
+
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+})();
+</script>
+<script defer src="assets/sov-foundation-v55822.js"></script>
+<script defer src="assets/sov-shell-v55825.js"></script>
+<script defer src="assets/sov-polish-v55826.js"></script>
+<script defer src="assets/sov-version.js?v=6.1.45aj"></script>
+</body>
+</html>
