@@ -1,50 +1,68 @@
 // SOV Web version helper.
-// Fix: never writes textContent into <html> or <body>; older v6.1.1 could wipe the page because body.dataset.sovVersion matched [data-sov-version].
+// Also injects the approved-member Nacrt Generator entry on the main Cloud dashboard.
 (function(){
   'use strict';
-  const FALLBACK_VERSION='6.1.45ao';
-  const FALLBACK_CACHE='6145ao-nacrt-v4-crash-rollback';
-  const FALLBACK_BUILD='sov-web-build-v6.1.45ao-nacrt-v4-crash-rollback';
-  const FALLBACK_NAME='v6.1.45ao-nacrt-v4-crash-rollback';
-  window.SOV_BUILD={version:FALLBACK_VERSION, versionName:FALLBACK_NAME, build:FALLBACK_BUILD, cacheBust:FALLBACK_CACHE};
-  function safeSetText(sel, value){
+  const FALLBACK_VERSION='6.1.45ap';
+  const FALLBACK_CACHE='6145ap-nacrt-clean-official';
+  const FALLBACK_BUILD='sov-web-build-v6.1.45ap-nacrt-clean-official';
+  const FALLBACK_NAME='v6.1.45ap-nacrt-clean-official';
+  window.SOV_BUILD={version:FALLBACK_VERSION,versionName:FALLBACK_NAME,build:FALLBACK_BUILD,cacheBust:FALLBACK_CACHE};
+
+  function safeSetText(sel,value){
+    try{document.querySelectorAll(sel).forEach(el=>{if(!el||el===document.body||el===document.documentElement)return;el.textContent=value;});}catch(e){}
+  }
+  function applyVersion(v,b,n){
+    v=v||FALLBACK_VERSION;b=b||FALLBACK_BUILD;n=n||FALLBACK_NAME;
+    try{document.documentElement.dataset.sovBuildVersion=v;}catch(e){}
+    try{if(document.body)document.body.dataset.sovBuildVersion=v;}catch(e){}
+    safeSetText('[data-sov-version]',v);
+    safeSetText('[data-sov-build]',b);
+    safeSetText('[data-sov-version-name]',n);
+    try{document.title=document.title.replace(/v\d+\.\d+(?:\.\d+)?/g,'v'+v);}catch(e){}
+  }
+
+  function injectNacrtDashboardCard(){
     try{
-      document.querySelectorAll(sel).forEach(el=>{
-        if(!el || el===document.body || el===document.documentElement) return;
-        el.textContent=value;
-      });
-    }catch(e){}
+      if(!document.body||!document.body.classList.contains('dashboard-page')) return;
+      if(document.getElementById('sov-nacrt-generator-card')) return;
+      const grid=document.querySelector('.v609-grid-primary, .sov-grid[aria-label="Moje stvari"]');
+      if(!grid) return;
+      const card=document.createElement('a');
+      card.id='sov-nacrt-generator-card';
+      card.className='sov-module v609-module';
+      card.href='nacrt.html';
+      card.setAttribute('data-dash-visible','user,editor,oruzar,arhivar,admin,webmaster');
+      card.setAttribute('data-dash-ability','drawings');
+      card.style.setProperty('--accent','rgba(171,196,255,.18)');
+      card.innerHTML='<div class="sov-icon">📐</div><h3>Nacrt Generator</h3><p>Učitaj TopoDroid ZIP i izradi čist službeni SVG ili PNG nacrt s Velebitovim logotipima.</p><div class="sov-module-foot"><span class="sov-tag">Cloud</span><span class="sov-soft">Otvori</span></div>';
+      grid.appendChild(card);
+    }catch(e){console.warn('Nacrt dashboard card skipped',e);}
   }
-  function applyVersion(v, b, n){
-    v = v || FALLBACK_VERSION; b = b || FALLBACK_BUILD; n = n || FALLBACK_NAME;
-    try{ document.documentElement.dataset.sovBuildVersion=v; }catch(e){}
-    try{ if(document.body) document.body.dataset.sovBuildVersion=v; }catch(e){}
-    safeSetText('[data-sov-version]', v);
-    safeSetText('[data-sov-build]', b);
-    safeSetText('[data-sov-version-name]', n);
-    try{ document.title=document.title.replace(/v\d+\.\d+(?:\.\d+)?/g,'v'+v); }catch(e){}
-  }
+
   async function loadManifest(){
     applyVersion(FALLBACK_VERSION,FALLBACK_BUILD,FALLBACK_NAME);
+    injectNacrtDashboardCard();
     try{
-      const res=await fetch('update.json?cb='+Date.now(), {cache:'no-store'});
-      if(!res.ok) throw new Error('HTTP '+res.status);
+      const res=await fetch('update.json?cb='+Date.now(),{cache:'no-store'});
+      if(!res.ok)throw new Error('HTTP '+res.status);
       const m=await res.json();
       window.SOV_UPDATE_MANIFEST=m;
-      const v=m.version || FALLBACK_VERSION;
-      const b=m.build || FALLBACK_BUILD;
-      const n=m.versionName || FALLBACK_NAME;
-      window.SOV_BUILD={version:v, versionName:n, build:b, cacheBust:m.cacheBust || FALLBACK_CACHE};
+      const v=m.version||FALLBACK_VERSION,b=m.build||FALLBACK_BUILD,n=m.versionName||FALLBACK_NAME;
+      window.SOV_BUILD={version:v,versionName:n,build:b,cacheBust:m.cacheBust||FALLBACK_CACHE};
       applyVersion(v,b,n);
-      safeSetText('[data-sov-manifest-version]', v);
-      safeSetText('[data-sov-manifest-build]', b);
+      safeSetText('[data-sov-manifest-version]',v);
+      safeSetText('[data-sov-manifest-build]',b);
       document.documentElement.dataset.sovVersionContract='ok';
-      window.dispatchEvent(new CustomEvent('sov:version', {detail:{ok:true,expected:v,manifest:m}}));
+      window.dispatchEvent(new CustomEvent('sov:version',{detail:{ok:true,expected:v,manifest:m}}));
     }catch(err){
       document.documentElement.dataset.sovVersionContract='unknown';
-      window.dispatchEvent(new CustomEvent('sov:version', {detail:{ok:false,expected:FALLBACK_VERSION,error:String(err&&err.message||err)}}));
+      window.dispatchEvent(new CustomEvent('sov:version',{detail:{ok:false,expected:FALLBACK_VERSION,error:String(err&&err.message||err)}}));
     }
+    injectNacrtDashboardCard();
   }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', loadManifest);
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',loadManifest);
   else loadManifest();
+  setTimeout(injectNacrtDashboardCard,350);
+  setTimeout(injectNacrtDashboardCard,1200);
 })();
