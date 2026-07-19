@@ -2,10 +2,10 @@
 // Also injects the approved-member Nacrt Generator entry on the main Cloud dashboard.
 (function(){
   'use strict';
-  const FALLBACK_VERSION='6.1.45as';
-  const FALLBACK_CACHE='6145as-nacrt-pds-logo-fix';
-  const FALLBACK_BUILD='sov-web-build-v6.1.45as-nacrt-pds-logo-fix';
-  const FALLBACK_NAME='v6.1.45as-nacrt-pds-logo-fix';
+  const FALLBACK_VERSION='6.1.45at';
+  const FALLBACK_CACHE='6145at-nacrt-corpus-style-v6';
+  const FALLBACK_BUILD='sov-web-build-v6.1.45at-nacrt-corpus-style-v6';
+  const FALLBACK_NAME='v6.1.45at-nacrt-corpus-style-v6';
   window.SOV_BUILD={version:FALLBACK_VERSION,versionName:FALLBACK_NAME,build:FALLBACK_BUILD,cacheBust:FALLBACK_CACHE};
 
   function safeSetText(sel,value){
@@ -34,7 +34,7 @@
       card.setAttribute('data-dash-visible','user,editor,oruzar,arhivar,admin,webmaster');
       card.setAttribute('data-dash-ability','drawings');
       card.style.setProperty('--accent','rgba(171,196,255,.18)');
-      card.innerHTML='<div class="sov-icon">📐</div><h3>Nacrt Generator</h3><p>Učitaj TopoDroid ZIP i izradi semantički nacrt iz svih TopoDroid scrapova, s točnim zidovima, ledom, snijegom, kamenjem i Velebitovim logotipima.</p><div class="sov-module-foot"><span class="sov-tag">Cloud</span><span class="sov-soft">Otvori</span></div>';
+      card.innerHTML='<div class="sov-icon">📐</div><h3>Nacrt Generator</h3><p>Učitaj TopoDroid ZIP i izradi semantički SOV nacrt s točnim materijalima, drvećem, kamenjem, scrapovima i Velebitovim logotipima.</p><div class="sov-module-foot"><span class="sov-tag">Cloud</span><span class="sov-soft">Otvori</span></div>';
       grid.appendChild(card);
     }catch(e){console.warn('Nacrt dashboard card skipped',e);}
   }
