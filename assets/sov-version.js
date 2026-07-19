@@ -2,10 +2,10 @@
 // Also injects the approved-member Nacrt Generator entry on the main Cloud dashboard.
 (function(){
   'use strict';
-  const FALLBACK_VERSION='6.1.45ar';
-  const FALLBACK_CACHE='6145ar-nacrt-semantic-v5';
-  const FALLBACK_BUILD='sov-web-build-v6.1.45ar-nacrt-semantic-v5';
-  const FALLBACK_NAME='v6.1.45ar-nacrt-semantic-v5';
+  const FALLBACK_VERSION='6.1.45as';
+  const FALLBACK_CACHE='6145as-nacrt-pds-logo-fix';
+  const FALLBACK_BUILD='sov-web-build-v6.1.45as-nacrt-pds-logo-fix';
+  const FALLBACK_NAME='v6.1.45as-nacrt-pds-logo-fix';
   window.SOV_BUILD={version:FALLBACK_VERSION,versionName:FALLBACK_NAME,build:FALLBACK_BUILD,cacheBust:FALLBACK_CACHE};
 
   function safeSetText(sel,value){
