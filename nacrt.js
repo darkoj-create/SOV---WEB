@@ -1,12 +1,21 @@
 /**
- * SOV Nacrt loader.
- * Emergency rollback: v4 material halo disabled because its per-pixel
- * distance scan can freeze/crash the browser on larger drawings.
- * Stable active stack: core + TDR fix + renderer v2 + visual v3.
+ * SOV Nacrt loader — stable clean build.
+ * Active stack: core + TopoDroid parser fix + renderer v2 + clean branding/symbols.
+ * Heavy v3/v4 colouring layers are intentionally disabled.
  */
+try { document.documentElement.style.visibility = 'hidden'; } catch (e) {}
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    if (!window.SOVAuth || !(await SOVAuth.requireApproved())) return;
+    document.documentElement.style.visibility = '';
+  } catch (err) {
+    location.href = 'login.html?next=nacrt.html';
+  }
+});
+
 document.write(
-  '<script src="nacrt-core.js?v=6145ao"></' + 'script>' +
-  '<script src="nacrt-tdr-fix.js?v=6145ao"></' + 'script>' +
-  '<script src="nacrt-v2.js?v=6145ao"></' + 'script>' +
-  '<script src="nacrt-v3.js?v=6145ao"></' + 'script>'
+  '<script src="nacrt-core.js?v=6145ap"></' + 'script>' +
+  '<script src="nacrt-tdr-fix.js?v=6145ap"></' + 'script>' +
+  '<script src="nacrt-v2.js?v=6145ap"></' + 'script>' +
+  '<script src="nacrt-branding.js?v=6145ap"></' + 'script>'
 );
