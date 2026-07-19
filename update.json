@@ -1,20 +1,23 @@
 {
   "app": "SOV web",
-  "version": "6.1.45ao",
-  "versionName": "v6.1.45ao-nacrt-v4-crash-rollback",
-  "build": "sov-web-build-v6.1.45ao-nacrt-v4-crash-rollback",
-  "createdAt": "2026-07-19T22:24:00+02:00",
-  "cacheBust": "6145ao-nacrt-v4-crash-rollback",
-  "base": "sov-web-build-v6.1.45an-nacrt-material-v4",
+  "version": "6.1.45ap",
+  "versionName": "v6.1.45ap-nacrt-clean-official",
+  "build": "sov-web-build-v6.1.45ap-nacrt-clean-official",
+  "createdAt": "2026-07-19T22:50:00+02:00",
+  "cacheBust": "6145ap-nacrt-clean-official",
+  "base": "sov-web-build-v6.1.45ao-nacrt-v4-crash-rollback",
   "requiresSql": false,
-  "releaseType": "nacrt-v4-crash-rollback",
+  "releaseType": "nacrt-clean-official",
   "changedFiles": [
     "nacrt.js",
-    "BUILD_NOTES_v6.1.45ao_NACRT_V4_CRASH_ROLLBACK.md",
+    "nacrt-branding.js",
+    "assets/nacrt-sov-logo.png",
+    "assets/nacrt-pds-velebit-logo.png",
+    "BUILD_NOTES_v6.1.45ap_NACRT_CLEAN_OFFICIAL.md",
     "BUILD_VERSION.txt",
     "VERSION.txt",
     "assets/sov-version.js",
     "update.json"
   ],
-  "notes": "Emergency rollback: nacrt-v4.js is no longer loaded because its per-pixel halo distance scan freezes or crashes browsers. Active stable stack is core + TDR fix + v2 + v3. The v4 source remains in the repository for later optimization."
+  "notes": "Stable clean Nacrt Generator: no generic cave colouring, official uploaded SOV and PDS Velebit logos, monochrome material patterns and speleological symbols, approved-user access guard, and automatic Nacrt Generator card on the main SOV Cloud dashboard."
 }
