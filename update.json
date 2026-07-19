@@ -8,7 +8,8 @@
   "base": "sov-web-build-v6.1.45at-nacrt-corpus-style-v6",
   "requiresSql": true,
   "sqlFiles": [
-    "SUPABASE_OBSERVABILITY_SYSTEM_STATUS_V2.sql"
+    "SUPABASE_OBSERVABILITY_SYSTEM_STATUS_V2.sql",
+    "SUPABASE_OBSERVABILITY_SYSTEM_STATUS_V2_RELEASE_REGISTRY.sql"
   ],
   "releaseType": "system-status-crash-v2",
   "changedFiles": [
@@ -17,6 +18,7 @@
     "assets/sov-system-status-wow-v6145au.js",
     "assets/sov-ecosystem-manifest.json",
     "SUPABASE_OBSERVABILITY_SYSTEM_STATUS_V2.sql",
+    "SUPABASE_OBSERVABILITY_SYSTEM_STATUS_V2_RELEASE_REGISTRY.sql",
     "BUILD_NOTES_v6.1.45au_SYSTEM_STATUS_CRASH_V2.md",
     "BUILD_VERSION.txt",
     "VERSION.txt",
