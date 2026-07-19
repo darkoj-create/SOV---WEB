@@ -1,21 +1,20 @@
 {
   "app": "SOV web",
-  "version": "6.1.45an",
-  "versionName": "v6.1.45an-nacrt-material-v4",
-  "build": "sov-web-build-v6.1.45an-nacrt-material-v4",
-  "createdAt": "2026-07-19T22:10:00+02:00",
-  "cacheBust": "6145an-nacrt-material-v4",
-  "base": "sov-web-build-v6.1.45am-nacrt-visual-v3",
+  "version": "6.1.45ao",
+  "versionName": "v6.1.45ao-nacrt-v4-crash-rollback",
+  "build": "sov-web-build-v6.1.45ao-nacrt-v4-crash-rollback",
+  "createdAt": "2026-07-19T22:24:00+02:00",
+  "cacheBust": "6145ao-nacrt-v4-crash-rollback",
+  "base": "sov-web-build-v6.1.45an-nacrt-material-v4",
   "requiresSql": false,
-  "releaseType": "nacrt-material-v4",
+  "releaseType": "nacrt-v4-crash-rollback",
   "changedFiles": [
     "nacrt.js",
-    "nacrt-v4.js",
-    "BUILD_NOTES_v6.1.45an_NACRT_MATERIAL_V4.md",
+    "BUILD_NOTES_v6.1.45ao_NACRT_V4_CRASH_ROLLBACK.md",
     "BUILD_VERSION.txt",
     "VERSION.txt",
     "assets/sov-version.js",
     "update.json"
   ],
-  "notes": "Nacrt Generator v4: cave void stays white, outer terrain halo replaces incorrect interior fill, old v3 fill raster removed, header/footer cleaned, depth rounded normally. Parser, geometry and v2/v3 layout stay intact."
+  "notes": "Emergency rollback: nacrt-v4.js is no longer loaded because its per-pixel halo distance scan freezes or crashes browsers. Active stable stack is core + TDR fix + v2 + v3. The v4 source remains in the repository for later optimization."
 }
