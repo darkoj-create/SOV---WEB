@@ -1,23 +1,21 @@
 {
   "app": "SOV web",
-  "version": "6.1.45al",
-  "versionName": "v6.1.45al-nacrt-renderer-v2",
-  "build": "sov-web-build-v6.1.45al-nacrt-renderer-v2",
-  "createdAt": "2026-07-19T19:20:00+02:00",
-  "cacheBust": "6145al-nacrt-renderer-v2",
-  "base": "sov-web-build-v6.1.45ak-karta-refresh-loop-hard-fix",
+  "version": "6.1.45am",
+  "versionName": "v6.1.45am-nacrt-visual-v3",
+  "build": "sov-web-build-v6.1.45am-nacrt-visual-v3",
+  "createdAt": "2026-07-19T21:34:00+02:00",
+  "cacheBust": "6145am-nacrt-visual-v3",
+  "base": "sov-web-build-v6.1.45al-nacrt-renderer-v2",
   "requiresSql": false,
-  "releaseType": "nacrt-renderer-v2",
+  "releaseType": "nacrt-visual-v3",
   "changedFiles": [
     "nacrt.js",
-    "nacrt-core.js",
-    "nacrt-tdr-fix.js",
-    "nacrt-v2.js",
-    "BUILD_NOTES_v6.1.45al_NACRT_RENDERER_V2.md",
+    "nacrt-v3.js",
+    "BUILD_NOTES_v6.1.45am_NACRT_VISUAL_V3.md",
     "BUILD_VERSION.txt",
     "VERSION.txt",
     "assets/sov-version.js",
     "update.json"
   ],
-  "notes": "Nacrt Generator v2: ispravan TopoDroid TDR parser, profilna poligonala preko stvarnih TDR stanica, profil lijevo, tlocrt desno, presjeci, dubinska skala, napredniji simboli i prošireni SOV naslovni blok."
+  "notes": "Nacrt Generator v3: automatske tonske ispune profila, tlocrta i presjeka, dubinsko sjenčanje, zrnata kamena tekstura, bogatiji blokovi, sipar, stupovi i ulazni simboli. Parser, geometrija, raspored i v2 naslovni blok ostaju netaknuti."
 }
