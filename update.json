@@ -8,20 +8,32 @@
   "base": "sov-web-build-v6.1.45aw-trips-force-refresh",
   "requiresSql": true,
   "sqlFiles": [
-    "sql/sov_release_v6145ax.sql"
+    "sql/sov_release_v6145ax.sql",
+    "sql/sov_trip_assets_cleanup_safe_v6145ax.sql"
   ],
   "releaseType": "stability-and-ui-cleanup",
   "changedFiles": [
-    "assets/sov-trips-cloud.js",
+    "system-status.html",
+    "assets/sov-system-status-v6145ax.js",
+    "assets/sov-client-logger.js",
     "izleti-cloud.html",
-    "tools/fix_trips_force_refresh.py",
-    "tools/trips_inflight_refresh_test.mjs",
+    "assets/sov-trips-cloud.js",
+    "zapisnici-native.html",
+    "zapisnici-najave.html",
+    "assets/zapisnici-native-v6144e.js",
+    "assets/zapisnici-najave-v6143a.js",
+    "dashboard.html",
+    "tools/visual_layout_audit.mjs",
+    "tools/fix_v6145ax.py",
+    "tools/finalize_v6145ax_manifest.py",
     ".github/workflows/pre-release-audit.yml",
+    "sql/sov_release_v6145ax.sql",
+    "sql/sov_trip_assets_cleanup_safe_v6145ax.sql",
     "VERSION.txt",
     "BUILD_VERSION.txt",
     "assets/sov-version.js",
     "README.md",
     "update.json"
   ],
-  "notes": "Automatic Trips refresh and effective past-trip completion, Gmail queue health, factual System Status v3, quieter client telemetry and professional zapisnici copy."
+  "notes": "Automatic Trips refresh and effective past-trip completion, hourly Gmail minutes sync, factual System Status v3, safe Android asset cleanup compatibility, quieter telemetry and professional Croatian UI copy."
 }
