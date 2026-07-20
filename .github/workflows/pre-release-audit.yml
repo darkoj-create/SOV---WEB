@@ -5,6 +5,7 @@ on:
     branches:
       - audit/pre-release-2026-07-20
       - 'hotfix/**'
+      - 'fix/**'
   pull_request:
     branches:
       - main
@@ -20,7 +21,7 @@ permissions:
 jobs:
   audit:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
     steps:
       - name: Checkout tested ref
         uses: actions/checkout@v4
@@ -39,6 +40,7 @@ jobs:
           python tools/fix_trips_force_refresh.py
           python tools/final_warning_fixes.py
           python tools/build_release_sql.py
+          python tools/fix_v6145ax.py
 
       - name: Persist deterministic repairs on source branches
         run: |
@@ -49,7 +51,7 @@ jobs:
           git config user.name "SOV Audit Bot"
           git config user.email "actions@users.noreply.github.com"
           git add .
-          git commit -m "Apply deterministic pre-release source repairs"
+          git commit -m "Apply deterministic v6.1.45ax repairs"
           if [[ "${GITHUB_EVENT_NAME}" == "push" ]]; then
             git pull --rebase origin "${GITHUB_REF_NAME}"
             git push origin "HEAD:${GITHUB_REF_NAME}"
@@ -108,11 +110,16 @@ jobs:
         continue-on-error: true
         run: node tools/trips_refresh_smoke.mjs
 
+      - name: Key-page desktop/mobile visual audit
+        id: visual
+        continue-on-error: true
+        run: node tools/visual_layout_audit.mjs
+
       - name: Show local server log
         if: always()
         run: tail -n 200 /tmp/sov-http.log || true
 
-      - name: Upload audit reports
+      - name: Upload audit reports and screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -122,7 +129,9 @@ jobs:
             AUDIT_REPORT.json
             BROWSER_SMOKE_REPORT.md
             BROWSER_SMOKE_REPORT.json
+            VISUAL_AUDIT/
             sql/sov_release_v6145av.sql
+            sql/sov_release_v6145ax.sql
           if-no-files-found: warn
           retention-days: 14
 
@@ -136,12 +145,14 @@ jobs:
           echo "trips_inflight=${{ steps.trips_inflight.outcome }}"
           echo "browser=${{ steps.browser.outcome }}"
           echo "trips_refresh=${{ steps.trips_refresh.outcome }}"
+          echo "visual=${{ steps.visual.outcome }}"
           if [[ "${{ steps.static.outcome }}" != "success" || \
                 "${{ steps.script_tags.outcome }}" != "success" || \
                 "${{ steps.javascript.outcome }}" != "success" || \
                 "${{ steps.trips_inflight.outcome }}" != "success" || \
                 "${{ steps.browser.outcome }}" != "success" || \
-                "${{ steps.trips_refresh.outcome }}" != "success" ]]; then
+                "${{ steps.trips_refresh.outcome }}" != "success" || \
+                "${{ steps.visual.outcome }}" != "success" ]]; then
             echo "Pre-release audit failed. Do not merge to production."
             exit 1
           fi
