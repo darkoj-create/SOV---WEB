@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="hr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>SOV Trips refresh audit harness</title>
+</head>
+<body>
+  <button id="refreshBtn" type="button">Osvježi</button>
+  <div id="tripAssetsPanel"></div>
+  <script>
+    window.__toastMessages=[];
+    window.__rpcCalls=0;
+    window.__loadCalls=0;
+    window.__lastRows=[];
+    window.toast=message=>window.__toastMessages.push(String(message));
+    window.selectedTrip=null;
+    window.renderDetail=function(){};
+    const staleRows=[{id:'stale',location_name:'Stari cache'}];
+    const freshRows=[{id:'fresh',location_name:'Svježi izlet'}];
+    const client={
+      rpc:async function(name){
+        window.__rpcCalls++;
+        if(name!=='sov_list_trips_feed') return {data:null,error:{message:'unexpected RPC '+name}};
+        await new Promise(resolve=>setTimeout(resolve,35));
+        return {data:freshRows,error:null};
+      },
+      from:function(){
+        throw new Error('Direct table fallback should not run in this test.');
+      }
+    };
+    window.SOVAuth={getClient:()=>client,requireApproved:async()=>true};
+    window.SOVTripsCloud={
+      sb:()=>client,
+      listTrips:async()=>staleRows,
+      saveCache:rows=>{window.__savedRows=rows;}
+    };
+    window.loadTrips=async function(options){
+      window.__loadCalls++;
+      window.__lastLoadOptions=options||{};
+      window.__lastRows=await window.SOVTripsCloud.listTrips();
+      return window.__lastRows;
+    };
+  </script>
+  <script src="../../assets/sov-trip-assets-v5596.js"></script>
+</body>
+</html>

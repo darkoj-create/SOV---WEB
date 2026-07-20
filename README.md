@@ -1,17 +1,44 @@
-# SOV web build v6.1.45ak
-## v6.1.45ak — Karta refresh loop hard fix
+# SOV web build v6.1.45av
 
-- `Karta.html` više nije redirect-wrapper i više nema `<meta refresh>`.
-- `Karta.html` sada je ista funkcionalna karta kao `karta.html`, pa stari linkovi ne mogu ući u petlju.
-- Dodani su kompatibilni aliasi `KARTA.HTM`, `KARTA.HTML`, `Karta.htm` i `karta.htm` bez redirecta.
-- Nema SQL promjena i nema promjene poslovne logike karte.
+## v6.1.45av — pre-release audit i stabilizacija
 
-Build: `sov-web-build-v6.1.45aj-trips-display-month-calendar-fix`
+Ovo je kontrolirani release nakon punog audita weba, Vercela i Supabase ugovora.
 
-## Što je novo
+### Automatski release gate
 
-- Popravljen je prikaz izleta odobrenih iz Gmail/native zapisnika.
-- Stranica `izleti-cloud.html` više ne ostaje prazna na tekućem mjesecu ako je prvi budući izlet u idućem mjesecu.
-- Stranica `kalendar-izleta.html` sada se nakon učitavanja automatski prebaci na mjesec prvog budućeg izleta/događaja ako u trenutnom mjesecu nema stavki.
-- Osvježavanje rasporeda vraća automatski odabir najbližeg relevantnog mjeseca.
-- Nema SQL promjena, nema promjene RPC/API ugovora i nema promjene poslovne logike odobravanja.
+- statički audit svih **279 HTML stranica**
+- provjera lokalnih linkova, asseta, ruta, auth registra i verzijskog ugovora
+- provjera sintakse svih JavaScript datoteka
+- zaštita od nezatvorenih vanjskih `<script src>` tagova
+- Playwright browser smoke kroz svih 279 stranica, izoliran od live Supabasea
+- funkcionalni test gumba **Osvježi** i mobilnog pull-to-refresh toka za Izlete
+
+### Glavni popravci
+
+- Izleti sada stvarno zaobilaze stari/in-flight zahtjev i povlače svježe retke iz baze.
+- Dodan je jedan ispravan refresh gumb i sigurno povlačenje za osvježavanje na mobitelu.
+- Popravljeni su ugniježđeni asseti i `update.json` dohvat na starim člancima.
+- Uklonjeni su konfliktni redirect/rewrites i meta-refresh aliasi.
+- Popravljen je dashboard script tag koji je gutao inline popravak topbara.
+- Speleoškola više ne traži četiri nepostojeća lokalna WordPress asseta.
+- TopoDroid import pravilno učitava Supabase klijent.
+
+### Objedinjeni SQL
+
+Primjenjuje se samo:
+
+`sql/sov_release_v6145av.sql`
+
+Migracija u jednoj transakciji:
+
+- odvaja brzi map feed od sporog Arhivar worklista
+- dodaje nedostajući review RPC za predane jame
+- usklađuje reviewer role na `webmaster`, `admin`, `arhivar`
+- prebacuje Spelo Runner leaderboard na `security_invoker`
+- uklanja nepotrebne anonimne write grantove za runner rezultate
+
+### Važno
+
+- Povijesni `http://` linkovi u arhiviranim člancima nisu naslijepo promijenjeni; provjeravaju se odredište po odredište.
+- Android cleanup RPC i dalje traži popravak u stvarnom APK sourceu ili sigurnoj Edge Function implementaciji; ne smije se rješavati otvaranjem direktnog brisanja iz `storage.objects`.
+- Detaljni audit: `docs/PRE_RELEASE_AUDIT_2026-07-20.md`.

@@ -2,10 +2,10 @@
 // Also injects the approved-member Nacrt Generator entry on the main Cloud dashboard.
 (function(){
   'use strict';
-  const FALLBACK_VERSION='6.1.45au';
-  const FALLBACK_CACHE='6145au-system-status-crash-v2';
-  const FALLBACK_BUILD='sov-web-build-v6.1.45au-system-status-crash-v2';
-  const FALLBACK_NAME='v6.1.45au-system-status-crash-v2';
+  const FALLBACK_VERSION='6.1.45av';
+  const FALLBACK_CACHE='6145av-pre-release-audit';
+  const FALLBACK_BUILD='sov-web-build-v6.1.45av-pre-release-audit';
+  const FALLBACK_NAME='v6.1.45av-pre-release-audit';
   window.SOV_BUILD={version:FALLBACK_VERSION,versionName:FALLBACK_NAME,build:FALLBACK_BUILD,cacheBust:FALLBACK_CACHE};
 
   function safeSetText(sel,value){
@@ -43,7 +43,7 @@
     applyVersion(FALLBACK_VERSION,FALLBACK_BUILD,FALLBACK_NAME);
     injectNacrtDashboardCard();
     try{
-      const res=await fetch('update.json?cb='+Date.now(),{cache:'no-store'});
+      const res=await fetch('/update.json?cb='+Date.now(),{cache:'no-store'});
       if(!res.ok)throw new Error('HTTP '+res.status);
       const m=await res.json();
       window.SOV_UPDATE_MANIFEST=m;

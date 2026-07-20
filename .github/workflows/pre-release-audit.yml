@@ -1,0 +1,136 @@
+name: SOV pre-release audit
+
+on:
+  push:
+    branches:
+      - audit/pre-release-2026-07-20
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: sov-pre-release-audit
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout audit branch
+        uses: actions/checkout@v4
+        with:
+          ref: audit/pre-release-2026-07-20
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Apply deterministic source repairs
+        run: |
+          python tools/normalize_legacy_paths.py
+          python tools/fix_trips_markup.py
+          python tools/final_warning_fixes.py
+          python tools/build_release_sql.py
+
+      - name: Persist deterministic repairs
+        run: |
+          if git diff --quiet; then
+            echo "Source already normalized."
+            exit 0
+          fi
+          git config user.name "SOV Audit Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add .
+          git commit -m "Apply deterministic pre-release source repairs"
+          git pull --rebase origin audit/pre-release-2026-07-20
+          git push origin HEAD:audit/pre-release-2026-07-20
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Static repository audit
+        id: static
+        continue-on-error: true
+        run: python tools/pre_release_audit.py
+
+      - name: External script tag integrity
+        id: script_tags
+        continue-on-error: true
+        run: python tools/script_tag_audit.py
+
+      - name: JavaScript syntax audit
+        id: javascript
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          find . -type f \( -name '*.js' -o -name '*.mjs' \) \
+            -not -path './.git/*' -not -path './node_modules/*' -print0 \
+            | xargs -0 -r -n1 node --check
+
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Start local static server
+        run: |
+          python -m http.server 4173 --bind 127.0.0.1 > /tmp/sov-http.log 2>&1 &
+          echo $! > /tmp/sov-http.pid
+          sleep 2
+
+      - name: Browser smoke test
+        id: browser
+        continue-on-error: true
+        run: node tools/browser_smoke.mjs
+
+      - name: Trips hard-refresh regression test
+        id: trips_refresh
+        continue-on-error: true
+        run: node tools/trips_refresh_smoke.mjs
+
+      - name: Show local server log
+        if: always()
+        run: tail -n 200 /tmp/sov-http.log || true
+
+      - name: Upload audit reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sov-pre-release-audit
+          path: |
+            AUDIT_REPORT.md
+            AUDIT_REPORT.json
+            BROWSER_SMOKE_REPORT.md
+            BROWSER_SMOKE_REPORT.json
+            sql/sov_release_v6145av.sql
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Enforce release gate
+        if: always()
+        shell: bash
+        run: |
+          echo "static=${{ steps.static.outcome }}"
+          echo "script_tags=${{ steps.script_tags.outcome }}"
+          echo "javascript=${{ steps.javascript.outcome }}"
+          echo "browser=${{ steps.browser.outcome }}"
+          echo "trips_refresh=${{ steps.trips_refresh.outcome }}"
+          if [[ "${{ steps.static.outcome }}" != "success" || \
+                "${{ steps.script_tags.outcome }}" != "success" || \
+                "${{ steps.javascript.outcome }}" != "success" || \
+                "${{ steps.browser.outcome }}" != "success" || \
+                "${{ steps.trips_refresh.outcome }}" != "success" ]]; then
+            echo "Pre-release audit failed. Do not merge to production."
+            exit 1
+          fi
+          echo "Pre-release audit passed."
