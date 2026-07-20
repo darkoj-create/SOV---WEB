@@ -18,6 +18,7 @@ data.update({
   'sqlFiles':[
     'sql/sov_release_v6145ax.sql',
     'sql/sov_trip_assets_cleanup_safe_v6145ax.sql',
+    'sql/sov_ecosystem_manifest_v6145ax.sql',
   ],
   'releaseType':'stability-and-ui-cleanup',
   'changedFiles':[
@@ -37,6 +38,7 @@ data.update({
     '.github/workflows/pre-release-audit.yml',
     'sql/sov_release_v6145ax.sql',
     'sql/sov_trip_assets_cleanup_safe_v6145ax.sql',
+    'sql/sov_ecosystem_manifest_v6145ax.sql',
     'VERSION.txt',
     'BUILD_VERSION.txt',
     'assets/sov-version.js',
