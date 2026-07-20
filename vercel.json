@@ -2,95 +2,31 @@
   "cleanUrls": false,
   "trailingSlash": false,
   "redirects": [
-    {
-      "source": "/system-status",
-      "destination": "/system-status.html",
-      "permanent": false
-    },
-    {
-      "source": "/system-status/",
-      "destination": "/system-status.html",
-      "permanent": false
-    },
-    {
-      "source": "/sov-system-status",
-      "destination": "/system-status.html",
-      "permanent": false
-    },
-    {
-      "source": "/sov-system-status/",
-      "destination": "/system-status.html",
-      "permanent": false
-    },
-    {
-      "source": "/status",
-      "destination": "/system-status.html",
-      "permanent": false
-    },
-    {
-      "source": "/status/",
-      "destination": "/system-status.html",
-      "permanent": false
-    },
-    {
-      "source": "/prijava",
-      "destination": "/login.html",
-      "permanent": false
-    },
-    {
-      "source": "/login",
-      "destination": "/login.html",
-      "permanent": false
-    },
-    {
-      "source": "/clanska-zona",
-      "destination": "/login.html",
-      "permanent": false
-    },
-    {
-      "source": "/o-nama",
-      "destination": "/o-drustvu.html",
-      "permanent": false
-    },
-    {
-      "source": "/novosti",
-      "destination": "/vijesti.html",
-      "permanent": false
-    },
-    {
-      "source": "/izleti",
-      "destination": "/izleti-cloud.html",
-      "permanent": false
-    },
-    {
-      "source": "/izleti/",
-      "destination": "/izleti-cloud.html",
-      "permanent": false
-    },
-    {
-      "source": "/izleti.html",
-      "destination": "/izleti-cloud.html",
-      "permanent": false
-    },
-    {
-      "source": "/zapisnici-cijela-arhiva.html",
-      "destination": "/zapisnici-native.html",
-      "permanent": false
-    },
-    {
-      "source": "/Karta.html",
-      "destination": "/karta.html",
-      "permanent": false
-    },
-    {
-      "source": "/Karta",
-      "destination": "/karta.html",
-      "permanent": false
-    },
-    {
-      "source": "/karta",
-      "destination": "/karta.html",
-      "permanent": false
-    }
+    {"source":"/system-status","destination":"/system-status.html","permanent":false},
+    {"source":"/system-status/","destination":"/system-status.html","permanent":false},
+    {"source":"/sov-system-status","destination":"/system-status.html","permanent":false},
+    {"source":"/sov-system-status/","destination":"/system-status.html","permanent":false},
+    {"source":"/status","destination":"/system-status.html","permanent":false},
+    {"source":"/status/","destination":"/system-status.html","permanent":false},
+    {"source":"/prijava","destination":"/login.html","permanent":false},
+    {"source":"/prijava/","destination":"/login.html","permanent":false},
+    {"source":"/login","destination":"/login.html","permanent":false},
+    {"source":"/login/","destination":"/login.html","permanent":false},
+    {"source":"/clanska-zona","destination":"/login.html","permanent":false},
+    {"source":"/clanska-zona/","destination":"/login.html","permanent":false},
+    {"source":"/o-nama","destination":"/o-drustvu.html","permanent":false},
+    {"source":"/novosti","destination":"/vijesti.html","permanent":false},
+    {"source":"/izleti","destination":"/izleti-cloud.html","permanent":false},
+    {"source":"/izleti/","destination":"/izleti-cloud.html","permanent":false},
+    {"source":"/izleti.html","destination":"/izleti-cloud.html","permanent":false},
+    {"source":"/baza.html","destination":"/karta.html","permanent":false},
+    {"source":"/inventura.html","destination":"/oruzarstvo.html#inventory","permanent":false},
+    {"source":"/pregled-zapisnika.html","destination":"/zapisnici-native.html","permanent":false},
+    {"source":"/zapisnici-aktualni-2026.html","destination":"/zapisnici-native.html","permanent":false},
+    {"source":"/zapisnici-arhiva-2017-2022.html","destination":"/zapisnici-native.html","permanent":false},
+    {"source":"/zapisnici-cijela-arhiva.html","destination":"/zapisnici-native.html","permanent":false},
+    {"source":"/Karta.html","destination":"/karta.html","permanent":false},
+    {"source":"/Karta","destination":"/karta.html","permanent":false},
+    {"source":"/karta","destination":"/karta.html","permanent":false}
   ]
 }
