@@ -61,6 +61,11 @@ jobs:
         continue-on-error: true
         run: node tools/browser_smoke.mjs
 
+      - name: Trips hard-refresh regression test
+        id: trips_refresh
+        continue-on-error: true
+        run: node tools/trips_refresh_smoke.mjs
+
       - name: Show local server log
         if: always()
         run: tail -n 200 /tmp/sov-http.log || true
@@ -85,9 +90,11 @@ jobs:
           echo "static=${{ steps.static.outcome }}"
           echo "javascript=${{ steps.javascript.outcome }}"
           echo "browser=${{ steps.browser.outcome }}"
+          echo "trips_refresh=${{ steps.trips_refresh.outcome }}"
           if [[ "${{ steps.static.outcome }}" != "success" || \
                 "${{ steps.javascript.outcome }}" != "success" || \
-                "${{ steps.browser.outcome }}" != "success" ]]; then
+                "${{ steps.browser.outcome }}" != "success" || \
+                "${{ steps.trips_refresh.outcome }}" != "success" ]]; then
             echo "Pre-release audit failed. Do not merge to production."
             exit 1
           fi
