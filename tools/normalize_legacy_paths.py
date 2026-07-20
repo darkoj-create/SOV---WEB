@@ -117,4 +117,48 @@ for path in (ROOT / 'assets').rglob('*.css'):
     if write_if_changed(path, new):
         changed += 1
 
+# Speleoškola referenced four local WordPress export folders that were never
+# included in the repository. Use the matching, stable WordPress media URLs
+# already used by the corresponding article cards on the public home page.
+school = ROOT / 'speleoskola.html'
+if school.exists():
+    text = read(school)
+    replacements = {
+        'novosti/Sve što je lijepo kratko traje, osim puta do Velebitaškog duha – Speleološki odsjek PDS Velebit_files/autorica-teksta-na-izlazu-iz-dvojame_paula-skelin.jpg':
+            'https://i0.wp.com/sovelebit.wordpress.com/wp-content/uploads/2026/05/demonstracija-tehnickog-penjanja_gorana-peric.jpg?fit=1200%2C676&ssl=1',
+        'novosti/Pa po užetu dol’ pa po užetu gor’! – Speleološki odsjek PDS Velebit_files/1f60a.svg':
+            'https://i0.wp.com/sovelebit.wordpress.com/wp-content/uploads/2026/05/jutarnje-zagrijavanje_gorana-peric.jpg?fit=1200%2C676&ssl=1',
+        'novosti/Spust u jamu – Speleološki odsjek PDS Velebit_files/grupno-crtanje_klara-krsticevic.jpg':
+            'https://i0.wp.com/sovelebit.wordpress.com/wp-content/uploads/2026/04/vjezbanje-uzlova_jelena-babic.jpg?fit=1200%2C900&ssl=1',
+        'novosti/Hej, haj Terihaj (i Gorsko) – Speleološki odsjek PDS Velebit_files/gorsko-zrcalo-na-stijeni_petra-jagodic.jpg':
+            'https://i0.wp.com/sovelebit.wordpress.com/wp-content/uploads/2026/04/terihaj-uspon_ines-sasic.jpg?fit=1200%2C900&ssl=1',
+    }
+    new = text
+    for old, replacement in replacements.items():
+        new = new.replace(old, replacement)
+    if write_if_changed(school, new):
+        changed += 1
+
+# This protected import page used auth.js without first loading supabase-js.
+topodroid_import = ROOT / 'topodroid-import.html'
+if topodroid_import.exists():
+    text = read(topodroid_import)
+    marker = '<script src="assets/supabase-config.js"></script><script src="assets/auth.js"></script>'
+    replacement = '<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="assets/supabase-config.js"></script><script src="assets/auth.js"></script>'
+    new = text.replace(marker, replacement, 1)
+    if write_if_changed(topodroid_import, new):
+        changed += 1
+
+# Vercel destinations may include URL fragments; the static file check must
+# validate only the path component.
+audit_tool = ROOT / 'tools' / 'pre_release_audit.py'
+if audit_tool.exists():
+    text = read(audit_tool)
+    new = text.replace(
+        'dest.lstrip("/").split("?", 1)[0]',
+        'dest.lstrip("/").split("#", 1)[0].split("?", 1)[0]',
+    )
+    if write_if_changed(audit_tool, new):
+        changed += 1
+
 print(f'Normalized {changed} file(s).')
