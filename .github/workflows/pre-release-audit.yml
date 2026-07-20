@@ -35,6 +35,11 @@ jobs:
         continue-on-error: true
         run: python tools/pre_release_audit.py
 
+      - name: External script tag integrity
+        id: script_tags
+        continue-on-error: true
+        run: python tools/script_tag_audit.py
+
       - name: JavaScript syntax audit
         id: javascript
         continue-on-error: true
@@ -88,10 +93,12 @@ jobs:
         shell: bash
         run: |
           echo "static=${{ steps.static.outcome }}"
+          echo "script_tags=${{ steps.script_tags.outcome }}"
           echo "javascript=${{ steps.javascript.outcome }}"
           echo "browser=${{ steps.browser.outcome }}"
           echo "trips_refresh=${{ steps.trips_refresh.outcome }}"
           if [[ "${{ steps.static.outcome }}" != "success" || \
+                "${{ steps.script_tags.outcome }}" != "success" || \
                 "${{ steps.javascript.outcome }}" != "success" || \
                 "${{ steps.browser.outcome }}" != "success" || \
                 "${{ steps.trips_refresh.outcome }}" != "success" ]]; then
