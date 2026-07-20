@@ -1,0 +1,37 @@
+name: Normalize legacy paths
+
+on:
+  push:
+    branches:
+      - audit/pre-release-2026-07-20
+    paths:
+      - tools/normalize_legacy_paths.py
+      - .github/workflows/normalize-legacy-paths.yml
+
+permissions:
+  contents: write
+
+jobs:
+  normalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: audit/pre-release-2026-07-20
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Normalize nested assets and alias pages
+        run: python tools/normalize_legacy_paths.py
+      - name: Commit normalized source
+        run: |
+          if git diff --quiet; then
+            echo "No normalization changes required."
+            exit 0
+          fi
+          git config user.name "SOV Audit Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add .
+          git commit -m "Normalize nested assets and legacy aliases"
+          git push origin HEAD:audit/pre-release-2026-07-20
