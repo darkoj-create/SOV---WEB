@@ -161,4 +161,19 @@ if audit_tool.exists():
     if write_if_changed(audit_tool, new):
         changed += 1
 
+# The current Vercel primary domain is www.so-velebit.hr. Keep canonical,
+# Open Graph, JSON-LD, sitemap and other public absolute URLs consistent with it.
+public_extensions = {'.html', '.htm', '.xml', '.json', '.webmanifest', '.js'}
+skip_dirs = {'.git', 'node_modules', '.vercel'}
+for path in ROOT.rglob('*'):
+    if not path.is_file() or path.suffix.lower() not in public_extensions:
+        continue
+    if any(part in skip_dirs for part in path.parts):
+        continue
+    text = read(path)
+    new = text.replace('https://so-velebit.hr', 'https://www.so-velebit.hr')
+    new = new.replace('http://so-velebit.hr', 'https://www.so-velebit.hr')
+    if write_if_changed(path, new):
+        changed += 1
+
 print(f'Normalized {changed} file(s).')
