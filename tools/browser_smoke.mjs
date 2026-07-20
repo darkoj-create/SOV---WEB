@@ -73,7 +73,12 @@ for (const rel of pages) {
   page.on('requestfailed', req => {
     try {
       const u = new URL(req.url());
-      if (u.origin === BASE) localProblems.push(`request failed ${u.pathname}: ${req.failure()?.errorText || 'unknown'}`);
+      const failure = req.failure()?.errorText || 'unknown';
+      // Navigation/auth redirects normally abort requests that are still in
+      // flight. Missing local files are caught authoritatively by HTTP >= 400.
+      if (u.origin === BASE && !/ERR_ABORTED/i.test(failure)) {
+        localProblems.push(`request failed ${u.pathname}: ${failure}`);
+      }
     } catch {}
   });
   page.on('response', response => {
