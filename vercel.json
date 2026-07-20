@@ -58,6 +58,21 @@
       "permanent": false
     },
     {
+      "source": "/izleti",
+      "destination": "/izleti-cloud.html",
+      "permanent": false
+    },
+    {
+      "source": "/izleti/",
+      "destination": "/izleti-cloud.html",
+      "permanent": false
+    },
+    {
+      "source": "/izleti.html",
+      "destination": "/izleti-cloud.html",
+      "permanent": false
+    },
+    {
       "source": "/Karta.html",
       "destination": "/karta.html",
       "permanent": false
@@ -71,20 +86,6 @@
       "source": "/karta",
       "destination": "/karta.html",
       "permanent": false
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/system-status",
-      "destination": "/system-status.html"
-    },
-    {
-      "source": "/sov-system-status",
-      "destination": "/system-status.html"
-    },
-    {
-      "source": "/status",
-      "destination": "/system-status.html"
     }
   ]
 }
