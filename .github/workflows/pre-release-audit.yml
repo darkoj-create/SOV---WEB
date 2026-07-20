@@ -42,6 +42,7 @@ jobs:
           python tools/build_release_sql.py
           python tools/fix_v6145ax.py
           python tools/finalize_v6145ax_manifest.py
+          python tools/fix_trips_default_upcoming.py
 
       - name: Persist deterministic repairs on source branches
         run: |
@@ -52,7 +53,7 @@ jobs:
           git config user.name "SOV Audit Bot"
           git config user.email "actions@users.noreply.github.com"
           git add .
-          git commit -m "Apply deterministic v6.1.45ax repairs"
+          git commit -m "Apply deterministic v6.1.45ay repairs"
           if [[ "${GITHUB_EVENT_NAME}" == "push" ]]; then
             git pull --rebase origin "${GITHUB_REF_NAME}"
             git push origin "HEAD:${GITHUB_REF_NAME}"
@@ -89,6 +90,11 @@ jobs:
         id: trips_inflight
         continue-on-error: true
         run: node tools/trips_inflight_refresh_test.mjs
+
+      - name: Trips default upcoming and auto-load test
+        id: trips_upcoming
+        continue-on-error: true
+        run: node tools/trips_default_upcoming_test.mjs
 
       - name: Install Playwright
         run: |
@@ -146,6 +152,7 @@ jobs:
           echo "script_tags=${{ steps.script_tags.outcome }}"
           echo "javascript=${{ steps.javascript.outcome }}"
           echo "trips_inflight=${{ steps.trips_inflight.outcome }}"
+          echo "trips_upcoming=${{ steps.trips_upcoming.outcome }}"
           echo "browser=${{ steps.browser.outcome }}"
           echo "trips_refresh=${{ steps.trips_refresh.outcome }}"
           echo "visual=${{ steps.visual.outcome }}"
@@ -153,6 +160,7 @@ jobs:
                 "${{ steps.script_tags.outcome }}" != "success" || \
                 "${{ steps.javascript.outcome }}" != "success" || \
                 "${{ steps.trips_inflight.outcome }}" != "success" || \
+                "${{ steps.trips_upcoming.outcome }}" != "success" || \
                 "${{ steps.browser.outcome }}" != "success" || \
                 "${{ steps.trips_refresh.outcome }}" != "success" || \
                 "${{ steps.visual.outcome }}" != "success" ]]; then
