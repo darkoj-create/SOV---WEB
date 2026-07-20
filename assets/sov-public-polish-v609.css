@@ -1,0 +1,4 @@
+/* SOV compatibility shim.
+ * Legacy pages still reference this v6.0.9 filename; active public styling is
+ * provided by the newer SOV public/foundation/shell bundles loaded alongside it.
+ */
