@@ -1,14 +1,16 @@
 {
   "app": "SOV web",
-  "version": "6.1.45aw",
-  "versionName": "v6.1.45aw-trips-force-refresh",
-  "build": "sov-web-build-v6.1.45aw-trips-force-refresh",
-  "createdAt": "2026-07-20T22:20:00+02:00",
-  "cacheBust": "6145aw-trips-force-refresh",
-  "base": "sov-web-build-v6.1.45av-pre-release-audit",
-  "requiresSql": false,
-  "sqlFiles": [],
-  "releaseType": "trips-force-refresh-hotfix",
+  "version": "6.1.45ax",
+  "versionName": "v6.1.45ax-gmail-trips-status-visual",
+  "build": "sov-web-build-v6.1.45ax-gmail-trips-status-visual",
+  "createdAt": "2026-07-20T23:15:00+02:00",
+  "cacheBust": "6145ax-gmail-trips-status-visual",
+  "base": "sov-web-build-v6.1.45aw-trips-force-refresh",
+  "requiresSql": true,
+  "sqlFiles": [
+    "sql/sov_release_v6145ax.sql"
+  ],
+  "releaseType": "stability-and-ui-cleanup",
   "changedFiles": [
     "assets/sov-trips-cloud.js",
     "izleti-cloud.html",
@@ -21,5 +23,5 @@
     "README.md",
     "update.json"
   ],
-  "notes": "True Trips force refresh now starts a separate database request even while an older request is still in flight. A generation guard prevents the older response from overwriting the fresh cache. The production page forwards force=true into the data layer and uses a new cache-busted asset URL."
+  "notes": "Automatic Trips refresh and effective past-trip completion, Gmail queue health, factual System Status v3, quieter client telemetry and professional zapisnici copy."
 }

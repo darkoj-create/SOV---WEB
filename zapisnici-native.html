@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1" name="viewport"/>
-<title>Živi zapisnici. — SOV Velebit</title>
+<title>Arhiva zapisnika — SOV Velebit</title>
 <link href="assets/site.css" rel="stylesheet"/>
 <link href="assets/mobile.css" rel="stylesheet"/>
 <link href="assets/sov-foundation-v55822.css" rel="stylesheet"/>
@@ -22,7 +22,7 @@
 <script src="assets/auth.js"></script>
 <link href="assets/sov-typography-v6144g.css" rel="stylesheet"/>
 <link rel="stylesheet" href="assets/sov-member-header-v6145ai.css">
-<meta content="Gmail ili ručni DOCX import ne mora spremati originalni DOCX u web. Sadržaj se sprema kao čitljiv tekst u bazi, lijepo prikazuje ovdje i po potrebi se ponovno…" name="description"/><meta content="noindex,nofollow,noarchive" name="robots"/><link href="https://www.so-velebit.hr/zapisnici-native.html" rel="canonical"/><meta content="Speleološki odsjek Velebit" property="og:site_name"/><meta content="hr_HR" property="og:locale"/><meta content="website" property="og:type"/><meta content="Živi zapisnici. — SOV Velebit" property="og:title"/><meta content="Gmail ili ručni DOCX import ne mora spremati originalni DOCX u web. Sadržaj se sprema kao čitljiv tekst u bazi, lijepo prikazuje ovdje i po potrebi se ponovno…" property="og:description"/><meta content="https://www.so-velebit.hr/zapisnici-native.html" property="og:url"/><meta content="https://www.so-velebit.hr/assets/sov-logo.png" property="og:image"/><meta content="summary_large_image" name="twitter:card"/><meta content="Živi zapisnici. — SOV Velebit" name="twitter:title"/><meta content="Gmail ili ručni DOCX import ne mora spremati originalni DOCX u web. Sadržaj se sprema kao čitljiv tekst u bazi, lijepo prikazuje ovdje i po potrebi se ponovno…" name="twitter:description"/><meta content="https://www.so-velebit.hr/assets/sov-logo.png" name="twitter:image"/><meta content="#0b0f14" name="theme-color"/></head>
+<meta content="Gmail ili ručni DOCX import ne mora spremati originalni DOCX u web. Sadržaj se sprema kao čitljiv tekst u bazi, lijepo prikazuje ovdje i po potrebi se ponovno…" name="description"/><meta content="noindex,nofollow,noarchive" name="robots"/><link href="https://www.so-velebit.hr/zapisnici-native.html" rel="canonical"/><meta content="Speleološki odsjek Velebit" property="og:site_name"/><meta content="hr_HR" property="og:locale"/><meta content="website" property="og:type"/><meta content="Arhiva zapisnika — SOV Velebit" property="og:title"/><meta content="Gmail ili ručni DOCX import ne mora spremati originalni DOCX u web. Sadržaj se sprema kao čitljiv tekst u bazi, lijepo prikazuje ovdje i po potrebi se ponovno…" property="og:description"/><meta content="https://www.so-velebit.hr/zapisnici-native.html" property="og:url"/><meta content="https://www.so-velebit.hr/assets/sov-logo.png" property="og:image"/><meta content="summary_large_image" name="twitter:card"/><meta content="Arhiva zapisnika — SOV Velebit" name="twitter:title"/><meta content="Gmail ili ručni DOCX import ne mora spremati originalni DOCX u web. Sadržaj se sprema kao čitljiv tekst u bazi, lijepo prikazuje ovdje i po potrebi se ponovno…" name="twitter:description"/><meta content="https://www.so-velebit.hr/assets/sov-logo.png" name="twitter:image"/><meta content="#0b0f14" name="theme-color"/></head>
 <body class="sov-premium minutes-native-page">
 <div class="mn-shell">
 <header class="sov-member-top" data-sov-member-header>
@@ -38,20 +38,20 @@
 </header>
 <main>
 <section class="mn-hero">
-<div class="mn-crumbs"><a href="dokumenti.html">Dokumenti</a><span>›</span><a href="dokumenti.html#zapisnici-sastanaka">Zapisnici</a><span>›</span><strong>Native tekst</strong></div>
-<span class="mn-eyebrow">Gmail / DOCX → native zapisnik</span>
-<h1>Živi zapisnici.</h1>
-<p>Gmail ili ručni DOCX import ne mora spremati originalni DOCX u web. Sadržaj se sprema kao čitljiv tekst u bazi, lijepo prikazuje ovdje i po potrebi se ponovno izvozi u Word/DOCX.</p>
-<div class="mn-actions-top"><a class="mn-btn primary" href="zapisnici-najave.html">Gmail sync i najave →</a><a class="mn-btn" href="zapisnici-aktualni-2026.html">Stara DOCX mapa</a><button class="mn-btn" id="refreshBtn">Osvježi</button></div>
+<div class="mn-crumbs"><a href="dokumenti.html">Dokumenti</a><span>›</span><a href="dokumenti.html#zapisnici-sastanaka">Zapisnici</a><span>›</span><strong>Arhiva zapisnika</strong></div>
+<span class="mn-eyebrow">Zapisnici sastanaka</span>
+<h1>Arhiva zapisnika</h1>
+<p>Zapisnici pristigli Gmailom ili ručnim unosom spremaju se kao pretraživ tekst. Iz svakog zapisa moguće je ponovno izvesti DOCX ili izdvojiti najave izleta.</p>
+<div class="mn-actions-top"><a class="mn-btn primary" href="zapisnici-najave.html">Gmail sinkronizacija i najave →</a><a class="mn-btn" href="zapisnici-aktualni-2026.html">Stara DOCX mapa</a><button class="mn-btn" id="refreshBtn">Osvježi</button></div>
 </section>
-<section class="mn-kpis"><div><b id="kCount">—</b><span>zapisnika u bazi</span></div><div><b id="kGmail">—</b><span>Gmail import</span></div><div><b id="kLatest">—</b><span>zadnji zapisnik</span></div><div><b>DOCX</b><span>export iz teksta</span></div></section>
+<section class="mn-kpis"><div><b id="kCount">—</b><span>zapisnika u bazi</span></div><div><b id="kGmail">—</b><span>uvezeno iz Gmaila</span></div><div><b id="kLatest">—</b><span>zadnji zapisnik</span></div><div><b>DOCX</b><span>export iz teksta</span></div></section>
 <section class="mn-toolbar"><input autocomplete="off" class="mn-search" id="searchBox" placeholder="Pretraži zapisnike po datumu, naslovu, sadržaju…"/><select class="mn-select" id="sourceFilter"><option value="all">Svi izvori</option><option value="gmail">Gmail</option><option value="manual_upload">Ručni upload</option><option value="manual_native">Ručni native unos</option></select></section>
 <section class="mn-grid"><aside class="mn-list"><div class="mn-panel-head"><b>Lista zapisnika</b><span id="listStatus">Učitavam…</span></div><div class="mn-items" id="minutesList"><div class="mn-empty">Učitavam zapisnike…</div></div></aside><section class="mn-detail"><div class="mn-panel-head"><b id="detailTitle">Preview</b><span id="detailMeta"></span></div><div class="mn-detail-actions" hidden="" id="detailActions"><button class="mn-btn primary" id="exportDocxBtn">Export DOCX</button><button class="mn-btn" id="exportTxtBtn">TXT</button><button class="mn-btn" id="copyBtn">Kopiraj tekst</button><a class="mn-btn" href="zapisnici-najave.html">Izvuci najave</a></div><article class="mn-paper-empty" id="paper">Odaberi zapisnik s lijeve strane.</article></section></section>
-<section class="mn-note"><b>Napomena:</b> ova stranica koristi tablicu <code>meeting_minutes</code>. Za Gmail automatski uvoz treba pokrenuti SQL <code>SUPABASE_SOV_GMAIL_ZAPISNICI_NATIVE_v6_1_44e.sql</code> i postaviti Apps Script <code>SOV_GMAIL_ZAPISNICI_APPS_SCRIPT_v6_1_44e_NATIVE_QUEUE.gs</code>.</section>
+<section class="mn-note"><b>Sinkronizacija:</b> novi SOV zapisnici iz Gmaila provjeravaju se automatski. Gumb na stranici Najave može zatražiti dodatnu provjeru zadnja četiri tjedna.</section>
 </main>
 </div>
-<script src="assets/zapisnici-native-v6144e.js?v=6.1.44e"></script>
+<script src="assets/zapisnici-native-v6144e.js?v=6.1.45ax"></script>
 <script defer="" src="assets/sov-version.js?v=6.1.45aj"></script>
-<script defer="" src="assets/sov-client-logger.js?v=6.1.44e"></script>
+<script defer="" src="assets/sov-client-logger.js?v=6.1.45ax"></script>
 </body>
 </html>
