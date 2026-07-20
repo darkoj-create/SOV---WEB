@@ -29,6 +29,36 @@ const context = await browser.newContext({
   ignoreHTTPSErrors: false,
 });
 
+// A smoke test must never read from or write to the live SOV database.
+// Return deterministic synthetic responses for all Supabase project traffic.
+await context.route(/^https:\/\/[^/]+\.supabase\.co\//, async route => {
+  const request = route.request();
+  const url = request.url();
+  const headers = {
+    'access-control-allow-origin': '*',
+    'access-control-allow-headers': '*',
+    'access-control-allow-methods': 'GET,HEAD,POST,PATCH,PUT,DELETE,OPTIONS',
+    'content-type': 'application/json; charset=utf-8',
+  };
+  if (request.method() === 'OPTIONS') {
+    await route.fulfill({ status: 200, headers, body: '{}' });
+    return;
+  }
+  if (url.includes('/rest/v1/rpc/sov_log_client_error')) {
+    await route.fulfill({ status: 200, headers, body: 'null' });
+    return;
+  }
+  await route.fulfill({
+    status: 401,
+    headers,
+    body: JSON.stringify({ message: 'SOV audit isolation: live Supabase disabled' }),
+  });
+});
+
+await context.addInitScript(() => {
+  Object.defineProperty(window, '__SOV_AUDIT_MODE__', { value: true, configurable: false });
+});
+
 for (const rel of pages) {
   const page = await context.newPage();
   const localProblems = [];
@@ -70,7 +100,7 @@ for (const rel of pages) {
   const uniqueLocal = [...new Set(localProblems)];
   const uniquePage = [...new Set(pageErrors)];
   const uniqueConsole = [...new Set(consoleErrors)]
-    .filter(x => !/favicon\.ico|youtube|third[- ]party cookie|ERR_BLOCKED_BY_CLIENT/i.test(x));
+    .filter(x => !/favicon\.ico|youtube|third[- ]party cookie|ERR_BLOCKED_BY_CLIENT|SOV audit isolation|401/i.test(x));
 
   for (const detail of uniqueLocal) issues.push({ severity: 'error', code: 'BROWSER_LOCAL_REQUEST', file: rel, detail });
   for (const detail of uniquePage) issues.push({ severity: 'error', code: 'BROWSER_PAGEERROR', file: rel, detail });
