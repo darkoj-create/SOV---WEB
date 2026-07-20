@@ -1,4 +1,15 @@
-# SOV web build v6.1.45aw
+# SOV web build v6.1.45ax
+
+## v6.1.45ax — Gmail, Izleti, status i vizualno čišćenje
+
+- prošli izleti više se ne prikazuju kao planirani ili aktivni;
+- Izleti se osvježavaju u pozadini i ostaju spremljeni u lokalnom cacheu;
+- Gmail red čekanja dobiva stvarni status i automatsku obradu;
+- Status sustava odvaja aktualne incidente od starih, obrađenih i testnih događaja;
+- Android warning nije označen kao crash;
+- uklonjeni su nazivi poput „Živi zapisnici” i zamijenjeni jasnim nazivima;
+- dodan je desktop/mobile vizualni layout audit ključnih stranica.
+
 
 ## v6.1.45aw — Trips force-refresh hotfix
 
