@@ -41,6 +41,7 @@ jobs:
           python tools/final_warning_fixes.py
           python tools/build_release_sql.py
           python tools/fix_v6145ax.py
+          python tools/finalize_v6145ax_manifest.py
 
       - name: Persist deterministic repairs on source branches
         run: |
@@ -132,6 +133,8 @@ jobs:
             VISUAL_AUDIT/
             sql/sov_release_v6145av.sql
             sql/sov_release_v6145ax.sql
+            sql/sov_trip_assets_cleanup_safe_v6145ax.sql
+            update.json
           if-no-files-found: warn
           retention-days: 14
 
