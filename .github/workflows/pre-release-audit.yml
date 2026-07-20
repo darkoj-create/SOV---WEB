@@ -9,8 +9,12 @@ on:
       - main
   workflow_dispatch:
 
+concurrency:
+  group: sov-pre-release-audit
+  cancel-in-progress: true
+
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   audit:
@@ -19,11 +23,32 @@ jobs:
     steps:
       - name: Checkout audit branch
         uses: actions/checkout@v4
+        with:
+          ref: audit/pre-release-2026-07-20
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+
+      - name: Apply deterministic source repairs
+        run: |
+          python tools/normalize_legacy_paths.py
+          python tools/fix_trips_markup.py
+
+      - name: Persist deterministic repairs
+        run: |
+          if git diff --quiet; then
+            echo "Source already normalized."
+            exit 0
+          fi
+          git config user.name "SOV Audit Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add .
+          git commit -m "Apply deterministic pre-release source repairs"
+          git pull --rebase origin audit/pre-release-2026-07-20
+          git push origin HEAD:audit/pre-release-2026-07-20
 
       - name: Set up Node
         uses: actions/setup-node@v4
