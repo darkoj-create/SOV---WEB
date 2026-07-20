@@ -43,7 +43,7 @@
     applyVersion(FALLBACK_VERSION,FALLBACK_BUILD,FALLBACK_NAME);
     injectNacrtDashboardCard();
     try{
-      const res=await fetch('update.json?cb='+Date.now(),{cache:'no-store'});
+      const res=await fetch('/update.json?cb='+Date.now(),{cache:'no-store'});
       if(!res.ok)throw new Error('HTTP '+res.status);
       const m=await res.json();
       window.SOV_UPDATE_MANIFEST=m;
