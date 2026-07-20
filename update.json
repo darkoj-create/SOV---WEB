@@ -1,29 +1,31 @@
 {
   "app": "SOV web",
-  "version": "6.1.45au",
-  "versionName": "v6.1.45au-system-status-crash-v2",
-  "build": "sov-web-build-v6.1.45au-system-status-crash-v2",
-  "createdAt": "2026-07-20T01:25:00+02:00",
-  "cacheBust": "6145au-system-status-crash-v2",
-  "base": "sov-web-build-v6.1.45at-nacrt-corpus-style-v6",
+  "version": "6.1.45av",
+  "versionName": "v6.1.45av-pre-release-audit",
+  "build": "sov-web-build-v6.1.45av-pre-release-audit",
+  "createdAt": "2026-07-20T20:45:00+02:00",
+  "cacheBust": "6145av-pre-release-audit",
+  "base": "sov-web-build-v6.1.45au-system-status-crash-v2",
   "requiresSql": true,
   "sqlFiles": [
-    "SUPABASE_OBSERVABILITY_SYSTEM_STATUS_V2.sql",
-    "SUPABASE_OBSERVABILITY_SYSTEM_STATUS_V2_RELEASE_REGISTRY.sql"
+    "sql/sov_release_v6145av.sql"
   ],
-  "releaseType": "system-status-crash-v2",
+  "releaseType": "pre-release-audit-stabilization",
   "changedFiles": [
-    "system-status.html",
-    "assets/sov-system-status-wow-v6145au.css",
-    "assets/sov-system-status-wow-v6145au.js",
-    "assets/sov-ecosystem-manifest.json",
-    "SUPABASE_OBSERVABILITY_SYSTEM_STATUS_V2.sql",
-    "SUPABASE_OBSERVABILITY_SYSTEM_STATUS_V2_RELEASE_REGISTRY.sql",
-    "BUILD_NOTES_v6.1.45au_SYSTEM_STATUS_CRASH_V2.md",
-    "BUILD_VERSION.txt",
-    "VERSION.txt",
+    "izleti-cloud.html",
+    "assets/sov-trip-assets-v5596.js",
+    "dashboard.html",
+    "speleoskola.html",
+    "topodroid.html",
+    "topodroid-import.html",
+    "vercel.json",
     "assets/sov-version.js",
+    "sql/sov_release_v6145av.sql",
+    "docs/PRE_RELEASE_AUDIT_2026-07-20.md",
+    "VERSION.txt",
+    "BUILD_VERSION.txt",
+    "README.md",
     "update.json"
   ],
-  "notes": "Adds an Admin/Webmaster-only Supabase status snapshot, live APK/web client error KPIs, recent crash reports and release-contract alignment. Existing direct checks remain as a fallback. No trip, map, archive, armory, Nacrt or tracking data model changes."
+  "notes": "Full pre-release audit and stabilization. Scans 279 HTML pages, validates JavaScript and external script tags, runs an isolated browser smoke suite and functional Trips button/pull-to-refresh regression tests. Fixes stale Trips refresh, duplicate/missing controls, nested news assets, legacy routing, dashboard script-tag corruption and missing TopoDroid loader. Consolidated SQL separates the fast map feed from the expensive Arhivar worklist, adds the missing reviewer RPC with aligned webmaster/admin/arhivar roles, and hardens the public Spelo Runner leaderboard view. Historical HTTP links in archived articles remain unchanged pending destination-by-destination verification."
 }
