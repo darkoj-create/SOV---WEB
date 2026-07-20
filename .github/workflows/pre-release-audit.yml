@@ -36,6 +36,8 @@ jobs:
         run: |
           python tools/normalize_legacy_paths.py
           python tools/fix_trips_markup.py
+          python tools/final_warning_fixes.py
+          python tools/build_release_sql.py
 
       - name: Persist deterministic repairs
         run: |
@@ -110,6 +112,7 @@ jobs:
             AUDIT_REPORT.json
             BROWSER_SMOKE_REPORT.md
             BROWSER_SMOKE_REPORT.json
+            sql/sov_release_v6145av.sql
           if-no-files-found: warn
           retention-days: 14
 
