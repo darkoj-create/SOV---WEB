@@ -73,6 +73,11 @@
       "permanent": false
     },
     {
+      "source": "/zapisnici-cijela-arhiva.html",
+      "destination": "/zapisnici-native.html",
+      "permanent": false
+    },
+    {
       "source": "/Karta.html",
       "destination": "/karta.html",
       "permanent": false
