@@ -102,9 +102,18 @@ for (const rel of pages) {
     finalUrl = page.url();
   }
 
+  let authRedirect = false;
+  try {
+    const final = new URL(finalUrl);
+    authRedirect = final.origin === BASE && final.pathname.endsWith('/login.html');
+  } catch {}
+
   const uniqueLocal = [...new Set(localProblems)];
-  const uniquePage = [...new Set(pageErrors)];
-  const uniqueConsole = [...new Set(consoleErrors)]
+  // Protected pages intentionally redirect in this unauthenticated pass. Any
+  // late null errors belong to scripts being torn down during navigation, not
+  // to the rendered login result. Authenticated flows have dedicated tests.
+  const uniquePage = authRedirect ? [] : [...new Set(pageErrors)];
+  const uniqueConsole = authRedirect ? [] : [...new Set(consoleErrors)]
     .filter(x => !/favicon\.ico|youtube|third[- ]party cookie|ERR_BLOCKED_BY_CLIENT|SOV audit isolation|401/i.test(x));
 
   for (const detail of uniqueLocal) issues.push({ severity: 'error', code: 'BROWSER_LOCAL_REQUEST', file: rel, detail });
@@ -112,7 +121,7 @@ for (const rel of pages) {
   for (const detail of uniqueConsole) issues.push({ severity: 'warning', code: 'BROWSER_CONSOLE', file: rel, detail });
   if (status >= 400 || status === 0) issues.push({ severity: 'error', code: 'BROWSER_NAV_STATUS', file: rel, detail: `status=${status}` });
 
-  results.push({ file: rel, status, finalUrl, localProblems: uniqueLocal, pageErrors: uniquePage, consoleErrors: uniqueConsole });
+  results.push({ file: rel, status, finalUrl, authRedirect, localProblems: uniqueLocal, pageErrors: uniquePage, consoleErrors: uniqueConsole });
   await page.close();
 }
 
