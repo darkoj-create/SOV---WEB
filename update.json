@@ -3,7 +3,7 @@
   "version": "6.1.45ax",
   "versionName": "v6.1.45ax-gmail-trips-status-visual",
   "build": "sov-web-build-v6.1.45ax-gmail-trips-status-visual",
-  "createdAt": "2026-07-20T23:15:00+02:00",
+  "createdAt": "2026-07-20T23:35:00+02:00",
   "cacheBust": "6145ax-gmail-trips-status-visual",
   "base": "sov-web-build-v6.1.45aw-trips-force-refresh",
   "requiresSql": true,
