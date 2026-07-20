@@ -14,8 +14,6 @@ begin;
 --   * the view is not directly exposed to anon/authenticated
 --   * the RPCs remain SECURITY DEFINER with explicit auth/role checks
 
-begin;
-
 create or replace view public.sov_map_objects_light
 with (security_invoker = true)
 as
@@ -346,8 +344,6 @@ comment on function public.sov_map_objects_page(integer, integer) is
 -- Removes the permanent 404/fallback path used by arhivar-submissions-review.js.
 -- Aligns database reviewer roles with auth.js: webmaster, admin and arhivar.
 
-begin;
-
 create or replace function public.sov_submissions_is_reviewer()
 returns boolean
 language sql
@@ -427,8 +423,6 @@ comment on function public.sov_update_speleo_submission_review(uuid,text,text[],
 -- SOV v6.1.45av — Spelo Runner leaderboard security hardening
 -- Keep public high-score reads while removing view-owner privilege bypass and
 -- unnecessary anonymous write grants.
-
-begin;
 
 create or replace view public.sov_runner_leaderboard
 with (security_invoker = true)
