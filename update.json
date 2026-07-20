@@ -1,31 +1,25 @@
 {
   "app": "SOV web",
-  "version": "6.1.45av",
-  "versionName": "v6.1.45av-pre-release-audit",
-  "build": "sov-web-build-v6.1.45av-pre-release-audit",
-  "createdAt": "2026-07-20T20:45:00+02:00",
-  "cacheBust": "6145av-pre-release-audit",
-  "base": "sov-web-build-v6.1.45au-system-status-crash-v2",
-  "requiresSql": true,
-  "sqlFiles": [
-    "sql/sov_release_v6145av.sql"
-  ],
-  "releaseType": "pre-release-audit-stabilization",
+  "version": "6.1.45aw",
+  "versionName": "v6.1.45aw-trips-force-refresh",
+  "build": "sov-web-build-v6.1.45aw-trips-force-refresh",
+  "createdAt": "2026-07-20T22:20:00+02:00",
+  "cacheBust": "6145aw-trips-force-refresh",
+  "base": "sov-web-build-v6.1.45av-pre-release-audit",
+  "requiresSql": false,
+  "sqlFiles": [],
+  "releaseType": "trips-force-refresh-hotfix",
   "changedFiles": [
+    "assets/sov-trips-cloud.js",
     "izleti-cloud.html",
-    "assets/sov-trip-assets-v5596.js",
-    "dashboard.html",
-    "speleoskola.html",
-    "topodroid.html",
-    "topodroid-import.html",
-    "vercel.json",
-    "assets/sov-version.js",
-    "sql/sov_release_v6145av.sql",
-    "docs/PRE_RELEASE_AUDIT_2026-07-20.md",
+    "tools/fix_trips_force_refresh.py",
+    "tools/trips_inflight_refresh_test.mjs",
+    ".github/workflows/pre-release-audit.yml",
     "VERSION.txt",
     "BUILD_VERSION.txt",
+    "assets/sov-version.js",
     "README.md",
     "update.json"
   ],
-  "notes": "Full pre-release audit and stabilization. Scans 279 HTML pages, validates JavaScript and external script tags, runs an isolated browser smoke suite and functional Trips button/pull-to-refresh regression tests. Fixes stale Trips refresh, duplicate/missing controls, nested news assets, legacy routing, dashboard script-tag corruption and missing TopoDroid loader. Consolidated SQL separates the fast map feed from the expensive Arhivar worklist, adds the missing reviewer RPC with aligned webmaster/admin/arhivar roles, and hardens the public Spelo Runner leaderboard view. Historical HTTP links in archived articles remain unchanged pending destination-by-destination verification."
+  "notes": "True Trips force refresh now starts a separate database request even while an older request is still in flight. A generation guard prevents the older response from overwriting the fresh cache. The production page forwards force=true into the data layer and uses a new cache-busted asset URL."
 }

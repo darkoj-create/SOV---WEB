@@ -1,7 +1,8 @@
 (function(){
-  const CACHE_KEY='sov_trips_cloud_cache_v6_1_25';
-  const LEGACY_CACHE_KEYS=['sov_trips_cloud_cache_v5_56'];
+  const CACHE_KEY='sov_trips_cloud_cache_v6_1_45aw';
+  const LEGACY_CACHE_KEYS=['sov_trips_cloud_cache_v6_1_25','sov_trips_cloud_cache_v5_56'];
   let listTripsInFlight=null;
+  let listTripsGeneration=0;
   function sb(){
     if(window.SOVAuth && window.SOVAuth.getClient) return window.SOVAuth.getClient();
     if(window.supabase && window.SOV_SUPABASE_URL && window.SOV_SUPABASE_ANON_KEY){
@@ -89,9 +90,12 @@
     const timeout=new Promise((_,reject)=>{ timer=setTimeout(()=>reject(new Error((label||'Poziv')+' nije odgovorio na vrijeme.')), ms); });
     return Promise.race([promise, timeout]).finally(()=>clearTimeout(timer));
   }
-  async function listTrips(){
-    if(listTripsInFlight) return listTripsInFlight;
-    listTripsInFlight=(async()=>{
+  async function listTrips(options={}){
+    const force=!!(options&&options.force);
+    if(listTripsInFlight && !force) return listTripsInFlight;
+    const generation=++listTripsGeneration;
+    const saveFresh=rows=>{if(generation===listTripsGeneration) saveCache(rows);};
+    const request=(async()=>{
       const c=sb(); if(!c) throw new Error('Supabase nije konfiguriran.');
       if(window.SOVAuth && window.SOVAuth.requireApproved){
         await withTimeout(window.SOVAuth.requireApproved(), 8000, 'Provjera prijave');
@@ -104,7 +108,7 @@
         const rpc=await withTimeout(c.rpc('sov_list_trips_feed'), 12000, 'Baza izleta');
         if(!rpc.error){
           const rows=normalizeRpcRows(rpc.data);
-          saveCache(rows);
+          saveFresh(rows);
           return rows;
         }
         lastError=rpc.error;
@@ -125,7 +129,7 @@
           12000,
           'Direktno čitanje izleta'
         );
-        if(!res.error){ saveCache(res.data||[]); return res.data||[]; }
+        if(!res.error){ saveFresh(res.data||[]); return res.data||[]; }
         lastError=res.error;
         console.warn('[SOV trips] direct table failed', res.error);
       }catch(e){ lastError=e; console.warn('[SOV trips] direct table timed out/failed', e); }
@@ -133,15 +137,16 @@
       // Old view fallback last.
       try{
         const res=await withTimeout(c.from('sov_trips_mobile_feed').select('*').order('start_date',{ascending:true}).limit(1500), 12000, 'Feed izleta');
-        if(!res.error){ saveCache(res.data||[]); return res.data||[]; }
+        if(!res.error){ saveFresh(res.data||[]); return res.data||[]; }
         lastError=res.error;
         console.warn('[SOV trips] mobile feed failed', res.error);
       }catch(e){ lastError=e; console.warn('[SOV trips] mobile feed timed out/failed', e); }
       
       throw lastError || new Error('Izleti nisu dostupni.');
     })();
-    try{return await listTripsInFlight;}
-    finally{listTripsInFlight=null;}
+    listTripsInFlight=request;
+    try{return await request;}
+    finally{if(listTripsInFlight===request) listTripsInFlight=null;}
   }
   function payloadFromTripForm(payload, extra={}){
     const meta={source:'sov_web_v5_56_trip_signup_transport', legacyPayload:payload||{}};
