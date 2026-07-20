@@ -4,13 +4,14 @@ on:
   push:
     branches:
       - audit/pre-release-2026-07-20
+      - 'hotfix/**'
   pull_request:
     branches:
       - main
   workflow_dispatch:
 
 concurrency:
-  group: sov-pre-release-audit
+  group: sov-pre-release-audit-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -21,10 +22,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - name: Checkout audit branch
+      - name: Checkout tested ref
         uses: actions/checkout@v4
         with:
-          ref: audit/pre-release-2026-07-20
           fetch-depth: 0
 
       - name: Set up Python
@@ -36,10 +36,11 @@ jobs:
         run: |
           python tools/normalize_legacy_paths.py
           python tools/fix_trips_markup.py
+          python tools/fix_trips_force_refresh.py
           python tools/final_warning_fixes.py
           python tools/build_release_sql.py
 
-      - name: Persist deterministic repairs
+      - name: Persist deterministic repairs on source branches
         run: |
           if git diff --quiet; then
             echo "Source already normalized."
@@ -49,8 +50,12 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           git add .
           git commit -m "Apply deterministic pre-release source repairs"
-          git pull --rebase origin audit/pre-release-2026-07-20
-          git push origin HEAD:audit/pre-release-2026-07-20
+          if [[ "${GITHUB_EVENT_NAME}" == "push" ]]; then
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          else
+            echo "Repairs applied in the PR test workspace; source-branch push run persists them."
+          fi
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -77,6 +82,11 @@ jobs:
             -not -path './.git/*' -not -path './node_modules/*' -print0 \
             | xargs -0 -r -n1 node --check
 
+      - name: Trips in-flight force-refresh unit test
+        id: trips_inflight
+        continue-on-error: true
+        run: node tools/trips_inflight_refresh_test.mjs
+
       - name: Install Playwright
         run: |
           npm install --no-save playwright@1.55.0
@@ -93,7 +103,7 @@ jobs:
         continue-on-error: true
         run: node tools/browser_smoke.mjs
 
-      - name: Trips hard-refresh regression test
+      - name: Trips button and pull-to-refresh regression test
         id: trips_refresh
         continue-on-error: true
         run: node tools/trips_refresh_smoke.mjs
@@ -123,11 +133,13 @@ jobs:
           echo "static=${{ steps.static.outcome }}"
           echo "script_tags=${{ steps.script_tags.outcome }}"
           echo "javascript=${{ steps.javascript.outcome }}"
+          echo "trips_inflight=${{ steps.trips_inflight.outcome }}"
           echo "browser=${{ steps.browser.outcome }}"
           echo "trips_refresh=${{ steps.trips_refresh.outcome }}"
           if [[ "${{ steps.static.outcome }}" != "success" || \
                 "${{ steps.script_tags.outcome }}" != "success" || \
                 "${{ steps.javascript.outcome }}" != "success" || \
+                "${{ steps.trips_inflight.outcome }}" != "success" || \
                 "${{ steps.browser.outcome }}" != "success" || \
                 "${{ steps.trips_refresh.outcome }}" != "success" ]]; then
             echo "Pre-release audit failed. Do not merge to production."

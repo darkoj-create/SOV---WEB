@@ -1,4 +1,12 @@
-# SOV web build v6.1.45av
+# SOV web build v6.1.45aw
+
+## v6.1.45aw — Trips force-refresh hotfix
+
+- `Osvježi` i mobilno povlačenje sada pokreću potpuno novi Supabase zahtjev čak i ako prethodni poziv još traje.
+- Stariji odgovor više ne može prepisati cache nakon što je stigao noviji rezultat.
+- Dodan je izolirani regresijski test koji namjerno drži stari zahtjev otvorenim i potvrđuje da force refresh vraća novi rezultat.
+- Nema SQL promjena.
+
 
 ## v6.1.45av — pre-release audit i stabilizacija
 

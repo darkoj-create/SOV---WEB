@@ -8,7 +8,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/supabase-config.js"></script>
 <script src="assets/auth.js"></script>
-<script src="assets/sov-trips-cloud.js?v=6.1.26"></script>
+<script src="assets/sov-trips-cloud.js?v=6.1.45aw"></script>
 <link href="assets/sov-trip-assets-v5596.css" rel="stylesheet"/>
 <style>
 :root{
@@ -245,7 +245,7 @@ async function loadTrips(opts={}){
   try{
     if(!window.SOVTripsCloud) throw new Error('Izleti nisu učitani');
     const rows=await Promise.race([
-      window.SOVTripsCloud.listTrips(),
+      window.SOVTripsCloud.listTrips({force:!!opts.force}),
       new Promise((_,reject)=>setTimeout(()=>reject(new Error('Baza izleta ne odgovara.')),18000))
     ]);
     if(token!==tripsLoadToken) return;
