@@ -58,11 +58,112 @@
     if(!id){state.assets=[]; render(); return}
     try{setBusy(true,'Učitavam pakete…'); state.assets=await listAssets(id); setBusy(false); render();}catch(e){console.warn(e); state.assets=[]; setBusy(false); const host=$('tripAssetsPanel'); if(host)host.innerHTML=`<div class="trip-assets-card"><b>Paketi za teren</b><p class="muted">Nije moguće učitati pakete: ${esc(e.message||e)}</p></div>`;}
   }
+
+  // v6.1.45av: a real hard refresh must not reuse the normal in-flight request.
+  function normalizeTripRows(data){
+    if(!data)return [];
+    if(Array.isArray(data))return data;
+    if(typeof data==='string'){try{const parsed=JSON.parse(data);return Array.isArray(parsed)?parsed:[]}catch(e){return []}}
+    if(Array.isArray(data.rows))return data.rows;
+    if(Array.isArray(data.data))return data.data;
+    return [];
+  }
+  function timed(promise,ms,label){let timer;const timeout=new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error((label||'Poziv')+' nije odgovorio na vrijeme.')),ms)});return Promise.race([promise,timeout]).finally(()=>clearTimeout(timer));}
+  let forcedTripsInFlight=null;
+  async function fetchFreshTrips(){
+    const api=window.SOVTripsCloud; const c=api&&api.sb&&api.sb();
+    if(!api||!c)throw new Error('Supabase nije konfiguriran.');
+    if(window.SOVAuth&&window.SOVAuth.requireApproved)await timed(window.SOVAuth.requireApproved(),8000,'Provjera prijave');
+    let lastError=null;
+    try{
+      const rpc=await timed(c.rpc('sov_list_trips_feed'),12000,'Baza izleta');
+      if(!rpc.error){const rows=normalizeTripRows(rpc.data);api.saveCache(rows);return rows;}
+      lastError=rpc.error;
+    }catch(e){lastError=e;}
+    try{
+      const res=await timed(c.from('sov_trips').select('id,start_date,end_date,title,leader_name,leader_user_id,location_name,objective,description,status,visibility,trip_category,min_lat,max_lat,min_lon,max_lon,center_lat,center_lon,created_by,updated_by,created_at,updated_at,source,legacy_external_id,meta').neq('status','archived').order('start_date',{ascending:true}).limit(1500),12000,'Direktno čitanje izleta');
+      if(!res.error){const rows=res.data||[];api.saveCache(rows);return rows;}
+      lastError=res.error;
+    }catch(e){lastError=e;}
+    throw lastError||new Error('Izleti nisu dostupni.');
+  }
+  function installTripsRefreshFix(){
+    const api=window.SOVTripsCloud;
+    if(!api||typeof api.listTrips!=='function'||api.listTrips.__sovHardRefresh)return;
+    const original=api.listTrips.bind(api);
+    const wrapped=async function(options={}){
+      const force=!!(options&&options.force)||!!api.__forceNextList;
+      api.__forceNextList=false;
+      if(!force)return original();
+      if(forcedTripsInFlight)return forcedTripsInFlight;
+      api.__lastForceError=null;
+      forcedTripsInFlight=fetchFreshTrips().catch(error=>{api.__lastForceError=error;throw error;}).finally(()=>{forcedTripsInFlight=null;});
+      return forcedTripsInFlight;
+    };
+    wrapped.__sovHardRefresh=true;
+    api.listTrips=wrapped;
+  }
+  async function requestTripsRefresh(source='button'){
+    installTripsRefreshFix();
+    const api=window.SOVTripsCloud;
+    const button=$('refreshBtn');
+    if(!api||typeof window.loadTrips!=='function')return;
+    if(button){button.disabled=true;button.setAttribute('aria-busy','true');}
+    api.__forceNextList=true;
+    try{
+      await window.loadTrips({force:true});
+      if(api.__lastForceError)throw api.__lastForceError;
+      toast(source==='pull'?'Izleti osvježeni povlačenjem.':'Izleti osvježeni.');
+    }catch(error){
+      console.warn('[SOV trips] hard refresh failed',error);
+      toast('Osvježavanje izleta nije uspjelo.');
+    }finally{
+      if(button){button.disabled=false;button.removeAttribute('aria-busy');}
+    }
+  }
+  function installPullToRefresh(){
+    if(!('ontouchstart' in window)||document.getElementById('sovTripsPullIndicator'))return;
+    const indicator=document.createElement('div');
+    indicator.id='sovTripsPullIndicator';
+    indicator.setAttribute('aria-live','polite');
+    indicator.style.cssText='position:fixed;z-index:80;left:50%;top:10px;transform:translate(-50%,-80px);padding:9px 14px;border:1px solid rgba(215,246,111,.32);border-radius:999px;background:rgba(5,12,14,.94);color:#eef8f5;font:800 13px/1 system-ui;box-shadow:0 12px 36px rgba(0,0,0,.35);transition:transform .18s ease;pointer-events:none';
+    indicator.textContent='Povuci za osvježavanje';
+    document.body.appendChild(indicator);
+    let startY=0,pulling=false,armed=false,busy=false;
+    const blockedTarget=target=>target&&target.closest&&target.closest('input,textarea,select,button,a,.modal,.modalCard,.tripForm');
+    document.addEventListener('touchstart',event=>{
+      if(busy||window.scrollY>1||event.touches.length!==1||blockedTarget(event.target))return;
+      startY=event.touches[0].clientY;pulling=true;armed=false;
+    },{passive:true});
+    document.addEventListener('touchmove',event=>{
+      if(!pulling||event.touches.length!==1)return;
+      const dy=event.touches[0].clientY-startY;
+      if(dy<=0){pulling=false;indicator.style.transform='translate(-50%,-80px)';return;}
+      if(window.scrollY>1){pulling=false;indicator.style.transform='translate(-50%,-80px)';return;}
+      const visible=Math.min(72,Math.max(0,dy*.55));
+      indicator.style.transform=`translate(-50%,${visible-58}px)`;
+      armed=dy>=82;
+      indicator.textContent=armed?'Pusti za osvježavanje':'Povuci za osvježavanje';
+      if(dy>12)event.preventDefault();
+    },{passive:false});
+    document.addEventListener('touchend',async()=>{
+      if(!pulling)return;
+      pulling=false;
+      if(!armed){indicator.style.transform='translate(-50%,-80px)';return;}
+      busy=true;indicator.textContent='Osvježavam izlete…';indicator.style.transform='translate(-50%,0)';
+      try{await requestTripsRefresh('pull');}finally{setTimeout(()=>{indicator.style.transform='translate(-50%,-80px)';indicator.textContent='Povuci za osvježavanje';busy=false;armed=false;},500);}
+    },{passive:true});
+    document.addEventListener('touchcancel',()=>{pulling=false;armed=false;indicator.style.transform='translate(-50%,-80px)';},{passive:true});
+  }
   function install(){
     const original=window.renderDetail;
     if(typeof original==='function'&&!original.__tripAssetsWrapped){window.renderDetail=function(t){original(t); setTimeout(refresh,0);}; window.renderDetail.__tripAssetsWrapped=true;}
     setInterval(()=>{const trip=(typeof selectedTrip!=='undefined')?selectedTrip:null; if(trip&&trip.id!==state.tripId) refresh();},1200);
+    installTripsRefreshFix();
+    const refreshButton=$('refreshBtn');
+    if(refreshButton)refreshButton.onclick=()=>requestTripsRefresh('button');
+    installPullToRefresh();
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install); else install();
-  window.SOVTripAssetsManager={refresh};
+  window.SOVTripAssetsManager={refresh,requestTripsRefresh};
 })();
