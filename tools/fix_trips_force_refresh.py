@@ -8,15 +8,6 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
-
-def replace_once(text: str, old: str, new: str, label: str) -> tuple[str, bool]:
-    if new in text:
-        return text, False
-    if old not in text:
-        raise SystemExit(f'Marker not found: {label}')
-    return text.replace(old, new, 1), True
-
-
 changed_files: list[str] = []
 
 # Data layer: a forced read must start a distinct request even while an older
@@ -30,11 +21,13 @@ cloud = cloud.replace(
     "  const CACHE_KEY='sov_trips_cloud_cache_v6_1_45aw';\n  const LEGACY_CACHE_KEYS=['sov_trips_cloud_cache_v6_1_25','sov_trips_cloud_cache_v5_56'];",
     1,
 )
-cloud = cloud.replace(
-    '  let listTripsInFlight=null;',
-    '  let listTripsInFlight=null;\n  let listTripsGeneration=0;',
-    1,
-)
+if 'let listTripsGeneration=0;' not in cloud:
+    cloud = cloud.replace(
+        '  let listTripsInFlight=null;',
+        '  let listTripsInFlight=null;\n  let listTripsGeneration=0;',
+        1,
+    )
+
 old_start = """  async function listTrips(){
     if(listTripsInFlight) return listTripsInFlight;
     listTripsInFlight=(async()=>{
@@ -52,6 +45,7 @@ if new_start not in cloud:
     cloud = cloud.replace(old_start, new_start, 1)
 
 start = cloud.index(new_start)
+body_start = start + len(new_start)
 old_end = """    })();
     try{return await listTripsInFlight;}
     finally{listTripsInFlight=null;}
@@ -63,20 +57,20 @@ new_end = """    })();
     finally{if(listTripsInFlight===request) listTripsInFlight=null;}
   }
 """
-end = cloud.index(old_end, start) if old_end in cloud[start:] else -1
+end = cloud.index(old_end, body_start) if old_end in cloud[body_start:] else -1
 if end >= 0:
-    body = cloud[start:end]
+    body = cloud[body_start:end]
     body = body.replace('saveCache(rows);', 'saveFresh(rows);')
     body = body.replace('saveCache(res.data||[]);', 'saveFresh(res.data||[]);')
-    cloud = cloud[:start] + body + cloud[end:].replace(old_end, new_end, 1)
-elif new_end not in cloud[start:]:
+    cloud = cloud[:body_start] + body + cloud[end:].replace(old_end, new_end, 1)
+elif new_end not in cloud[body_start:]:
     raise SystemExit('Trips listTrips end marker not found.')
 
 required_cloud_markers = [
     'async function listTrips(options={})',
     'const generation=++listTripsGeneration;',
     'if(listTripsInFlight && !force)',
-    'if(generation===listTripsGeneration) saveCache(rows)',
+    'const saveFresh=rows=>{if(generation===listTripsGeneration) saveCache(rows);};',
     'if(listTripsInFlight===request) listTripsInFlight=null',
 ]
 for marker in required_cloud_markers:
@@ -110,9 +104,14 @@ if page != original:
     changed_files.append(str(page_path.relative_to(ROOT)))
 
 # Release contract.
-(ROOT / 'VERSION.txt').write_text('6.1.45aw\n', encoding='utf-8')
-(ROOT / 'BUILD_VERSION.txt').write_text('sov-web-build-v6.1.45aw-trips-force-refresh\n', encoding='utf-8')
-changed_files.extend(['VERSION.txt', 'BUILD_VERSION.txt'])
+version_file = ROOT / 'VERSION.txt'
+if version_file.read_text(encoding='utf-8').strip() != '6.1.45aw':
+    version_file.write_text('6.1.45aw\n', encoding='utf-8')
+    changed_files.append('VERSION.txt')
+build_file = ROOT / 'BUILD_VERSION.txt'
+if build_file.read_text(encoding='utf-8').strip() != 'sov-web-build-v6.1.45aw-trips-force-refresh':
+    build_file.write_text('sov-web-build-v6.1.45aw-trips-force-refresh\n', encoding='utf-8')
+    changed_files.append('BUILD_VERSION.txt')
 
 version_path = ROOT / 'assets' / 'sov-version.js'
 version = version_path.read_text(encoding='utf-8')
@@ -126,7 +125,8 @@ if new_version != version:
 
 manifest_path = ROOT / 'update.json'
 manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
-manifest.update({
+new_manifest = dict(manifest)
+new_manifest.update({
     'version': '6.1.45aw',
     'versionName': 'v6.1.45aw-trips-force-refresh',
     'build': 'sov-web-build-v6.1.45aw-trips-force-refresh',
@@ -141,7 +141,7 @@ manifest.update({
         'izleti-cloud.html',
         'tools/fix_trips_force_refresh.py',
         'tools/trips_inflight_refresh_test.mjs',
-        '.github/workflows/sov-pre-release-audit.yml',
+        '.github/workflows/pre-release-audit.yml',
         'VERSION.txt',
         'BUILD_VERSION.txt',
         'assets/sov-version.js',
@@ -150,12 +150,14 @@ manifest.update({
     ],
     'notes': 'True Trips force refresh now starts a separate database request even while an older request is still in flight. A generation guard prevents the older response from overwriting the fresh cache. The production page forwards force=true into the data layer and uses a new cache-busted asset URL.',
 })
-manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
-changed_files.append('update.json')
+rendered_manifest = json.dumps(new_manifest, ensure_ascii=False, indent=2) + '\n'
+if manifest_path.read_text(encoding='utf-8') != rendered_manifest:
+    manifest_path.write_text(rendered_manifest, encoding='utf-8')
+    changed_files.append('update.json')
 
 readme_path = ROOT / 'README.md'
 readme = readme_path.read_text(encoding='utf-8')
-readme = re.sub(r'^# SOV web build v[^\n]+', '# SOV web build v6.1.45aw', readme, count=1)
+new_readme = re.sub(r'^# SOV web build v[^\n]+', '# SOV web build v6.1.45aw', readme, count=1)
 section = """
 ## v6.1.45aw — Trips force-refresh hotfix
 
@@ -165,11 +167,12 @@ section = """
 - Nema SQL promjena.
 
 """
-if '## v6.1.45aw — Trips force-refresh hotfix' not in readme:
-    first_break = readme.find('\n') + 1
-    readme = readme[:first_break] + section + readme[first_break:]
-readme_path.write_text(readme, encoding='utf-8')
-changed_files.append('README.md')
+if '## v6.1.45aw — Trips force-refresh hotfix' not in new_readme:
+    first_break = new_readme.find('\n') + 1
+    new_readme = new_readme[:first_break] + section + new_readme[first_break:]
+if new_readme != readme:
+    readme_path.write_text(new_readme, encoding='utf-8')
+    changed_files.append('README.md')
 
 print('Trips force-refresh hotfix ready.')
 for name in sorted(set(changed_files)):
