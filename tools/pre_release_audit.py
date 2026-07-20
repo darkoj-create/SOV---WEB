@@ -272,7 +272,7 @@ def audit_vercel() -> None:
     for item in redirects + rewrites:
         dest = str(item.get("destination", ""))
         if dest.startswith("/") and not any(ch in dest for ch in "*:()"):
-            local = ROOT / dest.lstrip("/").split("?", 1)[0]
+            local = ROOT / dest.lstrip("/").split("#", 1)[0].split("?", 1)[0]
             if not local.exists():
                 add("error", "VERCEL_DEST_MISSING", path, f"Destination missing for {item.get('source')}: {dest}")
 
