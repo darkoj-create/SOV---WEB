@@ -9,6 +9,10 @@ on:
       - tools/fix_trips_markup.py
       - .github/workflows/normalize-legacy-paths.yml
 
+concurrency:
+  group: sov-audit-normalization
+  cancel-in-progress: true
+
 permissions:
   contents: write
 
@@ -36,5 +40,6 @@ jobs:
           git config user.name "SOV Audit Bot"
           git config user.email "actions@users.noreply.github.com"
           git add .
-          git commit -m "Normalize legacy paths and repair Trips markup"
+          git commit -m "Normalize remaining legacy paths and audit edge cases"
+          git pull --rebase origin audit/pre-release-2026-07-20
           git push origin HEAD:audit/pre-release-2026-07-20
