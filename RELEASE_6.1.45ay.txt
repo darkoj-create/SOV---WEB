@@ -1,2 +1,3 @@
 SOV web release 6.1.45ay
 Trips auto-load fresh data and default to upcoming trips in the visible month.
+Vercel active PR preview trigger: 2026-07-21.
