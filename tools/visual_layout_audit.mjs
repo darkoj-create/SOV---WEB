@@ -9,7 +9,17 @@ const viewports=[
   {name:'desktop',width:1440,height:1000},
   {name:'mobile',width:390,height:844},
 ];
-const banned=[/Živi zapisnici/i,/Live admin dashboard/i,/observability v\d/i,/crash reporti/i];
+const banned=[
+  /Živi zapisnici/i,
+  /Live admin dashboard/i,
+  /observability v\d/i,
+  /crash reporti/i,
+  /Apps Script queue/i,
+  /Gmail import/i,
+  />Preview</i,
+  />Export DOCX</i,
+  /Ručni native unos/i,
+];
 const outDir=path.resolve('VISUAL_AUDIT');
 fs.mkdirSync(outDir,{recursive:true});
 const failures=[];
