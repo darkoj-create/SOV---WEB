@@ -1,7 +1,24 @@
 -- SOV v6.1.45av — stable Arhivar submission review endpoint
 -- Removes the permanent 404/fallback path used by arhivar-submissions-review.js.
+-- Aligns database reviewer roles with auth.js: webmaster, admin and arhivar.
 
 begin;
+
+create or replace function public.sov_submissions_is_reviewer()
+returns boolean
+language sql
+stable
+security definer
+set search_path = pg_catalog, public, auth
+as $function$
+  select public.sov_submission_current_role_safe() in ('webmaster','admin','arhivar')
+     and public.sov_submission_current_status_safe() in ('approved','active','enabled','ok');
+$function$;
+
+revoke all on function public.sov_submissions_is_reviewer() from public;
+revoke all on function public.sov_submissions_is_reviewer() from anon;
+grant execute on function public.sov_submissions_is_reviewer() to authenticated;
+grant execute on function public.sov_submissions_is_reviewer() to service_role;
 
 create or replace function public.sov_update_speleo_submission_review(
   p_submission_id uuid,
@@ -22,7 +39,7 @@ begin
     raise exception 'Nisi prijavljen.' using errcode = '42501';
   end if;
   if not public.sov_submissions_is_reviewer() then
-    raise exception 'Samo admin/arhivar može ažurirati review predaje.' using errcode = '42501';
+    raise exception 'Samo webmaster/admin/arhivar može ažurirati review predaje.' using errcode = '42501';
   end if;
   if v_status not in ('submitted','needs_changes','approved','rejected') then
     raise exception 'Nepodržan status predaje: %', p_status using errcode = '22023';
@@ -56,6 +73,8 @@ revoke all on function public.sov_update_speleo_submission_review(uuid,text,text
 grant execute on function public.sov_update_speleo_submission_review(uuid,text,text[],text) to authenticated;
 grant execute on function public.sov_update_speleo_submission_review(uuid,text,text[],text) to service_role;
 
+comment on function public.sov_submissions_is_reviewer() is
+  'True for approved webmaster/admin/arhivar users; aligned with web auth archive permission.';
 comment on function public.sov_update_speleo_submission_review(uuid,text,text[],text) is
   'Reviewer-only endpoint for submitted/needs_changes/approved/rejected workflow updates.';
 
