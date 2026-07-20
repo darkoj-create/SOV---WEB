@@ -6,6 +6,7 @@ on:
       - audit/pre-release-2026-07-20
     paths:
       - tools/normalize_legacy_paths.py
+      - tools/fix_trips_markup.py
       - .github/workflows/normalize-legacy-paths.yml
 
 permissions:
@@ -24,6 +25,8 @@ jobs:
           python-version: '3.12'
       - name: Normalize nested assets and alias pages
         run: python tools/normalize_legacy_paths.py
+      - name: Repair Trips refresh markup
+        run: python tools/fix_trips_markup.py
       - name: Commit normalized source
         run: |
           if git diff --quiet; then
@@ -33,5 +36,5 @@ jobs:
           git config user.name "SOV Audit Bot"
           git config user.email "actions@users.noreply.github.com"
           git add .
-          git commit -m "Normalize nested assets and legacy aliases"
+          git commit -m "Normalize legacy paths and repair Trips markup"
           git push origin HEAD:audit/pre-release-2026-07-20
