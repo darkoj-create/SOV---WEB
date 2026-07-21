@@ -2,10 +2,10 @@
 // Also injects the approved-member Nacrt Generator entry on the main Cloud dashboard.
 (function(){
   'use strict';
-  const FALLBACK_VERSION='6.1.46';
-  const FALLBACK_CACHE='6146-objekti-izleti-karta-ui';
-  const FALLBACK_BUILD='sov-web-build-v6.1.46-objekti-izleti-karta-ui';
-  const FALLBACK_NAME='v6.1.46-objekti-izleti-karta-ui';
+  const FALLBACK_VERSION='6.1.47';
+  const FALLBACK_CACHE='6147-cloud-preuzimanja';
+  const FALLBACK_BUILD='sov-web-build-v6.1.47-cloud-preuzimanja';
+  const FALLBACK_NAME='v6.1.47-cloud-preuzimanja';
   window.SOV_BUILD={version:FALLBACK_VERSION,versionName:FALLBACK_NAME,build:FALLBACK_BUILD,cacheBust:FALLBACK_CACHE};
 
   function safeSetText(sel,value){

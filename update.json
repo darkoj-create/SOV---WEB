@@ -1,27 +1,23 @@
 {
   "app": "SOV web",
-  "version": "6.1.46",
-  "versionName": "v6.1.46-objekti-izleti-karta-ui",
-  "build": "sov-web-build-v6.1.46-objekti-izleti-karta-ui",
+  "version": "6.1.47",
+  "versionName": "v6.1.47-cloud-preuzimanja",
+  "build": "sov-web-build-v6.1.47-cloud-preuzimanja",
   "createdAt": "2026-07-21T03:20:00+02:00",
-  "cacheBust": "6146-objekti-izleti-karta-ui",
-  "base": "sov-web-build-v6.1.45ay-trips-auto-upcoming",
+  "cacheBust": "6147-cloud-preuzimanja",
+  "base": "sov-web-build-v6.1.46-objekti-izleti-karta-ui",
   "requiresSql": true,
   "sqlFiles": [
     "SUPABASE_SYNC_APK_OBJEKTI_20260721.sql"
   ],
-  "releaseType": "objects-sync-trips-autoload-map-perf-ui-refine",
+  "releaseType": "dashboard-downloads",
   "changedFiles": [
-    "izleti-cloud.html",
-    "karta.html",
-    "login.html",
-    "assets/auth.js",
-    "assets/sov-shell-v55825.js",
+    "dashboard.html",
     "assets/sov-refine-v6146.css",
     "assets/sov-version.js",
     "VERSION.txt",
     "BUILD_VERSION.txt",
     "update.json"
   ],
-  "notes": "Izleti: novi izlet se sada pojavi sam (auto-sync 30 s, skok na mjesec novog izleta, izbor mjeseca prati aktivni status filter). Karta: dijeljeni canvas renderer, batch dodavanje markera, lijeni popupi, predracunati indeks pretrage i debounce trazilice. Registracija: obavezno polje 'Ponovi lozinku' uz provjeru podudaranja i minimalno 8 znakova (login.html + auth.js). UI: novi sov-refine sloj preko cijelog clanskog dijela (fokus stanja, kartice, tablice, prazna stanja, mobilni razmaci, print). Baza objekata: uz build ide SQL koji dodaje 293 objekta iz APK baze (ukupno 1578)."
+  "notes": "Cloud naslovnica: dvije nove kartice za preuzimanje - SOV 2.0 Android (APK) i SOV Field Hub (Windows), s inline SVG ikonama, otvaraju se u novoj kartici."
 }

@@ -1,1 +1,1 @@
-sov-web-build-v6.1.46-objekti-izleti-karta-ui
+sov-web-build-v6.1.47-cloud-preuzimanja
