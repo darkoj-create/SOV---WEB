@@ -80,11 +80,23 @@ function overlapsMonth(t,d=currentMonth){const b=monthBounds(d); const a=dateOnl
 function overlapsDay(t,iso){return isoDate(t.start_date)<=iso && isoDate(t.end_date||t.start_date)>=iso}
 function sameMonth(a,b){return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth()}
 function setMonthToTrip(t){if(!t)return; const d=dateOnly(t.start_date||t.date); if(!isNaN(d)) currentMonth=new Date(d.getFullYear(),d.getMonth(),1)}
+// v6.1.46: mjesec biramo prema izletima koje korisnik STVARNO vidi uz aktivni status filter.
+// Prije se gledalo "ima li ikakav izlet u ovom mjesecu" pa je jedan prosli izlet u tekucem
+// mjesecu blokirao skok na mjesec s nadolazecim izletima -> novi izlet se nije pojavio.
+function tripsMatchingStatusFilter(rows){
+  const today=todayIso();
+  const status=$('statusFilter')?$('statusFilter').value:'upcoming';
+  if(status==='upcoming') return rows.filter(t=>['planned','active'].includes(t.status)&&isoDate(t.end_date||t.start_date)>=today);
+  if(status) return rows.filter(t=>t.status===status);
+  return rows;
+}
 function chooseDefaultVisibleMonth(rows){
   if(monthManuallyChanged || !Array.isArray(rows) || !rows.length) return;
-  if(rows.some(t=>overlapsMonth(t,currentMonth))) return;
+  const matching=tripsMatchingStatusFilter(rows);
+  const pool=matching.length?matching:rows;
+  if(pool.some(t=>overlapsMonth(t,currentMonth))) return;
   const today=isoDate(new Date().toISOString().slice(0,10));
-  const sorted=[...rows].sort((a,b)=>String(a.start_date||'').localeCompare(String(b.start_date||'')));
+  const sorted=[...pool].sort((a,b)=>String(a.start_date||'').localeCompare(String(b.start_date||'')));
   const upcoming=sorted.find(t=>isoDate(t.end_date||t.start_date)>=today);
   setMonthToTrip(upcoming || sorted[0]);
 }
@@ -181,10 +193,28 @@ function renderFilePreview(){const el=$('filePreview'); if(!selectedTripFiles.le
 function renderEditFilePreview(){const el=$('editFilePreview'); if(!el)return; if(!selectedTripFiles.length){el.innerHTML='';return} el.innerHTML=selectedTripFiles.map(f=>`<div class="fileRow"><span>${esc(f.name)}</span><span class="muted">${Math.round(f.size/1024)} KB</span></div>`).join('')}
 
 function setTripsFromRows(rows, opts={}){
+  const prevIds=new Set(allTrips.map(t=>String(t.id)));
+  const hadTrips=allTrips.length>0;
   allTrips=(rows||[]).map(normalizeTrip);
   if(selectedTrip && selectedTrip.id){
     const fresh=allTrips.find(x=>String(x.id)===String(selectedTrip.id));
     if(fresh) selectedTrip=fresh;
+  }
+  // v6.1.46: ako je auto-sync donio NOVI izlet, ne smije ostati nevidljiv zbog
+  // filtra mjeseca. Skacemo na njegov mjesec i javljamo korisniku.
+  const arrived=hadTrips?allTrips.filter(t=>!prevIds.has(String(t.id))):[];
+  if(arrived.length){
+    const visibleNow=tripsMatchingStatusFilter(allTrips).filter(t=>overlapsMonth(t,currentMonth));
+    const arrivedVisible=arrived.some(t=>overlapsMonth(t,currentMonth));
+    if(!arrivedVisible && !visibleNow.length){
+      monthManuallyChanged=false;
+      const sorted=[...arrived].sort((a,b)=>String(a.start_date||'').localeCompare(String(b.start_date||'')));
+      setMonthToTrip(sorted[0]);
+    }
+    if(opts.announce!==false){
+      const first=arrived[0];
+      toast(arrived.length===1?`Novi izlet: ${tripTitle(first)}`:`${arrived.length} novih izleta u rasporedu.`);
+    }
   }
   chooseDefaultVisibleMonth(allTrips);
   render();
@@ -239,7 +269,7 @@ async function loadTrips(opts={}){
   tripsLoading=true;
   const cached=cacheRows();
   if(cached.length && !allTrips.length){
-    setTripsFromRows(cached,{label:`${cached.length} izleta`});
+    setTripsFromRows(cached,{label:`${cached.length} izleta`,announce:false});
   }else if(!cached.length && !silent && $('status')){
     $('status').textContent='Učitavam izlete…';
   }
@@ -257,7 +287,7 @@ async function loadTrips(opts={}){
     if(allTrips.length){
       if($('status')) $('status').textContent=`${allTrips.length} izleta`;
     }else if(cached.length){
-      setTripsFromRows(cached,{label:`${cached.length} izleta`});
+      setTripsFromRows(cached,{label:`${cached.length} izleta`,announce:false});
     }else{
       allTrips=[];
       render();
@@ -295,7 +325,7 @@ function refreshTripsInBackground(){
 }
 function startTripsAutoSync(){
   if(tripsAutoRefreshTimer)return;
-  tripsAutoRefreshTimer=setInterval(refreshTripsInBackground,60000);
+  tripsAutoRefreshTimer=setInterval(refreshTripsInBackground,30000);
   window.addEventListener('focus',refreshTripsInBackground);
   window.addEventListener('online',refreshTripsInBackground);
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refreshTripsInBackground()});

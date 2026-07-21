@@ -193,6 +193,11 @@ function pageName(){
     const full_name = (payload.name||'').trim();
     const note = payload.note || '';
     if(!email || !password || !full_name) return {ok:false,msg:'Unesi ime, email i lozinku.'};
+    // v6.1.46: potvrda lozinke. Ako je pozivatelj poslao passwordConfirm, mora se podudarati.
+    if(payload.passwordConfirm !== undefined && String(payload.passwordConfirm) !== String(password)){
+      return {ok:false,msg:'Lozinke se ne podudaraju.'};
+    }
+    if(String(password).length < 8) return {ok:false,msg:'Lozinka mora imati najmanje 8 znakova.'};
     const {data,error} = await sb.auth.signUp({
       email,password,
       options:{data:{full_name, requested_role:'user', note}}

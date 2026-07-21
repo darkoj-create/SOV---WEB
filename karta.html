@@ -61,7 +61,7 @@
 <p>Brza pretraga speleoloških objekata iz iste Arhivar baze. Status boja sada prvo sluša Arhivar truth: “nije u katastru” nikad ne smije ispasti zeleno.</p>
 </div>
 <div class="searchCard">
-<input autocomplete="off" class="search" id="q" oninput="render()" placeholder="Traži objekt, mjesto, općinu..."/>
+<input autocomplete="off" class="search" id="q" oninput="renderDebounced()" placeholder="Traži objekt, mjesto, općinu..."/>
 <div class="chips">
 <button class="chip active" data-filter="all" onclick="setFilter('all')">Sve</button>
 <button class="chip" data-filter="jama" onclick="setFilter('jama')">Jame</button>
@@ -94,6 +94,9 @@ const tk25=L.tileLayer.wms(TK25_WMS_URL,{layers:TK25_WMS_LAYER,format:'image/png
 const dof=L.tileLayer.wms(DOF_WMS_URL,{layers:DOF_WMS_LAYER,format:'image/png',transparent:false,version:'1.1.1',srs:'EPSG:3857',attribution:'DGU DOF'});
 const geo=L.tileLayer.wms(GEO_WMS_URL,{layers:GEO_WMS_LAYER,styles:'raster',format:'image/png',transparent:false,version:'1.1.1',srs:'EPSG:3857',attribution:'DGU HOK'});
 const markerLayer=L.layerGroup().addTo(map);
+// v6.1.46 perf: jedan dijeljeni canvas renderer za sve markere umjesto da Leaflet
+// otvara zaseban surface po markeru. Uz preferCanvas ovo najvise ubrza iscrtavanje.
+const markerRenderer=L.canvas({padding:0.5});
 const BASE_LAYERS={tk25,dof,geo,osm};
 const BASE_LABELS={tk25:'TK25',dof:'DOF',geo:'HOK',osm:'OSM'};
 const BASE_CONTROL_NAMES={'DGU TK25':'tk25','DGU DOF':'dof','DGU HOK':'geo','OSM':'osm'};
@@ -150,11 +153,42 @@ function statusLabel(o){
   if(statusType(o)==='red')return 'Nije u katastru / treba provjeru';
   return 'Provjera / ostalo'
 }
-function matchesFilter(o){const n=norm([o.name,o.object_type_final,o.record_status,o.cadastre_status,o.nearest_place,o.municipality,o.county,o.cadastral_number,o.missing_categories_text,o.search_text].join(' '));const q=norm($('q').value);if(q&&!n.includes(q))return false;if(activeFilter==='jama'&&!n.includes('jama'))return false;if(activeFilter==='spilja'&&!(n.includes('spilja')||n.includes('špilja')||n.includes('pecina')||n.includes('pećina')))return false;if(activeFilter==='katastar'&&statusType(o)!=='green')return false;if(activeFilter==='nije'&&statusType(o)!=='red')return false;if(activeFilter==='duboko'&&!(Number(o.depth_m)>=50))return false;return true}
+// v6.1.46 perf: normalizirani indeks pretrage racunamo JEDNOM po objektu, a ne
+// za svaki objekt pri svakom tipkanju (prije: ~1600 normalizacija po znaku).
+function searchBlob(o){
+  if(o.__blob===undefined){
+    o.__blob=norm([o.name,o.object_type_final,o.record_status,o.cadastre_status,o.nearest_place,o.municipality,o.county,o.cadastral_number,o.missing_categories_text,o.search_text].join(' '));
+  }
+  return o.__blob;
+}
+function matchesFilter(o){const n=searchBlob(o);const q=norm($('q').value);if(q&&!n.includes(q))return false;if(activeFilter==='jama'&&!n.includes('jama'))return false;if(activeFilter==='spilja'&&!(n.includes('spilja')||n.includes('špilja')||n.includes('pecina')||n.includes('pećina')))return false;if(activeFilter==='katastar'&&statusType(o)!=='green')return false;if(activeFilter==='nije'&&statusType(o)!=='red')return false;if(activeFilter==='duboko'&&!(Number(o.depth_m)>=50))return false;return true}
 function setFilter(f){activeFilter=f;document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('active',c.dataset.filter===f));render()}
 function render(){visible=all.filter(matchesFilter);const pts=visible.filter(hasMapPoint).length;$('shownText').textContent=visible.length+' objekata · '+pts+' na karti';drawResults();drawMarkers()}
+// v6.1.46 perf: tipkanje ne pokrece puni re-render na svaki znak.
+let renderTimer=null;
+function renderDebounced(){if(renderTimer)clearTimeout(renderTimer);renderTimer=setTimeout(()=>{renderTimer=null;render()},160)}
 function drawResults(){const box=$('results');if(!visible.length){box.innerHTML='<div class="empty">Nema rezultata za ovu pretragu.</div>';return}box.innerHTML='';visible.slice(0,140).forEach(o=>{const d=document.createElement('div');d.className='result';const coord=hasMapPoint(o)?'📍 na karti':'bez koordinata';const status=statusLabel(o);d.innerHTML='<span class="resultName">'+esc(o.name||o.object_name||'Bez naziva')+'</span><span class="resultStatus"><span class="dot" style="background:'+color(o)+'"></span>'+esc(status)+'</span><span class="resultType">'+esc(o.object_type_final||o.object_type||'objekt')+'</span><div class="meta">'+esc([o.nearest_place,o.municipality,o.county].filter(Boolean).join(' · ')||'bez lokacije')+'<br>'+coord+' · Dubina: '+plain(o.depth_m,'m')+' · Duljina: '+plain(o.length_m,'m')+'</div>';d.onclick=()=>openObject(o,true);box.appendChild(d)});if(visible.length>140){const p=document.createElement('div');p.className='empty';p.textContent='Prikazano prvih 140 rezultata u listi. Karta i dalje koristi sve objekte s koordinatama.';box.appendChild(p)}}
-function drawMarkers(){markerLayer.clearLayers();if(!markersVisible)return;const arr=visible.filter(hasMapPoint);arr.forEach(o=>{const m=L.circleMarker([Number(o.lat),Number(o.lon)],{radius:selected&&String(selected.id)===String(o.id)?9:6,color:'#071013',weight:2.4,fillColor:color(o),fillOpacity:.92});m.bindPopup(popupHtml(o));m.on('click',()=>showDetails(o,false));m.addTo(markerLayer)})}
+// v6.1.46 perf: markeri se grade u jedan batch i dodaju odjednom, popup HTML se
+// racuna tek na klik (lijeno), a svi dijele isti canvas renderer.
+function drawMarkers(){
+  markerLayer.clearLayers();
+  if(!markersVisible)return;
+  const arr=visible.filter(hasMapPoint);
+  const selId=selected?String(selected.id):null;
+  const batch=new Array(arr.length);
+  for(let i=0;i<arr.length;i++){
+    const o=arr[i];
+    const m=L.circleMarker([Number(o.lat),Number(o.lon)],{
+      renderer:markerRenderer,
+      radius:selId&&selId===String(o.id)?9:6,
+      color:'#071013',weight:2.4,fillColor:color(o),fillOpacity:.92
+    });
+    m.bindPopup(()=>popupHtml(o));
+    m.on('click',()=>showDetails(o,false));
+    batch[i]=m;
+  }
+  if(batch.length) markerLayer.addLayer(L.layerGroup(batch));
+}
 function popupHtml(o){return '<div class="objectPopup"><h3>'+esc(o.name)+'</h3><div class="pmeta">'+statusLabel(o)+' · '+esc(o.object_type_final||'objekt')+'<br>'+fmt(o.lat)+', '+fmt(o.lon)+'</div><a class="plink" onclick="window.SOVOpenObject&&window.SOVOpenObject(\''+mapDetailId(o).replace(/'/g,'')+'\')">Detalji</a></div>'}
 window.SOVOpenObject=(id)=>{const o=all.find(x=>String(mapDetailId(x))===String(id)||String(x.id)===String(id)||String(x.source_id)===String(id));if(o)openObject(o,false)};
 function openObject(o,focus){selected=o;showDetails(o,focus);if(focus&&hasMapPoint(o)){map.setView([Number(o.lat),Number(o.lon)],15);if(window.innerWidth<900)setTimeout(()=>document.querySelector('.mapPane').scrollIntoView({behavior:'smooth'}),60)}}

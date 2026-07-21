@@ -2,6 +2,18 @@
 (function(){
   const VERSION='5.58.28';
   const PAGE=(location.pathname.split('/').pop()||'index.html').toLowerCase();
+  // v6.1.46: refine sloj (samo vizual) ubacujemo iz shella da ne diramo 50 HTML datoteka.
+  // Ucitava se ZADNJI da moze nadjacati ranije stilove, i tiho preskace ako fajl fali.
+  (function injectRefineLayer(){
+    try{
+      if(document.querySelector('link[data-sov-refine]')) return;
+      const l=document.createElement('link');
+      l.rel='stylesheet';
+      l.href='assets/sov-refine-v6146.css';
+      l.setAttribute('data-sov-refine','6.1.46');
+      (document.head||document.documentElement).appendChild(l);
+    }catch(e){ /* vizualni sloj nikad ne smije srusiti stranicu */ }
+  })();
   const APP_PAGES=new Set([
     'dashboard.html','karta.html','baza.html','izleti.html','izleti-cloud.html','kalendar-izleta.html','oruzarstvo.html','oruzarstvo-import.html','oruzar-master.html','oruzar-master-posudbe.html','oruzar-master-inventar.html','oruzar-master-inventura.html','oruzar-master-notes.html','arhivar-dashboard.html','arhivar.html','arhivar-predane-jame.html','arhivar-izvoz.html','arhivar-zahvati.html','news-editor.html','napisi-clanak.html','admin-users.html','admin-notifications.html','role-manager.html','sync-status.html','audit-status.html','speleo-sql-safe.html','speleo-sql-edit-sandbox.html','speleo-sql-compare.html','speleo-sql-object-hub.html','speleo-sql-promote.html','speleo-sql-go-live.html','topodroid.html','topodroid-import.html','speleo-zapisnik.html','novi-zapisnik.html','pregled-baze.html','pregled-zapisnika.html','dokumentacija.html','dokumenti.html','zapisnici-skupstine.html'
   ]);
