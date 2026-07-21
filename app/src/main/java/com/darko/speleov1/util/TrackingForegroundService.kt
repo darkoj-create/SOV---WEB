@@ -10,6 +10,7 @@ class TrackingForegroundService : Service() {
     private var trackingHandle: LocationHelper.TrackingHandle? = null
     private var lastQueuedAtMillis: Long = 0L
     private var lastSyncAttemptAtMillis: Long = 0L
+    private val elevationRepo by lazy { ElevationRepository(this) }
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -49,8 +50,9 @@ class TrackingForegroundService : Service() {
             minDistanceM = 2f,
             mode = LocationHelper.LocationMode.GPS_ONLY,
         ) { location ->
-            TrackingRuntime.onLocation(location)
-            maybeQueueFieldTrackingPoint(location)
+            val demAlt = elevationRepo.elevationAtBlocking(location.latitude, location.longitude)
+            TrackingRuntime.onLocation(location, demAltitudeM = demAlt)
+            maybeQueueFieldTrackingPoint(location, demAlt)
             NotificationManagerCompat.from(this).notify(
                 TrackingNotificationHelper.NOTIFICATION_ID,
                 TrackingNotificationHelper.buildNotification(this, waitingForGpsFix = TrackingRuntime.state.value.waitingForGpsFix, startedAtMillis = TrackingRuntime.state.value.startedAtMillis)
@@ -74,7 +76,7 @@ class TrackingForegroundService : Service() {
         stopSelf()
     }
 
-    private fun maybeQueueFieldTrackingPoint(location: android.location.Location) {
+    private fun maybeQueueFieldTrackingPoint(location: android.location.Location, demAltitudeM: Double? = null) {
         val state = FieldTrackingLitePrefs.load(this)
         if (!state.active || state.tripId.isBlank() || state.sessionId.isBlank()) return
         val now = System.currentTimeMillis()
@@ -91,7 +93,7 @@ class TrackingForegroundService : Service() {
             }
         }
         if (lastQueuedAtMillis > 0L && now - lastQueuedAtMillis < intervalMs) return
-        FieldTrackingLiteStore.enqueue(this, location, state.sessionId, state.tripId)
+        FieldTrackingLiteStore.enqueue(this, location, state.sessionId, state.tripId, demAltitudeM = demAltitudeM)
         lastQueuedAtMillis = now
         if (lastSyncAttemptAtMillis == 0L || now - lastSyncAttemptAtMillis > 60_000L) {
             lastSyncAttemptAtMillis = now

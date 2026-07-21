@@ -175,7 +175,7 @@ import com.darko.speleov1.util.ImportParser
 import com.darko.speleov1.util.AppSessionStore
 import com.darko.speleov1.util.AppSessionSnapshot
 import com.darko.speleov1.util.SearchPreset
-import com.darko.speleov1.util.SovPermissionsStore
+import com.darko.speleov1.util.canUseKatastarNow
 import com.darko.speleov1.util.TrackingNotificationHelper
 import com.darko.speleov1.util.TrackingForegroundService
 import com.darko.speleov1.util.TrackingRuntime
@@ -246,7 +246,8 @@ fun SearchScreen(
     onRequestGpsLocation: () -> Unit,
     onShowFilteredOnMap: () -> Unit,
     onExportKml: () -> Unit,
-    onClearSearchFocus: () -> Unit = {}
+    onClearSearchFocus: () -> Unit = {},
+    onRequireKatastarLogin: () -> Unit = {}
 ) {
     val language = LocalAppLanguage.current
     val hasActiveSearch = remember(filters) { filters.hasAnyActiveCriteria() }
@@ -270,7 +271,8 @@ fun SearchScreen(
                 onFiltersChanged = onFiltersChanged,
                 onRequestGpsLocation = onRequestGpsLocation,
                 onShowFilteredOnMap = onShowFilteredOnMap,
-                onExportKml = onExportKml
+                onExportKml = onExportKml,
+                onRequireKatastarLogin = onRequireKatastarLogin
             )
         }
 
@@ -301,9 +303,10 @@ fun SearchScreen(
             }
             records.isEmpty() -> {
                 item {
-                    SearchMessageCard(
-                        title = "Nema rezultata",
-                        body = "Probaj širi pojam, drugu lokaciju ili očisti dio filtera."
+                    SovEmptyState(
+                        icon = Icons.Default.Search,
+                        title = language.pick("Nema rezultata", "No results"),
+                        hint = if (hasActiveSearch) language.pick("Probaj ukloniti filtere", "Try removing filters") else language.pick("Upiši pojam ili odaberi filter.", "Type a query or choose a filter.")
                     )
                 }
             }
@@ -342,12 +345,12 @@ fun FilterPanel(
     onFiltersChanged: (FilterState) -> Unit,
     onRequestGpsLocation: () -> Unit,
     onShowFilteredOnMap: () -> Unit,
-    onExportKml: () -> Unit
+    onExportKml: () -> Unit,
+    onRequireKatastarLogin: () -> Unit = {}
 ) {
     val language = LocalAppLanguage.current
     val context = LocalContext.current
-    val sovPermissions = remember { SovPermissionsStore.loadPermissions(context) }
-    val canViewKatastar = sovPermissions.canViewKatastar
+    val canViewKatastar = canUseKatastarNow(context)
     var showAdvanced by rememberSaveable {
         mutableStateOf(
             filters.distanceFilterKm != null ||
@@ -438,7 +441,7 @@ fun FilterPanel(
         ) {
             SearchSectionCard(
                 title = "Baza",
-                subtitle = if (canViewKatastar) "Unified role mode: SOV, Katastar, moja baza ili svi lokalni izvori." else "SOV, Moja baza i dozvoljeni izvori prema Supabase roli."
+                subtitle = if (canViewKatastar) "SOV, Katastar, moja baza." else "SOV i Moja baza."
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -460,9 +463,9 @@ fun FilterPanel(
                         } else {
                             SearchSourceButton(
                                 title = "Katastar",
-                                subtitle = "nije dopušteno",
+                                subtitle = "prijava",
                                 selected = false,
-                                onClick = {},
+                                onClick = onRequireKatastarLogin,
                                 modifier = Modifier.weight(1f)
                             )
                         }
@@ -493,7 +496,7 @@ fun FilterPanel(
                         onClick = { resetAll() },
                         contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
                     ) {
-                        Icon(Icons.Default.Delete, contentDescription = null, tint = MaterialTheme.colorScheme.error)
+                        Icon(Icons.Default.Delete, contentDescription = "Obriši", tint = MaterialTheme.colorScheme.error)
                         Spacer(Modifier.width(6.dp))
                         Text("Očisti sve filtere", color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.SemiBold)
                     }
@@ -510,11 +513,11 @@ fun FilterPanel(
                     onValueChange = { queryDraft = it },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
-                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Pretraga") },
                     label = { Text("Traži naziv, lokaciju ili broj pločice") },
                     placeholder = { Text("npr. Vražja jama, Ogulin, 124") },
                     supportingText = {
-                        Text("Najbrže: upiši naziv, lokaciju ili broj pločice.")
+                        Text("Upiši naziv, lokaciju ili pločicu.")
                     },
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedTextColor = Color.White,
@@ -563,7 +566,7 @@ fun FilterPanel(
                                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
                                 contentPadding = PaddingValues(horizontal = 12.dp, vertical = 12.dp)
                             ) {
-                                Icon(Icons.Default.Map, contentDescription = null)
+                                Icon(Icons.Default.Map, contentDescription = "Karta")
                                 Spacer(Modifier.width(8.dp))
                                 Text(if (hasActiveFilters) language.pick("Prikaži na karti", "Show on map") else language.pick("Prikaži sve", "Show all"), fontWeight = FontWeight.Bold)
                             }
@@ -575,7 +578,7 @@ fun FilterPanel(
                                 border = BorderStroke(1.dp, Color.White.copy(alpha = 0.20f)),
                                 contentPadding = PaddingValues(horizontal = 12.dp, vertical = 12.dp)
                             ) {
-                                Icon(Icons.Default.Download, contentDescription = null, tint = Color.White)
+                                Icon(Icons.Default.Download, contentDescription = "Preuzmi", tint = Color.White)
                                 Spacer(Modifier.width(8.dp))
                                 Text("KML", color = Color.White, fontWeight = FontWeight.SemiBold)
                             }
@@ -585,105 +588,42 @@ fun FilterPanel(
             }
 
             SearchSectionCard(
-                title = language.pick("Pametni početak", "Smart start"),
-                subtitle = language.pick("Najčešći terenski scenariji, bez ručnog slaganja filtera.", "Common field scenarios without manually combining filters.")
-            ) {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    SearchScenarioCard(
-                        title = language.pick("Terenski rad", "Field work"),
-                        subtitle = language.pick("SOV baza, teren i najkorisniji zapisi", "SOV database, field work and useful records"),
-                        icon = Icons.Default.MyLocation,
-                        accent = MaterialTheme.colorScheme.primary,
-                        onClick = { setPresetFieldWork() },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        SearchScenarioCard(
-                            title = language.pick("Moja baza", "My Base"),
-                            subtitle = language.pick("vlastiti KML/CSV zapisi", "your KML/CSV records"),
-                            icon = Icons.Default.UploadFile,
-                            accent = MaterialTheme.colorScheme.tertiary,
-                            onClick = { updateFilters(FilterState(sourceFilter = SourceFilter.MY_BASE)) },
-                            modifier = Modifier.weight(1f)
-                        )
-                        SearchScenarioCard(
-                            title = language.pick("U blizini", "Nearby"),
-                            subtitle = language.pick("25 km oko mene", "25 km around me"),
-                            icon = Icons.Default.LocationOn,
-                            accent = MaterialTheme.colorScheme.tertiary,
-                            onClick = { setPresetNearby() },
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-                }
-            }
-
-            SearchSectionCard(
-                title = language.pick("Brzi filteri", "Quick filters"),
-                subtitle = language.pick("Sivo = isključeno. Boja + kvačica = uključeno i odmah mijenja rezultate.", "Gray = off. Color + checkmark = on and updates results immediately.")
+                title = language.pick("Filter", "Filter"),
+                subtitle = language.pick("Filtriraj po katastru i nacrtima.", "Filter by cadastre and drawings.")
             ) {
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     SearchQuickChip(
-                        label = language.pick("U blizini", "Nearby"),
-                        selected = filters.distanceFilterKm == 25,
-                        accent = MaterialTheme.colorScheme.tertiary,
-                        helper = "25 km",
-                        onClick = {
-                            if (!hasCurrentUserLocation) onRequestGpsLocation()
-                            updateFilters(filters.copy(distanceFilterKm = if (filters.distanceFilterKm == 25) null else 25))
-                        }
-                    )
-                    SearchQuickChip(
-                        label = language.pick("Jame", "Pits"),
-                        selected = selectedCaveType == CaveTypeFilter.JAMA,
-                        accent = MaterialTheme.colorScheme.secondary,
-                        helper = language.pick("samo jame", "pits only"),
-                        onClick = { updateFilters(filters.copy(caveTypeFilter = if (selectedCaveType == CaveTypeFilter.JAMA) CaveTypeFilter.ALL else CaveTypeFilter.JAMA)) }
-                    )
-                    SearchQuickChip(
-                        label = language.pick("Špilje", "Caves"),
-                        selected = selectedCaveType == CaveTypeFilter.SPILJA,
-                        accent = MaterialTheme.colorScheme.tertiary,
-                        helper = language.pick("samo špilje", "caves only"),
-                        onClick = { updateFilters(filters.copy(caveTypeFilter = if (selectedCaveType == CaveTypeFilter.SPILJA) CaveTypeFilter.ALL else CaveTypeFilter.SPILJA)) }
-                    )
-                    SearchQuickChip(
-                        label = language.pick("Ima opis", "Has description"),
-                        selected = filters.onlyWithDescription,
+                        label = language.pick("U katastru", "In cadastre"),
+                        selected = filters.cadastreFilter == CadastreFilter.IN_CADASTRE,
                         accent = MaterialTheme.colorScheme.primary,
-                        helper = language.pick("opis postoji", "description exists"),
-                        onClick = { updateFilters(filters.copy(onlyWithDescription = !filters.onlyWithDescription)) }
-                    )
-                    SearchQuickChip(
-                        label = language.pick("Treba nacrt", "Needs drawing"),
-                        selected = filters.fieldTaskFilters.contains("ponoviti_nacrt") || filters.fieldTaskFilters.contains("digitalizirati_nacrt") || filters.fieldTaskFilters.contains("srediti_nacrt") || filters.fieldTaskFilters.contains("nastaviti_nacrt"),
-                        accent = MaterialTheme.colorScheme.tertiary,
-                        helper = "nacrt",
+                        helper = language.pick("samo objekti u katastru", "cadastre records only"),
                         onClick = {
-                            val drawingKeys = listOf("ponoviti_nacrt", "digitalizirati_nacrt", "srediti_nacrt", "nastaviti_nacrt")
-                            val active = drawingKeys.any { filters.fieldTaskFilters.contains(it) }
-                            val next = if (active) {
-                                filters.fieldTaskFilters.filterNot { it in drawingKeys }
-                            } else {
-                                (filters.fieldTaskFilters + drawingKeys).distinct()
-                            }
-                            updateFilters(filters.copy(fieldTaskFilters = next))
+                            updateFilters(filters.copy(
+                                cadastreFilter = if (filters.cadastreFilter == CadastreFilter.IN_CADASTRE) CadastreFilter.ALL else CadastreFilter.IN_CADASTRE
+                            ))
                         }
                     )
                     SearchQuickChip(
-                        label = language.pick("Treba koordinate", "Needs coordinates"),
-                        selected = filters.fieldTaskFilters.contains("koordinate"),
+                        label = language.pick("Nije u katastru", "Not in cadastre"),
+                        selected = filters.cadastreFilter == CadastreFilter.NOT_IN_CADASTRE,
                         accent = MaterialTheme.colorScheme.secondary,
-                        helper = "GPS",
+                        helper = language.pick("samo objekti koji nisu u katastru", "not in cadastre only"),
                         onClick = {
-                            val next = filters.fieldTaskFilters.toMutableList().apply {
-                                if (contains("koordinate")) remove("koordinate") else add("koordinate")
-                            }
-                            updateFilters(filters.copy(fieldTaskFilters = next.distinct()))
+                            updateFilters(filters.copy(
+                                cadastreFilter = if (filters.cadastreFilter == CadastreFilter.NOT_IN_CADASTRE) CadastreFilter.ALL else CadastreFilter.NOT_IN_CADASTRE
+                            ))
+                        }
+                    )
+                    SearchQuickChip(
+                        label = language.pick("Samo s nacrtom", "With drawing"),
+                        selected = filters.onlyWithDrawing,
+                        accent = MaterialTheme.colorScheme.tertiary,
+                        helper = language.pick("samo objekti koji imaju nacrt", "only objects with drawings"),
+                        onClick = {
+                            updateFilters(filters.copy(onlyWithDrawing = !filters.onlyWithDrawing))
                         }
                     )
                 }
-                SearchFilterLegend()
             }
 
             OutlinedButton(
@@ -692,7 +632,7 @@ fun FilterPanel(
                 shape = RoundedCornerShape(18.dp),
                 contentPadding = PaddingValues(horizontal = 14.dp, vertical = 12.dp)
             ) {
-                Icon(Icons.Default.Layers, contentDescription = null)
+                Icon(Icons.Default.Layers, contentDescription = "Slojevi")
                 Spacer(Modifier.width(8.dp))
                 Text(if (showAdvanced) "Sakrij fino podešavanje" else "Fino podešavanje")
             }
@@ -700,7 +640,7 @@ fun FilterPanel(
             if (!searchReady) {
                 SearchMessageCard(
                     title = language.pick("Pripremam pretragu", "Preparing search"),
-                    body = "Search indeks se grije u pozadini. Karta i osnovne funkcije ostaju dostupne."
+                    body = "Pretraga se učitava."
                 )
             }
 
@@ -867,7 +807,7 @@ internal fun SearchSourceButton(
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(5.dp)) {
                 Icon(
                     imageVector = if (selected) Icons.Default.CheckCircle else Icons.Default.Lens,
-                    contentDescription = null,
+                    contentDescription = if (selected) "Odabrano" else "Opcija",
                     tint = if (selected) accent else MaterialTheme.colorScheme.outline,
                     modifier = Modifier.size(if (selected) 16.dp else 10.dp)
                 )
@@ -912,7 +852,7 @@ internal fun SearchScenarioCard(
                     .border(1.dp, accent.copy(alpha = 0.28f), RoundedCornerShape(14.dp)),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(icon, contentDescription = null, tint = accent, modifier = Modifier.size(20.dp))
+                Icon(icon, contentDescription = "Ikona", tint = accent, modifier = Modifier.size(20.dp))
             }
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(title, fontWeight = FontWeight.Bold, color = Color.White, maxLines = 1, overflow = TextOverflow.Ellipsis)
@@ -959,7 +899,7 @@ internal fun SearchQuickChip(
             ) {
                 Icon(
                     imageVector = if (selected) Icons.Default.CheckCircle else Icons.Default.Lens,
-                    contentDescription = null,
+                    contentDescription = if (selected) "Odabrano" else "Opcija",
                     tint = if (selected) chipAccent else MaterialTheme.colorScheme.outline,
                     modifier = Modifier.size(if (selected) 16.dp else 9.dp)
                 )
@@ -1001,11 +941,11 @@ internal fun SearchFilterLegend() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(7.dp)) {
-                Icon(Icons.Default.CheckCircle, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
+                Icon(Icons.Default.CheckCircle, contentDescription = "Potvrđeno", tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
                 Text("Boja + kvačica = filter je ON", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.SemiBold)
             }
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                Icon(Icons.Default.Lens, contentDescription = null, tint = MaterialTheme.colorScheme.outline, modifier = Modifier.size(9.dp))
+                Icon(Icons.Default.Lens, contentDescription = "Status", tint = MaterialTheme.colorScheme.outline, modifier = Modifier.size(9.dp))
                 Text("sivo = OFF", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, fontWeight = FontWeight.Medium)
             }
         }
@@ -1021,10 +961,10 @@ internal fun buildSearchSmartHint(
 ): String {
     if (!searchReady) return "Indeks se priprema. Search će se sam osvježiti čim bude spreman."
     if (isFiltering) return "Radim u pozadini da lista i karta ostanu glatke."
-    if (!hasCurrentUserLocation && filters.distanceFilterKm != null) return "Uključen je filter udaljenosti. GPS će pomoći da rezultati budu precizni."
+    if (!hasCurrentUserLocation && filters.distanceFilterKm != null) return "GPS pomaže udaljenosti."
     if (!filters.hasAnyActiveCriteria()) return "Nema dodatnih filtera. Odabrana baza je aktivna; dodaj obojeni chip samo kad želiš suziti rezultate."
     if (resultCount == 0) return "Nema rezultata. Probaj očistiti jedan filter ili izabrati Sve baze."
-    if (resultCount > 250) return "Puno rezultata. Dodaj lokaciju, tip objekta ili udaljenost za čišći popis."
+    if (resultCount > 250) return "Puno rezultata. Dodaj filter."
     return "Dobar set filtera. Sad možeš otvoriti listu ili prikazati rezultate na karti."
 }
 
@@ -1082,7 +1022,7 @@ internal fun SearchActiveFilterPill(label: String) {
             .padding(horizontal = 10.dp, vertical = 7.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-            Icon(Icons.Default.CheckCircle, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(13.dp))
+            Icon(Icons.Default.CheckCircle, contentDescription = "Potvrđeno", tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(13.dp))
             Text(label, style = MaterialTheme.typography.labelMedium, color = Color.White, fontWeight = FontWeight.Bold)
         }
     }
@@ -1110,7 +1050,7 @@ internal fun SearchSelectField(
                 .background(premiumIconContainer(title), RoundedCornerShape(12.dp)),
             contentAlignment = Alignment.Center
         ) {
-            Icon(icon, contentDescription = null, tint = fieldTint, modifier = Modifier.size(18.dp))
+            Icon(icon, contentDescription = "Ikona", tint = fieldTint, modifier = Modifier.size(18.dp))
         }
         Spacer(Modifier.width(10.dp))
         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
@@ -1120,7 +1060,7 @@ internal fun SearchSelectField(
         Spacer(Modifier.width(8.dp))
         Icon(
             imageVector = Icons.Default.ArrowDropDown,
-            contentDescription = null,
+            contentDescription = "Otvori izbornik",
             tint = premiumIconTint(title).copy(alpha = 0.92f)
         )
     }
@@ -1158,7 +1098,7 @@ internal fun SearchMessageCard(
                     .background(messageTint.copy(alpha = 0.16f), RoundedCornerShape(12.dp)),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(Icons.Default.Search, contentDescription = null, tint = messageTint, modifier = Modifier.size(18.dp))
+                Icon(Icons.Default.Search, contentDescription = "Pretraga", tint = messageTint, modifier = Modifier.size(18.dp))
             }
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(title, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)

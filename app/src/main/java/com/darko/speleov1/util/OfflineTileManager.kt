@@ -26,6 +26,7 @@ object OfflineTileManager {
     private const val KEY_EXACT_BOUNDS_PREFIX = "exact_bounds_"
     private const val LEGACY_MAP_NAME = "Legacy offline"
     private const val MBTILES_FILE_NAME = "tiles.mbtiles"
+    const val DEM_TERRARIUM_DIR = "dem_terrarium"
 
     data class OfflineAreaSpec(
         val minLat: Double,
@@ -164,12 +165,73 @@ object OfflineTileManager {
         return publicRoot
     }
 
+
+    /**
+     * Reinstall/update restore bridge.
+     *
+     * The app mirrors user files to Downloads/SOV/Offline so they survive app
+     * reinstall on most devices. On startup we copy those files back into the
+     * app-private working folders, so GPX/KML/MBTiles become visible again
+     * without the user re-importing them manually. Existing private files win.
+     */
+    fun restoreFromPublicOfflineFolders(context: Context): Int {
+        ensureOfflineFolderStructure(context)
+        ensurePublicOfflineFolderStructure()
+        var restored = 0
+        restored += restorePlainFiles(publicGpxRoot(), gpxRoot(context), setOf("gpx"))
+        restored += restorePlainFiles(publicKmlRoot(), kmlRoot(context), setOf("kml", "kmz"))
+        restored += restorePlainFiles(publicMapsRoot(), mapsPackageRoot(context), setOf("mbtiles", "pmtiles"))
+        restored += restorePlainFiles(publicMbtilesRoot(), mbtilesRoot(context), setOf("mbtiles", "pmtiles"))
+        restored += restoreMbtilesAsCustomMaps(publicMbtilesRoot(), mbtilesRoot(context))
+        restored += restoreMbtilesAsCustomMaps(publicMapsRoot(), mapsPackageRoot(context))
+        if (getActiveMapName(context) == null) {
+            listAllMaps(context).firstOrNull()?.let { setActiveMapName(context, it) }
+        }
+        return restored
+    }
+
+    private fun restorePlainFiles(from: File, to: File, extensions: Set<String>): Int {
+        if (!from.exists()) return 0
+        to.mkdirs()
+        var count = 0
+        from.walkTopDown()
+            .filter { it.isFile && it.extension.lowercase(Locale.ROOT) in extensions }
+            .forEach { source ->
+                val target = File(to, source.name)
+                if (!target.exists()) {
+                    runCatching {
+                        source.copyTo(target, overwrite = false)
+                        count++
+                    }
+                }
+            }
+        return count
+    }
+
+    private fun restoreMbtilesAsCustomMaps(from: File, toRoot: File): Int {
+        if (!from.exists()) return 0
+        toRoot.mkdirs()
+        var count = 0
+        from.walkTopDown().filter { it.isFile && it.extension.equals("mbtiles", ignoreCase = true) }.forEach { source ->
+            val mapName = sanitizeMapName(source.nameWithoutExtension)
+            val mapDir = File(toRoot, mapName).apply { mkdirs() }
+            val target = File(mapDir, MBTILES_FILE_NAME)
+            if (!target.exists()) {
+                runCatching {
+                    source.copyTo(target, overwrite = false)
+                    count++
+                }
+            }
+        }
+        return count
+    }
+
     private fun copyPlainFiles(from: File, to: File, extensions: Set<String>) {
         if (!from.exists()) return
         to.mkdirs()
-        from.listFiles()
-            ?.filter { it.isFile && it.extension.lowercase() in extensions }
-            ?.forEach { source ->
+        from.walkTopDown()
+            .filter { it.isFile && it.extension.lowercase() in extensions }
+            .forEach { source ->
                 runCatching { source.copyTo(File(to, source.name), overwrite = true) }
             }
     }
@@ -177,22 +239,15 @@ object OfflineTileManager {
     private fun copyMbtilesExports(from: File, to: File) {
         if (!from.exists()) return
         to.mkdirs()
-        from.listFiles()?.forEach { source ->
+        from.walkTopDown().filter { it.isFile && it.extension.equals("mbtiles", ignoreCase = true) }.forEach { source ->
             runCatching {
-                when {
-                    source.isFile && source.extension.equals("mbtiles", ignoreCase = true) -> {
-                        source.copyTo(File(to, source.name), overwrite = true)
-                    }
-                    source.isDirectory -> {
-                        val mbtiles = source.listFiles()?.firstOrNull { it.isFile && it.extension.equals("mbtiles", ignoreCase = true) }
-                        if (mbtiles != null) {
-                            mbtiles.copyTo(File(to, sanitizeMapName(source.name) + ".mbtiles"), overwrite = true)
-                        } else {
-                            Unit
-                        }
-                    }
-                    else -> Unit
+                val relative = runCatching { source.relativeTo(from).invariantSeparatorsPath }.getOrDefault(source.name)
+                val targetName = if (relative.contains("/")) {
+                    sanitizeMapName(relative.substringBeforeLast("/")) + ".mbtiles"
+                } else {
+                    source.name
                 }
+                source.copyTo(File(to, targetName), overwrite = true)
             }
         }
     }
@@ -210,13 +265,20 @@ object OfflineTileManager {
     private fun containsTileContent(dir: File): Boolean {
         if (!dir.exists()) return false
         if (mbtilesFile(dir) != null) return true
-        return dir.walkTopDown().any { it.isFile && it.extension.lowercase() == "png" }
+        return dir.walkTopDown().any { isVisualTilePng(dir, it) }
     }
 
     private fun mbtilesFile(dir: File): File? {
         if (!dir.exists()) return null
         if (dir.isFile && dir.extension.equals("mbtiles", ignoreCase = true)) return dir
         return dir.listFiles()?.firstOrNull { it.isFile && it.extension.equals("mbtiles", ignoreCase = true) }
+    }
+
+    /** DEM terrarium PNG-ovi nisu vizualni tiles sloj i ne smiju ući u map count/MBTiles export. */
+    private fun isVisualTilePng(root: File, file: File): Boolean {
+        if (!file.isFile || !file.extension.equals("png", ignoreCase = true)) return false
+        val relative = runCatching { file.relativeTo(root).invariantSeparatorsPath }.getOrDefault(file.name)
+        return !relative.startsWith("$DEM_TERRARIUM_DIR/") && !relative.contains("/$DEM_TERRARIUM_DIR/")
     }
 
     fun listOfflineMaps(context: Context): List<String> {
@@ -305,7 +367,7 @@ object OfflineTileManager {
             it.beginTransaction()
             try {
                 srcDir.walkTopDown()
-                    .filter { file -> file.isFile && file.extension.equals("png", ignoreCase = true) }
+                    .filter { file -> isVisualTilePng(srcDir, file) }
                     .forEach { file ->
                         val parts = file.relativeTo(srcDir).invariantSeparatorsPath.split("/")
                         if (parts.size != 3) return@forEach
@@ -359,7 +421,7 @@ object OfflineTileManager {
         val mbtiles = mbtilesFile(root)
         if (mbtiles != null) return queryMbtilesTileCount(mbtiles)
         if (!root.exists()) return 0
-        return root.walkTopDown().count { it.isFile && it.extension.lowercase() == "png" }
+        return root.walkTopDown().count { isVisualTilePng(root, it) }
     }
 
     fun localTileCount(context: Context, mapName: String): Int {
@@ -367,7 +429,7 @@ object OfflineTileManager {
         val mbtiles = mbtilesFile(root)
         if (mbtiles != null) return queryMbtilesTileCount(mbtiles)
         if (!root.exists()) return 0
-        return root.walkTopDown().count { it.isFile && it.extension.lowercase() == "png" }
+        return root.walkTopDown().count { isVisualTilePng(root, it) }
     }
 
     fun isMbtilesMap(context: Context, mapName: String): Boolean = mbtilesFile(mapDir(context, mapName)) != null
@@ -402,7 +464,7 @@ object OfflineTileManager {
         var maxLat = Double.NEGATIVE_INFINITY
         var minLon = Double.POSITIVE_INFINITY
         var maxLon = Double.NEGATIVE_INFINITY
-        root.walkTopDown().filter { it.isFile && it.extension.lowercase() == "png" }.forEach { file ->
+        root.walkTopDown().filter { isVisualTilePng(root, it) }.forEach { file ->
             val rel = file.relativeTo(root).invariantSeparatorsPath
             val parts = rel.split('/')
             if (parts.size < 3) return@forEach
@@ -520,7 +582,7 @@ object OfflineTileManager {
         configureOsmdroidPaths(context)
         val tempZip = File(context.cacheDir, "offline_tiles_download.zip")
         val root = offlineMapDir(context, mapName).apply { mkdirs() }
-        val conn = (URL(url).openConnection() as HttpURLConnection).apply {
+        val conn = SovNetworkSecurity.openHttpConnection(url, "Offline karta download").apply {
             connectTimeout = 15000
             readTimeout = 30000
             instanceFollowRedirects = true
@@ -532,8 +594,8 @@ object OfflineTileManager {
             if (root.exists()) root.deleteRecursively()
             root.mkdirs()
             unzipIntoTileRoot(tempZip, root, onProgress)
-            if (!root.walkTopDown().any { it.isFile && it.extension.lowercase() == "png" }) {
-                return@withContext Result.failure(IllegalStateException("ZIP je skinut, ali nisam našao PNG tileove. Očekivani format je z/x/y.png"))
+            if (!root.walkTopDown().any { isVisualTilePng(root, it) }) {
+                return@withContext Result.failure(IllegalStateException("ZIP nema kartu."))
             }
             setActiveMapName(context, mapName)
             Result.success(root.walkTopDown().count { it.isFile && it.extension.lowercase() == "png" })
@@ -559,7 +621,7 @@ object OfflineTileManager {
         root.mkdirs()
         try {
             val estimates = estimateTiles(spec)
-            if (estimates > 4000) return@withContext Result.failure(IllegalStateException("Područje je preveliko za jedan download ($estimates tileova). Suzi okvir ili smanji detaljnost."))
+            if (estimates > 4000) return@withContext Result.failure(IllegalStateException("Područje je preveliko."))
             var downloaded = 0
             var skipped = 0
             val total = estimates.coerceAtLeast(1)
@@ -581,7 +643,7 @@ object OfflineTileManager {
                         }
                         outFile.parentFile?.mkdirs()
                         val url = WmsTileSource.buildTileUrl(config, z, x, y)
-                        val conn = (URL(url).openConnection() as HttpURLConnection).apply {
+                        val conn = SovNetworkSecurity.openHttpConnection(url, "Offline karta download").apply {
                             connectTimeout = 15000
                             readTimeout = 30000
                             instanceFollowRedirects = true
@@ -592,7 +654,7 @@ object OfflineTileManager {
                             conn.inputStream.use { input -> FileOutputStream(outFile).use { output -> input.copyTo(output) } }
                             if (outFile.length() < 100L) {
                                 outFile.delete()
-                                return@withContext Result.failure(IllegalStateException("WMS je vratio premali/neosnovan tile. Provjeri odabrano područje ili WMS postavke."))
+                                return@withContext Result.failure(IllegalStateException("Karta nije dostupna za to područje."))
                             }
                             downloaded++
                             processed++
@@ -623,7 +685,7 @@ object OfflineTileManager {
         root.mkdirs()
         try {
             val estimates = estimateTiles(spec)
-            if (estimates > 4000) return@withContext Result.failure(IllegalStateException("Podrucje je preveliko za jedan HGSS offline download ($estimates tileova). Suzi okvir ili smanji detaljnost."))
+            if (estimates > 4000) return@withContext Result.failure(IllegalStateException("Područje je preveliko."))
             var downloaded = 0
             var skipped = 0
             val total = estimates.coerceAtLeast(1)
@@ -645,7 +707,7 @@ object OfflineTileManager {
                         }
                         outFile.parentFile?.mkdirs()
                         val url = HGSSTileSource.buildHgssOsmTileUrl(z, x, y)
-                        val conn = (URL(url).openConnection() as HttpURLConnection).apply {
+                        val conn = SovNetworkSecurity.openHttpConnection(url, "Offline karta download").apply {
                             connectTimeout = 15000
                             readTimeout = 30000
                             instanceFollowRedirects = true
@@ -656,7 +718,7 @@ object OfflineTileManager {
                             conn.inputStream.use { input -> FileOutputStream(outFile).use { output -> input.copyTo(output) } }
                             if (outFile.length() < 50L) {
                                 outFile.delete()
-                                return@withContext Result.failure(IllegalStateException("HGSS je vratio premali tile. Probaj manji/drukciji odabir podrucja."))
+                                return@withContext Result.failure(IllegalStateException("Pokušaj manje područje."))
                             }
                             downloaded++
                             processed++
@@ -685,6 +747,22 @@ object OfflineTileManager {
         }
         return total
     }
+
+    fun estimateDemTiles(spec: OfflineAreaSpec): Int = OfflineDemTileStore.estimateDemTiles(spec)
+
+    fun estimateDemBytes(spec: OfflineAreaSpec): Long = OfflineDemTileStore.estimateDemBytes(spec)
+
+    fun localDemTileCount(context: Context, mapName: String): Int = OfflineDemTileStore.localDemTileCount(context, mapName)
+
+    fun findOfflineDemTile(context: Context, z: Int, x: Int, y: Int): File? = OfflineDemTileStore.findOfflineTileFile(context, z, x, y)
+
+    suspend fun downloadDemArea(
+        context: Context,
+        spec: OfflineAreaSpec,
+        mapName: String,
+        clearExisting: Boolean = false,
+        onProgress: ((done: Int, total: Int, zoom: Int) -> Unit)? = null
+    ): Result<Pair<Int, Int>> = OfflineDemTileStore.downloadDemArea(context, spec, mapName, clearExisting, onProgress)
 
     private fun unzipIntoTileRoot(zipFile: File, root: File, onProgress: ((done: Int, total: Int, zoom: Int) -> Unit)? = null) {
         val total = runCatching {
@@ -751,10 +829,10 @@ object OfflineTileManager {
 
             unzipIntoTileRoot(tempZip, root, onProgress)
             tempZip.delete()
-            val hasTiles = root.walkTopDown().any { it.isFile && it.extension.lowercase() == "png" }
+            val hasTiles = root.walkTopDown().any { isVisualTilePng(root, it) }
             if (!hasTiles) {
                 root.deleteRecursively()
-                return@withContext Result.failure(IllegalStateException("ZIP ne sadrži tileove u formatu z/x/y.png"))
+                return@withContext Result.failure(IllegalStateException("ZIP nema kartu."))
             }
             if (asOfflineMap) setActiveMapName(context, mapName)
             Result.success(mapName)

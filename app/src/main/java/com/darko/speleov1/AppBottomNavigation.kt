@@ -29,35 +29,35 @@ internal fun SovBottomNavigationBar(
             selected = currentTab == AppTab.SEARCH,
             onClick = onSearch,
             colors = sovNavigationItemColors("search"),
-            icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = null) },
+            icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Lista") },
             label = { Text(language.pick("Pretraga", "Search")) }
         )
         NavigationBarItem(
             selected = currentTab == AppTab.MAP,
             onClick = onMap,
             colors = sovNavigationItemColors("map karta"),
-            icon = { Icon(Icons.Default.LocationOn, contentDescription = null) },
+            icon = { Icon(Icons.Default.LocationOn, contentDescription = "Lokacija") },
             label = { Text(language.pick("Karta", "Map")) }
         )
         NavigationBarItem(
             selected = currentTab == AppTab.FIELD_PACKAGES,
             onClick = onFieldPackages,
             colors = sovNavigationItemColors("field package trip izleti"),
-            icon = { Icon(Icons.Default.Event, contentDescription = null) },
+            icon = { Icon(Icons.Default.Event, contentDescription = "Izleti") },
             label = { Text(language.pick("Izleti", "Trips")) }
         )
         NavigationBarItem(
             selected = currentTab == AppTab.TOOLS || currentTab == AppTab.CALCULATOR || currentTab == AppTab.SPELEO_RUNNER,
             onClick = onTools,
             colors = sovNavigationItemColors("tools kalkulator"),
-            icon = { Icon(Icons.Default.Calculate, contentDescription = null) },
+            icon = { Icon(Icons.Default.Calculate, contentDescription = "Kalkulator") },
             label = { Text(language.pick("Alati", "Tools")) }
         )
         NavigationBarItem(
             selected = currentTab == AppTab.OFFLINE,
             onClick = onOffline,
             colors = sovNavigationItemColors("offline overlay"),
-            icon = { Icon(Icons.Default.Map, contentDescription = null) },
+            icon = { Icon(Icons.Default.Map, contentDescription = "Karta") },
             label = { Text(language.pick("Slojevi", "Layers")) }
         )
     }

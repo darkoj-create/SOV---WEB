@@ -21,6 +21,7 @@ object SovAppRoutes {
     const val ARHIVA_NACRTI = "arhiva_nacrti"
     const val ARHIVA_PREDANE_JAME = "arhiva_predane_jame"
     const val TOOLS_CALENDAR = "tools_calendar"
+    const val LAPTOP_HUB = "laptop_hub"
 }
 
 val AppTab.route: String

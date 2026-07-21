@@ -44,7 +44,7 @@ object MyBaseRepository {
         val ext = resolveSupportedExtension(originalName)
             ?: resolveSupportedExtension(uri.lastPathSegment.orEmpty())
             ?: resolveSupportedMime(context.contentResolver.getType(uri).orEmpty())
-            ?: error("Podržani su samo KML i CSV za Moju bazu.")
+            ?: error("Podržani su KML i CSV.")
         val wantedName = if (originalName.endsWith(".$ext", ignoreCase = true)) originalName else "$originalName.$ext"
         val safeName = sanitizeFileName(wantedName, ext)
         val dir = importsDir(context).apply { mkdirs() }
@@ -55,7 +55,7 @@ object MyBaseRepository {
         val imported = parseImportFile(target).size
         if (imported == 0) {
             target.delete()
-            error(if (ext == "csv") "CSV nema prepoznatljive točke. Treba imati stupce name/naziv i latitude/longitude ili lat/lon." else "KML nema prepoznatljive Point točke.")
+            error(if (ext == "csv") "CSV nema točke." else "KML nema točke.")
         }
         val total = loadRecords(context).size
         return ImportResult(importedPoints = imported, fileName = target.name, totalPoints = total)
@@ -66,6 +66,43 @@ object MyBaseRepository {
         val files = dir.listFiles().orEmpty()
         files.forEach { it.deleteRecursively() }
         return files.size
+    }
+
+    /**
+     * Rebuilds "Moja baza" from native Offline folders after update/reinstall.
+     * KML and CSV files found in Download/SOV/Offline/kml and /tables are copied
+     * into the app working folder if they contain readable points. Existing files
+     * are preserved.
+     */
+    fun restoreFromOfflineFolders(context: Context): Int {
+        val sources = listOf(
+            OfflineTileManager.kmlRoot(context),
+            OfflineTileManager.publicKmlRoot(),
+            OfflineTileManager.publicTablesRoot()
+        )
+        val targetDir = importsDir(context).apply { mkdirs() }
+        val existing = targetDir.listFiles().orEmpty()
+            .map { "${it.name.lowercase(Locale.ROOT)}:${it.length()}" }
+            .toMutableSet()
+        var restored = 0
+        sources.flatMap { dir ->
+            if (!dir.exists()) emptyList() else dir.walkTopDown().filter { it.isFile && isSupportedImportFile(it) }.toList()
+        }.distinctBy { it.absolutePath }.forEach { source ->
+            val key = "${source.name.lowercase(Locale.ROOT)}:${source.length()}"
+            if (existing.contains(key)) return@forEach
+            val safeName = sanitizeFileName(source.name, resolveSupportedExtension(source.name) ?: source.extension)
+            val target = File(targetDir, uniqueFileName(targetDir, safeName))
+            runCatching {
+                // Ne parsiramo velike KML/CSV datoteke tijekom startup restore-a.
+                // Samo ih vratimo u radni folder; čitanje/indexiranje ide kasnije u pozadini.
+                source.copyTo(target, overwrite = false)
+                existing += key
+                restored++
+            }.onFailure {
+                runCatching { target.delete() }
+            }
+        }
+        return restored
     }
 
 

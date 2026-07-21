@@ -1,0 +1,5 @@
+{"type":"FeatureCollection","features":[
+{"type":"Feature","properties":{"name":"Čabar točka"},"geometry":{"type":"Point","coordinates":[14.64,45.59]}},
+{"type":"Feature","properties":{"name":"Žumberak"},"geometry":{"type":"Point","coordinates":[15.42,45.74]}},
+{"type":"Feature","properties":{"name":"Šetnja"},"geometry":{"type":"LineString","coordinates":[[15.0,45.0],[15.1,45.1]]}}
+]}

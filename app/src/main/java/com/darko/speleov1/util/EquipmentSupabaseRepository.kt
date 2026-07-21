@@ -216,7 +216,7 @@ internal object EquipmentSupabaseRepository {
         val permissions = SovPermissionsStore.loadPermissions(context)
         val session = SovPermissionsStore.loadSession(context)
         if (!session.isLoggedIn) {
-            return dbGateSnapshot("Prijavi se u SOV Cloud. Inventar je sakriven dok baza ne vrati katalog.")
+            return dbGateSnapshot("Prijavi se za inventar.")
         }
         return runCatching {
             val manifest = fetchCatalogManifest(context)
@@ -232,7 +232,7 @@ internal object EquipmentSupabaseRepository {
 
             if (items.isEmpty() && rawItems.isEmpty()) {
                 return@runCatching dbGateSnapshot(
-                    "Baza još ne vraća katalog Oružarstva. Inventar je sakriven dok se import ne završi.",
+                    "Inventar se učitava.",
                     myRequests = my,
                     armoryQueue = queue,
                     catalogVersion = manifest.catalogVersion,
@@ -255,7 +255,7 @@ internal object EquipmentSupabaseRepository {
                 lastChangedAt = manifest.lastChangedAt
             ).also { EquipmentCloudCache.save(context, it) }
         }.getOrElse { err ->
-            dbGateSnapshot("Cloud/baza još nije dostupna: ${err.message.orEmpty().take(120)}. Inventar je sakriven.")
+            dbGateSnapshot("Inventar nije dostupan.")
         }
     }
 
@@ -449,7 +449,7 @@ internal object EquipmentSupabaseRepository {
         val session = SovPermissionsStore.loadSession(context)
         if (!session.isLoggedIn) {
             EquipmentInventoryPendingStore.enqueue(context, locationName, categoryName, note, counts)
-            return EquipmentInventorySubmitResult(false, "Inventura je spremljena offline. Sinkronizirat će se kad se prijaviš u SOV Cloud.")
+            return EquipmentInventorySubmitResult(false, "Inventura spremljena lokalno.")
         }
         return runCatching {
             val sessionId = submitInventoryRemote(context, locationName, categoryName, note, counts)
@@ -719,7 +719,7 @@ internal object EquipmentSupabaseRepository {
                 myRequests = emptyList(),
                 armoryQueue = emptyList(),
                 fromCache = true,
-                message = "$message Prikazujem ugrađeni XLS canonical katalog v6.1.5.",
+                message = "$message Prikazujem spremljeni inventar.",
                 rawItems = bundled,
                 catalogVersion = ARMORY_XLS_CANONICAL_VERSION,
                 rawRowCount = bundled.size,
@@ -729,9 +729,9 @@ internal object EquipmentSupabaseRepository {
         }
         return EquipmentCloudSnapshot(
             items = listOf(
-                EquipmentCloudItem("item:XLS-DEMO-001", "XLS-DEMO-001", "Statičko uže 10.5 mm / 50 m", "Užad", "Oružarstvo", 4, 3, "Dostupno", "Lokalni fallback", subcategory = "Užad"),
-                EquipmentCloudItem("item:XLS-DEMO-002", "XLS-DEMO-002", "Karabiner HMS", "Sidrišta i opremanje", "Oružarstvo", 30, 22, "Dostupno", "Lokalni fallback", subcategory = "Karabineri"),
-                EquipmentCloudItem("item:XLS-DEMO-003", "XLS-DEMO-003", "Prva pomoć speleo komplet", "Medicinska oprema", "Oružarstvo", 2, 2, "Dostupno", "Lokalni fallback", subcategory = "Prva pomoć")
+                EquipmentCloudItem("item:DEMO-001", "DEMO-001", "Statičko uže 10.5 mm / 50 m", "Užad", "Oružarstvo", 4, 3, "Dostupno", "Spremljeno", subcategory = "Užad"),
+                EquipmentCloudItem("item:DEMO-002", "DEMO-002", "Karabiner HMS", "Sidrišta i opremanje", "Oružarstvo", 30, 22, "Dostupno", "Spremljeno", subcategory = "Karabineri"),
+                EquipmentCloudItem("item:DEMO-003", "DEMO-003", "Prva pomoć speleo komplet", "Medicinska oprema", "Oružarstvo", 2, 2, "Dostupno", "Spremljeno", subcategory = "Prva pomoć")
             ),
             myRequests = emptyList(),
             armoryQueue = emptyList(),

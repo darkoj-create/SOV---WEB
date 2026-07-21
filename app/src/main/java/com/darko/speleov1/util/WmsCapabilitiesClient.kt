@@ -32,7 +32,7 @@ object WmsCapabilitiesClient {
             require(baseUrl.startsWith("http://") || baseUrl.startsWith("https://")) { "WMS URL mora početi s http:// ili https://." }
             val separator = if (baseUrl.contains('?')) "&" else "?"
             val capabilitiesUrl = baseUrl + separator + "SERVICE=WMS&REQUEST=GetCapabilities"
-            val connection = (URL(capabilitiesUrl).openConnection() as HttpURLConnection).apply {
+            val connection = SovNetworkSecurity.openHttpConnection(capabilitiesUrl, "WMS capabilities").apply {
                 connectTimeout = 9000
                 readTimeout = 12000
                 requestMethod = "GET"

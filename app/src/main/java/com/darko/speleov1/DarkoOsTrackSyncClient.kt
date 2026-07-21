@@ -14,6 +14,8 @@ import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
+import com.darko.speleov1.util.SovNetworkSecurity
+import com.darko.speleov1.util.SovAppsScriptAuth
 
 internal data class DarkoOsTrackExportResult(
     val ok: Boolean = false,
@@ -90,18 +92,19 @@ internal object DarkoOsTrackSyncClient {
             "minLon" to stats.minLon.orBlank(),
             "maxLon" to stats.maxLon.orBlank(),
             "gpx" to gpx
-        )
+        ).toMutableMap().also { SovAppsScriptAuth.addToForm(it) }
 
         return@withContext try {
             val body = params.entries.joinToString("&") { (k, v) ->
                 URLEncoder.encode(k, "UTF-8") + "=" + URLEncoder.encode(v, "UTF-8")
             }
-            val conn = (URL(DARKO_OS_WEBAPP_URL).openConnection() as HttpURLConnection).apply {
+            val conn = SovNetworkSecurity.openHttpConnection(DARKO_OS_WEBAPP_URL, "Darko OS export").apply {
                 requestMethod = "POST"
                 connectTimeout = 15000
                 readTimeout = 30000
                 doOutput = true
                 setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
+                SovAppsScriptAuth.applyTo(this)
             }
             conn.outputStream.use { it.write(body.toByteArray(Charsets.UTF_8)) }
             val code = conn.responseCode

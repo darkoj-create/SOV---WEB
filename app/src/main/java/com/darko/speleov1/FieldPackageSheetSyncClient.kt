@@ -18,6 +18,8 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.UUID
+import com.darko.speleov1.util.SovNetworkSecurity
+import com.darko.speleov1.util.SovAppsScriptAuth
 
 internal data class FieldPackageSheetPayload(
     val packageId: String,
@@ -547,17 +549,18 @@ internal object FieldPackageSheetSyncClient {
                 "datum" to datum,
                 "voditelj" to voditelj,
                 "packageId" to packageId
-            )
+            ).also { SovAppsScriptAuth.addToForm(it) }
             val body = fields.entries.joinToString("&") { (key, value) ->
                 URLEncoder.encode(key, "UTF-8") + "=" + URLEncoder.encode(value, "UTF-8")
             }
-            val conn = (URL(RASPORED_WEBAPP_URL).openConnection() as HttpURLConnection).apply {
+            val conn = SovNetworkSecurity.openHttpConnection(RASPORED_WEBAPP_URL, "Raspored").apply {
                 requestMethod = "POST"
                 connectTimeout = 12000
                 readTimeout = 15000
                 doOutput = true
                 instanceFollowRedirects = true
                 setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
+                SovAppsScriptAuth.applyTo(this)
             }
             OutputStreamWriter(conn.outputStream, Charsets.UTF_8).use { it.write(body) }
             val code = conn.responseCode

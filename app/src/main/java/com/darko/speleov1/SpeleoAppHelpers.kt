@@ -72,7 +72,7 @@ fun MarkDialogPhotoPreview(
                 if (bitmap != null) {
                     Image(bitmap = bitmap.asImageBitmap(), contentDescription = label, modifier = Modifier.fillMaxSize())
                 } else {
-                    Icon(Icons.Default.PhotoLibrary, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Icon(Icons.Default.PhotoLibrary, contentDescription = "Galerija fotografija", tint = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
             Text(label, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold)

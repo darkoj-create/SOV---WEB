@@ -194,7 +194,7 @@ internal object FieldTrackingLitePrefs {
 
 internal object FieldTrackingLiteStore {
     private const val DB_NAME = "sov_field_tracking_lite.db"
-    private const val DB_VERSION = 2
+    private const val DB_VERSION = 3
     private const val TABLE = "tracking_queue"
 
     private class Helper(context: Context) : SQLiteOpenHelper(context.applicationContext, DB_NAME, null, DB_VERSION) {
@@ -212,6 +212,7 @@ internal object FieldTrackingLiteStore {
                   recorded_at integer not null,
                   accuracy_m real,
                   altitude_m real,
+                  altitude_dem_m real,
                   speed_mps real,
                   heading_deg real,
                   battery_pct integer,
@@ -233,17 +234,20 @@ internal object FieldTrackingLiteStore {
                 runCatching { db.execSQL("alter table $TABLE add column tracking_mode text") }
                 runCatching { db.execSQL("alter table $TABLE add column ping_interval_sec integer") }
             }
+            if (oldVersion < 3) {
+                runCatching { db.execSQL("alter table $TABLE add column altitude_dem_m real") }
+            }
         }
     }
 
-    fun enqueue(context: Context, location: Location, sessionId: String, tripId: String, userId: String? = null) {
+    fun enqueue(context: Context, location: Location, sessionId: String, tripId: String, userId: String? = null, demAltitudeM: Double? = null) {
         val now = if (location.time > 0L) location.time else System.currentTimeMillis()
         val db = Helper(context).writableDatabase
         val sql = """
             insert or ignore into $TABLE(
               client_point_id, session_id, trip_id, user_id, device_id, lat, lng, recorded_at,
-              accuracy_m, altitude_m, speed_mps, heading_deg, battery_pct, tracking_mode, ping_interval_sec, sync_status, attempts, created_at
-            ) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,'pending',0,?)
+              accuracy_m, altitude_m, altitude_dem_m, speed_mps, heading_deg, battery_pct, tracking_mode, ping_interval_sec, sync_status, attempts, created_at
+            ) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,'pending',0,?)
         """.trimIndent()
         val st = db.compileStatement(sql)
         try {
@@ -257,14 +261,15 @@ internal object FieldTrackingLiteStore {
             st.bindLong(8, now)
             if (location.hasAccuracy()) st.bindDouble(9, location.accuracy.toDouble()) else st.bindNull(9)
             if (location.hasAltitude()) st.bindDouble(10, location.altitude) else st.bindNull(10)
-            if (location.hasSpeed()) st.bindDouble(11, location.speed.toDouble()) else st.bindNull(11)
-            if (location.hasBearing()) st.bindDouble(12, location.bearing.toDouble()) else st.bindNull(12)
+            if (demAltitudeM != null) st.bindDouble(11, demAltitudeM) else st.bindNull(11)
+            if (location.hasSpeed()) st.bindDouble(12, location.speed.toDouble()) else st.bindNull(12)
+            if (location.hasBearing()) st.bindDouble(13, location.bearing.toDouble()) else st.bindNull(13)
             val batt = FieldTrackingLitePrefs.batteryPct(context)
             val state = FieldTrackingLitePrefs.load(context)
-            if (batt >= 0) st.bindLong(13, batt.toLong()) else st.bindNull(13)
-            st.bindString(14, state.trackingMode)
-            st.bindLong(15, state.pingIntervalSec.toLong())
-            st.bindLong(16, System.currentTimeMillis())
+            if (batt >= 0) st.bindLong(14, batt.toLong()) else st.bindNull(14)
+            st.bindString(15, state.trackingMode)
+            st.bindLong(16, state.pingIntervalSec.toLong())
+            st.bindLong(17, System.currentTimeMillis())
             st.executeInsert()
         } finally {
             st.close()
@@ -281,7 +286,7 @@ internal object FieldTrackingLiteStore {
     fun loadPending(context: Context, limit: Int = 120): JSONArray {
         val arr = JSONArray()
         Helper(context).readableDatabase.rawQuery(
-            "select client_point_id,lat,lng,recorded_at,accuracy_m,altitude_m,speed_mps,heading_deg,battery_pct,tracking_mode,ping_interval_sec from $TABLE where sync_status='pending' order by recorded_at asc limit ?",
+            "select client_point_id,lat,lng,recorded_at,accuracy_m,altitude_m,speed_mps,heading_deg,battery_pct,tracking_mode,ping_interval_sec,altitude_dem_m from $TABLE where sync_status='pending' order by recorded_at asc limit ?",
             arrayOf(limit.toString())
         ).use { c ->
             while (c.moveToNext()) {
@@ -298,6 +303,7 @@ internal object FieldTrackingLiteStore {
                     .put("battery_pct", if (c.isNull(8)) JSONObject.NULL else c.getInt(8))
                     .put("tracking_mode", if (c.isNull(9)) FieldTrackingLitePrefs.load(context).trackingMode else c.getString(9))
                     .put("ping_interval_sec", if (c.isNull(10)) FieldTrackingLitePrefs.load(context).pingIntervalSec else c.getInt(10))
+                    .put("altitude_dem_m", if (c.isNull(11)) JSONObject.NULL else c.getDouble(11))
                     .put("network_state", "android-batch")
                     .put("client_status", "queued")
                 )
@@ -336,7 +342,7 @@ internal object FieldTrackingLiteApi {
                 expectedAccessToken = cached.accessToken
             )
         }.getOrElse { throwable ->
-            if (forceRefresh) error("Prijava je istekla. Otvori login i prijavi se ponovno; tracking queue ostaje spremljen.")
+            if (forceRefresh) error("Prijava je istekla.")
             cached
         }
     }
@@ -351,8 +357,8 @@ internal object FieldTrackingLiteApi {
     fun friendlyError(throwable: Throwable): String {
         val msg = throwable.message.orEmpty()
         return when {
-            isAuthExpired(throwable) -> "Prijava je istekla. Otvori login i prijavi se ponovno; neslane tracking točke ostaju spremljene."
-            msg.contains("Failed to connect", ignoreCase = true) || msg.contains("timeout", ignoreCase = true) -> "Nema stabilne veze. Tracking se sprema lokalno i poslat će se kad se signal vrati."
+            isAuthExpired(throwable) -> "Prijava je istekla."
+            msg.contains("Failed to connect", ignoreCase = true) || msg.contains("timeout", ignoreCase = true) -> "Nema veze. Spremam lokalno."
             msg.contains("Prvo se prijavi", ignoreCase = true) -> "Prvo se prijavi u SOV Cloud."
             else -> msg.ifBlank { "Tracking sync nije uspio." }
         }
@@ -390,7 +396,7 @@ internal object FieldTrackingLiteApi {
             requestJsonAuth(context, "$SOV_SUPABASE_URL/rest/v1/rpc/sov_tracking_start_session", payload.toString())
         }
         val id = response.optString("session_id")
-        if (id.isBlank()) error("Supabase nije vratio tracking session_id.")
+        if (id.isBlank()) error("Cloud nije vratio ID.")
         FieldTrackingLitePrefs.markActive(
             context = context,
             tripId = tripId,
@@ -542,7 +548,7 @@ internal object FieldTrackingLiteApi {
             .put("p_default_tracking_mode", cleanMode)
         val response = requestJsonAuth(context, "$SOV_SUPABASE_URL/rest/v1/rpc/sov_tracking_create_field_event_v2", payload.toString())
         val id = response.optString("field_event_id", response.optString("trip_id"))
-        if (id.isBlank()) error("Supabase nije vratio ID teama.")
+        if (id.isBlank()) error("Cloud nije vratio ID ekipe.")
         return FieldTrackingFieldEvent(
             id = id,
             title = response.optString("title", title.ifBlank { "SOV teren" }),
@@ -562,7 +568,7 @@ internal object FieldTrackingLiteApi {
         if (code.isBlank()) error("Upiši kod ekipe.")
         val response = requestJsonAuth(context, "$SOV_SUPABASE_URL/rest/v1/rpc/sov_tracking_join_field_event", JSONObject().put("p_join_code", code).toString())
         val id = response.optString("field_event_id", response.optString("trip_id"))
-        if (id.isBlank()) error("Supabase nije vratio ID teama.")
+        if (id.isBlank()) error("Cloud nije vratio ID ekipe.")
         return FieldTrackingFieldEvent(
             id = id,
             title = response.optString("title", "SOV teren"),

@@ -1,0 +1,7 @@
+Command attempted:
+./gradlew :app:compileDebugKotlin --no-daemon
+
+Result:
+Gradle wrapper attempted to download gradle-8.7-bin.zip from services.gradle.org and failed with UnknownHostException because the sandbox has no internet access.
+
+No Supabase/API code was changed. Patch scope is UI-only in FieldPackageFeature.kt plus animateContentSize import.

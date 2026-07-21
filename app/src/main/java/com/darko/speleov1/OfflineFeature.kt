@@ -95,6 +95,7 @@ import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material.icons.filled.Storage
+import androidx.compose.material.icons.filled.Terrain
 import androidx.compose.material.icons.filled.Straighten
 import androidx.compose.material.icons.filled.Settings as SettingsGearIcon
 import androidx.compose.material.icons.filled.RemoveCircleOutline
@@ -173,6 +174,8 @@ import com.darko.speleov1.util.MapLayerPrefs
 import com.darko.speleov1.util.WmsConfig
 import com.darko.speleov1.util.WmsTileSource
 import com.darko.speleov1.util.OfflineTileManager
+import com.darko.speleov1.util.SovNativeOfflineFolders
+import com.darko.speleov1.util.SovLinkedOfflineFolder
 import com.darko.speleov1.util.PendingCameraPhoto
 import com.darko.speleov1.util.PhotoStore
 import com.darko.speleov1.util.UserContentStore
@@ -232,12 +235,14 @@ import java.util.concurrent.atomic.AtomicBoolean
 data class StoredMapUiInfo(
     val tileCount: Int,
     val bounds: OfflineTileManager.OfflineBounds?,
-    val isMbtiles: Boolean
+    val isMbtiles: Boolean,
+    val demTileCount: Int = 0
 )
 
 private fun describeStoredMap(info: StoredMapUiInfo, preferMbtilesLabel: Boolean = false): String = buildString {
     append(if (preferMbtilesLabel || info.isMbtiles) "MBTiles" else "PNG tiles")
     if (info.tileCount > 0) append(" • tileova ${info.tileCount}")
+    if (info.demTileCount > 0) append(" • DEM ${info.demTileCount}")
     info.bounds?.let { append(" • ${formatBoundsSummary(it)}") }
 }
 
@@ -295,6 +300,23 @@ fun OfflineMapsScreen(
     val language = LocalAppLanguage.current
     val offlineActions = remember(context) { OfflineActionController(context) }
     var message by rememberSaveable { mutableStateOf<String?>(null) }
+    var profileTrack by remember { mutableStateOf<SavedTrack?>(null) }
+    var linkedFolderScanRequest by rememberSaveable { mutableIntStateOf(0) }
+    var linkedFolderLabel by rememberSaveable { mutableStateOf(if (SovLinkedOfflineFolder.isLinked(context)) "SOV folder povezan" else "SOV folder nije povezan") }
+    profileTrack?.let { track ->
+        TrackElevationProfileDialog(track = track, onDismiss = { profileTrack = null })
+    }
+
+    val folderPicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
+        if (uri != null) {
+            SovLinkedOfflineFolder.saveLinkedFolder(context, uri)
+            linkedFolderLabel = "SOV folder povezan"
+            linkedFolderScanRequest++
+            message = "SOV folder povezan"
+        } else {
+            message = "Folder nije odabran"
+        }
+    }
     LaunchedEffect(message) {
         if (message != null) {
             delay(3_000L)
@@ -367,10 +389,23 @@ fun OfflineMapsScreen(
 
     LaunchedEffect(Unit) {
         offlineActions.ensureFolders()
+        val restored = withContext(Dispatchers.IO) { SovNativeOfflineFolders.scanAndRestore(context) }
+        if (restored.total > 0) {
+            onChanged()
+            message = "Učitano iz foldera: ${restored.total}"
+        }
     }
 
     LaunchedEffect(stateVersion) {
         selectedOfflineMap = offlineSnapshot.activeMapName.orEmpty()
+    }
+
+    LaunchedEffect(linkedFolderScanRequest) {
+        if (linkedFolderScanRequest <= 0) return@LaunchedEffect
+        val restored = withContext(Dispatchers.IO) { SovNativeOfflineFolders.scanAndRestore(context) }
+        onChanged()
+        stateVersion++
+        message = if (restored.total > 0) "Učitano iz SOV foldera: ${restored.total}" else "SOV folder povezan, nema novih datoteka"
     }
 
     CaveScreenBackground {
@@ -411,18 +446,17 @@ fun OfflineMapsScreen(
                     Modifier.padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Text(language.pick("Nemaš offline karata", "You have no offline maps"), fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.titleSmall)
-                    Text(
-                        language.pick("Klikni Import za uvoz MBTiles ili ZIP karte s mobitela, ili idi na Kartu → Tools → Download za preuzimanje offline karte direktno u aplikaciji.", "Tap Import to add MBTiles or ZIP maps from your phone, or go to Map → Tools → Download to download offline maps directly in the app."),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    SovEmptyState(
+                        icon = Icons.Default.Map,
+                        title = language.pick("Nemaš offline karata", "You have no offline maps"),
+                        hint = language.pick("Klikni Import za uvoz MBTiles ili ZIP karte s mobitela, ili idi na Kartu → Tools → Download.", "Tap Import to add MBTiles/ZIP maps, or go to Map → Tools → Download.")
                     )
                     OutlinedButton(
                         onClick = onImport,
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(14.dp)
                     ) {
-                        Icon(Icons.Default.UploadFile, null, modifier = Modifier.size(16.dp))
+                        Icon(Icons.Default.UploadFile, contentDescription = "Uvoz datoteke", modifier = Modifier.size(16.dp))
                         Spacer(Modifier.size(6.dp))
                         Text(language.pick("Import karte", "Import map"))
                     }
@@ -443,6 +477,9 @@ fun OfflineMapsScreen(
                 val opened = openSovOfflineFolder(context)
                 message = if (opened) language.pick("Otvaram Offline folder.", "Opening Offline folder.") else "Offline folder: ${OfflineTileManager.ensureOfflineFolderStructure(context).absolutePath}"
             },
+            onConnectFolder = { folderPicker.launch(null) },
+            onRescanLinkedFolder = { linkedFolderScanRequest++ },
+            linkedFolderLabel = linkedFolderLabel,
             onImport = onImport
         )
 
@@ -451,7 +488,7 @@ fun OfflineMapsScreen(
             onValueChange = { userLayerSearch = it },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
-            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+            leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Pretraga") },
             label = { Text(language.pick("Pretraži", "Search")) },
             placeholder = { Text(language.pick("karta, layer, točka, track...", "map, layer, point, track...")) }
         )
@@ -481,6 +518,7 @@ fun OfflineMapsScreen(
                     activeInfo?.let {
                         add((if (it.isMbtiles) Icons.Default.Storage else Icons.Default.Image) to if (it.isMbtiles) "MBTiles" else language.pick("PNG tileovi", "PNG tiles"))
                         if (it.tileCount > 0) add(Icons.Default.Map to language.pick("${it.tileCount} tileova", "${it.tileCount} tiles"))
+                        if (it.demTileCount > 0) add(Icons.Default.Terrain to language.pick("DEM visine ${it.demTileCount}", "DEM elevations ${it.demTileCount}"))
                         it.bounds?.let { bounds -> add(Icons.Default.LocationOn to formatBoundsSummary(bounds)) }
                     }
                     if (enabledCustomOverlays.isNotEmpty()) {
@@ -502,7 +540,8 @@ fun OfflineMapsScreen(
                         highlighted = selectedOfflineMap == mapName,
                         infoChips = buildList {
                             add(Icons.Default.Image to language.pick("PNG tileovi", "PNG tiles"))
-                            if (mapInfo.tileCount > 0) add(Icons.Default.Storage to "${mapInfo.tileCount} tileova")
+                            if (mapInfo.tileCount > 0) add(Icons.Default.Storage to language.pick("${mapInfo.tileCount} tileova", "${mapInfo.tileCount} tiles"))
+                            if (mapInfo.demTileCount > 0) add(Icons.Default.Terrain to language.pick("DEM visine ${mapInfo.demTileCount}", "DEM elevations ${mapInfo.demTileCount}"))
                             mapInfo.bounds?.let { bounds -> add(Icons.Default.LocationOn to formatBoundsSummary(bounds)) }
                         }
                     ) {
@@ -651,6 +690,13 @@ fun OfflineMapsScreen(
                             onClick = { onToggleImportedLayerVisibility(layer) }
                         )
                         OfflineWideActionChip(icon = Icons.Default.Map, label = "Na karti", onClick = { onOpenImportedLayer(layer) })
+                        if (layer.tracks.isNotEmpty()) {
+                            OfflineWideActionChip(
+                                icon = Icons.Default.Terrain,
+                                label = language.pick("Visinski profil", "Elevation profile"),
+                                onClick = { profileTrack = layer.tracks.first() }
+                            )
+                        }
                         OfflineWideActionChip(icon = Icons.Default.Edit, label = "Uredi ime", onClick = {
                             renameTarget = LayerRenameTarget(LayerRenameKind.IMPORTED_LAYER, layer.id)
                             renameValue = layer.name
@@ -763,7 +809,7 @@ fun OfflineMapsScreen(
                         enabled = !sharedLayersLoading,
                         contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
                     ) {
-                        Icon(Icons.Default.Refresh, null, modifier = Modifier.size(14.dp))
+                        Icon(Icons.Default.Refresh, contentDescription = "Osvježi", modifier = Modifier.size(14.dp))
                         Spacer(Modifier.size(4.dp))
                         Text("Osvježi", style = MaterialTheme.typography.labelMedium)
                     }
@@ -914,6 +960,11 @@ fun OfflineMapsScreen(
                                     onClick = { onToggleTrackVisibility(track) }
                                 )
                                 OfflineIconActionButton(icon = Icons.Default.Map, label = "Na karti", onClick = { onOpenTrack(track) })
+                                OfflineIconActionButton(
+                                    icon = Icons.Default.Terrain,
+                                    label = language.pick("Profil", "Profile"),
+                                    onClick = { profileTrack = track }
+                                )
                                 OfflineIconActionButton(icon = Icons.Default.Edit, label = "Uredi ime", onClick = {
                                     renameTarget = LayerRenameTarget(LayerRenameKind.SAVED_TRACK, track.id)
                                     renameValue = track.name
@@ -1063,7 +1114,7 @@ private fun OfflineCategorySelector(
             }
             if (selected.isEmpty()) {
                 Text(
-                    "Odaberi jednu ili više kategorija za prikaz.",
+                    "Odaberi kategorije.",
                     color = FieldMuted,
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
@@ -1105,8 +1156,8 @@ private fun OfflineCategoryTile(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(item.icon, null, modifier = Modifier.size(18.dp), tint = if (selected) item.accent else FieldMuted.copy(alpha = 0.82f))
-                if (selected) Icon(Icons.Default.CheckCircle, null, modifier = Modifier.size(15.dp), tint = item.accent)
+                Icon(item.icon, contentDescription = "Ikona", modifier = Modifier.size(18.dp), tint = if (selected) item.accent else FieldMuted.copy(alpha = 0.82f))
+                if (selected) Icon(Icons.Default.CheckCircle, contentDescription = "Potvrđeno", modifier = Modifier.size(15.dp), tint = item.accent)
             }
             Text(item.label, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold, color = if (selected) FieldInk else FieldMuted, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Text(item.count.toString(), style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, color = if (selected) item.accent else FieldMuted.copy(alpha = 0.72f), maxLines = 1)
@@ -1153,7 +1204,7 @@ private fun OfflineMapsHeroCard(
                     border = BorderStroke(1.dp, FieldGreen.copy(alpha = 0.28f))
                 ) {
                     Box(Modifier.size(52.dp), contentAlignment = Alignment.Center) {
-                        Icon(Icons.Default.Navigation, contentDescription = null, tint = FieldGreen, modifier = Modifier.size(28.dp))
+                        Icon(Icons.Default.Navigation, contentDescription = "Navigacija", tint = FieldGreen, modifier = Modifier.size(28.dp))
                     }
                 }
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
@@ -1183,6 +1234,9 @@ private fun OfflineQuickActionsCard(
     visibleOverlayCount: Int,
     onHideAll: () -> Unit,
     onOpenFolder: () -> Unit,
+    onConnectFolder: () -> Unit,
+    onRescanLinkedFolder: () -> Unit,
+    linkedFolderLabel: String,
     onImport: () -> Unit
 ) {
     val language = LocalAppLanguage.current
@@ -1213,12 +1267,16 @@ private fun OfflineQuickActionsCard(
                     contentColor = Color.White
                 )
             ) {
-                Icon(Icons.Default.UploadFile, null, modifier = Modifier.size(16.dp))
+                Icon(Icons.Default.UploadFile, contentDescription = "Uvoz datoteke", modifier = Modifier.size(16.dp))
                 Spacer(Modifier.size(6.dp))
                 Text(language.pick("Import karte / layera", "Import map / layer"), fontWeight = FontWeight.SemiBold)
             }
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                OfflineWideActionChip(icon = Icons.Default.FolderOpen, label = "Folder", onClick = onOpenFolder, modifier = Modifier.weight(1f))
+                OfflineWideActionChip(icon = Icons.Default.FolderOpen, label = "Poveži SOV folder", onClick = onConnectFolder, modifier = Modifier.weight(1f))
+                OfflineWideActionChip(icon = Icons.Default.Refresh, label = "Osvježi", onClick = onRescanLinkedFolder, modifier = Modifier.weight(1f))
+            }
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                OfflineWideActionChip(icon = Icons.Default.OpenInNew, label = "Otvori folder", onClick = onOpenFolder, modifier = Modifier.weight(1f))
                 OfflineWideActionChip(
                     icon = Icons.Default.VisibilityOff,
                     label = if (visibleOverlayCount > 0) language.pick("Sakrij sve", "Hide all") else language.pick("Sve sakriveno", "All hidden"),
@@ -1227,7 +1285,7 @@ private fun OfflineQuickActionsCard(
                 )
             }
             Text(
-                "Download/SOV/Offline  ·  maps  ·  mbtiles  ·  gpx  ·  kml  ·  photos  ·  geojson/xml/tables",
+                linkedFolderLabel + " · Download/SOV/Offline",
                 style = MaterialTheme.typography.labelMedium,
                 color = FieldMuted,
                 maxLines = 1,
@@ -1338,7 +1396,7 @@ fun OfflineStorageCard(
                     ) {
                         Icon(
                             imageVector = leadingIcon,
-                            contentDescription = null,
+                            contentDescription = "Akcija sloja",
                             tint = leadingTint,
                             modifier = Modifier.size(22.dp)
                         )
@@ -1417,7 +1475,7 @@ fun OfflineInfoChip(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            Icon(icon, contentDescription = null, modifier = Modifier.size(14.dp), tint = FieldAmber)
+            Icon(icon, contentDescription = "Ikona", modifier = Modifier.size(14.dp), tint = FieldAmber)
             Text(
                 text = text,
                 style = MaterialTheme.typography.labelMedium,
@@ -1542,7 +1600,7 @@ fun OfflineSectionCard(
                 border = BorderStroke(1.dp, accent.copy(alpha = 0.24f))
             ) {
                 Box(Modifier.size(38.dp), contentAlignment = Alignment.Center) {
-                    Icon(icon, contentDescription = null, tint = accent, modifier = Modifier.size(21.dp))
+                    Icon(icon, contentDescription = "Ikona", tint = accent, modifier = Modifier.size(21.dp))
                 }
             }
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(1.dp)) {

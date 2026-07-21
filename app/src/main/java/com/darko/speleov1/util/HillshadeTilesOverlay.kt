@@ -17,7 +17,6 @@ import java.io.File
 import java.io.FileOutputStream
 import java.util.Collections
 import java.util.concurrent.Executors
-import java.util.concurrent.atomic.AtomicLong
 import kotlin.math.atan
 import kotlin.math.cos
 import kotlin.math.floor
@@ -217,7 +216,7 @@ class HillshadeTilesOverlay(
         executor.execute {
             try {
                 readDiskTile(key)?.let { bitmap ->
-                    putMemoryTile(key, bitmap)
+                    putMemoryTile(key, WmsTileImageCache.toHardware(bitmap))
                     if (!prefetchOnly) requestMapRedraw(mapView)
                     return@execute
                 }
@@ -225,8 +224,8 @@ class HillshadeTilesOverlay(
                 for (urlText in hillshadeUrls(z, x, y)) {
                     val bitmap = downloadHillshade(urlText) ?: continue
                     val processed = bitmap.toShadowOnlyBitmap(maxShadowAlpha)
-                    putMemoryTile(key, processed)
                     writeDiskTile(key, processed)
+                    putMemoryTile(key, WmsTileImageCache.toHardware(processed))
                     if (!prefetchOnly) requestMapRedraw(mapView)
                     return@execute
                 }
@@ -353,7 +352,6 @@ class HillshadeTilesOverlay(
             override fun sizeOf(key: String, value: Bitmap): Int = value.byteCount
         }
         private val pending = Collections.synchronizedSet(mutableSetOf<String>())
-        private val lastInvalidateAt = AtomicLong(0L)
         private val executor = Executors.newFixedThreadPool(2) { runnable ->
             Thread(runnable, "sov-hillshade-cache").apply { isDaemon = true }
         }
@@ -367,12 +365,9 @@ class HillshadeTilesOverlay(
         private fun cacheKey(alpha: Int, z: Int, x: Int, y: Int): String = "a${alpha}/z${z}/x${x}/y${y}"
 
         private fun requestMapRedraw(mapView: MapView) {
-            val now = System.currentTimeMillis()
-            val previous = lastInvalidateAt.get()
-            if (now - previous >= 120L && lastInvalidateAt.compareAndSet(previous, now)) {
-                mapView.postInvalidate()
-            }
+            MapInvalidateCoalescer.requestInvalidate(mapView)
         }
+
 
         private fun hillshadeUrls(z: Int, x: Int, y: Int): List<String> = listOf(
             "https://server.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade/MapServer/tile/$z/$y/$x",

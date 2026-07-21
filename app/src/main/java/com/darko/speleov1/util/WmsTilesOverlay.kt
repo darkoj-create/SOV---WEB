@@ -217,7 +217,7 @@ class WmsTilesOverlay(
                 val cacheFile = WmsPerformanceCache.overlayCacheFile(appContext, sourceKey, z, x, y, fileExtension)
                 val cached = WmsTileImageCache.decodeCachedBitmap(cacheFile, Bitmap.Config.ARGB_8888, rejectMostlyBlack = true)
                 if (cached != null) {
-                    memoryCache.put(key, cached)
+                    memoryCache.put(key, WmsTileImageCache.toHardware(cached))
                     if (!prefetchOnly) requestRedraw(mapView)
                     return@execute
                 }
@@ -234,7 +234,7 @@ class WmsTilesOverlay(
                     WmsTilePerfLog.log("overlay", z, result.ttfbMs, result.bodyMs, bytes.size)
                     WmsTileImageCache.decodeBytes(bytes, Bitmap.Config.ARGB_8888, rejectMostlyBlack = true)?.let { bitmap ->
                         WmsTileImageCache.writeCacheFile(cacheFile, bytes)
-                        memoryCache.put(key, bitmap)
+                        memoryCache.put(key, WmsTileImageCache.toHardware(bitmap))
                         if (!prefetchOnly) requestRedraw(mapView)
                     }
                 }
@@ -249,13 +249,10 @@ class WmsTilesOverlay(
     companion object {
         private const val PREFETCH_MARGIN_TILES = 1
         private const val MAX_PREFETCH_TILES = 6
-        private const val MIN_REDRAW_INTERVAL_MS = 80L
         private val memoryCache = object : LruCache<String, Bitmap>(18 * 1024 * 1024) {
             override fun sizeOf(key: String, value: Bitmap): Int = value.byteCount
         }
         private val pending = Collections.synchronizedSet(mutableSetOf<String>())
-        @Volatile private var lastRedrawAtMs: Long = 0L
-        @Volatile private var redrawScheduled: Boolean = false
         private val visibleExecutor = Executors.newFixedThreadPool(2) { runnable ->
             Thread(runnable, "sov-wms-overlay").apply { isDaemon = true }
         }
@@ -282,21 +279,9 @@ class WmsTilesOverlay(
         }
 
         private fun requestRedraw(mapView: MapView) {
-            val now = System.currentTimeMillis()
-            val elapsed = now - lastRedrawAtMs
-            if (elapsed >= MIN_REDRAW_INTERVAL_MS) {
-                lastRedrawAtMs = now
-                mapView.postInvalidate()
-                return
-            }
-            if (redrawScheduled) return
-            redrawScheduled = true
-            mapView.postDelayed({
-                redrawScheduled = false
-                lastRedrawAtMs = System.currentTimeMillis()
-                mapView.invalidate()
-            }, (MIN_REDRAW_INTERVAL_MS - elapsed).coerceAtLeast(16L))
+            MapInvalidateCoalescer.requestInvalidate(mapView)
         }
+
 
         private fun lonToTileXDouble(lon: Double, z: Int): Double {
             val n = 2.0.pow(z.toDouble()).coerceAtLeast(1.0)

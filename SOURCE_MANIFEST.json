@@ -1,0 +1,46 @@
+{
+  "versionCode": 900154,
+  "versionName": "1.4.55a-offline-nacrti-v3",
+  "baseline": "1.4.54a-dem-track-profile",
+  "drawingPhysicalCount": 1096,
+  "drawingIndexCount": 1096,
+  "drawingGroups": 886,
+  "matcherVersion": "v3",
+  "assigned": 782,
+  "review": 41,
+  "unmatched": 63,
+  "keyFiles": {
+    "app/build.gradle.kts": {
+      "sizeBytes": 3742,
+      "sha256": "f7e776bbe829ede34601d32b576d1bf3ee0a7f458558c7af64754683559684cd"
+    },
+    "app/src/main/assets/baza_velebit_2026_android_v2.json.gz": {
+      "sizeBytes": 500221,
+      "sha256": "53fd07ee74c2e9d8493064d4d27f634dfb016302a3b5c114acf2e0e168b49c53"
+    },
+    "app/src/main/assets/katastar_crospeleo_2026_android_v1.json.gz": {
+      "sizeBytes": 4823647,
+      "sha256": "7b9443709c5dbe1d97c4f81c042b5e1564c6faded9f2e325b6287cbf25f5c24c"
+    },
+    "app/src/main/assets/nacrti_bundled/index.json": {
+      "sizeBytes": 476509,
+      "sha256": "7a5a285c7b7212ff12db032d640ae15120798f72916078c5d6953ddb454e8856"
+    },
+    "app/src/main/java/com/darko/speleov1/util/DriveDrawingsRepository.kt": {
+      "sizeBytes": 44385,
+      "sha256": "c52a05658716db82219c8260c8990fdc8bf32d5b87360d10a26fc21ce303c274"
+    },
+    "app/src/main/java/com/darko/speleov1/RecordDetailFeature.kt": {
+      "sizeBytes": 98614,
+      "sha256": "fdf4feef91c7aa385370d35648c29bb4981dd199e05f575110939c415e72b534"
+    },
+    "app/src/main/java/com/darko/speleov1/nacrt/NacrtZipParser.kt": {
+      "sizeBytes": 2685,
+      "sha256": "509711e3c0198122730c757db72ce917ee5b86f4e0ebc5ab4e10148b387394f5"
+    },
+    "app/src/main/java/com/darko/speleov1/nacrt/TdrParser.kt": {
+      "sizeBytes": 5566,
+      "sha256": "f6dba619f1adc7c56b85034848b524fa9972f36d9ddefbc7fd02f7354c12273f"
+    }
+  }
+}

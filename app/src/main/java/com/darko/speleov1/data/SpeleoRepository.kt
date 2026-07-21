@@ -13,7 +13,7 @@ class SpeleoRepository(private val context: Context) {
     private val gson: Gson by lazy(LazyThreadSafetyMode.PUBLICATION) { Gson() }
 
     fun loadDataset(assetName: String = DEFAULT_DATASET_ASSET_GZ): DatasetEnvelope {
-        cachedDataset?.let { return it }
+        cachedDatasets[assetName]?.let { return it }
 
         val candidates = datasetAssetCandidates(assetName)
         var lastError: Throwable? = null
@@ -25,7 +25,7 @@ class SpeleoRepository(private val context: Context) {
                 }
             }
             if (result.isSuccess) {
-                return result.getOrThrow().also { cachedDataset = it }
+                return result.getOrThrow().also { cachedDatasets[assetName] = it }
             }
             lastError = result.exceptionOrNull()
         }
@@ -35,10 +35,12 @@ class SpeleoRepository(private val context: Context) {
         }.getOrDefault("unknown")
 
         throw IllegalStateException(
-            "Ne mogu učitati SOV bazu. Pokušano: ${candidates.joinToString()}. Assets: $availableAssets",
+            "Ne mogu učitati bazu. Pokušano: ${candidates.joinToString()}. Assets: $availableAssets",
             lastError
         )
     }
+
+    fun loadKatastarDataset(): DatasetEnvelope = loadDataset(KATASTAR_DATASET_ASSET_GZ)
 
     private fun readDatasetFromAssetStream(
         raw: java.io.InputStream,
@@ -70,18 +72,20 @@ class SpeleoRepository(private val context: Context) {
             } else {
                 add("$assetName.gz")
             }
-            add(DEFAULT_DATASET_ASSET_GZ)
-            add(DEFAULT_DATASET_ASSET_JSON)
+            if (assetName == DEFAULT_DATASET_ASSET_GZ || assetName == DEFAULT_DATASET_ASSET_JSON) {
+                add(DEFAULT_DATASET_ASSET_GZ)
+                add(DEFAULT_DATASET_ASSET_JSON)
+            }
         }.distinct()
     }
 
     companion object {
         private const val DEFAULT_DATASET_ASSET_JSON = "baza_velebit_2026_android_v2.json"
         private const val DEFAULT_DATASET_ASSET_GZ = "baza_velebit_2026_android_v2.json.gz"
+        private const val KATASTAR_DATASET_ASSET_GZ = "katastar_crospeleo_2026_android_v1.json.gz"
         private const val GZIP_MAGIC_1 = 0x1f
         private const val GZIP_MAGIC_2 = 0x8b
 
-        @Volatile
-        private var cachedDataset: DatasetEnvelope? = null
+        private val cachedDatasets = java.util.concurrent.ConcurrentHashMap<String, DatasetEnvelope>()
     }
 }

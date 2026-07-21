@@ -214,7 +214,7 @@ enum class AppTab { HOME, SEARCH, MAP, CLOUD, TOOLS, SETTINGS, LOGIN, CALCULATOR
 
 enum class MapOrientationMode { NORTH_UP, HEADING_UP, STATIC }
 
-data class TrackPoint(val point: GeoPoint, val altitudeM: Double?)
+data class TrackPoint(val point: GeoPoint, val altitudeM: Double?, val demAltitudeM: Double? = null)
 
 data class MarkedPoint(
     val id: String,

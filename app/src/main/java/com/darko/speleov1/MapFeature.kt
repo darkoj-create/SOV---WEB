@@ -104,6 +104,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
@@ -169,6 +170,7 @@ import com.darko.speleov1.model.SpeleoRecord
 import com.darko.speleov1.model.SourceFilter
 import com.darko.speleov1.ui.theme.SpeleoTheme
 import com.darko.speleov1.util.CoordinateConverter
+import com.darko.speleov1.util.ElevationRepository
 import com.darko.speleov1.util.KmlExporter
 import com.darko.speleov1.util.LocationHelper
 import com.darko.speleov1.util.LocalTileOverlay
@@ -477,6 +479,7 @@ fun MapTabScreen(
     var downloadProgress by rememberSaveable { mutableFloatStateOf(0f) }
     var downloadProgressLabel by rememberSaveable { mutableStateOf("Priprema downloada…") }
     var offlineMapName by rememberSaveable { mutableStateOf("Offline ${System.currentTimeMillis()}") }
+    var includeDemInOfflineDownload by rememberSaveable { mutableStateOf(true) }
     var showToolsSheet by rememberSaveable { mutableStateOf(false) }
     var showSearchSheet by rememberSaveable { mutableStateOf(false) }
     var showFieldTeamSheet by rememberSaveable { mutableStateOf(false) }
@@ -525,6 +528,8 @@ fun MapTabScreen(
     var uiHideLevel by rememberSaveable { mutableIntStateOf(0) }
     var leftToolbarOpen by rememberSaveable { mutableStateOf(false) }
     var pendingLongPressPoint by remember { mutableStateOf<GeoPoint?>(null) }
+    var pendingLongPressElevationLabel by remember { mutableStateOf<String?>(null) }
+    val elevationRepository = remember(context) { ElevationRepository(context) }
     var showManualCoordDialog by remember { mutableStateOf(false) }
     var showOrientationDialog by rememberSaveable { mutableStateOf(false) }
     var pendingMapToolAction by rememberSaveable { mutableStateOf<String?>(null) }
@@ -830,7 +835,7 @@ fun MapTabScreen(
                     else -> "Ruler mode"
                 },
                 body = when {
-                    selectingOfflineArea -> if (selectedAreaPoints.isEmpty()) "Tapni prvi kut područja. Alati su zaključani dok ne završiš ili odustaneš." else "Tapni drugi kut područja."
+                    selectingOfflineArea -> if (selectedAreaPoints.isEmpty()) "Tapni prvi kut područja." else "Tapni drugi kut područja."
                     drawingModeEnabled -> "Crtanje je aktivno. Karta se neće slučajno pomicati kao običan pan."
                     rulerStartPoint == null -> "Tapni početnu točku mjerenja."
                     rulerEndPoint == null -> "Tapni završnu točku mjerenja."
@@ -1298,29 +1303,45 @@ fun MapTabScreen(
     }
 
 
+    LaunchedEffect(pendingLongPressPoint, language) {
+        val point = pendingLongPressPoint
+        if (point == null) {
+            pendingLongPressElevationLabel = null
+            return@LaunchedEffect
+        }
+        pendingLongPressElevationLabel = language.pick("Visina: učitavam…", "Elevation: loading…")
+        val elevation = elevationRepository.elevationAt(point.latitude, point.longitude)
+        pendingLongPressElevationLabel = if (elevation != null) {
+            language.pick("Visina: ${elevation.roundToInt()} m", "Elevation: ${elevation.roundToInt()} m")
+        } else {
+            language.pick("Visina: — (offline)", "Elevation: — (offline)")
+        }
+    }
+
     pendingLongPressPoint?.let { point ->
         AlertDialog(
             onDismissRequest = { pendingLongPressPoint = null },
             title = { Text("Waypoint") },
             text = {
                 Text(
-                    text = "Dodaj waypoint na ovoj lokaciji?\n" +
-                        String.format(Locale.US, "%.6f, %.6f", point.latitude, point.longitude)
+                    text = "${language.pick("Dodaj waypoint na ovoj lokaciji?", "Add waypoint at this location?")}\n" +
+                        String.format(Locale.US, "%.6f, %.6f", point.latitude, point.longitude) +
+                        "\n" + (pendingLongPressElevationLabel ?: language.pick("Visina: učitavam…", "Elevation: loading…"))
                 )
             },
             confirmButton = {
                 TextButton(onClick = {
                     onMarkPositionAtPoint(point)
                     pendingLongPressPoint = null
-                }) { Text("Add waypoint") }
+                }) { Text(language.pick("Dodaj waypoint", "Add waypoint")) }
             },
             dismissButton = {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     TextButton(onClick = {
                         pendingLongPressPoint = null
                         showManualCoordDialog = true
-                    }) { Text("Izmijeni koordinate") }
-                    TextButton(onClick = { pendingLongPressPoint = null }) { Text("Odustani") }
+                    }) { Text(language.pick("Izmijeni koordinate", "Edit coordinates")) }
+                    TextButton(onClick = { pendingLongPressPoint = null }) { Text(language.pick("Odustani", "Cancel")) }
                 }
             }
         )
@@ -1438,7 +1459,7 @@ fun MapTabScreen(
                     Column(modifier = Modifier.weight(1f)) {
                         Text("Članovi teama na karti", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                         Text(
-                            "Odaberi teren/team i app će na karti prikazati zadnje poznate pozicije i trailove.",
+                            "Odaberi teren/ekipu.",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -1470,7 +1491,7 @@ fun MapTabScreen(
                         Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                             Text("Nema dostupnih terena", fontWeight = FontWeight.Bold)
                             Text(
-                                "Otvori teren na webu ili se pridruži kodom, zatim pokreni tracking. Nakon prve točke team će se pojaviti ovdje.",
+                                "Pokreni tracking da se ekipa prikaže.",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -1493,7 +1514,7 @@ fun MapTabScreen(
                         ) {
                             Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
                                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                    Icon(Icons.Default.TravelExplore, contentDescription = null, tint = if (selected) Color(0xFF6EE7A2) else MaterialTheme.colorScheme.primary)
+                                    Icon(Icons.Default.TravelExplore, contentDescription = "Ikona", tint = if (selected) Color(0xFF6EE7A2) else MaterialTheme.colorScheme.primary)
                                     Text(event.title.ifBlank { "Teren" }, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
                                 }
                                 Text(
@@ -1652,7 +1673,7 @@ fun MapTabScreen(
 
                     if (fieldTeamPositions.isEmpty() && !fieldTeamBusy) {
                         Text(
-                            "Još nema poslanih lokacija za ovaj teren. Čim netko pokrene tracking i pošalje prvu točku, pojavit će se marker na karti.",
+                            "Još nema lokacija.",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -1686,7 +1707,7 @@ fun MapTabScreen(
                     }
 
                     Text(
-                        "SOV Field Tracking je pomoćni alat. Prikazane su zadnje poznate pozicije i mogu kasniti zbog GPS-a, baterije ili mobilne mreže.",
+                        "Pozicije mogu kasniti.",
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -1707,7 +1728,7 @@ fun MapTabScreen(
             ) {
                 Text(language.pick("Alati karte", "Map tools"), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                 Text(
-                    language.pick("Čisti map-first UX: osnovne radnje su pri ruci, a invazivni modovi se pale samo nakon potvrde.", "Clean map-first UX: core actions stay close, and intrusive modes only start after confirmation."),
+                    language.pick("Karta je glavni ekran.", "Map first."),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -1780,6 +1801,7 @@ fun MapTabScreen(
         val basicSpec = OfflineTileManager.OfflineAreaSpec(minLat, maxLat, minLon, maxLon, 8, 12)
         val terrainSpec = OfflineTileManager.OfflineAreaSpec(minLat, maxLat, minLon, maxLon, 8, 14)
         val detailSpec = OfflineTileManager.OfflineAreaSpec(minLat, maxLat, minLon, maxLon, 9, 15)
+        val demSpec = OfflineTileManager.OfflineAreaSpec(minLat, maxLat, minLon, maxLon, 9, 13)
         val estimateOfflineSizeText: (OfflineTileManager.OfflineAreaSpec) -> String = { spec ->
             val tiles = OfflineTileManager.estimateTiles(spec).coerceAtLeast(0)
             val estimatedBytes = tiles.toLong() * 45L * 1024L
@@ -1790,12 +1812,100 @@ fun MapTabScreen(
                 else -> "≈ 0 MB"
             }
         }
+        val estimateBytesText: (Long) -> String = { estimatedBytes ->
+            when {
+                estimatedBytes >= 1024L * 1024L * 1024L -> "≈ ${java.lang.String.format(Locale.US, "%.1f", estimatedBytes / 1024.0 / 1024.0 / 1024.0)} GB"
+                estimatedBytes >= 1024L * 1024L -> "≈ ${(estimatedBytes / 1024L / 1024L).coerceAtLeast(1L)} MB"
+                estimatedBytes > 0L -> "≈ ${(estimatedBytes / 1024L).coerceAtLeast(1L)} KB"
+                else -> "≈ 0 MB"
+            }
+        }
+        val demTileEstimate = OfflineTileManager.estimateDemTiles(demSpec)
+        val demSizeEstimate = estimateBytesText(OfflineTileManager.estimateDemBytes(demSpec))
         val downloadSourceMode = offlineDownloadSourceMode ?: when (selectedMode) {
             MapLayerMode.HGSS_SIGURNE_STAZE, MapLayerMode.HGSS_OSM_TEST -> MapLayerMode.HGSS_OSM_TEST
             else -> effectiveMode
         }
         val downloadSourceIsHgss = downloadSourceMode == MapLayerMode.HGSS_SIGURNE_STAZE || downloadSourceMode == MapLayerMode.HGSS_OSM_TEST
         val downloadSourceLabel = if (downloadSourceIsHgss) "HGSS SigurneStaze" else "trenutni WMS sloj"
+        val startOfflineDownload: (OfflineTileManager.OfflineAreaSpec, String) -> Unit = { spec, detailLabel ->
+            downloadBusy = true
+            downloadProgress = 0f
+            downloadProgressLabel = language.pick("Pripremam offline kartu…", "Preparing offline map…")
+            val mapName = OfflineTileManager.sanitizeMapName(offlineMapName)
+            selectedAreaPoints = emptyList()
+            scope.launch {
+                val mapResult = if (downloadSourceIsHgss) {
+                    OfflineTileManager.downloadHgssOsmArea(
+                        context = context,
+                        spec = spec,
+                        mapName = mapName,
+                        onProgress = { done, total, zoom ->
+                            downloadProgress = done.toFloat() / total.coerceAtLeast(1).toFloat()
+                            downloadProgressLabel = language.pick("Skidam HGSS offline kartu… z$zoom ($done/$total)", "Downloading HGSS offline map… z$zoom ($done/$total)")
+                        }
+                    )
+                } else {
+                    OfflineTileManager.downloadWmsArea(
+                        context = context,
+                        config = wmsConfig,
+                        spec = spec,
+                        mapName = mapName,
+                        onProgress = { done, total, zoom ->
+                            downloadProgress = done.toFloat() / total.coerceAtLeast(1).toFloat()
+                            downloadProgressLabel = language.pick("Skidam offline kartu… z$zoom ($done/$total)", "Downloading offline map… z$zoom ($done/$total)")
+                        }
+                    )
+                }
+                if (mapResult.isFailure) {
+                    downloadBusy = false
+                    downloadMessage = language.pick("Download nije uspio: ${mapResult.exceptionOrNull()?.message}", "Download failed: ${mapResult.exceptionOrNull()?.message}")
+                    return@launch
+                }
+
+                val mapCounts = mapResult.getOrNull() ?: (0 to 0)
+                var demCounts: Pair<Int, Int>? = null
+                var demError: Throwable? = null
+                if (includeDemInOfflineDownload) {
+                    downloadProgress = 0f
+                    downloadProgressLabel = language.pick("Skidam DEM visine…", "Downloading DEM elevations…")
+                    val demResult = OfflineTileManager.downloadDemArea(
+                        context = context,
+                        spec = demSpec,
+                        mapName = mapName,
+                        onProgress = { done, total, zoom ->
+                            downloadProgress = done.toFloat() / total.coerceAtLeast(1).toFloat()
+                            downloadProgressLabel = language.pick("Skidam DEM visine… z$zoom ($done/$total)", "Downloading DEM elevations… z$zoom ($done/$total)")
+                        }
+                    )
+                    demCounts = demResult.getOrNull()
+                    demError = demResult.exceptionOrNull()
+                }
+
+                downloadBusy = false
+                MapLayerPrefs.setMode(context, MapLayerMode.OFFLINE)
+                localMapLayerVersion++
+                downloadProgress = 1f
+                downloadProgressLabel = language.pick("Offline karta spremljena", "Offline map saved")
+                val center = GeoPoint((spec.minLat + spec.maxLat) / 2.0, (spec.minLon + spec.maxLon) / 2.0)
+                val targetZoom = (spec.minZoom + 1).toDouble()
+                onOfflineDownloaded(center, targetZoom)
+                downloadMessage = when {
+                    demError != null -> language.pick(
+                        "Offline spremljeno '$mapName' ($detailLabel): ${mapCounts.first} novih, ${mapCounts.second} preskočenih tileova. DEM nije skinut: ${demError.message}",
+                        "Offline saved '$mapName' ($detailLabel): ${mapCounts.first} new, ${mapCounts.second} skipped tiles. DEM failed: ${demError.message}"
+                    )
+                    demCounts != null -> language.pick(
+                        "Offline spremljeno '$mapName' ($detailLabel): ${mapCounts.first} karta + ${demCounts.first} DEM novih.",
+                        "Offline saved '$mapName' ($detailLabel): ${mapCounts.first} map + ${demCounts.first} DEM new."
+                    )
+                    else -> language.pick(
+                        "Offline spremljeno '$mapName' ($detailLabel): ${mapCounts.first} novih, ${mapCounts.second} preskočenih tileova.",
+                        "Offline saved '$mapName' ($detailLabel): ${mapCounts.first} new, ${mapCounts.second} skipped tiles."
+                    )
+                }
+            }
+        }
         AlertDialog(
             onDismissRequest = {
                 selectedAreaPoints = emptyList()
@@ -1810,12 +1920,38 @@ fun MapTabScreen(
                         modifier = Modifier.fillMaxWidth(),
                         label = { Text("Naziv offline karte") }
                     )
-                    Text("Odabrao si 2 kuta područja. Izvor karte: $downloadSourceLabel. Izaberi detaljnost downloada.")
+                    Text("Odaberi detaljnost karte.")
+                    Text(
+                        language.pick("Izvor karte: $downloadSourceLabel", "Map source: $downloadSourceLabel"),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                     Text("Osnovno: z8–12 (${OfflineTileManager.estimateTiles(basicSpec)} tileova • ${estimateOfflineSizeText(basicSpec)})")
                     Text("Teren: z8–14 (${OfflineTileManager.estimateTiles(terrainSpec)} tileova • ${estimateOfflineSizeText(terrainSpec)})")
                     Text("Detaljno: z9–15 (${OfflineTileManager.estimateTiles(detailSpec)} tileova • ${estimateOfflineSizeText(detailSpec)})")
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Checkbox(
+                            checked = includeDemInOfflineDownload,
+                            onCheckedChange = { includeDemInOfflineDownload = it }
+                        )
+                        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                            Text(language.pick("Visine (DEM)", "Elevations (DEM)"), fontWeight = FontWeight.SemiBold)
+                            Text(
+                                language.pick(
+                                    "z9–13 • $demTileEstimate tileova • $demSizeEstimate • za visinu na tap/offline",
+                                    "z9–13 • $demTileEstimate tiles • $demSizeEstimate • for tap/offline elevation"
+                                ),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
                     Text(
-                        "Savjet: za veće područje koristi Osnovno ili Teren. Prevelik odabir će app odbiti.",
+                        "Za veće područje koristi Osnovno.",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -1823,144 +1959,9 @@ fun MapTabScreen(
             },
             confirmButton = {
                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                    TextButton(onClick = {
-                        downloadBusy = true
-                        downloadProgress = 0f
-                        downloadProgressLabel = "Pripremam offline kartu…"
-                        val spec = basicSpec
-                        val mapName = OfflineTileManager.sanitizeMapName(offlineMapName)
-                        selectedAreaPoints = emptyList()
-                        scope.launch {
-                            val result = if (downloadSourceIsHgss) {
-                                OfflineTileManager.downloadHgssOsmArea(
-                                    context = context,
-                                    spec = spec,
-                                    mapName = mapName,
-                                    onProgress = { done, total, zoom ->
-                                        downloadProgress = done.toFloat() / total.coerceAtLeast(1).toFloat()
-                                        downloadProgressLabel = "Skidam HGSS offline kartu… z$zoom ($done/$total)"
-                                    }
-                                )
-                            } else {
-                                OfflineTileManager.downloadWmsArea(
-                                    context = context,
-                                    config = wmsConfig,
-                                    spec = spec,
-                                    mapName = mapName,
-                                    onProgress = { done, total, zoom ->
-                                        downloadProgress = done.toFloat() / total.coerceAtLeast(1).toFloat()
-                                        downloadProgressLabel = "Skidam offline kartu… z$zoom ($done/$total)"
-                                    }
-                                )
-                            }
-                            downloadBusy = false
-                            MapLayerPrefs.setMode(context, MapLayerMode.OFFLINE)
-                            localMapLayerVersion++
-                            result.fold(
-                                onSuccess = {
-                                    downloadProgress = 1f
-                                    downloadProgressLabel = "Offline karta spremljena"
-                                    val center = GeoPoint((spec.minLat + spec.maxLat) / 2.0, (spec.minLon + spec.maxLon) / 2.0)
-                                    val targetZoom = (spec.minZoom + 1).toDouble()
-                                    onOfflineDownloaded(center, targetZoom)
-                                    downloadMessage = "Offline spremljeno '$mapName': ${it.first} novih, ${it.second} preskočenih tileova."
-                                },
-                                onFailure = { downloadMessage = "Download nije uspio: ${it.message}" }
-                            )
-                        }
-                    }) { Text("Osnovno") }
-                    TextButton(onClick = {
-                        downloadBusy = true
-                        downloadProgress = 0f
-                        downloadProgressLabel = "Pripremam offline kartu…"
-                        val spec = terrainSpec
-                        val mapName = OfflineTileManager.sanitizeMapName(offlineMapName)
-                        selectedAreaPoints = emptyList()
-                        scope.launch {
-                            val result = if (downloadSourceIsHgss) {
-                                OfflineTileManager.downloadHgssOsmArea(
-                                    context = context,
-                                    spec = spec,
-                                    mapName = mapName,
-                                    onProgress = { done, total, zoom ->
-                                        downloadProgress = done.toFloat() / total.coerceAtLeast(1).toFloat()
-                                        downloadProgressLabel = "Skidam HGSS offline kartu… z$zoom ($done/$total)"
-                                    }
-                                )
-                            } else {
-                                OfflineTileManager.downloadWmsArea(
-                                    context = context,
-                                    config = wmsConfig,
-                                    spec = spec,
-                                    mapName = mapName,
-                                    onProgress = { done, total, zoom ->
-                                        downloadProgress = done.toFloat() / total.coerceAtLeast(1).toFloat()
-                                        downloadProgressLabel = "Skidam offline kartu… z$zoom ($done/$total)"
-                                    }
-                                )
-                            }
-                            downloadBusy = false
-                            MapLayerPrefs.setMode(context, MapLayerMode.OFFLINE)
-                            localMapLayerVersion++
-                            result.fold(
-                                onSuccess = {
-                                    downloadProgress = 1f
-                                    downloadProgressLabel = "Offline karta spremljena"
-                                    val center = GeoPoint((spec.minLat + spec.maxLat) / 2.0, (spec.minLon + spec.maxLon) / 2.0)
-                                    val targetZoom = (spec.minZoom + 1).toDouble()
-                                    onOfflineDownloaded(center, targetZoom)
-                                    downloadMessage = "Offline spremljeno '$mapName': ${it.first} novih, ${it.second} preskočenih tileova."
-                                },
-                                onFailure = { downloadMessage = "Download nije uspio: ${it.message}" }
-                            )
-                        }
-                    }) { Text("Teren") }
-                    TextButton(onClick = {
-                        downloadBusy = true
-                        downloadProgress = 0f
-                        downloadProgressLabel = "Pripremam offline kartu…"
-                        val spec = detailSpec
-                        val mapName = OfflineTileManager.sanitizeMapName(offlineMapName)
-                        selectedAreaPoints = emptyList()
-                        scope.launch {
-                            val result = if (downloadSourceIsHgss) {
-                                OfflineTileManager.downloadHgssOsmArea(
-                                    context = context,
-                                    spec = spec,
-                                    mapName = mapName,
-                                    onProgress = { done, total, zoom ->
-                                        downloadProgress = done.toFloat() / total.coerceAtLeast(1).toFloat()
-                                        downloadProgressLabel = "Skidam HGSS offline kartu… z$zoom ($done/$total)"
-                                    }
-                                )
-                            } else {
-                                OfflineTileManager.downloadWmsArea(
-                                    context = context,
-                                    config = wmsConfig,
-                                    spec = spec,
-                                    mapName = mapName,
-                                    onProgress = { done, total, zoom ->
-                                        downloadProgress = done.toFloat() / total.coerceAtLeast(1).toFloat()
-                                        downloadProgressLabel = "Skidam offline kartu… z$zoom ($done/$total)"
-                                    }
-                                )
-                            }
-                            downloadBusy = false
-                            MapLayerPrefs.setMode(context, MapLayerMode.OFFLINE)
-                            localMapLayerVersion++
-                            result.fold(
-                                onSuccess = {
-                                    downloadProgress = 1f
-                                    downloadProgressLabel = "Offline karta spremljena"
-                                    val center = GeoPoint((spec.minLat + spec.maxLat) / 2.0, (spec.minLon + spec.maxLon) / 2.0)
-                                    val targetZoom = (spec.minZoom + 1).toDouble()
-                                    onOfflineDownloaded(center, targetZoom)
-                                    downloadMessage = "Offline spremljeno '$mapName': ${it.first} novih, ${it.second} preskočenih tileova."
-                                },
-                                onFailure = { downloadMessage = "Download nije uspio: ${it.message}" }
-                            )
-                        }
-                    }) { Text("Detaljno") }
+                    TextButton(onClick = { startOfflineDownload(basicSpec, language.pick("Osnovno", "Basic")) }) { Text(language.pick("Osnovno", "Basic")) }
+                    TextButton(onClick = { startOfflineDownload(terrainSpec, language.pick("Teren", "Terrain")) }) { Text(language.pick("Teren", "Terrain")) }
+                    TextButton(onClick = { startOfflineDownload(detailSpec, language.pick("Detaljno", "Detailed")) }) { Text(language.pick("Detaljno", "Detailed")) }
                 }
             },
             dismissButton = {
@@ -1980,7 +1981,7 @@ fun MapTabScreen(
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text(language.pick("Karte i slojevi", "Maps & Layers"), fontWeight = FontWeight.Bold)
                     Text(
-                        language.pick("Prvo odaberi osnovnu kartu, zatim po želji dodaj reljef ili geo sloj.", "First choose the base map, then optionally add relief or a geo overlay."),
+                        language.pick("Odaberi kartu i slojeve.", "First choose the base map, then optionally add relief or a geo overlay."),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -1996,7 +1997,7 @@ fun MapTabScreen(
                 ) {
                     MapLayerPanelSection(
                         title = language.pick("1. Osnovna karta", "1. Base map"),
-                        subtitle = language.pick("Samo jedna osnovna karta je aktivna. Ovo je podloga ispod svih objekata i trackova.", "Only one base map is active. It sits under all objects and tracks."),
+                        subtitle = language.pick("Samo jedna osnovna karta.", "Only one base map is active. It sits under all objects and tracks."),
                         icon = Icons.Default.Map,
                         accent = Color(0xFF72E0C4)
                     ) {
@@ -2073,7 +2074,7 @@ fun MapTabScreen(
 
                     MapLayerPanelSection(
                         title = language.pick("2. Poboljšanja prikaza", "2. Visual enhancements"),
-                        subtitle = language.pick("Ovi slojevi ne mijenjaju osnovnu kartu — samo je čine čitljivijom.", "These layers do not replace the base map — they only make it easier to read."),
+                        subtitle = language.pick("Ovi slojevi ne mijenjaju osnovnu kartu — samo je čine čitljivijom.", "Layers help readability."),
                         icon = Icons.Default.Visibility,
                         accent = Color(0xFFFFC46B)
                     ) {
@@ -2104,7 +2105,7 @@ fun MapTabScreen(
                                 }
                             }
                             Text(
-                                language.pick("Preporuka: 25–40% za teren. 55% koristi samo kad želiš jače naglasiti reljef.", "Recommended: 25–40% in the field. Use 55% only when you want stronger relief."),
+                                language.pick("Preporuka: 25–40%.", "Recommended: 25–40%."),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -2113,7 +2114,7 @@ fun MapTabScreen(
 
                     MapLayerPanelSection(
                         title = language.pick("3. Overlay slojevi", "3. Overlay layers"),
-                        subtitle = language.pick("Overlay ide preko osnovne karte. Koristi ga kad želiš dodatnu informaciju, npr. geologiju.", "Overlays sit above the base map. Use them when you need extra information, such as geology."),
+                        subtitle = language.pick("Sloj ide preko karte.", "Layer over map."),
                         icon = Icons.Default.Layers,
                         accent = Color(0xFFC7A7FF)
                     ) {
@@ -2144,7 +2145,7 @@ fun MapTabScreen(
                                 }
                             }
                             Text(
-                                language.pick("Preporuka: Geological Units 25–40%. SOV objekti, trackovi i GPS ostaju iznad overlaya.", "Recommended: Geological Units 25–40%. SOV objects, tracks and GPS stay above the overlay."),
+                                language.pick("Preporuka: 25–40%.", "Recommended: 25–40%."),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -2153,7 +2154,7 @@ fun MapTabScreen(
 
                     MapLayerPanelSection(
                         title = language.pick("4. Moji WMS slojevi", "4. My WMS layers"),
-                        subtitle = language.pick("Dodatni servisi koje sam dodaješ. Mogu biti osnovna karta ili overlay, ovisno o transparentnosti.", "Extra services you add yourself. They can work as a base map or an overlay depending on transparency."),
+                        subtitle = language.pick("Dodatni slojevi.", "Extra layers."),
                         icon = Icons.Default.FolderOpen,
                         accent = Color(0xFF8EC5FF)
                     ) {
@@ -2164,7 +2165,7 @@ fun MapTabScreen(
                                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.14f))
                             ) {
                                 Text(
-                                    language.pick("Nema spremljenih custom WMS slojeva.", "No custom WMS layers saved."),
+                                    language.pick("Nema spremljenih slojeva.", "No custom WMS layers saved."),
                                     modifier = Modifier.fillMaxWidth().padding(12.dp),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -2181,7 +2182,7 @@ fun MapTabScreen(
                                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                             Icon(
                                                 if (saved.config.transparent) Icons.Default.Layers else Icons.Default.Map,
-                                                contentDescription = null,
+                                                contentDescription = language.pick("WMS sloj", "WMS layer"),
                                                 tint = Color(0xFF8EC5FF),
                                                 modifier = Modifier.size(20.dp)
                                             )
@@ -2259,13 +2260,13 @@ fun MapTabScreen(
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(18.dp)
                         ) {
-                            Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Icon(Icons.Default.Add, contentDescription = "Dodaj", modifier = Modifier.size(18.dp))
                             Spacer(Modifier.width(8.dp))
                             Text(language.pick("Dodaj WMS sloj", "Add WMS layer"))
                         }
 
                         Text(
-                            language.pick("Savjet: za geologiju i posebne slojeve koristi transparentni overlay. Za potpunu kartu koristi base WMS.", "Tip: use a transparent overlay for geology and special layers. Use base WMS for a full map."),
+                            language.pick("Za geologiju koristi sloj.", "Use layer for geology."),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -2282,9 +2283,9 @@ fun MapTabScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
-                            Icon(Icons.Default.Info, contentDescription = null, tint = Color(0xFF9EE7D8), modifier = Modifier.size(20.dp))
+                            Icon(Icons.Default.Info, contentDescription = "Informacije", tint = Color(0xFF9EE7D8), modifier = Modifier.size(20.dp))
                             Text(
-                                language.pick("Layer redoslijed: osnovna karta → hillshade/geo overlay/WMS overlay → SOV objekti → trackovi/GPS.", "Layer order: base map → hillshade/geo overlay/WMS overlay → SOV objects → tracks/GPS."),
+                                language.pick("Redoslijed: karta → slojevi → objekti → trackovi.", "Order: map → layers → objects → tracks."),
                                 color = Color.White.copy(alpha = 0.74f),
                                 style = MaterialTheme.typography.bodySmall
                             )
@@ -2307,7 +2308,7 @@ fun MapTabScreen(
             title = {
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text(language.pick("Dodaj WMS sloj", "Add WMS layer"), fontWeight = FontWeight.Bold)
-                    Text(language.pick("Spremi ga kao osnovnu kartu ili transparentni overlay.", "Save it as a base map or a transparent overlay."), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(language.pick("Spremi kao kartu ili sloj.", "Save it as a base map or a transparent overlay."), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             },
             text = {
@@ -2319,7 +2320,7 @@ fun MapTabScreen(
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     Text(
-                        language.pick("Zalijepi WMS URL. Najlakše je prvo učitati layere, a zatim odabrati želiš li ga koristiti kao base kartu ili overlay preko karte.", "Paste the WMS URL. It is easiest to load layers first, then choose whether to use it as a base map or an overlay."),
+                        language.pick("Zalijepi WMS URL.", "Paste WMS URL."),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -2360,7 +2361,7 @@ fun MapTabScreen(
                                         customWmsVersion = capabilities.version.ifBlank { customWmsVersion }
                                         capabilitiesLayers = capabilities.layers
                                         capabilitiesMessage = if (capabilities.layers.isEmpty()) {
-                                            language.pick("Servis je dostupan, ali nisam našao layer s imenom. Unesi LAYERS ručno.", "The service is available, but no named layer was found. Enter LAYERS manually.")
+                                            language.pick("Unesi layer ručno.", "The service is available, but no named layer was found. Enter LAYERS manually.")
                                         } else {
                                             language.pick("Pronađeno layera: ${capabilities.layers.size}. Odaberi jedan iz liste.", "Layers found: ${capabilities.layers.size}. Choose one from the list.")
                                         }
@@ -2681,7 +2682,7 @@ internal fun OrientationModeDialog(
         title = { Text("Orijentacija karte") },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text("Kompas više ne mijenja mod slučajnim tapom. Odaberi način prikaza karte.")
+                Text("Odaberi orijentaciju karte.")
                 OrientationOptionButton("North-up", "Karta je uvijek okrenuta prema sjeveru", current == MapOrientationMode.NORTH_UP) {
                     onSelect(MapOrientationMode.NORTH_UP)
                 }
@@ -2713,7 +2714,7 @@ internal fun OrientationOptionButton(
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
             Icon(
                 imageVector = if (selected) Icons.Default.CheckCircle else Icons.Default.Navigation,
-                contentDescription = null,
+                contentDescription = if (selected) "Odabrano" else "Navigacija",
                 tint = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(20.dp)
             )
@@ -2907,7 +2908,7 @@ private fun NearMeFieldPanel(
                     modifier = Modifier.size(34.dp)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
-                        Icon(Icons.Default.Navigation, contentDescription = null, tint = Color(0xFF6EE7A2), modifier = Modifier.size(20.dp))
+                        Icon(Icons.Default.Navigation, contentDescription = "Navigacija", tint = Color(0xFF6EE7A2), modifier = Modifier.size(20.dp))
                     }
                 }
                 Column(modifier = Modifier.weight(1f)) {
@@ -2937,7 +2938,7 @@ private fun NearMeFieldPanel(
 
             if (!hasGps) {
                 Text(
-                    "Panel će se popuniti čim app dobije tvoju lokaciju.",
+                    "Čekam lokaciju.",
                     color = Color.White.copy(alpha = 0.72f),
                     fontSize = 12.sp
                 )
@@ -3000,7 +3001,7 @@ private fun NearMeResultRow(item: NearMeFieldItem, onClick: () -> Unit) {
                 Text(item.record.name, color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 13.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 Text(item.subline, color = Color.White.copy(alpha = 0.62f), fontSize = 10.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
-            Icon(Icons.Default.OpenInNew, contentDescription = null, tint = Color.White.copy(alpha = 0.62f), modifier = Modifier.size(16.dp))
+            Icon(Icons.Default.OpenInNew, contentDescription = "Otvori izvana", tint = Color.White.copy(alpha = 0.62f), modifier = Modifier.size(16.dp))
         }
     }
 }
@@ -3028,7 +3029,7 @@ private fun MapLayerPanelSection(
                     border = BorderStroke(1.dp, accent.copy(alpha = 0.24f))
                 ) {
                     Box(Modifier.size(42.dp), contentAlignment = Alignment.Center) {
-                        Icon(icon, contentDescription = null, tint = accent, modifier = Modifier.size(23.dp))
+                        Icon(icon, contentDescription = "Ikona", tint = accent, modifier = Modifier.size(23.dp))
                     }
                 }
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
@@ -3076,7 +3077,7 @@ private fun MapLayerChoiceButton(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            Icon(icon, contentDescription = null, modifier = Modifier.size(20.dp), tint = if (selected) accent else LocalContentColor.current.copy(alpha = 0.78f))
+            Icon(icon, contentDescription = "Ikona", modifier = Modifier.size(20.dp), tint = if (selected) accent else LocalContentColor.current.copy(alpha = 0.78f))
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(title, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 Text(subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2, overflow = TextOverflow.Ellipsis)
@@ -3119,7 +3120,7 @@ private fun MapLayerToggleCard(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            Icon(icon, contentDescription = null, modifier = Modifier.size(21.dp), tint = if (selected) accent else MaterialTheme.colorScheme.onSurfaceVariant)
+            Icon(icon, contentDescription = "Ikona", modifier = Modifier.size(21.dp), tint = if (selected) accent else MaterialTheme.colorScheme.onSurfaceVariant)
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(title, fontWeight = FontWeight.SemiBold)
                 Text(subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -3212,7 +3213,7 @@ private fun FieldMapTripMessagesSheet(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp)
             ) {
-                Icon(Icons.Default.MyLocation, contentDescription = null, modifier = Modifier.size(18.dp))
+                Icon(Icons.Default.MyLocation, contentDescription = "Moja lokacija", modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(8.dp))
                 Text("Pošalji moju lokaciju kao KML")
             }
@@ -3343,7 +3344,7 @@ private fun FieldTripLocationMessageCard(location: SovBroadcastLocation) {
     ) {
         Column(Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Icon(Icons.Default.LocationOn, contentDescription = null, tint = Color(0xFF6EE7A2), modifier = Modifier.size(18.dp))
+                Icon(Icons.Default.LocationOn, contentDescription = "Lokacija", tint = Color(0xFF6EE7A2), modifier = Modifier.size(18.dp))
                 Column(Modifier.weight(1f)) {
                     Text(location.label, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     Text(
@@ -3358,7 +3359,7 @@ private fun FieldTripLocationMessageCard(location: SovBroadcastLocation) {
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(16.dp))
+                Icon(Icons.Default.Share, contentDescription = "Podijeli", modifier = Modifier.size(16.dp))
                 Spacer(Modifier.width(8.dp))
                 Text("Podijeli KML")
             }
@@ -3573,13 +3574,13 @@ internal fun HudSegment(
             when {
                 arrowRotationDeg != null -> Icon(
                     imageVector = Icons.Default.Navigation,
-                    contentDescription = null,
+                    contentDescription = "Smjer",
                     tint = accent,
                     modifier = Modifier.size(16.dp).rotate(arrowRotationDeg)
                 )
                 icon != null -> Icon(
                     imageVector = icon,
-                    contentDescription = null,
+                    contentDescription = "Status",
                     tint = accent,
                     modifier = Modifier.size(16.dp)
                 )
@@ -4325,7 +4326,7 @@ fun EmptyMapHint() {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Icon(Icons.Default.Map, contentDescription = null)
+                Icon(Icons.Default.Map, contentDescription = "Karta")
                 Text("Karta je trenutno prazna", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
                 Text(
                     "Upiši ime jame, mjesto ili lokaciju na tabu Pretraga. Kad dobiješ rezultate, otvori kartu ili klikni 'Vidi na karti'. Gumb 'Moja lokacija' može te centrirati na GPS.",
@@ -4334,7 +4335,7 @@ fun EmptyMapHint() {
                 )
                 Divider(modifier = Modifier.padding(vertical = 4.dp))
                 Text(
-                    "Dugi klik na kartu = dodaj točku ili postavi navigaciju.",
+                    "Dugi klik = točka/navigacija.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontWeight = FontWeight.Medium
@@ -4346,12 +4347,12 @@ fun EmptyMapHint() {
                 ) {
                     Icon(
                         Icons.Default.MyLocation,
-                        contentDescription = null,
+                        contentDescription = "GPS lokacija",
                         modifier = Modifier.size(14.dp),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
-                        "GPS gumb = gornji desni toolbar → aktivira lokaciju i praćenje.",
+                        "GPS gumb uključuje lokaciju.",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontWeight = FontWeight.Medium

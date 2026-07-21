@@ -2,6 +2,7 @@ package com.darko.speleov1.util
 
 import android.os.SystemClock
 import android.util.Log
+import com.darko.speleov1.BuildConfig
 
 /**
  * Lagani mjerni log za WMS dohvat pločica.
@@ -21,7 +22,7 @@ import android.util.Log
  * Ostavi ENABLED = true dok mjeris na terenu, pa prebaci na false za produkciju da nema log spam-a.
  */
 internal object WmsTilePerfLog {
-    @Volatile var enabled: Boolean = true
+    @Volatile var enabled: Boolean = BuildConfig.DEBUG
 
     private const val TAG = "SOV_WMS_PERF"
 
@@ -34,7 +35,7 @@ internal object WmsTilePerfLog {
      * @param bytes  velicina pločice u bajtovima
      */
     fun log(layer: String, z: Int, tStart: Long, tHeaders: Long, tBody: Long, bytes: Int) {
-        if (!enabled) return
+        if (!enabled || !BuildConfig.DEBUG) return
         val ttfbMs = tHeaders - tStart
         val bodyMs = tBody - tHeaders
         val sizeKb = (bytes + 512) / 1024
@@ -43,7 +44,7 @@ internal object WmsTilePerfLog {
 
     /** Varijanta kad su ttfb/body vec izmjereni (npr. iz SovTileHttp.Result). */
     fun log(layer: String, z: Int, ttfbMs: Long, bodyMs: Long, bytes: Int) {
-        if (!enabled) return
+        if (!enabled || !BuildConfig.DEBUG) return
         val sizeKb = (bytes + 512) / 1024
         Log.d(TAG, "$layer z=$z ttfb=${ttfbMs}ms body=${bodyMs}ms size=${sizeKb}KB")
     }

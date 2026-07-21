@@ -9,6 +9,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.osmdroid.util.GeoPoint
 import java.io.File
+import java.util.Locale
 
 object UserContentStore {
     private const val PREFS = "user_content_store"
@@ -24,7 +25,7 @@ object UserContentStore {
     private const val MAX_PREFS_BYTES = 1_500_000 // ~1.5 MB safe limit per SharedPreferences key
     private const val MAX_TRACK_POINTS_PER_TRACK = 3000 // trim per-track before serializing
 
-    private data class TrackPointDto(val lat: Double, val lon: Double, val altitudeM: Double?)
+    private data class TrackPointDto(val lat: Double, val lon: Double, val altitudeM: Double?, val demAltitudeM: Double? = null)
     private data class MarkedPointDto(
         val id: String,
         val name: String,
@@ -107,7 +108,7 @@ object UserContentStore {
                     name = dto.name,
                     description = dto.description,
                     createdAtMillis = dto.createdAtMillis,
-                    points = dto.points.map { TrackPoint(GeoPoint(it.lat, it.lon), it.altitudeM) },
+                    points = dto.points.map { TrackPoint(GeoPoint(it.lat, it.lon), it.altitudeM, it.demAltitudeM) },
                     visible = dto.visible ?: false
                 )
             }
@@ -126,7 +127,7 @@ object UserContentStore {
                 name = track.name,
                 description = track.description,
                 createdAtMillis = track.createdAtMillis,
-                points = trimmedPoints.map { TrackPointDto(it.point.latitude, it.point.longitude, it.altitudeM) },
+                points = trimmedPoints.map { TrackPointDto(it.point.latitude, it.point.longitude, it.altitudeM, it.demAltitudeM) },
                 visible = track.visible
             )
         }
@@ -180,7 +181,7 @@ object UserContentStore {
                             name = track.name,
                             description = track.description,
                             createdAtMillis = track.createdAtMillis,
-                            points = track.points.map { TrackPoint(GeoPoint(it.lat, it.lon), it.altitudeM) },
+                            points = track.points.map { TrackPoint(GeoPoint(it.lat, it.lon), it.altitudeM, it.demAltitudeM) },
                             visible = track.visible ?: true
                         )
                     }
@@ -287,7 +288,7 @@ object UserContentStore {
                         name = track.name,
                         description = track.description,
                         createdAtMillis = track.createdAtMillis,
-                        points = track.points.map { TrackPointDto(it.point.latitude, it.point.longitude, it.altitudeM) },
+                        points = track.points.map { TrackPointDto(it.point.latitude, it.point.longitude, it.altitudeM, it.demAltitudeM) },
                         visible = track.visible
                     )
                 }
@@ -312,4 +313,67 @@ object UserContentStore {
             }
         }
     }
+
+    /**
+     * Rebuild visible imported layers from the durable Offline folders after
+     * update/reinstall. This only adds missing layers; it never deletes or
+     * overwrites existing user layers.
+     */
+    fun restoreImportedLayersFromOfflineFolders(context: Context): Int {
+        val candidateFiles = listOf(
+            OfflineTileManager.gpxRoot(context),
+            OfflineTileManager.kmlRoot(context),
+            OfflineTileManager.publicGpxRoot(),
+            OfflineTileManager.publicKmlRoot(),
+            OfflineTileManager.publicGeojsonRoot(),
+            OfflineTileManager.publicTablesRoot(),
+            OfflineTileManager.publicDatabasesRoot()
+        ).flatMap { dir ->
+            if (!dir.exists()) emptyList() else dir.walkTopDown().filter { it.isFile && isRestorableLayerFile(it) }.toList()
+        }.distinctBy { it.absolutePath }
+
+        if (candidateFiles.isEmpty()) return 0
+
+        val current = loadImportedLayers(context).toMutableList()
+        val existingKeys = current.map { layerKey(it) }.toMutableSet()
+        var added = 0
+
+        candidateFiles.sortedBy { it.name.lowercase(Locale.ROOT) }.forEach { file ->
+            val fileKey = "${file.name.lowercase(Locale.ROOT)}:${file.length()}:${file.lastModified()}"
+            if (existingKeys.contains(fileKey)) return@forEach
+            runCatching {
+                file.inputStream().use { input ->
+                    val parsed = ImportParser.parse(input, file.name)
+                    if (parsed.points.isEmpty() && parsed.tracks.isEmpty()) return@use
+                    val restored = parsed.copy(
+                        id = parsed.id.ifBlank { "restored_${kotlin.math.abs(fileKey.hashCode())}" },
+                        name = parsed.name.ifBlank { file.nameWithoutExtension },
+                        visible = true,
+                        createdAtMillis = file.lastModified().takeIf { it > 0L } ?: System.currentTimeMillis()
+                    )
+                    current += restored
+                    existingKeys += layerKey(restored)
+                    existingKeys += fileKey
+                    added++
+                }
+            }.onFailure { throwable ->
+                android.util.Log.w("UserContentStore", "Cannot restore imported layer from ${file.name}", throwable)
+            }
+        }
+
+        if (added > 0) saveImportedLayers(context, current)
+        return added
+    }
+
+    private fun isRestorableLayerFile(file: File): Boolean {
+        val ext = file.extension.lowercase(Locale.ROOT)
+        return ext in setOf("gpx", "kml", "kmz", "geojson", "json", "csv", "gpkg", "geopackage")
+    }
+
+    private fun layerKey(layer: ImportedLayer): String {
+        val name = layer.name.lowercase(Locale.ROOT)
+        val type = layer.type.lowercase(Locale.ROOT)
+        return "$name:$type:${layer.points.size}:${layer.tracks.size}"
+    }
+
 }

@@ -1,0 +1,24 @@
+SOV ADMIN 1.4.55a — OTVARANJE U ANDROID STUDIJU
+
+1. Raspakiraj cijeli ZIP u novi folder, npr. D:\SOV-app builds\sov-admin-1.4.55a
+2. U Android Studiju odaberi File > Open.
+3. Otvori folder u kojem su settings.gradle.kts, build.gradle.kts i folder app.
+4. Pusti Gradle Sync.
+5. Ako Android Studio ne napravi local.properties automatski, kopiraj local.properties.example
+   u local.properties i upiši svoj sdk.dir. Pravi SOV_APPS_SCRIPT_KEY nemoj spremati u Git.
+6. Za provjeru napravi Build > Clean Project, zatim Build > Build APK(s).
+
+VERZIJA
+- versionCode: 900154
+- versionName: 1.4.55a-offline-nacrti-v3
+
+SADRŽAJ
+- 1096 bundled nacrta + aktualni matcher v3 index
+- SOV baza 1750 zapisa (Sjeverni Velebit 2026 update)
+- offline nacrti u detalju objekta i filter "ima nacrt"
+- native TopoDroid ZIP / survey.sql / TDR parser i Nacrt Generator
+- GPS + DEM visina tracka
+
+NAPOMENA
+Ovaj paket je čisti Android Studio source. Namjerno ne sadrži .gradle, .idea,
+app/build, build, APK/AAB ni local.properties.

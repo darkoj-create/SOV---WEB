@@ -30,37 +30,21 @@ internal object SpeleoRunnerLeaderboardClient {
     private const val KEY_PENDING_NAME = "pending_name"
     private const val KEY_PENDING_SCORE = "pending_score"
     private const val KEY_PENDING_BATS = "pending_bats"
-    private const val SHEET_ID = "1NjtgeSth1lVW3ZuIbBYIAletPkLTncz0U_L4UGRuYmk"
-
-    // Legacy Google Sheet remains read-only fallback/import source so old scores are not lost.
-    private const val CSV_URL = "https://docs.google.com/spreadsheets/d/$SHEET_ID/gviz/tq?tqx=out:csv&gid=0"
-
-    // Legacy Apps Script remains emergency write fallback if Supabase submit is temporarily unavailable.
-    private const val SUBMIT_URL = "https://script.google.com/macros/s/AKfycbyl7eZZzClNVGGYTBH0mZiiwBE4btIl8-WpapOj05kLy_CIKjizhaZVAqcZx_yTmax-/exec"
+    // v1.4.29c: Supabase is the source of truth.
+    // Google Sheet / Apps Script write fallback is intentionally removed so scores only append to SQL.
 
     suspend fun refresh(context: Context): List<SpeleoRunnerLeaderboardEntry> = withContext(Dispatchers.IO) {
         flushPending(context)
         val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
 
-        val supabaseEntries = runCatching { fetchSupabaseLeaderboard(context) }.getOrDefault(emptyList())
-        if (supabaseEntries.isNotEmpty()) {
-            prefs.edit().putString(KEY_CACHE, entriesToCsv(supabaseEntries)).apply()
-            return@withContext supabaseEntries
-        }
-
-        // If SQL is empty or temporarily unavailable, keep old results visible from the published Sheet.
-        val legacyEntries = runCatching {
-            val csv = httpGet(CSV_URL)
-            prefs.edit().putString(KEY_CACHE, csv).apply()
-            parseCsv(csv)
-        }.getOrElse {
+        // Supabase is the only online source of truth. If the network is down, show only the last local cache.
+        val supabaseEntries = runCatching { fetchSupabaseLeaderboard(context) }.getOrElse {
             parseCsv(prefs.getString(KEY_CACHE, null).orEmpty())
         }
-
-        if (legacyEntries.isNotEmpty()) {
-            importLegacyEntriesToSupabase(context, legacyEntries)
+        if (supabaseEntries.isNotEmpty()) {
+            prefs.edit().putString(KEY_CACHE, entriesToCsv(supabaseEntries)).apply()
         }
-        legacyEntries
+        supabaseEntries
     }
 
     suspend fun submitOrQueue(context: Context, name: String, score: Int, bats: Int): Boolean = withContext(Dispatchers.IO) {
@@ -70,8 +54,7 @@ internal object SpeleoRunnerLeaderboardClient {
         val date = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(Date())
         val clientKey = scoreClientKey("apk", safeName, score, safeBats, date)
 
-        val ok = trySubmitSupabase(context, safeName, score, safeBats, date, clientKey, "apk") ||
-            trySubmitLegacyAppsScript(safeName, score, safeBats, date)
+        val ok = trySubmitSupabase(context, safeName, score, safeBats, date, clientKey, "apk")
         if (!ok) {
             context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
                 .putString(KEY_PENDING_NAME, safeName)
@@ -89,8 +72,7 @@ internal object SpeleoRunnerLeaderboardClient {
         val bats = prefs.getInt(KEY_PENDING_BATS, 0)
         if (name.isBlank() || score <= 0) return
         val date = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(Date())
-        val ok = trySubmitSupabase(context, name, score, bats.coerceAtLeast(0), date, scoreClientKey("apk_pending", name, score, bats, date), "apk_pending") ||
-            trySubmitLegacyAppsScript(name, score, bats.coerceAtLeast(0), date)
+        val ok = trySubmitSupabase(context, name, score, bats.coerceAtLeast(0), date, scoreClientKey("apk_pending", name, score, bats, date), "apk_pending")
         if (ok) {
             prefs.edit()
                 .remove(KEY_PENDING_NAME)
@@ -126,56 +108,6 @@ internal object SpeleoRunnerLeaderboardClient {
         SovHttpClient.post(context, "$SOV_SUPABASE_URL/rest/v1/rpc/sov_submit_runner_score", body)
         true
     }.getOrDefault(false)
-
-    private fun importLegacyEntriesToSupabase(context: Context, entries: List<SpeleoRunnerLeaderboardEntry>) {
-        entries
-            .filter { it.score > 0 && it.name.isNotBlank() }
-            .take(500)
-            .forEach { entry ->
-                val key = scoreClientKey("legacy_sheet", entry.name, entry.score, entry.bats, entry.date)
-                trySubmitSupabase(context, entry.name, entry.score, entry.bats, entry.date, key, "legacy_sheet")
-            }
-    }
-
-    private fun trySubmitLegacyAppsScript(name: String, score: Int, bats: Int, date: String): Boolean {
-        if (SUBMIT_URL.isBlank()) return false
-        return try {
-            val body = buildString {
-                append("name=").append(URLEncoder.encode(name, "UTF-8"))
-                append("&score=").append(URLEncoder.encode(score.toString(), "UTF-8"))
-                append("&bats=").append(URLEncoder.encode(bats.coerceAtLeast(0).toString(), "UTF-8"))
-                append("&date=").append(URLEncoder.encode(date, "UTF-8"))
-            }
-            val conn = (URL(SUBMIT_URL).openConnection() as HttpURLConnection).apply {
-                requestMethod = "POST"
-                connectTimeout = 7000
-                readTimeout = 7000
-                doOutput = true
-                setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
-            }
-            OutputStreamWriter(conn.outputStream, Charsets.UTF_8).use { it.write(body) }
-            val code = conn.responseCode
-            conn.disconnect()
-            code in 200..299
-        } catch (_: Exception) {
-            false
-        }
-    }
-
-    private fun httpGet(url: String): String {
-        val conn = (URL(url).openConnection() as HttpURLConnection).apply {
-            requestMethod = "GET"
-            connectTimeout = 7000
-            readTimeout = 7000
-        }
-        return try {
-            BufferedReader(InputStreamReader(conn.inputStream, Charsets.UTF_8)).use { reader ->
-                reader.readText()
-            }
-        } finally {
-            conn.disconnect()
-        }
-    }
 
     private fun parseCsv(csv: String): List<SpeleoRunnerLeaderboardEntry> {
         if (csv.isBlank()) return emptyList()

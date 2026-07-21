@@ -25,10 +25,10 @@ internal fun CompassStatusScreen(onBack: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Kompas") },
+                title = { Text(language.pick("Kompas", "Compass")) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Natrag")
+                        Icon(Icons.Default.ArrowBack, contentDescription = language.pick("Natrag", "Back"))
                     }
                 }
             )

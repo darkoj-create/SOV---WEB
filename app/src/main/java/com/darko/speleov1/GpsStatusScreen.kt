@@ -25,10 +25,10 @@ internal fun GpsStatusScreen(onBack: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("GPS Status") },
+                title = { Text(language.pick("GPS status", "GPS status")) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Natrag")
+                        Icon(Icons.Default.ArrowBack, contentDescription = language.pick("Natrag", "Back"))
                     }
                 }
             )

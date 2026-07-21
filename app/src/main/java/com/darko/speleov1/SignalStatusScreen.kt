@@ -76,6 +76,7 @@ private data class VisibleNetwork(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun SignalStatusScreen(onBack: () -> Unit) {
+    val language = LocalAppLanguage.current
     val context = LocalContext.current
     val telephony = remember { context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager }
     var hasPhonePermission by remember {
@@ -136,14 +137,14 @@ internal fun SignalStatusScreen(onBack: () -> Unit) {
     fun refreshVisibleNetworks() {
         if (!hasLocationPermission) {
             visibleNetworks = emptyList()
-            visibleNetworksMessage = "Nema dozvole za lokaciju"
+            visibleNetworksMessage = language.pick("Nema dozvole za lokaciju", "No location permission")
             locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
             return
         }
         val scanned = readVisibleNetworks(context, telephony)
         visibleNetworks = scanned
         visibleNetworksMessage = if (scanned.isEmpty()) {
-            "Android nije vratio dodatne mreže na ovoj lokaciji"
+            language.pick("Android nije vratio dodatne mreže na ovoj lokaciji", "Android did not return additional networks at this location")
         } else {
             null
         }
@@ -154,7 +155,7 @@ internal fun SignalStatusScreen(onBack: () -> Unit) {
     }
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Signal i pokrivenost") }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = "Natrag") } }) }
+        topBar = { TopAppBar(title = { Text(language.pick("Signal i pokrivenost", "Signal & coverage")) }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = language.pick("Natrag", "Back")) } }) }
     ) { inner ->
         CaveScreenBackground {
             Column(
@@ -163,41 +164,41 @@ internal fun SignalStatusScreen(onBack: () -> Unit) {
             ) {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
                     Box(Modifier.size(56.dp).background(Color(0xFF42A5F5).copy(alpha = 0.16f), RoundedCornerShape(20.dp)), contentAlignment = Alignment.Center) {
-                        Icon(Icons.Default.SignalCellularAlt, contentDescription = null, tint = Color(0xFF42A5F5), modifier = Modifier.size(31.dp))
+                        Icon(Icons.Default.SignalCellularAlt, contentDescription = language.pick("Signal", "Signal"), tint = Color(0xFF42A5F5), modifier = Modifier.size(31.dp))
                     }
                     Column {
-                        Text("Signal i pokrivenost", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
-                        Text("Status mreže i vidljive ćelije", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(language.pick("Signal i pokrivenost", "Signal & coverage"), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+                        Text(language.pick("Status mreže i vidljive ćelije", "Network status and visible cells"), color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
 
-                Text("Status mreže", color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                Text(language.pick("Status mreže", "Network status"), color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                 if (!hasPhonePermission) {
-                    StatusCard("Dozvola", "Nema dozvole za čitanje mreže", "Dopusti READ_PHONE_STATE za mrežni tip i signal.", Color(0xFFFF7043))
-                    TextButton(onClick = { phonePermissionLauncher.launch(Manifest.permission.READ_PHONE_STATE) }) { Text("Dopusti mrežu") }
+                    StatusCard(language.pick("Dozvola", "Permission"), language.pick("Nema dozvole za čitanje mreže", "No permission to read network state"), language.pick("Dopusti READ_PHONE_STATE za mrežni tip i signal.", "Allow READ_PHONE_STATE for network type and signal."), Color(0xFFFF7043))
+                    TextButton(onClick = { phonePermissionLauncher.launch(Manifest.permission.READ_PHONE_STATE) }) { Text(language.pick("Dopusti mrežu", "Allow network access")) }
                 } else {
                     Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        StatusCard("Operator", operatorName, "trenutna mreža", Color(0xFF42A5F5), Modifier.weight(1f))
-                        StatusCard("Tip", networkType, "2G / 3G / 4G / 5G", Color(0xFF80CBC4), Modifier.weight(1f))
+                        StatusCard(language.pick("Operator", "Operator"), operatorName, language.pick("trenutna mreža", "current network"), Color(0xFF42A5F5), Modifier.weight(1f))
+                        StatusCard(language.pick("Tip", "Type"), networkType, "2G / 3G / 4G / 5G", Color(0xFF80CBC4), Modifier.weight(1f))
                     }
                     Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        StatusCard("Signal", if (signalDbm == Int.MIN_VALUE) "—" else "$signalDbm dBm", "jačina signala", signalColor(signalDbm), Modifier.weight(1f))
+                        StatusCard(language.pick("Signal", "Signal"), if (signalDbm == Int.MIN_VALUE) "—" else "$signalDbm dBm", language.pick("jačina signala", "signal strength"), signalColor(signalDbm), Modifier.weight(1f))
                         SignalBarsCard(signalBars(signalDbm), signalColor(signalDbm), Modifier.weight(1f))
                     }
                 }
 
-                Text("Dostupne mreže u okolici", color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                Text(language.pick("Dostupne mreže u okolici", "Nearby available networks"), color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                 Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.94f)), shape = RoundedCornerShape(24.dp)) {
                     Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                        Text("Android može prikazati ćelije/bazne stanice koje mobitel vidi u okolici. App može očitati Cell ID, TAC/LAC, PCI/PSC i kanal kad uređaj to vrati, ali ne zna stvarnu GPS lokaciju tornja bez vanjske baze baznih stanica.", color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
-                        Button(onClick = { refreshVisibleNetworks() }, enabled = hasLocationPermission) { Text("Osvježi ćelije") }
+                        Text(language.pick("Prikaz mreže koju mobitel vidi.", "Shows networks visible to this phone."), color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
+                        Button(onClick = { refreshVisibleNetworks() }, enabled = hasLocationPermission) { Text(language.pick("Osvježi ćelije", "Refresh cells")) }
                         if (!hasLocationPermission) {
-                            Text("Nema dozvole za lokaciju", color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
+                            Text(language.pick("Nema dozvole za lokaciju", "No location permission"), color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
                         } else if (visibleNetworks.isEmpty()) {
-                            Text(visibleNetworksMessage ?: "Nema dodatnih mreža za prikaz", color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
+                            Text(visibleNetworksMessage ?: language.pick("Nema dodatnih mreža za prikaz", "No additional networks to show"), color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
                         } else {
                             visibleNetworks.forEach { network ->
-                                AvailableNetworkRow(network)
+                                AvailableNetworkRow(network, language)
                             }
                         }
                     }
@@ -244,8 +245,8 @@ private fun SignalBarsCard(bars: Int, tint: Color, modifier: Modifier = Modifier
 }
 
 @Composable
-private fun AvailableNetworkRow(network: VisibleNetwork) {
-    val dbmText = if (network.dbm == Int.MIN_VALUE) "jačina nije dostupna" else "${network.dbm} dBm"
+private fun AvailableNetworkRow(network: VisibleNetwork, language: AppLanguage) {
+    val dbmText = if (network.dbm == Int.MIN_VALUE) language.pick("jačina nije dostupna", "signal unavailable") else "${network.dbm} dBm"
     val tint = signalColor(network.dbm)
     Row(
         modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f), RoundedCornerShape(16.dp)).padding(12.dp),
@@ -254,8 +255,8 @@ private fun AvailableNetworkRow(network: VisibleNetwork) {
     ) {
         SignalMiniBars(signalBars(network.dbm), tint, Modifier.weight(0.25f))
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            Text(network.operator.ifBlank { "Nepoznata mreža" }, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold)
-            Text("${network.technology} • ${if (network.registered) "spojeno" else "vidljivo"} • $dbmText", color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
+            Text(network.operator.ifBlank { language.pick("Nepoznata mreža", "Unknown network") }, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold)
+            Text("${network.technology} • ${if (network.registered) language.pick("spojeno", "connected") else language.pick("vidljivo", "visible")} • $dbmText", color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
             Text("Cell ID: ${network.cellId} • ${network.areaCode} • ${network.pci} • ${network.channel}", color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.82f), style = MaterialTheme.typography.bodySmall)
         }
     }
@@ -277,7 +278,7 @@ private fun readVisibleNetworks(context: Context, telephony: TelephonyManager): 
     return runCatching {
         val cells = telephony.allCellInfo.orEmpty()
         val networks = cells.mapNotNull { cell ->
-            val operator = cellOperatorLabel(cell).ifBlank { "Nepoznata mreža" }
+            val operator = cellOperatorLabel(cell)
             val technology = cellTechnologyLabel(cell)
             val dbm = cellSignalDbm(cell)
             val details = cellTowerDetails(cell)

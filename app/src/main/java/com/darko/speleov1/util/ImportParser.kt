@@ -2,7 +2,6 @@ package com.darko.speleov1.util
 
 import android.database.sqlite.SQLiteDatabase
 import android.location.Location
-import android.util.Xml
 import com.darko.speleov1.ImportedLayer
 import com.darko.speleov1.MarkedPoint
 import com.darko.speleov1.SavedTrack
@@ -12,6 +11,7 @@ import org.json.JSONObject
 import org.json.JSONTokener
 import org.osmdroid.util.GeoPoint
 import org.xmlpull.v1.XmlPullParser
+import org.xmlpull.v1.XmlPullParserFactory
 import java.io.BufferedInputStream
 import java.io.ByteArrayInputStream
 import java.io.File
@@ -290,7 +290,7 @@ object ImportParser {
     }
 
     private fun parseKml(input: InputStream, suggestedName: String, onProgress: (Progress) -> Unit, isCancelled: () -> Boolean): ImportedLayer {
-        val parser = Xml.newPullParser()
+        val parser = XmlPullParserFactory.newInstance().newPullParser()
         parser.setInput(input, null)
 
         val points = ArrayList<MarkedPoint>(256)
@@ -433,7 +433,7 @@ object ImportParser {
     }
 
     private fun parseGpx(input: InputStream, suggestedName: String, onProgress: (Progress) -> Unit, isCancelled: () -> Boolean): ImportedLayer {
-        val parser = Xml.newPullParser()
+        val parser = XmlPullParserFactory.newInstance().newPullParser()
         parser.setInput(input, null)
         val points = ArrayList<MarkedPoint>(128)
         val tracks = ArrayList<SavedTrack>(16)
@@ -904,7 +904,7 @@ object ImportParser {
 
     private fun parseSharedStrings(bytes: ByteArray?): List<String> {
         if (bytes == null) return emptyList()
-        val parser = Xml.newPullParser()
+        val parser = XmlPullParserFactory.newInstance().newPullParser()
         parser.setInput(ByteArrayInputStream(bytes), null)
         val values = ArrayList<String>()
         var event = parser.eventType
@@ -930,7 +930,7 @@ object ImportParser {
 
     private fun parseWorkbookRelationships(bytes: ByteArray?): Map<String, String> {
         if (bytes == null) return emptyMap()
-        val parser = Xml.newPullParser()
+        val parser = XmlPullParserFactory.newInstance().newPullParser()
         parser.setInput(ByteArrayInputStream(bytes), null)
         val mapping = LinkedHashMap<String, String>()
         var event = parser.eventType
@@ -950,7 +950,7 @@ object ImportParser {
 
     private fun parseFirstWorksheetPath(bytes: ByteArray?, rels: Map<String, String>): String? {
         if (bytes == null) return null
-        val parser = Xml.newPullParser()
+        val parser = XmlPullParserFactory.newInstance().newPullParser()
         parser.setInput(ByteArrayInputStream(bytes), null)
         var event = parser.eventType
         while (event != XmlPullParser.END_DOCUMENT) {
@@ -965,7 +965,7 @@ object ImportParser {
     }
 
     private fun parseWorksheetRows(bytes: ByteArray, sharedStrings: List<String>, isCancelled: () -> Boolean): List<List<String>> {
-        val parser = Xml.newPullParser()
+        val parser = XmlPullParserFactory.newInstance().newPullParser()
         parser.setInput(ByteArrayInputStream(bytes), null)
         val rows = ArrayList<List<String>>()
         var event = parser.eventType

@@ -733,6 +733,7 @@ fun FilterState.hasAdvancedFilters(): Boolean =
         distanceFilterKm != null ||
         depthMinM != null ||
         onlyWithDescription ||
+        onlyWithDrawing ||
         fieldTaskFilters.isNotEmpty() ||
         boundingBoxFilter != null
 

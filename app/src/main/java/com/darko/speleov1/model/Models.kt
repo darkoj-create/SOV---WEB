@@ -123,6 +123,7 @@ data class FilterState(
     val distanceFilterKm: Int? = null,
     val depthMinM: Int? = null,
     val onlyWithDescription: Boolean = false,
+    val onlyWithDrawing: Boolean = false,
     val fieldTaskFilters: List<String> = emptyList(),
     val boundingBoxFilter: BoundingBoxFilter? = null
 )

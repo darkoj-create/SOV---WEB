@@ -1,9 +1,25 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
 }
+
+val localProperties = Properties().apply {
+    val propsFile = rootProject.file("local.properties")
+    if (propsFile.exists()) {
+        propsFile.inputStream().use { load(it) }
+    }
+}
+
+fun String.asBuildConfigString(): String = "\"" + replace("\\", "\\\\").replace("\"", "\\\"") + "\""
+
+val sovAppsScriptKey: String = (localProperties.getProperty("SOV_APPS_SCRIPT_KEY")
+    ?: System.getenv("SOV_APPS_SCRIPT_KEY")
+    ?: "")
+    .trim()
 
 android {
     namespace = "com.darko.speleov1"
@@ -13,13 +29,17 @@ android {
         applicationId = "com.darko.speleov1admin"
         minSdk = 26
         targetSdk = 35
-        versionCode = 900118
-        versionName = "1.4.29a-cloud-login-human-icon-gate"
+        versionCode = 900154
+        versionName = "1.4.55a-offline-nacrti-v3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        // SOV Apps Script shared secret: set SOV_APPS_SCRIPT_KEY in local.properties
+        // or as an environment variable. Never hardcode the value in source.
+        buildConfigField("String", "SOV_APPS_SCRIPT_KEY", sovAppsScriptKey.asBuildConfigString())
     }
 
     buildTypes {
@@ -61,6 +81,7 @@ dependencies {
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("androidx.security:security-crypto:1.1.0-alpha06")
     implementation("com.google.android.material:material:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.4")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.4")
@@ -78,6 +99,9 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
     implementation("com.google.firebase:firebase-crashlytics")
     implementation("com.google.firebase:firebase-analytics")
+
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
 
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")

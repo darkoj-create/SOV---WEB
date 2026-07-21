@@ -59,7 +59,7 @@ internal object TripAssetCloudRepository {
 
     fun uploadPackage(context: Context, tripId: String, file: File, title: String, description: String = ""): TripCloudAsset {
         val cleanTripId = tripId.trim()
-        if (cleanTripId.isBlank()) error("Izlet nema cloud ID pa ne može imati zajednički paket.")
+        if (cleanTripId.isBlank()) error("Izlet nema paket.")
         if (!file.exists() || !file.isFile) error("Paket nije pronađen na uređaju.")
         val session = ensureSession(context)
         val safeFile = sanitizeFileName(file.name.ifBlank { "SOV_teren.sovpkg" })
@@ -79,7 +79,7 @@ internal object TripAssetCloudRepository {
         val checksum = runCatching { sha256(file) }.getOrDefault("")
         val metadata = JSONObject()
             .put("source", "android_sovpkg")
-            .put("note", "Paket može sadržavati offline kartu, GPX/KML trackove, točke i TopoDroid privitke.")
+            .put("note", "Paket: karta, trackovi, točke, privitci.")
             .put("checksum_sha256", checksum)
             .put("offline_ready", true)
         val payload = JSONObject()
@@ -123,7 +123,7 @@ internal object TripAssetCloudRepository {
         if (isAssetDownloaded(context, asset)) return outFile
         val session = ensureSession(context)
         val url = "$SOV_SUPABASE_URL/storage/v1/object/$BUCKET/${asset.storagePath.storagePathEncoded()}"
-        val conn = (URL(url).openConnection() as HttpURLConnection).apply {
+        val conn = SovNetworkSecurity.openHttpConnection(url, "Trip assets").apply {
             requestMethod = "GET"
             connectTimeout = 20000
             readTimeout = 120000
@@ -171,7 +171,7 @@ internal object TripAssetCloudRepository {
 
     private fun uploadToStorage(context: Context, path: String, file: File, contentType: String) {
         val url = "$SOV_SUPABASE_URL/storage/v1/object/$BUCKET/${path.storagePathEncoded()}"
-        val conn = (URL(url).openConnection() as HttpURLConnection).apply {
+        val conn = SovNetworkSecurity.openHttpConnection(url, "Trip assets").apply {
             requestMethod = "POST"
             doOutput = true
             connectTimeout = 20000

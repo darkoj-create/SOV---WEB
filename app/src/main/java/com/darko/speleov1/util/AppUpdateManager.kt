@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import android.util.Log
 import androidx.core.content.FileProvider
 import androidx.core.content.pm.PackageInfoCompat
 import com.google.gson.Gson
@@ -22,6 +23,7 @@ private const val GITHUB_OWNER = "darkoj-create"
 private const val GITHUB_REPO = "SOV-APP-ADMIN"
 private const val GITHUB_LATEST_RELEASE_URL = "https://api.github.com/repos/$GITHUB_OWNER/$GITHUB_REPO/releases/latest"
 private const val DEFAULT_APK_MIME = "application/vnd.android.package-archive"
+private const val TAG = "SOVUpdate"
 
 sealed interface UpdateCheckResult {
     data class Available(val info: AppUpdateInfo) : UpdateCheckResult
@@ -79,19 +81,27 @@ object AppUpdateManager {
                 runCatching { gson.fromJson(fetchText(url), ReleaseUpdateJson::class.java) }.getOrNull()
             }
 
-            val apkAsset = resolveApkAsset(latestRelease.assets, releaseUpdateJson)
-                ?: return@runCatching UpdateCheckResult.Error("Na zadnjem GitHub releaseu nema APK asseta.")
-
             val latestVersionName = releaseUpdateJson?.versionName?.trim().orEmpty().ifBlank {
                 normalizeTagToVersion(latestRelease.tagName)
             }
             val latestVersionCode = releaseUpdateJson?.versionCode
+
+            // Ako je release asset update.json zaboravljen na starijem buildu,
+            // to nije greška za korisnika na terenu: samo znači da nema novog updatea.
+            if (latestVersionCode != null && latestVersionCode < currentVersionCode) {
+                Log.i(TAG, "Release update.json je stariji od instalirane aplikacije: release=$latestVersionCode, local=$currentVersionCode")
+                return@runCatching UpdateCheckResult.UpToDate(currentVersionName)
+            }
+
+            val apkAsset = resolveApkAsset(latestRelease.assets, releaseUpdateJson)
+                ?: return@runCatching UpdateCheckResult.Error("Nema nove verzije.")
+
             val notes = releaseUpdateJson?.notes?.takeIf { it.isNotBlank() }
                 ?: latestRelease.body.orEmpty().trim()
 
             val updateAvailable = when {
                 latestVersionCode != null -> latestVersionCode > currentVersionCode
-                latestVersionName.isNotBlank() -> compareVersionNames(latestVersionName, currentVersionName) > 0
+                latestVersionName.isNotBlank() -> compareAppVersionNames(latestVersionName, currentVersionName) > 0
                 else -> false
             }
 
@@ -175,32 +185,12 @@ object AppUpdateManager {
         return tag.orEmpty().trim().removePrefix("v").removePrefix("V")
     }
 
-    private fun compareVersionNames(left: String, right: String): Int {
-        val leftParts = extractVersionNumbers(left)
-        val rightParts = extractVersionNumbers(right)
-        val maxSize = maxOf(leftParts.size, rightParts.size)
-        for (index in 0 until maxSize) {
-            val l = leftParts.getOrElse(index) { 0 }
-            val r = rightParts.getOrElse(index) { 0 }
-            if (l != r) return l.compareTo(r)
-        }
-        return 0
-    }
-
-    private fun extractVersionNumbers(raw: String): List<Int> {
-        val normalized = raw.trim().removePrefix("v").removePrefix("V")
-        return normalized
-            .split('.', '-', '_')
-            .mapNotNull { token -> token.filter(Char::isDigit).takeIf { it.isNotBlank() }?.toIntOrNull() }
-            .ifEmpty { listOf(0) }
-    }
-
     private fun sanitizeFileName(name: String): String {
         return name.replace(Regex("[^A-Za-z0-9._-]"), "_")
     }
 
     private fun fetchText(url: String): String {
-        val connection = (URL(url).openConnection() as HttpURLConnection).apply {
+        val connection = SovNetworkSecurity.openHttpConnection(url, "Update check/download").apply {
             requestMethod = "GET"
             connectTimeout = 15000
             readTimeout = 20000
@@ -212,8 +202,8 @@ object AppUpdateManager {
             if (connection.responseCode !in 200..299) {
                 stream?.bufferedReader()?.use { it.readText() }.orEmpty()
                 val friendlyMessage = when (connection.responseCode) {
-                    404 -> "Nema objavljenog GitHub releasea za darkoj-create/SOV-APP ili repo nije javan."
-                    403 -> "GitHub trenutno blokira provjeru ažuriranja ili je dosegnut limit zahtjeva."
+                    404 -> "Nema nove verzije."
+                    403 -> "Provjera nije dostupna."
                     else -> "GitHub update check nije uspio."
                 }
                 error(friendlyMessage)
@@ -223,7 +213,7 @@ object AppUpdateManager {
     }
 
     private fun downloadBinary(url: String, targetFile: File) {
-        val connection = (URL(url).openConnection() as HttpURLConnection).apply {
+        val connection = SovNetworkSecurity.openHttpConnection(url, "Update check/download").apply {
             requestMethod = "GET"
             connectTimeout = 15000
             readTimeout = 60000
@@ -232,7 +222,7 @@ object AppUpdateManager {
         connection.useAndDisconnect {
             if (connection.responseCode !in 200..299) {
                 val body = connection.errorStream?.bufferedReader()?.use { it.readText() }.orEmpty()
-                error("APK download nije uspio (${connection.responseCode}). ${body.take(180)}")
+                error("Preuzimanje nije uspjelo.")
             }
             connection.inputStream.use { input ->
                 FileOutputStream(targetFile).use { output ->

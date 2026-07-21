@@ -1,0 +1,7 @@
+# Local Android SDK path stays machine-specific.
+# sdk.dir=C:\\Users\\darko\\AppData\\Local\\Android\\Sdk
+
+# Shared secret for legacy Google Apps Script webapp endpoints.
+# Must match Script Properties value SOV_APPS_SCRIPT_KEY in every Apps Script project.
+# Do NOT commit a real value.
+SOV_APPS_SCRIPT_KEY=REPLACE_WITH_LONG_RANDOM_SECRET

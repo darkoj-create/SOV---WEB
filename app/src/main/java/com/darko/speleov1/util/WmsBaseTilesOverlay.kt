@@ -240,8 +240,8 @@ class WmsBaseTilesOverlay(
                 val cacheFile = WmsPerformanceCache.baseCacheFile(appContext, sourceKey, z, x, y, fileExtension)
                 val cachedBitmap = WmsTileImageCache.decodeCachedBitmap(cacheFile, Bitmap.Config.RGB_565, rejectMostlyBlack = true)
                 if (cachedBitmap != null) {
-                    memoryCache.put(key, cachedBitmap)
-                    if (!prefetchOnly) mapView.postInvalidate()
+                    memoryCache.put(key, WmsTileImageCache.toHardware(cachedBitmap))
+                    if (!prefetchOnly) MapInvalidateCoalescer.requestInvalidate(mapView)
                 } else {
                     val result = SovTileHttp.get(
                         urlText = WmsTileSource.buildTileUrl(baseConfig, z, x, y),
@@ -255,8 +255,8 @@ class WmsBaseTilesOverlay(
                         WmsTilePerfLog.log("base", z, result.ttfbMs, result.bodyMs, bytes.size)
                         WmsTileImageCache.decodeBytes(bytes, Bitmap.Config.RGB_565, rejectMostlyBlack = true)?.let { bitmap ->
                             WmsTileImageCache.writeCacheFile(cacheFile, bytes)
-                            memoryCache.put(key, bitmap)
-                            if (!prefetchOnly) mapView.postInvalidate()
+                            memoryCache.put(key, WmsTileImageCache.toHardware(bitmap))
+                            if (!prefetchOnly) MapInvalidateCoalescer.requestInvalidate(mapView)
                         }
                     }
                 }

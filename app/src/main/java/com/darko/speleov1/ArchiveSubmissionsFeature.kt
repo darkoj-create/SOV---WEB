@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.CollectionsBookmark
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.UploadFile
 import androidx.compose.material3.AlertDialog
@@ -109,7 +110,7 @@ internal fun ArchiveSubmissionsScreen(onBack: () -> Unit) {
                     IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onSurface) }
                     Column(Modifier.weight(1f)) {
                         Text("Predane jame", color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-                        Text("Korisnik preda jamu s privitcima. Pregledaj, odobri ili označi što nedostaje.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text("Pregledaj nove predaje.", color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                     OutlinedButton(onClick = { refresh() }, enabled = !loading, shape = RoundedCornerShape(16.dp)) { Text(if (loading) "Sync..." else "Osvježi") }
                 }
@@ -129,7 +130,7 @@ internal fun ArchiveSubmissionsScreen(onBack: () -> Unit) {
             }
             item { Text("Predaje (${filtered.size})", color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold) }
             if (filtered.isEmpty()) {
-                item { ArchiveSubmissionEmpty() }
+                item { SovEmptyState(Icons.Default.Description, "Nema predaja", "Kad članovi predaju nove jame ili nacrte, pojavit će se ovdje.") }
             } else {
                 items(filtered, key = { it.id }) { item ->
                     ArchiveSubmissionRow(item = item, selected = selected?.id == item.id, onClick = { selected = item })
@@ -264,7 +265,7 @@ private fun ArchiveSubmissionRow(item: ArchiveSubmission, selected: Boolean, onC
         Column(Modifier.fillMaxWidth().padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 Box(Modifier.size(42.dp).background(tint.copy(alpha = 0.16f), RoundedCornerShape(14.dp)), contentAlignment = Alignment.Center) {
-                    Icon(Icons.Default.UploadFile, contentDescription = null, tint = tint)
+                    Icon(Icons.Default.UploadFile, contentDescription = "Uvoz datoteke", tint = tint)
                 }
                 Column(Modifier.weight(1f)) {
                     Text(item.objectName, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
@@ -312,7 +313,7 @@ private fun ArchiveSubmissionDetailCard(
             Text("Privitci", color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold)
             if (item.files.isEmpty()) Text("Nema privitaka.", color = MaterialTheme.colorScheme.onSurfaceVariant) else item.files.forEach { file ->
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Icon(Icons.Default.Download, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                    Icon(Icons.Default.Download, contentDescription = "Preuzmi", tint = MaterialTheme.colorScheme.primary)
                     Column(Modifier.weight(1f)) {
                         Text(file.fileName, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
                         Text("${file.fileType} · ${file.sizeBytes / 1024} KB", color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
@@ -332,7 +333,7 @@ private fun ArchiveSubmissionDetailCard(
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(16.dp)
                 ) {
-                    Icon(Icons.Default.CheckCircle, contentDescription = null)
+                    Icon(Icons.Default.CheckCircle, contentDescription = "Potvrđeno")
                     Spacer(Modifier.width(6.dp))
                     Text("Odobri")
                 }
@@ -343,7 +344,7 @@ private fun ArchiveSubmissionDetailCard(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp)
             ) {
-                Icon(Icons.Default.Close, contentDescription = null)
+                Icon(Icons.Default.Close, contentDescription = "Zatvori")
                 Spacer(Modifier.width(6.dp))
                 Text("Odbij predaju")
             }
@@ -355,7 +356,7 @@ private fun ArchiveSubmissionDetailCard(
                     title = { Text("Potvrdi odobrenje", fontWeight = FontWeight.Bold) },
                     text = {
                         Text(
-                            "Predaja \"${item.objectName}\" će biti odobrena i unesena u arhivu. Ovo se ne može poništiti."
+                            "Odobriti ${item.objectName}?"
                         )
                     },
                     confirmButton = {

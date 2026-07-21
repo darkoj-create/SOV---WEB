@@ -62,10 +62,10 @@ internal object FieldTrackingBatteryDiagnosticsStore {
 
         val recommendation = when {
             !state.active -> "Tracking nije aktivan. Procjena se računa kad pokreneš teren."
-            currentPct in 1..14 -> "Baterija je kritična. Prebaci na Lite, ugasi ekran i razmisli o powerbanku."
+            currentPct in 1..14 -> "Baterija je kritična."
             currentPct in 15..29 && state.trackingMode == "route" -> "Baterija je niska. Za duži teren prebaci na Lite auto ping."
             currentPct in 15..29 -> "Low battery mode je aktivan: app razrjeđuje pingove radi uštede."
-            state.trackingMode == "route" && (perHour ?: 0.0) >= 8.0 -> "Ruta/GPX troši dosta baterije. Lite je bolji ako samo želiš znati gdje je tko."
+            state.trackingMode == "route" && (perHour ?: 0.0) >= 8.0 -> "Lite troši manje baterije."
             state.trackingMode == "route" -> "Ruta/GPX daje bolji trag, ali troši više od Lite moda."
             else -> "Lite auto ping je dobar za dug teren i minimalnu potrošnju."
         }

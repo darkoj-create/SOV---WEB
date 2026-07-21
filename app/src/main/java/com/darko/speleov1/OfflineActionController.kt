@@ -47,7 +47,8 @@ class OfflineActionController(private val context: Context) {
     fun mapInfo(mapName: String): StoredMapUiInfo = StoredMapUiInfo(
         tileCount = OfflineTileManager.localTileCount(context, mapName),
         bounds = OfflineTileManager.getOfflineBounds(context, mapName),
-        isMbtiles = OfflineTileManager.isMbtilesMap(context, mapName)
+        isMbtiles = OfflineTileManager.isMbtilesMap(context, mapName),
+        demTileCount = OfflineTileManager.localDemTileCount(context, mapName)
     )
 
     fun setActiveMap(mapName: String) {

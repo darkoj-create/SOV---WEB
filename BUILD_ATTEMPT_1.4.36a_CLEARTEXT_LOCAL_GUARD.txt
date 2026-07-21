@@ -1,0 +1,13 @@
+Command attempted in sandbox:
+./gradlew :app:compileDebugKotlin --no-daemon
+
+Result:
+FAILED before project compilation because Gradle wrapper tried to download gradle-8.7-bin.zip and sandbox DNS/network cannot resolve services.gradle.org.
+
+Error:
+java.net.UnknownHostException: services.gradle.org
+
+Static checks performed:
+- Version bump present in app/build.gradle.kts.
+- No direct URL(...).openConnection() call remains outside SovNetworkSecurity.
+- New app-side cleartext guard added in SovNetworkSecurity.kt.

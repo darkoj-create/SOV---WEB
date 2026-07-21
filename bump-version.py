@@ -1,69 +1,76 @@
 #!/usr/bin/env python3
-"""SOV web version bump helper.
+"""SOV web helper: bump cache query version for versioned JS assets.
 
-Bumpa:
-- ?v= parametar na assets/sov-version.js, assets/sov-client-logger.js i assets/pwa-register.js u svim HTML-ovima
-- fallback verzije u assets/sov-version.js
-- SW_VERSION u sw.js
+Usage:
+  python bump-version.py 6.1.45ak
 
-Upotreba:
-  python bump-version.py 6.1.46a
+Radi samo tekstualne zamjene u statičkom web buildu:
+- svim .html datotekama ažurira ?v= na sov-version.js i sov-client-logger.js referencama
+- assets/sov-version.js ažurira FALLBACK_VERSION i izvedene build/cache nazive
+- na kraju ispiše broj promijenjenih datoteka
 """
 from __future__ import annotations
+
 import re
 import sys
 from pathlib import Path
 
-VERSION = sys.argv[1] if len(sys.argv) > 1 else "6.1.46a"
-VERSION_NAME = f"v{VERSION}-pwa-step1"
-BUILD = f"sov-web-build-v{VERSION}-pwa-step1"
-CACHE = VERSION.replace('.', '').replace('-', '') + "-pwa-step1"
-ROOT = Path.cwd()
-SKIP_DIRS = {".git", "node_modules", "dist", "build", ".vercel"}
+TARGETS = ("sov-version.js", "sov-client-logger.js")
 
-def skip(path: Path) -> bool:
-    return any(part in SKIP_DIRS for part in path.parts)
+
+def update_html(text: str, version: str) -> str:
+    out = text
+    for asset in TARGETS:
+        pattern = re.compile(rf"((?:assets/)?{re.escape(asset)})(?:\?v=[^\"'<>\s]+)?")
+        out = pattern.sub(rf"\1?v={version}", out)
+    return out
+
+
+def update_version_js(text: str, version: str) -> str:
+    safe = re.sub(r"[^0-9A-Za-z]+", "", version)
+    build = f"sov-web-build-v{version}"
+    name = f"v{version}"
+    out = text
+    replacements = {
+        "FALLBACK_VERSION": version,
+        "FALLBACK_CACHE": safe,
+        "FALLBACK_BUILD": build,
+        "FALLBACK_NAME": name,
+    }
+    for key, value in replacements.items():
+        out = re.sub(rf"const\s+{key}\s*=\s*['\"][^'\"]*['\"]", f"const {key}='{value}'", out)
+    return out
+
 
 def write_if_changed(path: Path, text: str, changed: list[Path]) -> None:
-    raw = path.read_text(encoding="utf-8", errors="ignore") if path.exists() else ""
-    if text != raw:
+    old = path.read_text(encoding="utf-8")
+    if old != text:
         path.write_text(text, encoding="utf-8")
         changed.append(path)
 
+
 def main() -> int:
+    if len(sys.argv) != 2 or not sys.argv[1].strip():
+        print("Usage: python bump-version.py <version>", file=sys.stderr)
+        return 2
+    version = sys.argv[1].strip()
+    root = Path.cwd()
     changed: list[Path] = []
-    for path in ROOT.rglob("*.html"):
-        if skip(path):
+
+    for html in root.rglob("*.html"):
+        if any(part in {"node_modules", ".git", "dist", "build"} for part in html.parts):
             continue
-        raw = path.read_text(encoding="utf-8", errors="ignore")
-        text = re.sub(
-            r'(assets/(?:sov-version|sov-client-logger|pwa-register)\.js)(?:\?v=[^"\']*)?',
-            rf'\1?v={VERSION}',
-            raw,
-            flags=re.I,
-        )
-        write_if_changed(path, text, changed)
+        write_if_changed(html, update_html(html.read_text(encoding="utf-8"), version), changed)
 
-    sv = ROOT / "assets" / "sov-version.js"
-    if sv.exists():
-        raw = sv.read_text(encoding="utf-8", errors="ignore")
-        text = raw
-        text = re.sub(r"const\s+FALLBACK_VERSION\s*=\s*['\"][^'\"]+['\"]", f"const FALLBACK_VERSION='{VERSION}'", text)
-        text = re.sub(r"const\s+FALLBACK_CACHE\s*=\s*['\"][^'\"]+['\"]", f"const FALLBACK_CACHE='{CACHE}'", text)
-        text = re.sub(r"const\s+FALLBACK_BUILD\s*=\s*['\"][^'\"]+['\"]", f"const FALLBACK_BUILD='{BUILD}'", text)
-        text = re.sub(r"const\s+FALLBACK_NAME\s*=\s*['\"][^'\"]+['\"]", f"const FALLBACK_NAME='{VERSION_NAME}'", text)
-        write_if_changed(sv, text, changed)
+    version_js = root / "assets" / "sov-version.js"
+    if version_js.exists():
+        write_if_changed(version_js, update_version_js(version_js.read_text(encoding="utf-8"), version), changed)
 
-    sw = ROOT / "sw.js"
-    if sw.exists():
-        raw = sw.read_text(encoding="utf-8", errors="ignore")
-        text = re.sub(r"const\s+SW_VERSION\s*=\s*['\"][^'\"]+['\"]", f"const SW_VERSION = '{VERSION}-pwa-step1'", raw)
-        write_if_changed(sw, text, changed)
-
-    print(f"SOV bump-version: promijenjeno datoteka: {len(changed)}")
-    for p in changed:
-        print(" -", p.relative_to(ROOT))
+    print(f"Promijenjeno datoteka: {len(changed)}")
+    for path in changed:
+        print(path.relative_to(root))
     return 0
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

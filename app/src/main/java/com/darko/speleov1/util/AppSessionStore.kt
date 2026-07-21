@@ -3,6 +3,7 @@ package com.darko.speleov1.util
 import android.content.Context
 import com.darko.speleov1.AppTab
 import com.darko.speleov1.AppLanguage
+import com.darko.speleov1.AppThemeMode
 import com.darko.speleov1.MapOrientationMode
 import com.darko.speleov1.model.CadastreFilter
 import com.darko.speleov1.model.CaveTypeFilter
@@ -18,6 +19,7 @@ private data class SessionFilterDto(
     val areaFilter: String = "",
     val distanceFilterKm: Int? = null,
     val onlyWithDescription: Boolean = false,
+    val onlyWithDrawing: Boolean = false,
     val fieldTaskFilters: List<String> = emptyList()
 )
 
@@ -34,6 +36,7 @@ data class SearchPreset(
 data class AppSessionSnapshot(
     val currentTab: AppTab = AppTab.HOME,
     val appLanguage: AppLanguage = AppLanguage.HR,
+    val appThemeMode: AppThemeMode = AppThemeMode.DARK,
     val hasSeenWelcome: Boolean = false,
     val simplePointViewEnabled: Boolean = false,
     val hideUserContentOnMap: Boolean = false,
@@ -56,6 +59,7 @@ object AppSessionStore {
     private data class SessionDto(
         val currentTab: String = AppTab.HOME.name,
         val appLanguage: String = AppLanguage.HR.name,
+        val appThemeMode: String = AppThemeMode.DARK.name,
         val hasSeenWelcome: Boolean = false,
         val simplePointViewEnabled: Boolean = false,
         val hideUserContentOnMap: Boolean = false,
@@ -78,6 +82,7 @@ object AppSessionStore {
             AppSessionSnapshot(
                 currentTab = enumValueOrDefault(dto.currentTab, AppTab.HOME).let { if (it == AppTab.SPELEO_RUNNER) AppTab.HOME else it },
                 appLanguage = enumValueOrDefault(dto.appLanguage, AppLanguage.HR),
+                appThemeMode = AppThemeMode.fromStored(dto.appThemeMode),
                 hasSeenWelcome = dto.hasSeenWelcome,
                 simplePointViewEnabled = dto.simplePointViewEnabled,
                 hideUserContentOnMap = dto.hideUserContentOnMap,
@@ -99,6 +104,7 @@ object AppSessionStore {
                             areaFilter = p.filters.areaFilter,
                             distanceFilterKm = p.filters.distanceFilterKm,
                             onlyWithDescription = p.filters.onlyWithDescription,
+                            onlyWithDrawing = p.filters.onlyWithDrawing,
                             fieldTaskFilters = p.filters.fieldTaskFilters
                         )
                     )
@@ -111,6 +117,7 @@ object AppSessionStore {
                     areaFilter = dto.filters.areaFilter,
                     distanceFilterKm = dto.filters.distanceFilterKm,
                     onlyWithDescription = dto.filters.onlyWithDescription,
+                    onlyWithDrawing = dto.filters.onlyWithDrawing,
                     fieldTaskFilters = dto.filters.fieldTaskFilters
                 )
             )
@@ -121,6 +128,7 @@ object AppSessionStore {
         val dto = SessionDto(
             currentTab = (if (snapshot.currentTab == AppTab.SPELEO_RUNNER) AppTab.HOME else snapshot.currentTab).name,
             appLanguage = snapshot.appLanguage.name,
+            appThemeMode = snapshot.appThemeMode.name,
             hasSeenWelcome = snapshot.hasSeenWelcome,
             simplePointViewEnabled = snapshot.simplePointViewEnabled,
             hideUserContentOnMap = snapshot.hideUserContentOnMap,
@@ -142,6 +150,7 @@ object AppSessionStore {
                         areaFilter = p.filters.areaFilter,
                         distanceFilterKm = p.filters.distanceFilterKm,
                         onlyWithDescription = p.filters.onlyWithDescription,
+                        onlyWithDrawing = p.filters.onlyWithDrawing,
                         fieldTaskFilters = p.filters.fieldTaskFilters
                     )
                 )
@@ -154,6 +163,7 @@ object AppSessionStore {
                 areaFilter = snapshot.filters.areaFilter,
                 distanceFilterKm = snapshot.filters.distanceFilterKm,
                 onlyWithDescription = snapshot.filters.onlyWithDescription,
+                onlyWithDrawing = snapshot.filters.onlyWithDrawing,
                 fieldTaskFilters = snapshot.filters.fieldTaskFilters
             )
         )

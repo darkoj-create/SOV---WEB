@@ -62,6 +62,12 @@ internal fun buildSearchActiveFilterPills(
         CaveTypeFilter.SPILJA -> add("Špilje")
         else -> Unit
     }
+    when (filters.cadastreFilter) {
+        CadastreFilter.IN_CADASTRE -> add("U katastru")
+        CadastreFilter.NOT_IN_CADASTRE -> add("Nije u katastru")
+        else -> Unit
+    }
+    if (filters.onlyWithDrawing) add("Samo s nacrtom")
     if (filters.distanceFilterKm != null) add(selectedDistanceLabel)
     if (filters.depthMinM != null) add("Dubina ${filters.depthMinM}+ m")
     if (filters.onlyWithDescription) add("Ima opis")

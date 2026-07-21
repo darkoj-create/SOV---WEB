@@ -2,13 +2,16 @@ package com.darko.speleov1.util
 
 import android.content.Context
 import android.os.Build
+import com.darko.speleov1.BuildConfig
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.URL
 import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
+import java.util.concurrent.Executors
 
 /**
  * SOV Observability v1: lightweight handled-error logger for Android.
@@ -16,9 +19,13 @@ import java.security.MessageDigest
  * Does not use SovHttpClient to avoid recursive logging loops.
  */
 internal object SovClientLogger {
-    private const val APP_VERSION = "1.4.27-wms-nav-runner"
+    private val APP_VERSION: String
+        get() = BuildConfig.VERSION_NAME
     private const val CONNECT_TIMEOUT_MS = 6_000
     private const val READ_TIMEOUT_MS = 8_000
+    private val logExecutor = Executors.newSingleThreadExecutor { runnable ->
+        Thread(runnable, "SOV-ClientLogger").apply { isDaemon = true }
+    }
     @Volatile private var isSending = false
     private var lastKey: String = ""
     private var lastAt: Long = 0L
@@ -33,21 +40,22 @@ internal object SovClientLogger {
         tripId: String = "",
         teamId: String = ""
     ) {
-        val cleanMessage = message.take(1800).ifBlank { "Greška bez poruke" }
-        val key = listOf(screen, action, severity, cleanMessage).joinToString("|")
+        val cleanMessage = sanitizeLogText(message).take(1800).ifBlank { "Greška bez poruke" }
+        val cleanDetails = sanitizeJsonObject(details)
+        val key = listOf(screen, sanitizeLogText(action), severity, cleanMessage).joinToString("|")
         val now = System.currentTimeMillis()
         if (key == lastKey && now - lastAt < 15_000L) return
         lastKey = key
         lastAt = now
 
         // SOV Observability v2: Crashlytics gets the same context as Supabase logs.
-        logToCrashlytics(context.applicationContext, screen, action, severity, cleanMessage, details, tripId, teamId)
+        logToCrashlytics(context.applicationContext, screen, sanitizeLogText(action), severity, cleanMessage, cleanDetails, tripId, teamId)
 
-        Thread {
+        logExecutor.execute {
             runCatching {
-                send(context.applicationContext, screen, action, severity, cleanMessage, details, tripId, teamId, handled = true)
+                send(context.applicationContext, screen, sanitizeLogText(action), severity, cleanMessage, cleanDetails, tripId, teamId, handled = true)
             }
-        }.start()
+        }
     }
 
     fun logInfo(context: Context, screen: String, action: String, message: String, details: JSONObject = JSONObject()) {
@@ -91,6 +99,50 @@ internal object SovClientLogger {
         }
     }
 
+    private fun sanitizeLogText(value: String): String {
+        var out = value
+        out = out.replace(SOV_SUPABASE_ANON_KEY, "<supabase-anon-key>")
+        out = out.replace(Regex("(?i)Bearer\\s+[A-Za-z0-9._\\-]+"), "Bearer <redacted>")
+        out = out.replace(Regex("(?i)(access_token|refresh_token|apikey|authorization)([\\\"'\\s:=]+)([^\\\"'\\s,}]+)")) {
+            "${it.groupValues[1]}${it.groupValues[2]}<redacted>"
+        }
+        out = out.replace(Regex("(?i)(email)([\\\"'\\s:=]+)([^\\\"'\\s,}]+@[^\\\"'\\s,}]+)")) {
+            "${it.groupValues[1]}${it.groupValues[2]}<redacted-email>"
+        }
+        return out
+    }
+
+    private fun sanitizeJsonObject(input: JSONObject): JSONObject {
+        val output = JSONObject()
+        val keys = input.keys()
+        while (keys.hasNext()) {
+            val key = keys.next()
+            val value = input.opt(key)
+            val safeValue = when (value) {
+                is JSONObject -> sanitizeJsonObject(value)
+                is JSONArray -> sanitizeJsonArray(value)
+                is String -> sanitizeLogText(value)
+                else -> value
+            }
+            output.put(key, safeValue)
+        }
+        return output
+    }
+
+    private fun sanitizeJsonArray(input: JSONArray): JSONArray {
+        val output = JSONArray()
+        for (index in 0 until input.length()) {
+            val value = input.opt(index)
+            output.put(when (value) {
+                is JSONObject -> sanitizeJsonObject(value)
+                is JSONArray -> sanitizeJsonArray(value)
+                is String -> sanitizeLogText(value)
+                else -> value
+            })
+        }
+        return output
+    }
+
     private fun sha256(value: String): String {
         val bytes = MessageDigest.getInstance("SHA-256").digest(value.toByteArray(StandardCharsets.UTF_8))
         return bytes.joinToString("") { "%02x".format(it) }
@@ -125,7 +177,7 @@ internal object SovClientLogger {
                     .put("model", Build.MODEL ?: "")
                     .put("android", Build.VERSION.RELEASE ?: "")
                     .put("sdk", Build.VERSION.SDK_INT)
-                    .put("email", session.email)
+                    .put("email_hash", session.email.trim().lowercase().takeIf { it.isNotBlank() }?.let { sha256(it).take(16) }.orEmpty())
                 )
                 .put("p_user_role", permissions.role)
                 .put("p_trip_id", tripId)
@@ -133,7 +185,7 @@ internal object SovClientLogger {
                 .put("p_handled", handled)
 
             val token = session.accessToken.ifBlank { SOV_SUPABASE_ANON_KEY }
-            val conn = (URL("$SOV_SUPABASE_URL/rest/v1/rpc/sov_log_client_error").openConnection() as HttpURLConnection).apply {
+            val conn = SovNetworkSecurity.openHttpConnection("$SOV_SUPABASE_URL/rest/v1/rpc/sov_log_client_error", "Client error log").apply {
                 requestMethod = "POST"
                 connectTimeout = CONNECT_TIMEOUT_MS
                 readTimeout = READ_TIMEOUT_MS

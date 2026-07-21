@@ -175,7 +175,7 @@ internal object ArchiveCloudCache {
         val raw = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_ITEMS, null) ?: return null
         return runCatching {
             val items = JSONArray(raw).mapObjects { it.toArchiveWorkItem() }
-            ArchiveSnapshot(items = items, stats = statsFromItems(items), message = "Prikazujem zadnji spremljeni arhivarski worklist. Falinke dolaze iz speleo baze / field_tasks.", fromCache = true)
+            ArchiveSnapshot(items = items, stats = statsFromItems(items), message = "Prikazujem spremljeni popis.", fromCache = true)
         }.getOrNull()
     }
 
@@ -200,7 +200,7 @@ internal object ArchiveSupabaseRepository {
             val items = fetchWorklist(context)
             val stats = fetchStats(context) ?: statsFromItems(items)
             ArchiveCloudCache.save(context, items)
-            ArchiveSnapshot(items, stats, "Arhiva sinkronizirana. Falinke dolaze iz speleo baze: field_tasks/workflow/statusi, ne iz upload arhive.", false)
+            ArchiveSnapshot(items, stats, "Arhiva osvježena.", false)
         }.getOrElse { err ->
             cached?.copy(message = "Cloud nije dostupan: ${err.message.orEmpty().take(90)}", fromCache = true)
                 ?: fallback("Cloud nije dostupan: ${err.message.orEmpty().take(90)}")

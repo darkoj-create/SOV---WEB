@@ -172,6 +172,7 @@ import com.darko.speleov1.model.FilterState
 import com.darko.speleov1.model.SpeleoRecord
 import com.darko.speleov1.ui.theme.SpeleoTheme
 import com.darko.speleov1.util.CoordinateConverter
+import com.darko.speleov1.util.ElevationRepository
 import com.darko.speleov1.util.KmlExporter
 import com.darko.speleov1.util.LocationHelper
 import com.darko.speleov1.util.LocalTileOverlay
@@ -245,6 +246,13 @@ import java.util.concurrent.atomic.AtomicBoolean
 @Composable
 
 fun RecordCard(record: SpeleoRecord, onClick: () -> Unit, onViewOnMap: () -> Unit) {
+    val context = LocalContext.current
+    var hasBundledDrawing by remember(record.id) { mutableStateOf<Boolean?>(null) }
+    LaunchedEffect(record.id) {
+        hasBundledDrawing = withContext(Dispatchers.IO) {
+            runCatching { DriveDrawingsRepository.hasBundledDrawingFor(context, record) }.getOrDefault(false)
+        }
+    }
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -288,7 +296,7 @@ fun RecordCard(record: SpeleoRecord, onClick: () -> Unit, onViewOnMap: () -> Uni
                     ),
                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
                 ) {
-                    Icon(Icons.Default.Map, contentDescription = null, modifier = Modifier.size(16.dp), tint = if (hasCoordinates) premiumIconTint("map karta") else premiumIconTint("map karta").copy(alpha = 0.4f))
+                    Icon(Icons.Default.Map, contentDescription = "Karta", modifier = Modifier.size(16.dp), tint = if (hasCoordinates) premiumIconTint("map karta") else premiumIconTint("map karta").copy(alpha = 0.4f))
                     Spacer(Modifier.width(6.dp))
                     Text(if (hasCoordinates) "Karta" else "Nema GPS")
                 }
@@ -305,11 +313,43 @@ fun RecordCard(record: SpeleoRecord, onClick: () -> Unit, onViewOnMap: () -> Uni
                 }
             }
 
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
-                SearchStatPill(label = "Dubina", value = record.metrics.depth_m?.let { "${it} m" } ?: "-", modifier = Modifier.weight(1f, fill = false))
-                SearchStatPill(label = "Duljina", value = record.metrics.length_m?.let { "${it} m" } ?: "-", modifier = Modifier.weight(1f, fill = false))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    SearchStatPill(label = "Dubina", value = record.metrics.depth_m?.let { "${it} m" } ?: "-", modifier = Modifier.weight(1f, fill = false))
+                    SearchStatPill(label = "Duljina", value = record.metrics.length_m?.let { "${it} m" } ?: "-", modifier = Modifier.weight(1f, fill = false))
+                }
+                DrawingLinkedBadge(hasBundledDrawing)
             }
         }
+    }
+}
+
+/** Mala oznaka u donjem desnom kutu kartice: je li nacrt spojen na objekt (iz ugrađene baze). */
+@Composable
+private fun DrawingLinkedBadge(hasDrawing: Boolean?) {
+    val (tint, bg, label) = when (hasDrawing) {
+        true -> Triple(Color(0xFF9BE7B2), Color(0xFF16301F), "Nacrt")
+        false -> Triple(Color(0xFF8B93A1), Color(0xFF2A303B), "Bez nacrta")
+        null -> Triple(Color(0xFF8B93A1).copy(alpha = 0.4f), Color(0xFF2A303B), "…")
+    }
+    Row(
+        modifier = Modifier
+            .background(bg, RoundedCornerShape(999.dp))
+            .padding(horizontal = 9.dp, vertical = 5.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        Icon(
+            Icons.Default.Description,
+            contentDescription = if (hasDrawing == true) "Nacrt spojen" else "Nacrt nije spojen",
+            modifier = Modifier.size(13.dp),
+            tint = tint
+        )
+        Text(label, style = MaterialTheme.typography.labelSmall, color = tint)
     }
 }
 
@@ -407,16 +447,25 @@ fun DetailSheet(
     onFillRecord: () -> Unit,
     onOpenOfflineZapisnik: () -> Unit,
     onShareRecord: () -> Unit,
+    onOpenDrawing: () -> Unit = {},
     onImportAttachmentToMap: (Uri) -> Unit = {},
     onOpenGeneratedLayerOnMap: (ImportedLayer) -> Unit = {},
     onChanged: () -> Unit = {}
 ) {
     val context = LocalContext.current
+    val language = LocalAppLanguage.current
+    val messenger = LocalSovMessenger.current
     val clipboard = LocalClipboardManager.current
     val coroutineScope = rememberCoroutineScope()
     var showNoteDialog by remember(record.id) { mutableStateOf(false) }
     var localNote by remember(record.id) { mutableStateOf(UserContentStore.loadRecordNote(context, record.id)) }
     var isFavorite by remember(record.id) { mutableStateOf(UserContentStore.isFavoriteRecord(context, record.id)) }
+    var hasDrawing by remember(record.id) { mutableStateOf<Boolean?>(null) }
+    LaunchedEffect(record.id) {
+        hasDrawing = withContext(Dispatchers.IO) {
+            runCatching { DriveDrawingsRepository.hasBundledDrawingFor(context, record) }.getOrDefault(false)
+        }
+    }
     var topoAttachments by remember(record.id) { mutableStateOf(TopoDroidBridgeStore.loadForRecord(context, record.id)) }
     val isNotInCadastre = record.classification.record_status == "nije_u_katastru" || record.cadastre.not_in_cadastre_candidate == true || record.cadastre.in_cadastre == false
     val fieldTasks = record.classification.field_tasks.orEmpty()
@@ -516,6 +565,21 @@ fun DetailSheet(
                     modifier = Modifier.weight(1f)
                 )
             }
+            if (hasDrawing == true) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    DialogActionButton(
+                        text = "Otvori nacrt",
+                        icon = Icons.Default.Map,
+                        onClick = onOpenDrawing,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Spacer(Modifier.weight(1f))
+                }
+            }
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -563,6 +627,7 @@ fun DetailSheet(
                 })
             }
         }
+        RecordElevationCheck(record = record, language = language)
         DetailLine("Pločica", displayPlateNumber(record))
         DetailLine("Dubina", record.metrics.depth_m?.let { "$it m" })
         DetailLine("Duljina", record.metrics.length_m?.let { "$it m" })
@@ -601,7 +666,7 @@ fun DetailSheet(
                     val archive = TopoDroidBridgeStore.createObjectArchive(context, record, topoAttachments)
                     shareFileFromCache(context, archive, "application/zip", "Podijeli arhivu nacrta")
                 }.onFailure {
-                    Toast.makeText(context, "Ne mogu izraditi arhivu nacrta", Toast.LENGTH_LONG).show()
+                    messenger.error("Ne mogu izraditi arhivu nacrta")
                 }
             },
             onOpen = { attachment -> openAttachmentUri(context, attachment.uri) },
@@ -624,14 +689,14 @@ fun DetailSheet(
                             val current = UserContentStore.loadImportedLayers(context)
                             UserContentStore.saveImportedLayers(context, current.filterNot { it.id == layer.id } + layer.copy(visible = true))
                             onChanged()
-                            Toast.makeText(context, "Topo plan je dodan na kartu i otvoren kao sloj.", Toast.LENGTH_LONG).show()
+                            Toast.makeText(context, "Nacrt dodan na kartu.", Toast.LENGTH_LONG).show()
                             onOpenGeneratedLayerOnMap(layer.copy(visible = true))
                         } else {
-                            Toast.makeText(context, "Ne mogu georeferencirati — nema survey.sql u ovom attachmentu.", Toast.LENGTH_LONG).show()
+                            messenger.error("Ne mogu otvoriti nacrt.")
                         }
                     }
                 } else {
-                    Toast.makeText(context, "Objekt nema koordinate ulaza — ne mogu georeferencirati.", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "Objekt nema koordinate.", Toast.LENGTH_LONG).show()
                 }
             }
         )
@@ -645,20 +710,20 @@ fun DetailSheet(
                 ) {
                     PhotoActionCard(
                         title = "Snimi foto",
-                        subtitle = "Dodaj novu fotku kamerom",
+                        subtitle = "Kamera",
                         icon = Icons.Default.AddAPhoto,
                         onClick = onTakePhoto
                     )
                     PhotoActionCard(
                         title = "Iz galerije",
-                        subtitle = "Uvezi postojeću fotografiju",
+                        subtitle = "Galerija",
                         icon = Icons.Default.PhotoLibrary,
                         onClick = onAddPhoto
                     )
                 }
                 if (photoUris.isEmpty()) {
                     Text(
-                        "Još nema dodanih fotografija za ovu jamu. Snimljene i uvezene fotke spremaju se u app folder.",
+                        "Nema fotografija.",
                         style = MaterialTheme.typography.bodySmall,
                         color = Color(0xFFC5CCD7)
                     )
@@ -692,7 +757,7 @@ fun DetailSheet(
             title = { Text("Note") },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("Dodaj kratku privatnu bilješku za ovu točku.")
+                    Text("Kratka bilješka.")
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -704,7 +769,7 @@ fun DetailSheet(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text("Favorit")
-                        Icon(if (isFavorite) Icons.Default.Star else Icons.Default.StarBorder, contentDescription = null, tint = premiumIconTint("favorite star"))
+                        Icon(if (isFavorite) Icons.Default.Star else Icons.Default.StarBorder, contentDescription = "Favorit", tint = premiumIconTint("favorite star"))
                     }
                     OutlinedTextField(
                         value = localNote,
@@ -749,7 +814,7 @@ private fun FieldTasksChips(tasks: List<String>) {
                 AssistChip(
                     onClick = {},
                     label = { Text(task, color = premiumIconTint(task)) },
-                    leadingIcon = { Icon(Icons.Default.CheckCircle, null, tint = premiumIconTint(task)) }
+                    leadingIcon = { Icon(Icons.Default.CheckCircle, contentDescription = "Potvrđeno", tint = premiumIconTint(task)) }
                 )
             }
         }
@@ -758,8 +823,64 @@ private fun FieldTasksChips(tasks: List<String>) {
 
 
 @Composable
+private fun RecordElevationCheck(record: SpeleoRecord, language: AppLanguage) {
+    val context = LocalContext.current
+    val lat = record.location.lat
+    val lon = record.location.lon
+    if (lat == null || lon == null) return
+    val baseElevation = record.location.altitude_m
+    var demElevation by remember(record.id, lat, lon) { mutableStateOf<Double?>(null) }
+    var loaded by remember(record.id, lat, lon) { mutableStateOf(false) }
+
+    LaunchedEffect(record.id, lat, lon) {
+        loaded = false
+        demElevation = withContext(Dispatchers.IO) { ElevationRepository(context).elevationAt(lat, lon) }
+        loaded = true
+    }
+
+    val baseText = baseElevation?.let { "${it.roundToInt()} m" } ?: "—"
+    val demText = when {
+        !loaded -> language.pick("učitavam…", "loading…")
+        demElevation != null -> "${demElevation!!.roundToInt()} m"
+        else -> "—"
+    }
+    val diff = if (baseElevation != null && demElevation != null) kotlin.math.abs(baseElevation - demElevation!!) else null
+    val suspicious = diff != null && diff > 30.0
+
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        color = if (suspicious) Color(0xFF3A2F12) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.42f),
+        border = BorderStroke(1.dp, if (suspicious) Color(0xFFE6C36A).copy(alpha = 0.45f) else Color.White.copy(alpha = 0.08f))
+    ) {
+        Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            Text(
+                language.pick(
+                    "Visina (baza): $baseText · Visina (DEM): $demText",
+                    "Elevation (database): $baseText · Elevation (DEM): $demText"
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = if (suspicious) Color(0xFFFFE1A3) else MaterialTheme.colorScheme.onSurface
+            )
+            if (suspicious) {
+                Text(
+                    language.pick(
+                        "Razlika je veća od 30 m — provjeri koordinate ili nadmorsku visinu u bazi.",
+                        "Difference is greater than 30 m — check coordinates or database elevation."
+                    ),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color(0xFFFFD28A)
+                )
+            }
+        }
+    }
+}
+
+@Composable
 private fun DriveDrawingsCard(record: SpeleoRecord) {
     val context = LocalContext.current
+    val messenger = LocalSovMessenger.current
     val scope = rememberCoroutineScope()
     val webAppUrl = remember(record.id) { DriveDrawingsRepository.loadWebAppUrl(context) }
     var isLoading by remember(record.id) { mutableStateOf(false) }
@@ -782,7 +903,7 @@ private fun DriveDrawingsCard(record: SpeleoRecord) {
                 previewDrawing = drawing
                 Toast.makeText(context, "Nacrt dodan lokalno", Toast.LENGTH_SHORT).show()
             }.onFailure { error ->
-                Toast.makeText(context, error.message ?: "Ne mogu dodati nacrt", Toast.LENGTH_LONG).show()
+                messenger.error(error.message ?: "Ne mogu dodati nacrt")
             }
         }
     }
@@ -871,7 +992,7 @@ private fun DriveDrawingsCard(record: SpeleoRecord) {
                 if (isLoading) {
                     CircularProgressIndicator(modifier = Modifier.size(22.dp), strokeWidth = 2.dp, color = Color(0xFF9FC2FF))
                 } else {
-                    Icon(Icons.Default.Description, contentDescription = null, tint = Color(0xFF9FC2FF))
+                    Icon(Icons.Default.Description, contentDescription = "Dokument", tint = Color(0xFF9FC2FF))
                 }
             }
 
@@ -881,7 +1002,7 @@ private fun DriveDrawingsCard(record: SpeleoRecord) {
                     enabled = !isLoading,
                     modifier = Modifier.weight(1f)
                 ) {
-                    Icon(Icons.Default.Search, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Icon(Icons.Default.Search, contentDescription = "Pretraga", modifier = Modifier.size(16.dp))
                     Spacer(Modifier.width(6.dp))
                     Text("Osvježi")
                 }
@@ -890,7 +1011,7 @@ private fun DriveDrawingsCard(record: SpeleoRecord) {
                     enabled = !isLoading,
                     modifier = Modifier.weight(1f)
                 ) {
-                    Icon(Icons.Default.UploadFile, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Icon(Icons.Default.UploadFile, contentDescription = "Uvoz datoteke", modifier = Modifier.size(16.dp))
                     Spacer(Modifier.width(6.dp))
                     Text("Dodaj svoj")
                 }
@@ -940,7 +1061,7 @@ private fun DriveDrawingsCard(record: SpeleoRecord) {
                                         Toast.makeText(context, "Nacrt spremljen u Offline/nacrti", Toast.LENGTH_SHORT).show()
                                         previewDrawing = match.drawing
                                     }.onFailure { error ->
-                                        Toast.makeText(context, error.message ?: "Download nacrta nije uspio", Toast.LENGTH_LONG).show()
+                                        messenger.error(error.message ?: "Download nacrta nije uspio")
                                     }
                                 }
                             },
@@ -998,7 +1119,7 @@ private fun DriveDrawingMatchRow(
                         color = if (strong) Color(0xFF9BE7B2) else Color(0xFFFFD28A)
                     )
                 }
-                Icon(if (isLocal) Icons.Default.CheckCircle else Icons.Default.Download, contentDescription = null, tint = if (isLocal) Color(0xFF9BE7B2) else Color(0xFF9FC2FF))
+                Icon(if (isLocal) Icons.Default.CheckCircle else Icons.Default.Download, contentDescription = "Preuzmi", tint = if (isLocal) Color(0xFF9BE7B2) else Color(0xFF9FC2FF))
             }
             if (isLocal) {
                 val context = LocalContext.current
@@ -1011,12 +1132,12 @@ private fun DriveDrawingMatchRow(
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                 Button(onClick = onDownloadOrOpen, modifier = Modifier.weight(1f)) {
-                    Icon(if (isLocal) Icons.Default.Visibility else Icons.Default.Download, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Icon(if (isLocal) Icons.Default.Visibility else Icons.Default.Download, contentDescription = "Preuzmi", modifier = Modifier.size(16.dp))
                     Spacer(Modifier.width(6.dp))
                     Text(if (isLocal) "Pregledaj" else "Preuzmi")
                 }
                 OutlinedButton(onClick = onOpenDrive, modifier = Modifier.weight(1f)) {
-                    Icon(Icons.Default.FolderOpen, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Icon(Icons.Default.FolderOpen, contentDescription = "Otvori mapu", modifier = Modifier.size(16.dp))
                     Spacer(Modifier.width(6.dp))
                     Text("Drive")
                 }
@@ -1033,12 +1154,15 @@ private fun DrawingThumbnail(
     title: String,
     onClick: () -> Unit
 ) {
+    val context = LocalContext.current
     var bitmap by remember(localFile.absolutePath) { mutableStateOf<Bitmap?>(null) }
     LaunchedEffect(localFile.absolutePath) {
         bitmap = withContext(Dispatchers.IO) {
+            // Ugrađeni (asset:) nacrt se po potrebi tek ovdje kopira iz APK-a — nikad na main threadu.
+            val file = runCatching { DriveDrawingsRepository.ensureLocalCopy(context, drawing) }.getOrDefault(localFile)
             when {
-                drawing.isPdf -> renderPdfPageBitmap(localFile, pageIndex = 0, targetWidthPx = 520)
-                drawing.isImage -> renderImageBitmap(localFile, targetWidthPx = 520)
+                drawing.isPdf -> renderPdfPageBitmap(file, pageIndex = 0, targetWidthPx = 520)
+                drawing.isImage -> renderImageBitmap(file, targetWidthPx = 520)
                 else -> null
             }
         }
@@ -1066,19 +1190,19 @@ private fun DrawingThumbnail(
                     .background(Color.Black.copy(alpha = 0.58f), RoundedCornerShape(999.dp))
                     .padding(horizontal = 10.dp, vertical = 5.dp)
             ) {
-                Text("Tap za fullscreen", style = MaterialTheme.typography.labelSmall, color = Color.White)
+                Text("Tap za cijeli ekran", style = MaterialTheme.typography.labelSmall, color = Color.White)
             }
         } else {
             Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 CircularProgressIndicator(modifier = Modifier.size(22.dp), strokeWidth = 2.dp, color = Color(0xFF9FC2FF))
-                Text(if (drawing.isImage && drawing.extension in setOf("tif", "tiff")) "TIFF možda treba vanjski preglednik…" else "Učitavam pregled nacrta…", style = MaterialTheme.typography.bodySmall, color = Color(0xFFB8C7DD))
+                Text(if (drawing.isImage && drawing.extension in setOf("tif", "tiff")) "Otvori vanjskim preglednikom…" else "Učitavam…", style = MaterialTheme.typography.bodySmall, color = Color(0xFFB8C7DD))
             }
         }
     }
 }
 
 @Composable
-private fun DrawingViewerDialog(
+internal fun DrawingViewerDialog(
     title: String,
     drawing: DriveDrawing,
     localFile: File,
@@ -1093,8 +1217,12 @@ private fun DrawingViewerDialog(
     var offsetX by remember(localFile.absolutePath, pageIndex) { mutableFloatStateOf(0f) }
     var offsetY by remember(localFile.absolutePath, pageIndex) { mutableFloatStateOf(0f) }
 
+    val viewerContext = LocalContext.current
     LaunchedEffect(localFile.absolutePath) {
-        pageCount = withContext(Dispatchers.IO) { if (drawing.isPdf) readPdfPageCount(localFile).coerceAtLeast(1) else 1 }
+        pageCount = withContext(Dispatchers.IO) {
+            val file = runCatching { DriveDrawingsRepository.ensureLocalCopy(viewerContext, drawing) }.getOrDefault(localFile)
+            if (drawing.isPdf) readPdfPageCount(file).coerceAtLeast(1) else 1
+        }
     }
     LaunchedEffect(localFile.absolutePath, pageIndex) {
         errorText = null
@@ -1102,7 +1230,10 @@ private fun DrawingViewerDialog(
         scale = 1f
         offsetX = 0f
         offsetY = 0f
-        val rendered = withContext(Dispatchers.IO) { if (drawing.isPdf) renderPdfPageBitmap(localFile, pageIndex, targetWidthPx = 1800) else renderImageBitmap(localFile, targetWidthPx = 1800) }
+        val rendered = withContext(Dispatchers.IO) {
+            val file = runCatching { DriveDrawingsRepository.ensureLocalCopy(viewerContext, drawing) }.getOrDefault(localFile)
+            if (drawing.isPdf) renderPdfPageBitmap(file, pageIndex, targetWidthPx = 1800) else renderImageBitmap(file, targetWidthPx = 1800)
+        }
         if (rendered == null) {
             errorText = "Ne mogu prikazati ovaj nacrt u appu. Probaj vanjski preglednik."
         } else {
@@ -1175,7 +1306,7 @@ private fun DrawingViewerDialog(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
-                                Icon(Icons.Default.Description, contentDescription = null, tint = Color(0xFFFFD28A), modifier = Modifier.size(36.dp))
+                                Icon(Icons.Default.Description, contentDescription = "Dokument", tint = Color(0xFFFFD28A), modifier = Modifier.size(36.dp))
                                 Text(errorText.orEmpty(), textAlign = TextAlign.Center, color = Color(0xFFFFD28A))
                                 Button(onClick = onOpenExternal) { Text("Otvori vanjskim preglednikom") }
                             }
@@ -1234,7 +1365,7 @@ private fun renderPdfPageBitmap(file: File, pageIndex: Int, targetWidthPx: Int):
 
 private fun renderImageBitmap(file: File, targetWidthPx: Int): Bitmap? = runCatching {
     if (!file.exists() || file.length() <= 0L) return@runCatching null
-    val original = decodeDrawingImageBitmap(file) ?: return@runCatching null
+    val original = decodeDrawingImageBitmap(file, targetWidthPx.coerceIn(320, 2200)) ?: return@runCatching null
     val safeWidth = targetWidthPx.coerceIn(320, 2200)
     if (original.width <= safeWidth) return@runCatching original
     val ratio = original.height.toFloat() / max(original.width.toFloat(), 1f)
@@ -1242,17 +1373,31 @@ private fun renderImageBitmap(file: File, targetWidthPx: Int): Bitmap? = runCatc
     Bitmap.createScaledBitmap(original, safeWidth, safeHeight, true)
 }.getOrNull()
 
-private fun decodeDrawingImageBitmap(file: File): Bitmap? {
+private fun decodeDrawingImageBitmap(file: File, targetWidthPx: Int = 2200): Bitmap? {
+    // Dekodira odmah na ciljanu širinu umjesto pune rezolucije — bitno za memoriju
+    // kad se prikazuje više thumbnailova nacrta odjednom (OOM zaštita).
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
         runCatching {
             val source = ImageDecoder.createSource(file)
-            return ImageDecoder.decodeBitmap(source) { decoder, _, _ ->
+            return ImageDecoder.decodeBitmap(source) { decoder, info, _ ->
                 decoder.allocator = ImageDecoder.ALLOCATOR_SOFTWARE
                 decoder.isMutableRequired = false
+                val width = info.size.width
+                if (width > targetWidthPx) {
+                    val height = (info.size.height.toLong() * targetWidthPx / max(width, 1)).toInt().coerceAtLeast(1)
+                    decoder.setTargetSize(targetWidthPx, height)
+                }
             }
         }
     }
-    return BitmapFactory.decodeFile(file.absolutePath)
+    val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+    BitmapFactory.decodeFile(file.absolutePath, bounds)
+    val opts = BitmapFactory.Options().apply {
+        var sample = 1
+        while (bounds.outWidth / (sample * 2) >= targetWidthPx) sample *= 2
+        inSampleSize = sample
+    }
+    return BitmapFactory.decodeFile(file.absolutePath, opts)
 }
 
 @Composable
@@ -1298,7 +1443,7 @@ private fun PhotoActionCard(
                 color = premiumIconContainer(title, active = true)
             ) {
                 Box(modifier = Modifier.size(40.dp), contentAlignment = Alignment.Center) {
-                    Icon(icon, contentDescription = null, tint = actionTint)
+                    Icon(icon, contentDescription = "Ikona", tint = actionTint)
                 }
             }
             Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
@@ -1360,7 +1505,7 @@ private fun RecordPhotoPreviewCard(
                         modifier = Modifier.fillMaxSize()
                     )
                 } else {
-                    Icon(Icons.Default.PhotoLibrary, contentDescription = null, tint = premiumIconTint("photo gallery"))
+                    Icon(Icons.Default.PhotoLibrary, contentDescription = "Galerija fotografija", tint = premiumIconTint("photo gallery"))
                 }
             }
             Text(label, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold)
@@ -1432,7 +1577,7 @@ fun TopoDroidBridgeCard(
                         )
                     }
                 }
-                Icon(Icons.Default.FolderOpen, contentDescription = null, tint = Color(0xFF9FB7D8))
+                Icon(Icons.Default.FolderOpen, contentDescription = "Otvori mapu", tint = Color(0xFF9FB7D8))
             }
 
             if (attachments.isEmpty()) {
@@ -1450,18 +1595,18 @@ fun TopoDroidBridgeCard(
 
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedButton(onClick = onManualAttach, shape = RoundedCornerShape(16.dp)) {
-                    Icon(Icons.Default.UploadFile, null, modifier = Modifier.size(18.dp))
+                    Icon(Icons.Default.UploadFile, contentDescription = "Uvoz datoteke", modifier = Modifier.size(18.dp))
                     Spacer(Modifier.width(6.dp))
                     Text("Dodaj TopoDroid")
                 }
                 OutlinedButton(onClick = onScanFolder, shape = RoundedCornerShape(16.dp)) {
-                    Icon(Icons.Default.Search, null, modifier = Modifier.size(18.dp))
+                    Icon(Icons.Default.Search, contentDescription = "Pretraga", modifier = Modifier.size(18.dp))
                     Spacer(Modifier.width(6.dp))
                     Text("Skeniraj folder")
                 }
                 if (attachments.isNotEmpty()) {
                     OutlinedButton(onClick = onExportArchive, shape = RoundedCornerShape(16.dp)) {
-                        Icon(Icons.Default.Share, null, modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Share, contentDescription = "Podijeli", modifier = Modifier.size(18.dp))
                         Spacer(Modifier.width(6.dp))
                         Text("Export arhive")
                     }
@@ -1515,7 +1660,7 @@ fun TopoDroidAttachmentRow(
                         .background(Color(0xFF314056), RoundedCornerShape(14.dp)),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(Icons.Default.Description, null, tint = Color(0xFFDDE8F8))
+                    Icon(Icons.Default.Description, contentDescription = "Dokument", tint = Color(0xFFDDE8F8))
                 }
                 Column(modifier = Modifier.weight(1f)) {
                     Text(attachment.originalFilename, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
@@ -1548,7 +1693,7 @@ fun TopoDroidAttachmentRow(
                 if (onShowOnMap != null) TextButton(onClick = onShowOnMap) { Text("Prikaži na karti") }
                 if (onGeoreferenceToMap != null) {
                     TextButton(onClick = onGeoreferenceToMap) {
-                        Icon(Icons.Default.Map, null, modifier = Modifier.size(14.dp))
+                        Icon(Icons.Default.Map, contentDescription = "Karta", modifier = Modifier.size(14.dp))
                         Spacer(Modifier.size(4.dp))
                         Text("Centerline na kartu", style = MaterialTheme.typography.labelSmall)
                     }
@@ -1611,7 +1756,7 @@ fun TopoDroidViewerDialog(
                     val viewerModel = model
                     if (viewerModel == null) {
                         Text(
-                            "Ovaj attachment nema čitljiv survey.sql za interni viewer. Original se i dalje može otvoriti ili podijeliti.",
+                            "Pregled nije dostupan. Original možeš otvoriti.",
                             color = Color(0xFF5F6875)
                         )
                     } else {
@@ -1701,7 +1846,7 @@ private fun TopoDroidMeasurementsPanel(model: TopoDroidBridgeStore.SurveyViewerM
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             trailingIcon = if (stationFilter.isNotBlank()) {
-                { IconButton(onClick = { stationFilter = "" }) { Icon(Icons.Default.Clear, null, modifier = Modifier.size(16.dp)) } }
+                { IconButton(onClick = { stationFilter = "" }) { Icon(Icons.Default.Clear, contentDescription = "Očisti", modifier = Modifier.size(16.dp)) } }
             } else null
         )
         if (filtered.isEmpty()) {

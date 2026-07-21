@@ -1,6 +1,7 @@
 package com.darko.speleov1
 
 import android.app.Application
+import android.content.Context
 import android.location.Location
 import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
@@ -14,8 +15,12 @@ import com.darko.speleov1.model.FilterState
 import com.darko.speleov1.model.SpeleoRecord
 import com.darko.speleov1.model.SourceFilter
 import com.darko.speleov1.util.AppSessionStore
+import com.darko.speleov1.util.DriveDrawingsRepository
 import com.darko.speleov1.util.UserContentStore
 import com.darko.speleov1.util.MyBaseRepository
+import com.darko.speleov1.util.canUseKatastarNow
+import com.darko.speleov1.util.compactSovSearchToken
+import com.darko.speleov1.util.normalizeSovSearchText
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -27,13 +32,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.osmdroid.util.GeoPoint
 import java.io.File
-import java.text.Normalizer
 import java.util.Locale
 
-private val DIACRITICS_REGEX = Regex("\\p{Mn}+")
-private val WHITESPACE_REGEX = Regex("\\s+")
-private val SEARCH_SEPARATOR_REGEX = Regex("[^a-z0-9]+")
-private val SEARCH_COMPACT_SEPARATOR_REGEX = Regex("[^a-z0-9]+")
 
 private data class SearchIndexRecord(
     val record: SpeleoRecord,
@@ -50,6 +50,7 @@ private data class SearchIndexRecord(
     val objectType: String,
     val cadastreStatus: String,
     val descriptionPresent: Boolean,
+    val hasBundledDrawing: Boolean,
     val tasks: Set<String>,
     val areaTokens: Set<String>,
     val searchBlob: String
@@ -86,6 +87,7 @@ private data class CachedSearchIndexRecord(
     val objectType: String,
     val cadastreStatus: String,
     val descriptionPresent: Boolean,
+    val hasBundledDrawing: Boolean,
     val tasks: List<String>,
     val areaTokens: List<String>,
     val searchBlob: String
@@ -133,7 +135,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private var lastFilterSnapshot: FilterSnapshot? = null
 
     companion object {
-        private const val SEARCH_CACHE_VERSION = 9001
+        private const val SEARCH_CACHE_VERSION = 9003
         private const val SEARCH_CACHE_FILE_NAME = "search_index_cache_admin_v9001.json"
         @Volatile private var cachedRecordsKey: String? = null
         @Volatile private var cachedIndexedRecords: List<SearchIndexRecord>? = null
@@ -156,19 +158,34 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         loadData()
     }
 
+    fun reloadDataForAccessChange() {
+        searchCacheFile().delete()
+        cachedRecordsKey = null
+        cachedIndexedRecords = null
+        cachedLocationOptions = null
+        loadData()
+    }
+
     private fun loadData() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, isFiltering = false, error = null, isSearchIndexReady = false, loadingMessage = "Učitavam bazu…", loadingProgress = 0.08f) }
             runCatching {
                 withContext(Dispatchers.IO) {
-                    repository.loadDataset()
+                    val baseEnvelope = repository.loadDataset()
+                    val katastarEnvelope = if (canUseKatastarNow(appContext)) {
+                        runCatching { repository.loadKatastarDataset() }.getOrNull()
+                    } else null
+                    baseEnvelope to katastarEnvelope
                 }.also {
                     _uiState.update { state -> state.copy(loadingMessage = "Pripremam objekte za search…", loadingProgress = 0.42f) }
                 }
-            }.onSuccess { envelope ->
-                val myBaseRecords = withContext(Dispatchers.IO) { MyBaseRepository.loadRecords(appContext) }
-                val records = envelope.records + myBaseRecords
-                val cacheKey = buildRecordsCacheKey(envelope, MyBaseRepository.cacheFingerprint(appContext))
+            }.onSuccess { (envelope, katastarEnvelope) ->
+                // Moja baza može biti velika. Ne blokiramo početni load/parsing na 49%.
+                // Prvo se prikažu SOV + Katastar, a Moja baza se doda u pozadini.
+                val myBaseRecords = emptyList<SpeleoRecord>()
+                val records = envelope.records + katastarEnvelope?.records.orEmpty()
+                val katastarKey = katastarEnvelope?.let { "${it.schema_version}|${it.generated_at_utc}|${it.stats.records_total}" } ?: "katastar_locked"
+                val cacheKey = buildRecordsCacheKey(envelope, "mybase:deferred", katastarKey)
                 val cachedIndex = cachedIndexedRecords.takeIf { cachedRecordsKey == cacheKey }
                 val cachedOptions = cachedLocationOptions.takeIf { cachedRecordsKey == cacheKey }
                 val hasMemoryCache = !cachedIndex.isNullOrEmpty() && !cachedOptions.isNullOrEmpty()
@@ -195,7 +212,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                         allRecords = records,
                         filteredRecords = emptyList(),
                         myBaseCount = myBaseRecords.size,
-                        myBaseSummary = MyBaseRepository.summary(appContext),
+                        myBaseSummary = "Moja baza se učitava u pozadini",
                         locationOptions = when {
                             hasMemoryCache -> cachedOptions.orEmpty()
                             hasDiskCache -> diskOptions.orEmpty()
@@ -210,6 +227,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 } else {
                     warmUpSearch(records, cacheKey)
                 }
+                loadMyBaseInBackground(envelope, katastarEnvelope)
             }.onFailure { throwable ->
                 _uiState.update {
                     it.copy(
@@ -225,9 +243,41 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private fun warmUpSearch(records: List<SpeleoRecord>, cacheKey: String) {
+
+    private fun loadMyBaseInBackground(envelope: DatasetEnvelope, katastarEnvelope: DatasetEnvelope?) {
+        viewModelScope.launch {
+            val myBaseRecords = withContext(Dispatchers.IO) { MyBaseRepository.loadRecords(appContext) }
+            val summary = if (myBaseRecords.isEmpty()) "Nema učitanih KML/CSV točaka" else "${myBaseRecords.size} točaka u Mojoj bazi"
+            if (myBaseRecords.isEmpty()) {
+                _uiState.update { it.copy(myBaseCount = 0, myBaseSummary = summary, myBaseMessage = null) }
+                return@launch
+            }
+            val records = envelope.records + katastarEnvelope?.records.orEmpty() + myBaseRecords
+            val katastarKey = katastarEnvelope?.let { "${it.schema_version}|${it.generated_at_utc}|${it.stats.records_total}" } ?: "katastar_locked"
+            val cacheKey = buildRecordsCacheKey(envelope, MyBaseRepository.cacheFingerprint(appContext), katastarKey)
+            _uiState.update {
+                it.copy(
+                    allRecords = records,
+                    filteredRecords = emptyList(),
+                    myBaseCount = myBaseRecords.size,
+                    myBaseSummary = summary,
+                    isSearchIndexReady = false,
+                    myBaseMessage = "Moja baza učitana: ${myBaseRecords.size} točaka"
+                )
+            }
+            warmUpSearch(records, cacheKey, keepUiVisible = true)
+        }
+    }
+
+    private fun warmUpSearch(records: List<SpeleoRecord>, cacheKey: String, keepUiVisible: Boolean = false) {
         viewModelScope.launch(Dispatchers.Default) {
-            _uiState.update { it.copy(isLoading = true, loadingMessage = "Gradim search index…", loadingProgress = 0.58f) }
+            _uiState.update {
+                if (keepUiVisible) {
+                    it.copy(isLoading = false, isSearchIndexReady = false, myBaseMessage = "Moja baza se dodaje u pozadini…")
+                } else {
+                    it.copy(isLoading = true, loadingMessage = "Gradim search index…", loadingProgress = 0.58f)
+                }
+            }
             val total = records.size.coerceAtLeast(1)
             val index = ArrayList<SearchIndexRecord>(records.size)
             val cacheEntries = ArrayList<CachedSearchIndexRecord>(records.size)
@@ -258,7 +308,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                         isSearchIndexReady = true,
                         loadingMessage = "Search spreman",
                         loadingProgress = 1f,
-                        locationOptions = locationOptions
+                        locationOptions = locationOptions,
+                        myBaseMessage = if (keepUiVisible) null else it.myBaseMessage
                     )
                 }
                 if (pendingReapplyAfterWarmup || _uiState.value.filters.hasAnyActiveCriteriaFast()) {
@@ -371,7 +422,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         return if (normalizedQuery.startsWith(snapshot.queryNormalized)) snapshot.results else indexedRecords
     }
 
-    private fun buildIndex(record: SpeleoRecord): SearchIndexRecord {
+    private fun buildIndex(record: SpeleoRecord, context: Context = appContext): SearchIndexRecord {
         val county = normalizeSearchText(record.location.county)
         val municipality = normalizeSearchText(record.location.municipality)
         val locality = normalizeSearchText(record.location.locality)
@@ -424,6 +475,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             descriptionPresent = !record.content.technical_description.isNullOrBlank() ||
                 !record.content.access_description.isNullOrBlank() ||
                 !record.content.note.isNullOrBlank(),
+            hasBundledDrawing = runCatching { DriveDrawingsRepository.hasBundledDrawingFor(context, record) }.getOrDefault(false),
             tasks = tasks,
             areaTokens = listOf(county, municipality, locality, nearestPlace)
                 .filter { it.isNotBlank() }
@@ -432,7 +484,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         )
     }
 
-    private fun buildRecordsCacheKey(envelope: DatasetEnvelope, myBaseFingerprint: String): String {
+    private fun buildRecordsCacheKey(envelope: DatasetEnvelope, myBaseFingerprint: String, katastarFingerprint: String): String {
         val schema = envelope.schema_version.ifBlank { "schema" }
         val generatedAt = envelope.generated_at_utc.ifBlank { "generated" }
         val source = envelope.source_file.ifBlank { "source" }
@@ -444,6 +496,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             envelope.stats.records_total.toString(),
             envelope.records.firstOrNull()?.id.orEmpty(),
             envelope.records.lastOrNull()?.id.orEmpty(),
+            katastarFingerprint,
             myBaseFingerprint
         ).joinToString("|")
     }
@@ -502,6 +555,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                         objectType = cached.objectType,
                         cadastreStatus = cached.cadastreStatus,
                         descriptionPresent = cached.descriptionPresent,
+                        hasBundledDrawing = cached.hasBundledDrawing,
                         tasks = cached.tasks.toSet(),
                         areaTokens = cached.areaTokens.toSet(),
                         searchBlob = cached.searchBlob
@@ -559,6 +613,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         objectType = objectType,
         cadastreStatus = cadastreStatus,
         descriptionPresent = descriptionPresent,
+        hasBundledDrawing = hasBundledDrawing,
         tasks = tasks.toList(),
         areaTokens = areaTokens.toList(),
         searchBlob = searchBlob
@@ -606,6 +661,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     CadastreFilter.IN_CADASTRE -> it.record.cadastre.in_cadastre == true || it.cadastreStatus == "u_katastru"
                     CadastreFilter.NOT_IN_CADASTRE -> it.record.cadastre.not_in_cadastre_candidate == true || it.cadastreStatus.contains("nije")
                 }
+            }
+            .filter {
+                if (filters.onlyWithDrawing) it.hasBundledDrawing else true
             }
             .filter {
                 when (filters.caveTypeFilter) {
@@ -759,19 +817,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         return values.joinToString(" ").trim()
     }
 
-    private fun compactSearchToken(value: String): String =
-        value.replace(SEARCH_COMPACT_SEPARATOR_REGEX, "").trim()
+    private fun compactSearchToken(value: String): String = compactSovSearchToken(value)
 
-    private fun normalizeSearchText(value: String?): String {
-        if (value.isNullOrBlank()) return ""
-        val replaced = value.trim().replace('đ', 'd').replace('Đ', 'D')
-        return Normalizer.normalize(replaced, Normalizer.Form.NFD)
-            .replace(DIACRITICS_REGEX, "")
-            .lowercase(Locale.ROOT)
-            .replace(SEARCH_SEPARATOR_REGEX, " ")
-            .replace(WHITESPACE_REGEX, " ")
-            .trim()
-    }
+    private fun normalizeSearchText(value: String?): String = normalizeSovSearchText(value)
 }
 
 private fun FilterState.withoutQuery(): FilterState = copy(query = "")
@@ -785,5 +833,6 @@ private fun FilterState.hasAnyActiveCriteriaFast(): Boolean =
         distanceFilterKm != null ||
         depthMinM != null ||
         onlyWithDescription ||
+        onlyWithDrawing ||
         fieldTaskFilters.isNotEmpty() ||
         boundingBoxFilter != null

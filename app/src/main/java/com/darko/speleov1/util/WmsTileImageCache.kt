@@ -3,6 +3,7 @@ package com.darko.speleov1.util
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.os.Build
 import java.io.File
 import java.io.FileOutputStream
 
@@ -33,6 +34,17 @@ internal object WmsTileImageCache {
         if (bitmap.width <= 0 || bitmap.height <= 0) return null
         if (rejectMostlyBlack && bitmap.isMostlySolidBlack()) return null
         return bitmap
+    }
+
+
+    fun toHardware(bitmap: Bitmap): Bitmap {
+        if (Build.VERSION.SDK_INT < 26) return bitmap
+        if (bitmap.config == Bitmap.Config.HARDWARE) return bitmap
+        return runCatching {
+            bitmap.copy(Bitmap.Config.HARDWARE, false)?.also { hardware ->
+                if (hardware !== bitmap && !bitmap.isRecycled) bitmap.recycle()
+            }
+        }.getOrNull() ?: bitmap
     }
 
     fun writeCacheFile(file: File, bytes: ByteArray) {

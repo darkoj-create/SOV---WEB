@@ -17,6 +17,9 @@ import android.provider.Settings
 import android.provider.OpenableColumns
 import android.Manifest
 import android.widget.Toast
+import com.darko.speleov1.util.DriveDrawing
+import com.darko.speleov1.util.DriveDrawingMatch
+import com.darko.speleov1.util.DriveDrawingsRepository
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import android.content.pm.PackageManager
@@ -175,6 +178,7 @@ import com.darko.speleov1.util.MapLayerPrefs
 import com.darko.speleov1.util.WmsConfig
 import com.darko.speleov1.util.WmsTileSource
 import com.darko.speleov1.util.OfflineTileManager
+import com.darko.speleov1.util.SovNativeOfflineFolders
 import com.darko.speleov1.util.PendingCameraPhoto
 import com.darko.speleov1.util.PhotoStore
 import com.darko.speleov1.util.UserContentStore
@@ -247,7 +251,9 @@ import java.util.zip.ZipInputStream
 fun SpeleoApp(
     viewModel: MainViewModel = viewModel(),
     incomingOpenUri: Uri? = null,
-    onIncomingOpenConsumed: () -> Unit = {}
+    onIncomingOpenConsumed: () -> Unit = {},
+    appThemeMode: AppThemeMode = AppThemeMode.DARK,
+    onThemeModeChange: (AppThemeMode) -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val mapViewModel: MapScreenViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
@@ -405,6 +411,8 @@ fun SpeleoApp(
     var selectedMarkedPointForActions by remember { mutableStateOf<MarkedPoint?>(null) }
     var selectedImportedPointForActions by remember { mutableStateOf<MarkedPoint?>(null) }
     var offlineZapisnikTarget by remember { mutableStateOf<OfflineZapisnikTarget?>(null) }
+    var drawingViewerRecord by remember { mutableStateOf<SpeleoRecord?>(null) }
+    var showNacrtGenerator by remember { mutableStateOf(false) }
     var hideUserContentOnMap by rememberSaveable { mutableStateOf(initialSession.hideUserContentOnMap) }
     var simplePointViewEnabled by rememberSaveable { mutableStateOf(initialSession.simplePointViewEnabled) }
     val snackbarHostState = remember { SnackbarHostState() }
@@ -463,6 +471,7 @@ fun SpeleoApp(
     var importSummaryLayer by remember { mutableStateOf<ImportedLayer?>(null) }
     LaunchedEffect(Unit) {
         val snapshot = withContext(Dispatchers.IO) {
+            SovNativeOfflineFolders.scanAndRestore(context)
             Triple(
                 UserContentStore.loadMarkedPoints(context),
                 UserContentStore.loadSavedTracks(context),
@@ -1811,7 +1820,12 @@ fun SpeleoApp(
         }
     }
 
-    CompositionLocalProvider(LocalAppLanguage provides appLanguage) {
+    val sovMessenger = remember(snackbarHostState, launcherScope) { SovMessenger(snackbarHostState, launcherScope) }
+
+    CompositionLocalProvider(
+        LocalAppLanguage provides appLanguage,
+        LocalSovMessenger provides sovMessenger
+    ) {
     Scaffold(
         topBar = {
             if (currentTab == AppTab.CALCULATOR) {
@@ -1912,7 +1926,12 @@ fun SpeleoApp(
                         }
                     }
                 }
-                CompositionLocalProvider(LocalAppLanguage provides appLanguage) {
+                val sovMessenger = remember(snackbarHostState, launcherScope) { SovMessenger(snackbarHostState, launcherScope) }
+
+    CompositionLocalProvider(
+        LocalAppLanguage provides appLanguage,
+        LocalSovMessenger provides sovMessenger
+    ) {
                 NavHost(
                     navController = navController,
                     startDestination = AppTab.HOME.route,
@@ -1985,7 +2004,11 @@ fun SpeleoApp(
                             exportMode = "all"
                             showExportDialog = true
                         },
-                        onClearSearchFocus = { clearAllSearchState() }
+                        onClearSearchFocus = { clearAllSearchState() },
+                        onRequireKatastarLogin = {
+                            pendingPostLoginRoute = SovAppRoutes.SEARCH
+                            navController.navigate(SovAppRoutes.LOGIN) { launchSingleTop = true }
+                        }
                     )
                     }
                     composable(AppTab.MAP.route) {
@@ -2207,7 +2230,9 @@ fun SpeleoApp(
                             CloudScreen(
                                 onOpenTrips = { navigateTo(AppTab.FIELD_PACKAGES) },
                                 onOpenEquipment = { openCloudRoute(SovAppRoutes.ORUZARSTVO) },
-                                onOpenArchive = { openCloudRoute(SovAppRoutes.ARHIVA_NACRTI) }
+                                onOpenArchive = { openCloudRoute(SovAppRoutes.ARHIVA_NACRTI) },
+                                onOpenLaptopHub = { openCloudRoute(SovAppRoutes.LAPTOP_HUB) },
+                                onOpenNacrt = { showNacrtGenerator = true }
                             )
                         }
                     }
@@ -2222,6 +2247,7 @@ fun SpeleoApp(
                         onOpenArchive = { openCloudRoute(SovAppRoutes.ARHIVA_NACRTI) }
                     )
                     }
+                    composable(SovAppRoutes.LAPTOP_HUB) { SovLaptopHubScreen(onBack = { navController.popBackStack() }) }
                     composable(SovAppRoutes.ORUZARSTVO) { EquipmentReadOnlyScreen(onBack = { navController.popBackStack() }) }
                     composable(SovAppRoutes.TOOLS_CALENDAR) {
                         SovToolsCalendarScreen(
@@ -2243,6 +2269,7 @@ fun SpeleoApp(
                             onLoggedIn = {
                                 val target = pendingPostLoginRoute
                                 pendingPostLoginRoute = null
+                                viewModel.reloadDataForAccessChange()
                                 if (target != null) {
                                     navController.navigate(target) {
                                         launchSingleTop = true
@@ -2260,6 +2287,8 @@ fun SpeleoApp(
                             appLanguage = language
                             persistSession { it.copy(appLanguage = language) }
                         },
+                        themeMode = appThemeMode,
+                        onThemeModeChange = onThemeModeChange,
                         onOpenBatteryStatus = { navController.navigate(SovAppRoutes.BATTERY_STATUS) },
                         onOpenGpsStatus = { navController.navigate(SovAppRoutes.GPS_STATUS) },
                         onOpenCompassStatus = { navController.navigate(SovAppRoutes.COMPASS_STATUS) },
@@ -2337,7 +2366,7 @@ fun SpeleoApp(
                             returnToFieldPackageFlowAfterDownload = true
                             startOfflineAreaSelectionNonce++
                             navigateTo(AppTab.MAP)
-                            Toast.makeText(context, "Odaberi područje za download na karti, pa spremi. Vraćam te u izlet automatski.", Toast.LENGTH_LONG).show()
+                            Toast.makeText(context, "Označi područje i spremi.", Toast.LENGTH_LONG).show()
                         },
                         onChanged = {
                             markedPoints.clear()
@@ -2355,6 +2384,12 @@ fun SpeleoApp(
                         savedTracks = savedTracks,
                         importedLayers = importedLayers,
                         onChanged = {
+                            markedPoints.clear()
+                            markedPoints.addAll(UserContentStore.loadMarkedPoints(context))
+                            savedTracks.clear()
+                            savedTracks.addAll(UserContentStore.loadSavedTracks(context))
+                            importedLayers.clear()
+                            importedLayers.addAll(UserContentStore.loadImportedLayers(context))
                             offlineStateVersion++
                             mapLayerStateVersion++
                         },
@@ -2633,9 +2668,9 @@ fun SpeleoApp(
             title = { Text("Preuzmi KML") },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Text("Odaberi što želiš skinuti iz trenutnih rezultata pretrage.")
+                    Text("Odaberi izvoz.")
                     Text(
-                        "KML format možeš otvoriti u Google Maps, Google Earth ili bilo kojem GIS programu (QGIS, OruxMaps...).",
+                        "KML možeš otvoriti u kartama/GIS-u.",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -2678,7 +2713,7 @@ fun SpeleoApp(
             title = { Text(if (editingMarkId == null) "Add waypoint" else "Edit point") },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.verticalScroll(rememberScrollState())) {
-                    Text("GPS pozicija će biti spremljena kao žuta KML točka. Kasnije je možeš otvoriti i editirati iz Overlay taba ili klikom na marker.")
+                    Text("GPS točka bit će spremljena.")
                     OutlinedTextField(value = markName, onValueChange = { markName = it }, modifier = Modifier.fillMaxWidth(), label = { Text("Ime točke") })
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         listOf("jama", "spilja", "ostalo").forEach { option ->
@@ -2696,12 +2731,12 @@ fun SpeleoApp(
                             pendingCameraPhoto = pending
                             val hasPermission = ContextCompat.checkSelfPermission(context, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
                             if (hasPermission) cameraLauncher.launch(pending.contentUri) else cameraPermissionLauncher.launch(android.Manifest.permission.CAMERA)
-                        }) { Icon(Icons.Default.AddAPhoto, null); Spacer(Modifier.size(6.dp)); Text("Take photo") }
+                        }) { Icon(Icons.Default.AddAPhoto, contentDescription = "Dodaj"); Spacer(Modifier.size(6.dp)); Text("Take photo") }
                         OutlinedButton(onClick = {
                             pendingPhotoRecordId = markDraftId
                             pendingPhotoRecordLabel = markName.ifBlank { markDraftId }
                             photoLauncher.launch(arrayOf("image/*"))
-                        }) { Icon(Icons.Default.PhotoLibrary, null); Spacer(Modifier.size(6.dp)); Text("Gallery") }
+                        }) { Icon(Icons.Default.PhotoLibrary, contentDescription = "Galerija fotografija"); Spacer(Modifier.size(6.dp)); Text("Gallery") }
                     }
                     if (markPhotos.isNotEmpty()) {
                         Text("Fotografije: ${markPhotos.size}", style = MaterialTheme.typography.bodySmall)
@@ -2739,7 +2774,7 @@ fun SpeleoApp(
                             showMarkDialog = false
                             openExternalUrl(SPELEO_ZAPISNIK_URL)
                         }) {
-                            Icon(Icons.Default.Description, null)
+                            Icon(Icons.Default.Description, contentDescription = "Dokument")
                             Spacer(Modifier.size(6.dp))
                             Text("Online zapisnik")
                         }
@@ -2748,7 +2783,7 @@ fun SpeleoApp(
                             showMarkDialog = false
                             offlineZapisnikTarget = createOfflineZapisnikTarget(draftPoint, context)
                         }) {
-                            Icon(Icons.Default.Save, null)
+                            Icon(Icons.Default.Save, contentDescription = "Spremi")
                             Spacer(Modifier.size(6.dp))
                             Text("Offline zapisnik")
                         }
@@ -2775,7 +2810,7 @@ fun SpeleoApp(
                                 )
                                 Toast.makeText(
                                     context,
-                                    if (ok) "✓ Zajednička točka '${pointToShare.name}' spremljena u tablicu." else "Greška — zajednička točka nije spremljena. Provjeri internet i Apps Script deployment.",
+                                    if (ok) "✓ Zajednička točka '${pointToShare.name}' spremljena u tablicu." else "Točka nije spremljena. Provjeri internet.",
                                     Toast.LENGTH_LONG
                                 ).show()
                                 if (ok) refreshSharedLayers()
@@ -2809,7 +2844,7 @@ fun SpeleoApp(
             },
             title = { Text("Postojeći track") },
             text = {
-                Text("Na karti već postoji zaustavljeni track. Želiš li nastaviti postojeći ili pokrenuti novi? Ako pokreneš novi, stari će se spremiti u spremljene trackove i maknuti s karte.")
+                Text("Već postoji track. Nastaviti ili pokrenuti novi?")
             },
             confirmButton = {
                 TextButton(onClick = {
@@ -2913,12 +2948,12 @@ fun SpeleoApp(
                                 .background(Color(0xFF1E40AF).copy(alpha = 0.26f), RoundedCornerShape(15.dp)),
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(Icons.Default.Navigation, contentDescription = null, tint = Color(0xFF93C5FD), modifier = Modifier.size(24.dp))
+                            Icon(Icons.Default.Navigation, contentDescription = "Navigacija", tint = Color(0xFF93C5FD), modifier = Modifier.size(24.dp))
                         }
                         Column(modifier = Modifier.weight(1f)) {
                             Text("Spremi track", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 20.sp)
                             Text(
-                                "Dodaj ime, opis i odaberi što želiš napraviti s tragom.",
+                                "Dodaj ime i spremi.",
                                 color = Color.White.copy(alpha = 0.68f),
                                 style = MaterialTheme.typography.bodySmall
                             )
@@ -2986,7 +3021,7 @@ fun SpeleoApp(
                                 .heightIn(min = 48.dp),
                             shape = RoundedCornerShape(16.dp)
                         ) {
-                            Icon(Icons.Default.Save, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Icon(Icons.Default.Save, contentDescription = "Spremi", modifier = Modifier.size(18.dp))
                             Spacer(Modifier.width(8.dp))
                             Text("Spremi track", fontWeight = FontWeight.Bold)
                         }
@@ -3014,7 +3049,7 @@ fun SpeleoApp(
                                         )
                                         Toast.makeText(
                                             context,
-                                            if (ok) "✓ Zajednički trag '${sharedTrack.name}' spremljen u tablicu." else "Greška — zajednički trag nije spremljen. Provjeri internet i Apps Script deployment.",
+                                            if (ok) "✓ Zajednički trag '${sharedTrack.name}' spremljen u tablicu." else "Track nije spremljen. Provjeri internet.",
                                             Toast.LENGTH_LONG
                                         ).show()
                                         if (ok) {
@@ -3030,7 +3065,7 @@ fun SpeleoApp(
                                     .heightIn(min = 46.dp),
                                 shape = RoundedCornerShape(16.dp)
                             ) {
-                                Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(17.dp))
+                                Icon(Icons.Default.Share, contentDescription = "Podijeli", modifier = Modifier.size(17.dp))
                                 Spacer(Modifier.width(6.dp))
                                 Text("Zajednički", maxLines = 1, overflow = TextOverflow.Ellipsis)
                             }
@@ -3049,7 +3084,7 @@ fun SpeleoApp(
                                     .heightIn(min = 46.dp),
                                 shape = RoundedCornerShape(16.dp)
                             ) {
-                                Icon(Icons.Default.Download, contentDescription = null, modifier = Modifier.size(17.dp))
+                                Icon(Icons.Default.Download, contentDescription = "Preuzmi", modifier = Modifier.size(17.dp))
                                 Spacer(Modifier.width(6.dp))
                                 Text("Export GPX", maxLines = 1, overflow = TextOverflow.Ellipsis)
                             }
@@ -3076,7 +3111,7 @@ fun SpeleoApp(
                                 },
                                 modifier = Modifier.weight(1f)
                             ) {
-                                Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(17.dp))
+                                Icon(Icons.Default.Delete, contentDescription = "Obriši", modifier = Modifier.size(17.dp))
                                 Spacer(Modifier.width(6.dp))
                                 Text("Obriši")
                             }
@@ -3093,7 +3128,7 @@ fun SpeleoApp(
             title = { Text("Spremi ručno nacrtanu rutu") },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Text("Crtež s karte spremit će se kao track i kasnije se može exportirati ili shareati kao GPX.")
+                    Text("Crtež se sprema kao track.")
                     OutlinedTextField(
                         value = drawingName,
                         onValueChange = { drawingName = it },
@@ -3362,6 +3397,10 @@ fun SpeleoApp(
                     }
                 },
                 onShareRecord = { shareText(context, record.name, buildRecordShareText(record)) },
+                onOpenDrawing = {
+                    drawingViewerRecord = record
+                    viewModel.selectRecord(null)
+                },
                 onImportAttachmentToMap = { uri -> handleImportedUri(uri) },
                 onOpenGeneratedLayerOnMap = { layer ->
                     viewModel.selectRecord(null)
@@ -3402,6 +3441,68 @@ fun SpeleoApp(
                 }
             }
         )
+    }
+
+    drawingViewerRecord?.let { dvRecord ->
+        var drawingMatches by remember(dvRecord.id) { mutableStateOf<List<DriveDrawingMatch>?>(null) }
+        var previewDrawing by remember(dvRecord.id) { mutableStateOf<DriveDrawing?>(null) }
+
+        LaunchedEffect(dvRecord.id) {
+            val result = DriveDrawingsRepository.fetchMatchesForRecord(context, dvRecord)
+            drawingMatches = result.matches
+            if (result.matches.size == 1) {
+                previewDrawing = result.matches.first().drawing
+            }
+        }
+
+        if (previewDrawing != null) {
+            val drawing = previewDrawing!!
+            val localFile = DriveDrawingsRepository.localFileFor(context, drawing)
+            DrawingViewerDialog(
+                title = drawing.displayName,
+                drawing = drawing,
+                localFile = localFile,
+                onDismiss = {
+                    previewDrawing = null
+                    drawingViewerRecord = null
+                },
+                onOpenExternal = {
+                    if (!DriveDrawingsRepository.openLocalDrawing(context, drawing)) {
+                        Toast.makeText(context, "Ne mogu otvoriti nacrt", Toast.LENGTH_LONG).show()
+                    }
+                }
+            )
+        } else if (drawingMatches != null) {
+            if (drawingMatches!!.isEmpty()) {
+                LaunchedEffect(Unit) {
+                    Toast.makeText(context, "Nema nacrta za ovaj objekt", Toast.LENGTH_SHORT).show()
+                    drawingViewerRecord = null
+                }
+            } else {
+                AlertDialog(
+                    onDismissRequest = { drawingViewerRecord = null },
+                    title = { Text("Nacrti — ${dvRecord.name}") },
+                    text = {
+                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            drawingMatches!!.forEach { match ->
+                                TextButton(onClick = { previewDrawing = match.drawing }) {
+                                    Text(match.drawing.displayName, maxLines = 2)
+                                }
+                            }
+                        }
+                    },
+                    confirmButton = {
+                        TextButton(onClick = { drawingViewerRecord = null }) {
+                            Text("Zatvori")
+                        }
+                    }
+                )
+            }
+        }
+    }
+
+    if (showNacrtGenerator) {
+        com.darko.speleov1.nacrt.NacrtScreen(onDismiss = { showNacrtGenerator = false })
     }
 
     if (updateDialogInfo != null) {
@@ -3476,7 +3577,7 @@ private fun SharedLayerUploadDialog(
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Text(
-                    "Sloj će biti vidljiv svim korisnicima SOV appa koji osvježe Zajedničke slojeve.",
+                    "Sloj će biti vidljiv svima nakon osvježavanja.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

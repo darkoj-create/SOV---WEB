@@ -1,6 +1,7 @@
 package com.darko.speleov1.util
 
 import android.content.Context
+import android.content.SharedPreferences
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.BufferedReader
@@ -11,6 +12,8 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.net.HttpURLConnection
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 import java.net.URL
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -25,7 +28,7 @@ internal data class SovAppPermissions(
     val fullName: String = "",
     val status: String = "offline",
     val canViewSovBase: Boolean = true,
-    val canViewKatastar: Boolean = true,
+    val canViewKatastar: Boolean = false,
     val canEditObjects: Boolean = true,
     val canUploadDrawings: Boolean = true,
     val canVerifyDrawings: Boolean = true,
@@ -163,38 +166,109 @@ internal fun SovAppPermissions.permissionSummaryHr(): String {
     return if (flags.isEmpty()) "Samo osnovni pristup" else flags.joinToString(" · ")
 }
 
+internal fun canUseKatastarNow(context: Context): Boolean {
+    val session = SovPermissionsStore.loadSession(context)
+    if (!session.isLoggedIn) return false
+    val permissions = SovPermissionsStore.loadPermissions(context)
+    // Katastar je za sve registrirane/odobrene korisnike.
+    // Ne tražimo više poseban canViewKatastar flag jer bi registrirani članovi ostali zaključani.
+    return permissions.isApproved
+}
+
 internal object SovPermissionsStore {
-    private const val PREFS = "sov_ecosystem_permissions_v1"
+    private const val LEGACY_PREFS = "sov_ecosystem_permissions_v1"
+    private const val SECURE_PREFS = "sov_ecosystem_permissions_v1_encrypted"
     private const val KEY_PERMISSIONS = "permissions"
     private const val KEY_SESSION = "session"
+    private const val KEY_MIGRATED_FROM_LEGACY = "migrated_from_plaintext_v1"
+
+    @Volatile private var cachedSecurePrefs: SharedPreferences? = null
+    @Volatile private var securePrefsUnavailable: Boolean = false
+
+    @Synchronized
+    private fun securePrefs(context: Context): SharedPreferences? {
+        cachedSecurePrefs?.let { return it }
+        if (securePrefsUnavailable) return null
+        val appContext = context.applicationContext
+        return runCatching {
+            val masterKey = MasterKey.Builder(appContext)
+                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                .build()
+            EncryptedSharedPreferences.create(
+                appContext,
+                SECURE_PREFS,
+                masterKey,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            ).also { prefs ->
+                migratePlaintextIfNeeded(appContext, prefs)
+                cachedSecurePrefs = prefs
+            }
+        }.getOrElse {
+            // Ako je Android Keystore korumpiran ili encrypted prefs ne može startati,
+            // ne smijemo crashati niti nastaviti koristiti plaintext tokene.
+            securePrefsUnavailable = true
+            clearPlaintextSession(appContext)
+            null
+        }
+    }
+
+    private fun migratePlaintextIfNeeded(context: Context, securePrefs: SharedPreferences) {
+        if (securePrefs.getBoolean(KEY_MIGRATED_FROM_LEGACY, false)) return
+        val legacy = context.getSharedPreferences(LEGACY_PREFS, Context.MODE_PRIVATE)
+        val legacySession = legacy.getString(KEY_SESSION, null)
+        val legacyPermissions = legacy.getString(KEY_PERMISSIONS, null)
+        if (legacySession != null || legacyPermissions != null) {
+            securePrefs.edit().apply {
+                legacySession?.let { putString(KEY_SESSION, it) }
+                legacyPermissions?.let { putString(KEY_PERMISSIONS, it) }
+                putBoolean(KEY_MIGRATED_FROM_LEGACY, true)
+            }.commit()
+            legacy.edit().clear().commit()
+        } else {
+            securePrefs.edit().putBoolean(KEY_MIGRATED_FROM_LEGACY, true).apply()
+        }
+    }
+
+    private fun clearPlaintextSession(context: Context) {
+        context.getSharedPreferences(LEGACY_PREFS, Context.MODE_PRIVATE)
+            .edit()
+            .remove(KEY_SESSION)
+            .apply()
+    }
 
     fun loadPermissions(context: Context): SovAppPermissions {
-        val raw = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_PERMISSIONS, null)
+        val raw = securePrefs(context)?.getString(KEY_PERMISSIONS, null)
         return runCatching { raw?.let { SovAppPermissions.fromJson(JSONObject(it)) } }.getOrNull()
             ?: SovAppPermissions()
     }
 
     fun savePermissions(context: Context, permissions: SovAppPermissions) {
-        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-            .edit()
-            .putString(KEY_PERMISSIONS, permissions.toJson().toString())
-            .apply()
+        securePrefs(context)
+            ?.edit()
+            ?.putString(KEY_PERMISSIONS, permissions.toJson().toString())
+            ?.apply()
     }
 
     fun loadSession(context: Context): SovAuthSession {
-        val raw = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_SESSION, null)
+        val raw = securePrefs(context)?.getString(KEY_SESSION, null)
         return runCatching { raw?.let { SovAuthSession.fromJson(JSONObject(it)) } }.getOrNull() ?: SovAuthSession()
     }
 
     fun saveSession(context: Context, session: SovAuthSession) {
-        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-            .edit()
+        val prefs = securePrefs(context)
+        if (prefs == null) {
+            clearPlaintextSession(context.applicationContext)
+            return
+        }
+        prefs.edit()
             .putString(KEY_SESSION, session.toJson().toString())
             .commit()
     }
 
     fun clear(context: Context) {
-        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().clear().apply()
+        securePrefs(context)?.edit()?.clear()?.apply()
+        context.getSharedPreferences(LEGACY_PREFS, Context.MODE_PRIVATE).edit().clear().apply()
     }
 
     fun lastSyncLabel(context: Context): String {
@@ -221,10 +295,10 @@ internal object SovRoleSyncManager {
         if (!online) {
             return SovRoleSyncState(
                 session = cachedSession,
-                permissions = cachedPermissions.copy(lastSyncOk = false, lastSyncError = "Offline: koristim spremljene permissione."),
+                permissions = cachedPermissions.copy(lastSyncOk = false, lastSyncError = "Offline način."),
                 isOnline = false,
                 usedCachedPermissions = true,
-                message = "Nema mreže: koristim lokalni role cache."
+                message = "Nema mreže."
             )
         }
         if (!cachedSession.isLoggedIn) {
@@ -233,7 +307,7 @@ internal object SovRoleSyncManager {
                 permissions = cachedPermissions,
                 isOnline = true,
                 usedCachedPermissions = true,
-                message = "Online si, ali nisi prijavljen u SOV Cloud."
+                message = "Nisi prijavljen."
             )
         }
         return runCatching {
@@ -252,7 +326,7 @@ internal object SovRoleSyncManager {
                 permissions = permissions,
                 isOnline = true,
                 usedCachedPermissions = false,
-                message = "SOV Cloud sync OK: ${permissions.roleLabel}"
+                message = "Cloud OK."
             )
         }.getOrElse { throwable ->
             val cached = cachedPermissions.copy(
@@ -266,7 +340,7 @@ internal object SovRoleSyncManager {
                 permissions = cached,
                 isOnline = true,
                 usedCachedPermissions = true,
-                message = "Cloud sync nije uspio: koristim spremljeni cache."
+                message = "Cloud nije dostupan."
             )
         }
     }
@@ -301,7 +375,7 @@ internal object SovSupabaseRoleClient {
     }.getOrDefault(false)
 
     fun refreshSession(refreshToken: String): SovAuthSession {
-        if (refreshToken.isBlank()) error("Nema refresh tokena. Prijavi se ponovno.")
+        if (refreshToken.isBlank()) error("Prijavi se ponovno.")
         val body = JSONObject().put("refresh_token", refreshToken).toString()
         val response = requestJson(
             url = "$SOV_SUPABASE_URL/auth/v1/token?grant_type=refresh_token",
@@ -326,7 +400,7 @@ internal object SovSupabaseRoleClient {
             body = null
         )
         val arr = JSONArray(response)
-        if (arr.length() == 0) error("Supabase nije vratio profil/permissione. Provjeri da je korisnik approved i da postoji u profiles.")
+        if (arr.length() == 0) error("Korisnik nije odobren.")
         val obj = arr.getJSONObject(0)
         return SovAppPermissions.fromJson(obj).copy(
             fetchedAtMillis = System.currentTimeMillis(),
@@ -346,7 +420,7 @@ internal object SovSupabaseRoleClient {
     private fun requestJson(url: String, method: String, accessToken: String?, body: String?): JSONObject = JSONObject(requestText(url, method, accessToken, body))
 
     private fun requestText(url: String, method: String, accessToken: String?, body: String?): String {
-        val conn = (URL(url).openConnection() as HttpURLConnection).apply {
+        val conn = SovNetworkSecurity.openHttpConnection(url, "SOV auth/role").apply {
             requestMethod = method
             connectTimeout = 15000
             readTimeout = 20000
@@ -366,7 +440,7 @@ internal object SovSupabaseRoleClient {
         val text = stream.bufferedReader(StandardCharsets.UTF_8).use { it.readText() }
         if (code !in 200..299) {
             val clean = text.ifBlank { "HTTP $code" }
-            error("Supabase HTTP $code: $clean")
+            error("Greška mreže ($code)")
         }
         return text
     }

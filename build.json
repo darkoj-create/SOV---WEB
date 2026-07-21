@@ -1,14 +1,14 @@
 {
-  "versionCode": 900115,
-  "versionName": "1.4.27-wms-nav-runner",
-  "releaseName": "SOV Admin 1.4.27 WMS + Nav Runner Merge",
-  "apkFileName": "SOV-ADMIN-1.4.27.apk",
-  "notes": "WMS 1.4.26 stale-connection fix zadrzan + nav target camera fix + SpeleoRunner GC/jank Path preallocation fix. Bez SQL-a.",
-  "fileName": "sov-admin-v1_4_27-wms-nav-runner-merge-source.zip",
-  "releaseDate": "2026-06-26",
+  "versionCode": 900128,
+  "versionName": "1.4.30a-runner-perf-graphics",
+  "releaseName": "SOV Admin 1.4.30a Speleo Runner perf + bitmap backgrounds",
+  "apkFileName": "SOV-ADMIN-1.4.30a.apk",
+  "notes": "Speleo Runner: jeftiniji scanline shader overlay, manje obstacle/token alokacija, bitmap pozadine aktivirane, jump buffering/coyote time, dt smoothing clamp uklonjen. Supabase/leaderboard logika nije mijenjana.",
+  "fileName": "sov-admin-v1_4_30a-runner-perf-graphics-source.zip",
+  "releaseDate": "2026-07-08",
   "supabaseUrl": "https://ncomefzkuixyfixisrhi.supabase.co",
-  "requiresSql": "Nema novog SQL-a.",
+  "requiresSql": "Supabase tablica sov_crospeleo_katastar_objects kreirana s RLS authenticated read; APK koristi lokalni zaključani asset za brzu pretragu.",
   "firebaseProject": "sov-app-3ecd1",
   "applicationId": "com.darko.speleov1admin",
-  "apkName": "SOV-ADMIN-1.4.27.apk"
+  "apkName": "SOV-ADMIN-1.4.30a.apk"
 }

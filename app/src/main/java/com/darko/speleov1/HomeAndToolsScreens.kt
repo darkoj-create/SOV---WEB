@@ -80,6 +80,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.BatteryFull
 import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.Cloud
+import androidx.compose.material.icons.filled.Computer
 import androidx.compose.material.icons.filled.CollectionsBookmark
 import androidx.compose.material.icons.filled.CenterFocusStrong
 import androidx.compose.material.icons.filled.CheckCircle
@@ -116,6 +117,7 @@ import androidx.compose.material.icons.filled.Storage
 import androidx.compose.material.icons.filled.Straighten
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.RemoveCircleOutline
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -262,7 +264,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 import androidx.compose.ui.graphics.luminance
 
 private val SOV_DISPLAY_VERSION: String
-    get() = "SOV ${BuildConfig.VERSION_NAME} PUBLIC RELEASE"
+    get() = "SOV ${BuildConfig.VERSION_NAME}"
 
 private const val SOV_UPDATED_DATE_HR = "19.5.2026"
 private const val SOV_UPDATED_DATE_EN = "19 May 2026"
@@ -741,7 +743,7 @@ internal fun CompassWidget(
                 )
                 Icon(
                     imageVector = Icons.Default.Navigation,
-                    contentDescription = null,
+                    contentDescription = "Smjer kompasa",
                     tint = Color.White.copy(alpha = 0.22f),
                     modifier = Modifier
                         .size(20.dp)
@@ -841,27 +843,6 @@ internal fun HomeScreen(
             }
         }
 
-        Text(
-            text = SOV_DISPLAY_VERSION,
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .zIndex(18f)
-                .padding(top = 14.dp, end = 14.dp)
-                .background(
-                    color = Color.Black.copy(alpha = 0.28f),
-                    shape = RoundedCornerShape(999.dp)
-                )
-                .border(
-                    width = 1.dp,
-                    color = Color.White.copy(alpha = 0.18f),
-                    shape = RoundedCornerShape(999.dp)
-                )
-                .padding(horizontal = 10.dp, vertical = 5.dp),
-            color = Color.White.copy(alpha = 0.86f),
-            fontSize = 11.sp,
-            fontWeight = FontWeight.SemiBold,
-            maxLines = 1
-        )
 
         Column(
             modifier = Modifier
@@ -942,30 +923,10 @@ internal fun HomeScreen(
                 },
                 title = { Text(language.pick("Upute", "Read me")) },
                 text = {
-                    Column(verticalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.verticalScroll(rememberScrollState())) {
-                        Text(language.pick("SOV je terenska speleološka aplikacija za pregled objekata, pretragu baze, rad s kartama, snimanje trackova, unos točaka i dijeljenje podataka na terenu.", "SOV is a field speleology app for browsing objects, searching the database, working with maps, recording tracks, adding waypoints and sharing field data."))
-                        Spacer(Modifier.height(4.dp))
-                        Text(language.pick("Što je uključeno u ovu verziju:", "Included in this version:"))
-                        Text("- offline baza speleo objekata, uključujući SoV bazu i podatke iz katastra")
-                        Text("- pretraga po nazivu, lokaciji, broju pločice, tipu objekta, opisu, udaljenosti i terenskim zadacima")
-                        Text("- detalji objekta s WGS84 i HTRS96/TM koordinatama, opisima, napomenama i terenskim statusom")
-                        Text("- karta s markerima u različitim bojama za SOV objekte, custom točke, importane slojeve i trackove")
-                        Text(language.pick("- TK25/OpenTopo base karte, hillshade, Geological Units i custom WMS slojevi", "- TK25/OpenTopo base maps, hillshade, Geological Units and custom WMS layers"))
-                        Text(language.pick("- custom WMS import: naziv, URL, layer, CRS/SRS, verzija, stil, transparentnost i spremanje", "- custom WMS import: name, URL, layer, CRS/SRS, version, style, transparency and saving"))
-                        Text(language.pick("- offline karte, MBTiles, importani layeri, moja baza, custom točke i spremljeni GPX trackovi", "- offline maps, MBTiles, imported layers, My Base, custom points and saved GPX tracks"))
-                        Text(language.pick("- import KML, KMZ, GPX, GeoJSON/JSON, CSV, XLSX/XLSM, SHP ZIP, GPKG, MBTiles i osnovni TIFF/GeoTIFF", "- import KML, KMZ, GPX, GeoJSON/JSON, CSV, XLSX/XLSM, SHP ZIP, GPKG, MBTiles and basic TIFF/GeoTIFF"))
-                        Text(language.pick("- export/share KML točaka, CSV/KML moje baze, rezultata pretrage, GPX trackova i MBTiles slojeva", "- export/share KML points, CSV/KML My Base data, search results, GPX tracks and MBTiles layers"))
-                        Text("- GPS prikaz, Center, Follow, kompas, heading-up/north-up prikaz i mjerenje udaljenosti")
-                        Text("- snimanje GPX trackova uz foreground service i rad u pozadini")
-                        Text("- custom waypointi s nazivom, tipom, opisom, fotografijama, Google Maps otvaranjem, exportom i shareom")
-                        Text("- offline zapisnik za terenski unos kada nema signala")
-                        Text("- drawing pen s Undo, Save i Cancel")
-                        Text("- coordinate calculator za WGS84 i HTRS96/TM")
-                        Text("- automatska provjera updatea preko GitHub releaseova pri pokretanju aplikacije")
-                        Spacer(Modifier.height(4.dp))
-                        Text(language.pick("Osnovna ideja je da se što više terenskog rada može obaviti direktno s mobitela: pronaći objekt, provjeriti opis i koordinate, vidjeti ga na karti, dodati vlastitu točku, snimiti trag, podijeliti podatke i raditi offline kad nema signala.", "The idea is to handle as much field work as possible directly on the phone: find an object, check description and coordinates, view it on the map, add your own point, record a track, share data and work offline when there is no signal."))
-                        Spacer(Modifier.height(4.dp))
-                        Text(language.pick("Za updateove vrijedi pravilo: svaki build ima jasnu verziju, versionCode, changelog i GitHub release. Ako postoji novija verzija, app će pri pokretanju ponuditi skidanje APK-a.", "Updates follow a clear rule: every build has a version, versionCode, changelog and GitHub release. If a newer version exists, the app offers the APK download on startup."))
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.verticalScroll(rememberScrollState())) {
+                        Text(language.pick("Pronađi objekt, otvori kartu i radi offline.", "Find an object, open the map, work offline."))
+                        Text(language.pick("Glavno: Pretraga · Karta · Slojevi · Cloud · Alati.", "Main: Search · Map · Layers · Cloud · Tools."))
+                        Text(language.pick("Za detalje otvori pojedini ekran.", "Open each screen for details."))
                     }
                 },
                 containerColor = cardElevatedColor,
@@ -993,23 +954,23 @@ internal fun HomeScreen(
                             }
                         }
                         Text("SOV")
-                        Text(language.pick("PUBLIC RELEASE · baza 2026 · terenski build", "PUBLIC RELEASE · database 2026 · field-ready build"))
+                        Text(language.pick("SOV terenska aplikacija", "SOV field app"))
                         Text(language.pick("Verzija: $SOV_DISPLAY_VERSION", "Version: $SOV_DISPLAY_VERSION"))
-                        Text(language.pick("Ažurirano: $SOV_UPDATED_DATE_HR", "Updated: $SOV_UPDATED_DATE_EN"))
-                        Text(language.pick("Autor: Darko Jeras", "Author: Darko Jeras"))
+                        
+                        
                         OutlinedButton(onClick = {
                             val intent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:darko.jeras@gmail.com"))
                             runCatching { context.startActivity(intent) }
                         }) {
-                            Icon(Icons.Default.Info, contentDescription = null, tint = premiumIconTint("info about"))
+                            Icon(Icons.Default.Info, contentDescription = "Informacije", tint = premiumIconTint("info about"))
                             Spacer(Modifier.size(8.dp))
-                            Text(language.pick("Pitanja, greške i prijedlozi", "Questions, bugs and suggestions"))
+                            Text(language.pick("Kontakt", "Contact"))
                         }
                         OutlinedButton(onClick = onCheckForUpdates, enabled = !updateCheckInProgress) {
                             if (updateCheckInProgress) {
                                 CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
                             } else {
-                                Icon(Icons.Default.Download, contentDescription = null, tint = premiumIconTint("download update"))
+                                Icon(Icons.Default.Download, contentDescription = "Preuzmi", tint = premiumIconTint("download update"))
                             }
                             Spacer(Modifier.size(8.dp))
                             Text(if (updateCheckInProgress) language.pick("Provjeravam…", "Checking…") else language.pick("Provjeri ažuriranje", "Check for update"))
@@ -1083,6 +1044,39 @@ private fun LanguageToggleChip(
                 color = color,
                 style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.ExtraBold
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun ThemeModeToggleBar(
+    language: AppLanguage,
+    themeMode: AppThemeMode,
+    onThemeModeChange: (AppThemeMode) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    FlowRow(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        AppThemeMode.values().forEach { mode ->
+            FilterChip(
+                selected = themeMode == mode,
+                onClick = { onThemeModeChange(mode) },
+                label = { Text(mode.label(language), maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                leadingIcon = {
+                    Icon(
+                        imageVector = when (mode) {
+                            AppThemeMode.SYSTEM -> Icons.Default.Settings
+                            AppThemeMode.LIGHT -> Icons.Default.LightMode
+                            AppThemeMode.DARK -> Icons.Default.DarkMode
+                        },
+                        contentDescription = null
+                    )
+                }
             )
         }
     }
@@ -1269,6 +1263,8 @@ private fun SettingsStatusTile(
 internal fun SettingsScreen(
     language: AppLanguage,
     onLanguageChange: (AppLanguage) -> Unit,
+    themeMode: AppThemeMode = AppThemeMode.DARK,
+    onThemeModeChange: (AppThemeMode) -> Unit = {},
     onOpenBatteryStatus: () -> Unit = {},
     onOpenGpsStatus: () -> Unit = {},
     onOpenCompassStatus: () -> Unit = {},
@@ -1413,8 +1409,8 @@ internal fun SettingsScreen(
             title = { Text(language.pick("Očistiti Moju bazu?", "Clear My Base?")) },
             text = {
                 Text(language.pick(
-                    "Ovo briše sve KML datoteke iz lokalnog /mybase foldera i uklanja tamno plave točke iz Searcha i karte.",
-                    "This deletes all KML files from the local /mybase folder and removes the dark-blue points from Search and the map."
+                    "Obrisati Moju bazu?",
+                    "Delete My Base?"
                 ))
             },
             confirmButton = {
@@ -1459,14 +1455,14 @@ internal fun SettingsScreen(
                 ) {
                     Icon(
                         Icons.Default.Settings,
-                        contentDescription = null,
+                        contentDescription = language.pick("Postavke", "Settings"),
                         tint = Color(0xFF42A5F5),
                         modifier = Modifier.size(31.dp)
                     )
                 }
                 Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
                     Text(language.pick("Postavke", "Settings"), color = primaryText, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-                    Text(language.pick("Opće postavke, GPS, kompas i signal", "General settings, GPS, compass and signal"), color = secondaryText, style = MaterialTheme.typography.bodyMedium)
+                    Text(language.pick("Postavke", "Settings"), color = secondaryText, style = MaterialTheme.typography.bodyMedium)
                 }
             }
 
@@ -1486,13 +1482,42 @@ internal fun SettingsScreen(
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = language.pick("Odaberi hrvatski ili engleski prikaz.", "Choose Croatian or English UI."),
+                        text = language.pick("Odaberi jezik.", "Choose language."),
                         color = secondaryText,
                         style = MaterialTheme.typography.bodySmall
                     )
                     LanguageToggleBar(
                         language = language,
                         onLanguageChange = onLanguageChange,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
+
+            Card(
+                colors = CardDefaults.cardColors(containerColor = cardColor),
+                shape = RoundedCornerShape(26.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Text(
+                        text = language.pick("Tema aplikacije", "App theme"),
+                        color = primaryText,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = themeMode.description(language),
+                        color = secondaryText,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    ThemeModeToggleBar(
+                        language = language,
+                        themeMode = themeMode,
+                        onThemeModeChange = onThemeModeChange,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -1517,7 +1542,7 @@ internal fun SettingsScreen(
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = language.pick("Svaka ikona otvara svoj zasebni prozor — baterija, GPS, mreža, kompas i Moja baza.", "Each icon opens its own screen — battery, GPS, network, compass and My Base."),
+                        text = language.pick("Brzi alati.", "Quick tools."),
                         color = secondaryText,
                         style = MaterialTheme.typography.bodySmall
                     )
@@ -1655,6 +1680,16 @@ internal fun MyBaseStatusScreen(
     }
 }
 
+private fun localizedMyBaseSummary(summary: String, language: AppLanguage): String {
+    return when (summary) {
+        "Nema učitanih KML/CSV točaka" -> language.pick(
+            "Nema učitanih KML/CSV točaka",
+            "No KML/CSV points loaded"
+        )
+        else -> summary
+    }
+}
+
 @Composable
 private fun SettingsMyBaseContent(
     language: AppLanguage,
@@ -1713,8 +1748,8 @@ private fun SettingsMyBaseContent(
             title = { Text(language.pick("Očistiti Moju bazu?", "Clear My Base?")) },
             text = {
                 Text(language.pick(
-                    "Ovo briše sve KML datoteke iz lokalnog /mybase foldera i uklanja tamno plave točke iz Searcha i karte.",
-                    "This deletes all KML files from the local /mybase folder and removes the dark-blue points from Search and the map."
+                    "Obrisati Moju bazu?",
+                    "Delete My Base?"
                 ))
             },
             confirmButton = {
@@ -1755,17 +1790,17 @@ private fun SettingsMyBaseContent(
                         .background(Color(0xFF0B3D91).copy(alpha = 0.22f), RoundedCornerShape(20.dp)),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(Icons.Default.Storage, contentDescription = null, tint = Color(0xFF64B5F6), modifier = Modifier.size(30.dp))
+                    Icon(Icons.Default.Storage, contentDescription = language.pick("Moja baza", "My Base"), tint = Color(0xFF64B5F6), modifier = Modifier.size(30.dp))
                 }
                 Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
                     Text(language.pick("Moja baza", "My Base"), color = primaryText, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                    Text(myBaseSummary, color = secondaryText, style = MaterialTheme.typography.bodyMedium)
+                    Text(localizedMyBaseSummary(myBaseSummary, language), color = secondaryText, style = MaterialTheme.typography.bodyMedium)
                 }
             }
             Text(
                 text = language.pick(
-                    "Uvezi vlastite KML ili CSV točke, koristi ih u Searchu i prikaži ih na karti kao tamno plave objekte.",
-                    "Import your own KML or CSV points, search them, and show them on the map as dark-blue objects."
+                    "Uvezi KML/CSV točke.",
+                    "Import KML/CSV points."
                 ),
                 color = secondaryText,
                 style = MaterialTheme.typography.bodyMedium
@@ -1779,13 +1814,13 @@ private fun SettingsMyBaseContent(
                     onClick = {},
                     enabled = false,
                     label = { Text(language.pick("Search izvor", "Search source")) },
-                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, modifier = Modifier.size(16.dp)) }
+                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = language.pick("Pretraga", "Search"), modifier = Modifier.size(16.dp)) }
                 )
                 AssistChip(
                     onClick = {},
                     enabled = false,
                     label = { Text(language.pick("tamno plave točke", "dark-blue points")) },
-                    leadingIcon = { Icon(Icons.Default.Lens, contentDescription = null, modifier = Modifier.size(16.dp), tint = Color(0xFF0B3D91)) }
+                    leadingIcon = { Icon(Icons.Default.Lens, contentDescription = language.pick("Status", "Status"), modifier = Modifier.size(16.dp), tint = Color(0xFF0B3D91)) }
                 )
             }
             Button(
@@ -1793,7 +1828,7 @@ private fun SettingsMyBaseContent(
                 modifier = Modifier.fillMaxWidth(),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp)
             ) {
-                Icon(Icons.Default.UploadFile, contentDescription = null)
+                Icon(Icons.Default.UploadFile, contentDescription = language.pick("Uvoz datoteke", "File import"))
                 Spacer(Modifier.width(8.dp))
                 Text(language.pick("Uvezi KML/CSV točke", "Import KML/CSV points"), maxLines = 1)
             }
@@ -1808,11 +1843,11 @@ private fun SettingsMyBaseContent(
                         modifier = Modifier.fillMaxWidth(),
                         contentPadding = PaddingValues(horizontal = 12.dp, vertical = 10.dp)
                     ) {
-                        Icon(Icons.Default.Download, contentDescription = null)
+                        Icon(Icons.Default.Download, contentDescription = language.pick("Preuzmi", "Download"))
                         Spacer(Modifier.width(8.dp))
                         Text(language.pick("Izvezi", "Export"), maxLines = 1)
                         Spacer(Modifier.width(4.dp))
-                        Icon(Icons.Default.ArrowDropDown, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.ArrowDropDown, contentDescription = language.pick("Otvori izbornik", "Open menu"), modifier = Modifier.size(18.dp))
                     }
                     DropdownMenu(
                         expanded = showMyBaseExportMenu,
@@ -1820,7 +1855,7 @@ private fun SettingsMyBaseContent(
                     ) {
                         DropdownMenuItem(
                             text = { Text("CSV") },
-                            leadingIcon = { Icon(Icons.Default.Description, contentDescription = null) },
+                            leadingIcon = { Icon(Icons.Default.Description, contentDescription = language.pick("Dokument", "Document")) },
                             onClick = {
                                 showMyBaseExportMenu = false
                                 shareMyBaseExport("csv")
@@ -1828,7 +1863,7 @@ private fun SettingsMyBaseContent(
                         )
                         DropdownMenuItem(
                             text = { Text("KML") },
-                            leadingIcon = { Icon(Icons.Default.Map, contentDescription = null) },
+                            leadingIcon = { Icon(Icons.Default.Map, contentDescription = language.pick("Karta", "Map")) },
                             onClick = {
                                 showMyBaseExportMenu = false
                                 shareMyBaseExport("kml")
@@ -1841,7 +1876,7 @@ private fun SettingsMyBaseContent(
                     modifier = Modifier.weight(1f),
                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 10.dp)
                 ) {
-                    Icon(Icons.Default.Delete, contentDescription = null, tint = MaterialTheme.colorScheme.error)
+                    Icon(Icons.Default.Delete, contentDescription = language.pick("Obriši", "Delete"), tint = MaterialTheme.colorScheme.error)
                     Spacer(Modifier.width(8.dp))
                     Text(language.pick("Očisti", "Clear"), color = MaterialTheme.colorScheme.error, maxLines = 1)
                 }
@@ -1892,7 +1927,7 @@ private fun SettingsBatteryTrackingCard(language: AppLanguage) {
                     modifier = Modifier.size(48.dp).background(batteryColor.copy(alpha = 0.18f), RoundedCornerShape(18.dp)),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(Icons.Default.Info, contentDescription = null, tint = batteryColor, modifier = Modifier.size(27.dp))
+                    Icon(Icons.Default.Info, contentDescription = "Informacije", tint = batteryColor, modifier = Modifier.size(27.dp))
                 }
                 Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
                     Text(language.pick("Baterija i tracking", "Battery & tracking"), color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
@@ -2065,11 +2100,11 @@ internal fun SettingsGpsFieldStatusContent(
                 modifier = Modifier.size(58.dp).background(gpsColor.copy(alpha = 0.18f), RoundedCornerShape(21.dp)),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(Icons.Default.MyLocation, contentDescription = null, tint = gpsColor, modifier = Modifier.size(31.dp))
+                Icon(Icons.Default.MyLocation, contentDescription = "Moja lokacija", tint = gpsColor, modifier = Modifier.size(31.dp))
             }
             Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
                 Text(language.pick("GPS stanje na terenu", "GPS Field Status"), color = primaryText, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-                Text(language.pick("Sateliti, preciznost i zadnji fix uživo", "Live satellites, accuracy and last fix"), color = secondaryText, style = MaterialTheme.typography.bodyMedium)
+                Text(language.pick("GPS status", "GPS status"), color = secondaryText, style = MaterialTheme.typography.bodyMedium)
             }
         }
 
@@ -2147,7 +2182,7 @@ internal fun SettingsCompassStabilityContent(
                     modifier = Modifier.size(50.dp).background(compassQualityColor(compassStatus).copy(alpha = 0.16f), RoundedCornerShape(18.dp)),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(Icons.Default.Navigation, contentDescription = null, tint = compassQualityColor(compassStatus), modifier = Modifier.size(27.dp))
+                    Icon(Icons.Default.Navigation, contentDescription = "Navigacija", tint = compassQualityColor(compassStatus), modifier = Modifier.size(27.dp))
                 }
                 Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
                     Text(language.pick("Kompas", "Compass"), color = primaryText, fontWeight = FontWeight.SemiBold)
@@ -2170,7 +2205,7 @@ internal fun SettingsCompassStabilityContent(
             Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(language.pick("Terenski savjet", "Field tip"), color = primaryText, fontWeight = FontWeight.SemiBold)
                 Text(
-                    language.pick("Za kompas: radi osmice dok indikator ne prijeđe u zeleno. Ako magnetno polje jako odskače, makni mobitel od auta, metala i powerbankova.", "For compass calibration: move the phone in figure-8 motions until the indicator turns green. If the magnetic field is far off, move away from cars, metal and power banks."),
+                    language.pick("Za kompas: napravi osmice mobitelom.", "For compass calibration: move the phone in figure-8 motions until the indicator turns green. If the magnetic field is far off, move away from cars, metal and power banks."),
                     color = secondaryText,
                     style = MaterialTheme.typography.bodyMedium
                 )
@@ -2193,7 +2228,9 @@ private fun SpeleoRunnerToolIcon(modifier: Modifier = Modifier) {
 internal fun CloudScreen(
     onOpenTrips: () -> Unit,
     onOpenEquipment: () -> Unit,
-    onOpenArchive: () -> Unit
+    onOpenArchive: () -> Unit,
+    onOpenLaptopHub: () -> Unit,
+    onOpenNacrt: () -> Unit = {}
 ) {
     val language = LocalAppLanguage.current
     val context = LocalContext.current
@@ -2201,7 +2238,7 @@ internal fun CloudScreen(
     val canOpenTrips = permissions.isApproved && permissions.canManageTrips
     val canOpenEquipment = permissions.isApproved
     val canOpenArchive = permissions.isApproved && (permissions.canEditObjects || permissions.canUploadDrawings || permissions.canVerifyDrawings || permissions.role.equals("arhivar", ignoreCase = true) || permissions.role.equals("admin", ignoreCase = true) || permissions.role.equals("webmaster", ignoreCase = true))
-    val canOpenSync = permissions.isApproved && (permissions.canUseSqlTools || permissions.role.equals("webmaster", ignoreCase = true))
+    val canOpenLaptopHub = permissions.isApproved
     val secondaryText = MaterialTheme.colorScheme.onSurfaceVariant
     CaveScreenBackground {
         Column(
@@ -2213,7 +2250,7 @@ internal fun CloudScreen(
                     modifier = Modifier.size(64.dp).background(Color(0xFF42A5F5).copy(alpha = 0.18f), RoundedCornerShape(20.dp)),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(Icons.Default.Cloud, contentDescription = null, tint = Color(0xFF42A5F5), modifier = Modifier.size(38.dp))
+                    Icon(Icons.Default.Cloud, contentDescription = "Cloud", tint = Color(0xFF42A5F5), modifier = Modifier.size(38.dp))
                 }
                 Column {
                     Text(language.pick("SOV Cloud", "SOV Cloud"), color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
@@ -2224,7 +2261,7 @@ internal fun CloudScreen(
             Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface), shape = RoundedCornerShape(28.dp)) {
                 Column(Modifier.fillMaxWidth().padding(18.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(language.pick("Terenski cloud moduli", "Field cloud modules"), color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                    Text(language.pick("Ovdje su svi moduli koji žive između weba, Supabasea i terenske APK aplikacije. Izleti ostaju prvi ulaz, ali više nisu sami na home ekranu.", "These are the modules that live between the web, Supabase and the field APK. Trips remain the first entry, but they no longer sit alone on the home screen."), color = secondaryText)
+                    Text(language.pick("Izleti, oprema i arhiva.", "Trips, equipment and archive."), color = secondaryText)
                 }
             }
 
@@ -2232,7 +2269,8 @@ internal fun CloudScreen(
                 if (canOpenTrips) Triple(language.pick("Izleti", "Trips"), Icons.Default.Event, Color(0xFF795548)) to Pair(language.pick("plan, offline područje, trackovi", "plan, offline area, tracks"), onOpenTrips) else null,
                 if (canOpenEquipment) Triple(language.pick("Oružarstvo", "Equipment"), Icons.Default.Storage, Color(0xFF7E57C2)) to Pair(language.pick("katalog i zahtjevi", "catalog and requests"), onOpenEquipment) else null,
                 if (canOpenArchive) Triple(language.pick("Arhiva", "Archive"), Icons.Default.CollectionsBookmark, Color(0xFF26A69A)) to Pair(language.pick("nacrti i metapodaci", "drawings and metadata"), onOpenArchive) else null,
-                if (canOpenSync) Triple(language.pick("Sync", "Sync"), Icons.Default.Security, Color(0xFF607D8B)) to Pair(language.pick("status sustava", "system status"), { }) else null
+                if (canOpenLaptopHub) Triple(language.pick("Laptop hub", "Laptop hub"), Icons.Default.Computer, Color(0xFF83E6C2)) to Pair(language.pick("mobitel ↔ laptop", "phone ↔ laptop"), onOpenLaptopHub) else null,
+                Triple(language.pick("Nacrt Generator", "Drawing Generator"), Icons.Default.Architecture, Color(0xFFE6C36A)) to Pair(language.pick("TopoDroid → nacrt spilje", "TopoDroid → cave drawing"), onOpenNacrt)
             )
             cloudCards.chunked(2).forEach { row ->
                 Row(horizontalArrangement = Arrangement.spacedBy(14.dp), modifier = Modifier.fillMaxWidth()) {
@@ -2282,6 +2320,135 @@ private fun CloudModuleCard(
             }
             Text(label, color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
             Text(subtitle, color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
+        }
+    }
+}
+
+
+@Composable
+internal fun SovLaptopHubScreen(onBack: () -> Unit) {
+    val language = LocalAppLanguage.current
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var settings by remember { mutableStateOf(SovFieldHubClient.loadSettings(context)) }
+    var roster by remember { mutableStateOf(SovFieldHubClient.loadCachedRoster(context)) }
+    var baseUrl by remember(settings.baseUrl) { mutableStateOf(settings.baseUrl) }
+    var pin by remember(settings.pin) { mutableStateOf(settings.pin) }
+    var busy by remember { mutableStateOf(false) }
+    var message by remember { mutableStateOf<String?>(null) }
+    val rosterTeamCount = roster.trips.sumOf { it.teams.size }
+
+    fun save() {
+        val next = SovFieldHubSettings(baseUrl = baseUrl, pin = pin)
+        SovFieldHubClient.saveSettings(context, next)
+        settings = SovFieldHubClient.loadSettings(context)
+        baseUrl = settings.baseUrl
+        pin = settings.pin
+        message = language.pick("Spremljeno.", "Saved.")
+    }
+
+    fun testHub() {
+        busy = true
+        message = null
+        scope.launch {
+            val result = withContext(Dispatchers.IO) { runCatching { SovFieldHubClient.ping(SovFieldHubSettings(baseUrl, pin)) } }
+            message = result.getOrElse { language.pick("Hub nije dostupan: ${it.message ?: "greška"}", "Hub unavailable: ${it.message ?: "error"}") }
+            busy = false
+        }
+    }
+
+    fun fetchRoster() {
+        busy = true
+        message = null
+        scope.launch {
+            val result = withContext(Dispatchers.IO) { runCatching { SovFieldHubClient.fetchRoster(context, SovFieldHubSettings(baseUrl, pin)) } }
+            result.onSuccess {
+                roster = it
+                message = language.pick("Povučeno: ${it.trips.size} izleta.", "Fetched: ${it.trips.size} trips.")
+            }.onFailure {
+                message = language.pick("Nije povučeno: ${it.message ?: "greška"}", "Not fetched: ${it.message ?: "error"}")
+            }
+            busy = false
+        }
+    }
+
+    CaveScreenBackground {
+        Column(
+            modifier = Modifier.align(Alignment.TopCenter).fillMaxWidth().verticalScroll(rememberScrollState()).padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                Surface(
+                    color = Color.Black.copy(alpha = 0.30f),
+                    shape = RoundedCornerShape(999.dp),
+                    border = BorderStroke(1.dp, Color.White.copy(alpha = 0.16f))
+                ) {
+                    IconButton(onClick = onBack, modifier = Modifier.size(46.dp)) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = language.pick("Natrag", "Back"), tint = Color.White)
+                    }
+                }
+                Box(
+                    modifier = Modifier.size(58.dp).background(Color(0xFF83E6C2).copy(alpha = 0.16f), RoundedCornerShape(18.dp)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(Icons.Default.Computer, contentDescription = language.pick("Laptop hub", "Laptop hub"), tint = Color(0xFF83E6C2), modifier = Modifier.size(34.dp))
+                }
+                Column(Modifier.weight(1f)) {
+                    Text(language.pick("Laptop hub", "Laptop hub"), color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+                    Text(language.pick("Mobitel ↔ laptop bez interneta", "Phone ↔ laptop without internet"), color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(28.dp),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF071A17), contentColor = Color.White),
+                border = BorderStroke(1.dp, Color(0xFF83E6C2).copy(alpha = 0.24f))
+            ) {
+                Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Text(language.pick("Poveži laptop", "Connect laptop"), fontWeight = FontWeight.Bold, color = Color.White)
+                    Text(language.pick("Upiši adresu i PIN s laptopa.", "Enter laptop address and PIN."), color = Color.White.copy(alpha = 0.62f), style = MaterialTheme.typography.bodySmall)
+
+                    OutlinedTextField(
+                        value = baseUrl,
+                        onValueChange = { baseUrl = it },
+                        label = { Text(language.pick("Adresa laptop huba", "Laptop hub address")) },
+                        placeholder = { Text("http://192.168.43.1:8080") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    OutlinedTextField(
+                        value = pin,
+                        onValueChange = { pin = it },
+                        label = { Text("PIN") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        OutlinedButton(onClick = { save() }, enabled = !busy, modifier = Modifier.weight(1f), shape = RoundedCornerShape(16.dp)) {
+                            Text(language.pick("Spremi", "Save"))
+                        }
+                        OutlinedButton(onClick = { testHub() }, enabled = !busy, modifier = Modifier.weight(1f), shape = RoundedCornerShape(16.dp)) {
+                            Icon(Icons.Default.Refresh, contentDescription = language.pick("Osvježi", "Refresh"), modifier = Modifier.size(16.dp))
+                            Spacer(Modifier.width(6.dp))
+                            Text("Test")
+                        }
+                    }
+
+                    Button(onClick = { fetchRoster() }, enabled = !busy, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp)) {
+                        Icon(Icons.Default.Refresh, contentDescription = language.pick("Osvježi", "Refresh"), modifier = Modifier.size(16.dp))
+                        Spacer(Modifier.width(7.dp))
+                        Text(language.pick("Povuci raspored", "Fetch schedule"), fontWeight = FontWeight.Bold)
+                    }
+
+                    if (busy) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                    Text(language.pick("Spremljeno: ${roster.trips.size} izleta, $rosterTeamCount ekipa", "Saved: ${roster.trips.size} trips, $rosterTeamCount teams"), color = Color.White.copy(alpha = 0.62f), style = MaterialTheme.typography.bodySmall)
+                    message?.takeIf { it.isNotBlank() }?.let {
+                        Text(it, color = if (it.contains("nije", true) || it.contains("greška", true) || it.contains("not", true) || it.contains("error", true) || it.contains("HTTP", true)) Color(0xFFFFA0A0) else Color(0xFFB8FFD0), style = MaterialTheme.typography.bodySmall)
+                    }
+                }
+            }
         }
     }
 }
@@ -2366,6 +2533,17 @@ private data class EquipmentRequestCartLine(
     val quantity: Int = 1
 )
 
+private data class EquipmentInventoryBulkConfirm(
+    val items: List<EquipmentMobileItem>,
+    val filterLabel: String
+)
+
+private data class EquipmentInventoryBulkUndo(
+    val counts: Map<String, Int>,
+    val done: Set<String>,
+    val affectedCount: Int
+)
+
 private val equipmentMobilePreviewItems = emptyList<EquipmentMobileItem>()
 
 
@@ -2407,6 +2585,8 @@ internal fun EquipmentReadOnlyScreen(
     var inventoryMessage by rememberSaveable { mutableStateOf("") }
     var inventoryEditItem by remember { mutableStateOf<EquipmentMobileItem?>(null) }
     var inventoryEditValue by rememberSaveable { mutableStateOf("") }
+    var pendingInventoryBulkConfirm by remember { mutableStateOf<EquipmentInventoryBulkConfirm?>(null) }
+    var lastInventoryBulkUndo by remember { mutableStateOf<EquipmentInventoryBulkUndo?>(null) }
     var returnRequest by remember { mutableStateOf<EquipmentMobileRequest?>(null) }
     var returnCounts by remember { mutableStateOf<Map<String, Int>>(emptyMap()) }
     var returnDestinations by remember { mutableStateOf<Map<String, String>>(emptyMap()) }
@@ -2421,11 +2601,11 @@ internal fun EquipmentReadOnlyScreen(
         armoryQueue.clear(); armoryQueue.addAll(snapshot.armoryQueue)
         val meta = buildList {
             if (snapshot.catalogVersion.isNotBlank()) add(snapshot.catalogVersion)
-            if (snapshot.rawRowCount > 0) add("${snapshot.rawRowCount} XLS redova")
+            if (snapshot.rawRowCount > 0) add("${snapshot.rawRowCount} stavki")
             if (snapshot.groupedRowCount > 0) add("${snapshot.groupedRowCount} kataloških stavki")
         }.joinToString(" · ")
         syncMessage = listOf(snapshot.message, meta).filter { it.isNotBlank() }.joinToString(" · ").ifBlank {
-            language.pick("Čekam da Supabase vrati oružarski katalog.", "Waiting for Supabase equipment catalog.")
+            language.pick("Učitavam inventar…", "Loading inventory…")
         }
     }
 
@@ -2437,7 +2617,7 @@ internal fun EquipmentReadOnlyScreen(
         equipmentSyncJob = scope.launch {
             isSyncing = true
             if (force) armoryRetryCount = 0
-            syncMessage = language.pick("Provjeravam promjene u oružarstvu...", "Checking equipment changes...")
+            syncMessage = language.pick("Učitavam…", "Loading…")
             try {
                 val snapshot = withContext(Dispatchers.IO) {
                     withTimeoutOrNull(60_000L) { EquipmentSupabaseRepository.loadSnapshot(context) }
@@ -2447,8 +2627,8 @@ internal fun EquipmentReadOnlyScreen(
                         applySnapshot(snapshot)
                     } else {
                         syncMessage = language.pick(
-                            "Sync traje predugo. Provjeri vezu i stisni Osvježi opet.",
-                            "Sync is taking too long. Check the connection and tap Refresh again."
+                            "Učitavanje traje predugo. Pokušaj opet.",
+                            "Loading takes too long. Try again."
                         )
                     }
                 }
@@ -2554,6 +2734,21 @@ internal fun EquipmentReadOnlyScreen(
             }.sortedWith(compareBy<EquipmentMobileItem> { it.location }.thenBy { it.name.lowercase(Locale.getDefault()) })
         }
     }
+    val inventoryBulkFilterLabel = remember(language, hasInventorySearchQuery, inventoryQuery, inventoryCategory, inventoryLocation, inventoryItems.size) {
+        if (hasInventorySearchQuery) {
+            language.pick(
+                "pretraga \"${inventoryQuery.trim()}\" · ${inventoryItems.size} rezultata",
+                "search \"${inventoryQuery.trim()}\" · ${inventoryItems.size} results"
+            )
+        } else {
+            val categoryLabel = if (inventoryCategory == "Sve") language.pick("sve kategorije", "all categories") else inventoryCategory
+            val locationLabel = if (inventoryLocation == "Sve lokacije") language.pick("sve lokacije", "all locations") else inventoryLocation
+            language.pick(
+                "kategorija: $categoryLabel · lokacija: $locationLabel · ${inventoryItems.size} stavki",
+                "category: $categoryLabel · location: $locationLabel · ${inventoryItems.size} items"
+            )
+        }
+    }
     LaunchedEffect(inventoryItems.map { it.id }.joinToString("|")) {
         // Zadrži već prebrojane stavke pri promjeni kategorije/lokacije.
         val fresh = inventoryItems.filter { it.id !in inventoryDone }
@@ -2575,14 +2770,14 @@ internal fun EquipmentReadOnlyScreen(
         val item = inventoryEditItem!!
         AlertDialog(
             onDismissRequest = { inventoryEditItem = null },
-            title = { Text("Stvarni broj", fontWeight = FontWeight.Bold) },
+            title = { Text(language.pick("Stvarni broj", "Actual count"), fontWeight = FontWeight.Bold) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     EquipmentDialogMiniHeader(item, canManage = true)
                     OutlinedTextField(
                         value = inventoryEditValue,
                         onValueChange = { inventoryEditValue = it.filter { ch -> ch.isDigit() }.take(4) },
-                        label = { Text("Prebrojano") },
+                        label = { Text(language.pick("Prebrojano", "Counted")) },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -2594,9 +2789,64 @@ internal fun EquipmentReadOnlyScreen(
                     inventoryCounts = inventoryCounts + (item.id to value.coerceAtLeast(0))
                     inventoryDone = inventoryDone + item.id
                     inventoryEditItem = null
-                }) { Text("Spremi") }
+                }) { Text(language.pick("Spremi", "Save")) }
             },
-            dismissButton = { TextButton(onClick = { inventoryEditItem = null }) { Text("Odustani") } }
+            dismissButton = { TextButton(onClick = { inventoryEditItem = null }) { Text(language.pick("Odustani", "Cancel")) } }
+        )
+    }
+
+    pendingInventoryBulkConfirm?.let { bulk ->
+        AlertDialog(
+            onDismissRequest = { pendingInventoryBulkConfirm = null },
+            title = { Text(language.pick("Potvrditi sve prikazano?", "Confirm all shown?"), fontWeight = FontWeight.Bold) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Text(
+                        language.pick(
+                            "Označit će se ${bulk.items.size} stavki kao da se slažu sa stanjem u evidenciji.",
+                            "${bulk.items.size} items will be marked as matching the expected inventory."
+                        ),
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Surface(
+                        color = Color(0xFFFFA726).copy(alpha = 0.12f),
+                        shape = RoundedCornerShape(16.dp),
+                        border = BorderStroke(1.dp, Color(0xFFFFA726).copy(alpha = 0.28f))
+                    ) {
+                        Text(
+                            bulk.filterLabel,
+                            modifier = Modifier.padding(12.dp),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+                    Text(
+                        language.pick(
+                            "Ako je filter kriv, odustani i provjeri kategoriju/lokaciju ili pretragu.",
+                            "If the filter is wrong, cancel and check the category/location or search."
+                        ),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+            },
+            confirmButton = {
+                Button(onClick = {
+                    lastInventoryBulkUndo = EquipmentInventoryBulkUndo(
+                        counts = inventoryCounts,
+                        done = inventoryDone,
+                        affectedCount = bulk.items.size
+                    )
+                    inventoryCounts = inventoryCounts + bulk.items.associate { it.id to it.total }
+                    inventoryDone = inventoryDone + bulk.items.map { it.id }.toSet()
+                    inventoryMessage = language.pick(
+                        "Bulk potvrda: ${bulk.items.size} stavki označeno kao OK.",
+                        "Bulk confirm: ${bulk.items.size} items marked OK."
+                    )
+                    pendingInventoryBulkConfirm = null
+                }) { Text(language.pick("Potvrdi", "Confirm")) }
+            },
+            dismissButton = { TextButton(onClick = { pendingInventoryBulkConfirm = null }) { Text(language.pick("Odustani", "Cancel")) } }
         )
     }
 
@@ -2609,8 +2859,8 @@ internal fun EquipmentReadOnlyScreen(
                     Surface(color = Color(0xFF7E57C2).copy(alpha = 0.10f), shape = RoundedCornerShape(18.dp)) {
                         Text(
                             language.pick(
-                                "Jedan zahtjev može imati više artikala. Oružar ga na webu i u appu vidi kao jedan paket za izdavanje.",
-                                "One request can contain multiple items. The armorer sees it as one issuing package on web and in the app."
+                                "Zahtjev može imati više artikala.",
+                                "Request can contain multiple items."
                             ),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             style = MaterialTheme.typography.bodySmall,
@@ -2710,7 +2960,7 @@ internal fun EquipmentReadOnlyScreen(
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.heightIn(max = 520.dp).verticalScroll(rememberScrollState())) {
                     Surface(color = Color(0xFFAB47BC).copy(alpha = 0.10f), shape = RoundedCornerShape(18.dp)) {
                         Text(
-                            "Po artiklu upiši koliko je vraćeno i gdje ostaje ostatak. Ako se ne vrati sve, zahtjev postaje djelomično vraćen.",
+                            "Upiši vraćenu količinu.",
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             style = MaterialTheme.typography.bodySmall,
                             modifier = Modifier.padding(12.dp)
@@ -2808,7 +3058,7 @@ internal fun EquipmentReadOnlyScreen(
                                 if (it.isNotBlank()) selectedSubcategory = "Sve"
                             },
                             label = { Text(language.pick("Traži: uže, karabiner, pojas, krol/croll, bušilica...", "Search: rope, carabiner, harness, croll, drill...")) },
-                            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                            leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Pretraga") },
                             trailingIcon = {
                                 if (query.isNotBlank()) {
                                     TextButton(onClick = { query = "" }) { Text(language.pick("Očisti", "Clear")) }
@@ -2927,7 +3177,9 @@ internal fun EquipmentReadOnlyScreen(
                                 onReset = {
                                     inventoryCounts = emptyMap()
                                     inventoryDone = emptySet()
-                                    inventoryMessage = "Inventura je resetirana."
+                                    pendingInventoryBulkConfirm = null
+                                    lastInventoryBulkUndo = null
+                                    inventoryMessage = language.pick("Inventura je resetirana.", "Inventory has been reset.")
                                 }
                             )
                         }
@@ -2937,7 +3189,7 @@ internal fun EquipmentReadOnlyScreen(
                                     value = inventoryQuery,
                                     onValueChange = { inventoryQuery = it },
                                     label = { Text("Pretraži inventuru — trpi tipfelere") },
-                                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Pretraga") },
                                     trailingIcon = {
                                         if (inventoryQuery.isNotBlank()) {
                                             TextButton(onClick = { inventoryQuery = "" }) { Text("Očisti") }
@@ -2945,7 +3197,7 @@ internal fun EquipmentReadOnlyScreen(
                                     },
                                     supportingText = {
                                         Text(
-                                            if (hasInventorySearchQuery) "Nađeno: ${inventoryItems.size} · traži po nazivu, modelu, kategoriji, lokaciji i napomeni."
+                                            if (hasInventorySearchQuery) "Nađeno: ${inventoryItems.size}"
                                             else "Upiši npr. karbiner, busilca, batrija, uze, crol…"
                                         )
                                     },
@@ -2966,12 +3218,36 @@ internal fun EquipmentReadOnlyScreen(
                                 if (inventoryItems.isNotEmpty()) {
                                     OutlinedButton(
                                         onClick = {
-                                            inventoryCounts = inventoryCounts + inventoryItems.associate { it.id to it.total }
-                                            inventoryDone = inventoryDone + inventoryItems.map { it.id }.toSet()
+                                            pendingInventoryBulkConfirm = EquipmentInventoryBulkConfirm(
+                                                items = inventoryItems.toList(),
+                                                filterLabel = inventoryBulkFilterLabel
+                                            )
                                         },
                                         modifier = Modifier.fillMaxWidth()
                                     ) {
-                                        Text(if (hasInventorySearchQuery) "✓ Potvrdi sve prikazane rezultate" else "✓ Potvrdi sve u kategoriji (sve se slaže)")
+                                        Text(
+                                            if (hasInventorySearchQuery) {
+                                                language.pick("✓ Potvrdi sve prikazane rezultate", "✓ Confirm all shown results")
+                                            } else {
+                                                language.pick("✓ Potvrdi sve u kategoriji (sve se slaže)", "✓ Confirm all in category (all match)")
+                                            }
+                                        )
+                                    }
+                                    lastInventoryBulkUndo?.let { undo ->
+                                        TextButton(
+                                            onClick = {
+                                                inventoryCounts = undo.counts
+                                                inventoryDone = undo.done
+                                                inventoryMessage = language.pick(
+                                                    "Poništena zadnja bulk potvrda (${undo.affectedCount} stavki).",
+                                                    "Last bulk confirm undone (${undo.affectedCount} items)."
+                                                )
+                                                lastInventoryBulkUndo = null
+                                            },
+                                            modifier = Modifier.fillMaxWidth()
+                                        ) {
+                                            Text(language.pick("↶ Poništi zadnju bulk potvrdu", "↶ Undo last bulk confirm"))
+                                        }
                                     }
                                 }
                             }
@@ -3141,7 +3417,7 @@ private fun EquipmentDatabaseLoadingCard(message: String, isSyncing: Boolean, on
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 Box(Modifier.size(48.dp).background(Color(0xFF26A69A).copy(alpha = 0.14f), RoundedCornerShape(18.dp)), contentAlignment = Alignment.Center) {
                     if (isSyncing) CircularProgressIndicator(modifier = Modifier.size(26.dp), strokeWidth = 3.dp, color = Color(0xFF26A69A))
-                    else Icon(Icons.Default.Cloud, contentDescription = null, tint = Color(0xFF26A69A))
+                    else Icon(Icons.Default.Cloud, contentDescription = "Cloud", tint = Color(0xFF26A69A))
                 }
                 Column(Modifier.weight(1f)) {
                     Text(language.pick("Učitavam oružarstvo…", "Loading equipment…"), fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.titleMedium)
@@ -3167,7 +3443,7 @@ private fun EquipmentArmoryTopBar(onBack: () -> Unit, canManage: Boolean, messag
         Row(Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Back") }
             Box(Modifier.size(42.dp).background(Color(0xFF7E57C2).copy(alpha = 0.14f), RoundedCornerShape(15.dp)), contentAlignment = Alignment.Center) {
-                Icon(Icons.Default.Storage, contentDescription = null, tint = Color(0xFF7E57C2))
+                Icon(Icons.Default.Storage, contentDescription = "Baza", tint = Color(0xFF7E57C2))
             }
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(language.pick("Oružarstvo", "Equipment"), fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
@@ -3188,7 +3464,7 @@ private fun EquipmentArmoryTopBar(onBack: () -> Unit, canManage: Boolean, messag
 private fun EquipmentCartInlineBar(count: Int, onOpen: () -> Unit, onClear: () -> Unit) {
     Surface(color = Color(0xFF26A69A).copy(alpha = 0.12f), shape = RoundedCornerShape(22.dp), border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF26A69A).copy(alpha = 0.24f))) {
         Row(Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            Icon(Icons.Default.Add, contentDescription = null, tint = Color(0xFF26A69A))
+            Icon(Icons.Default.Add, contentDescription = "Dodaj", tint = Color(0xFF26A69A))
             Text("Košarica · $count kom", modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
             TextButton(onClick = onClear) { Text("Očisti") }
             Button(onClick = onOpen, shape = RoundedCornerShape(16.dp)) { Text("Pošalji") }
@@ -3213,7 +3489,7 @@ private fun EquipmentCartFloatingBar(count: Int, onOpen: () -> Unit, onClear: ()
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Box(Modifier.size(42.dp).background(Color(0xFF26A69A).copy(alpha = 0.18f), RoundedCornerShape(16.dp)), contentAlignment = Alignment.Center) {
-                Icon(Icons.Default.Add, contentDescription = null, tint = Color(0xFF26A69A))
+                Icon(Icons.Default.Add, contentDescription = "Dodaj", tint = Color(0xFF26A69A))
             }
             Column(Modifier.weight(1f)) {
                 Text("Zahtjev u pripremi", color = Color.White, fontWeight = FontWeight.Bold, maxLines = 1)
@@ -3239,7 +3515,7 @@ private fun EquipmentRequestDateSection(
     val presets = listOf("Danas", "3 dana", "Vikend", "7 dana")
     Column(verticalArrangement = Arrangement.spacedBy(9.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Icon(Icons.Default.Event, contentDescription = null, tint = Color(0xFF7E57C2))
+            Icon(Icons.Default.Event, contentDescription = "Izleti", tint = Color(0xFF7E57C2))
             Column(Modifier.weight(1f)) {
                 Text("Termin posudbe", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                 Text("$from → $to", color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
@@ -3298,107 +3574,6 @@ private fun EquipmentCartLineRow(line: EquipmentRequestCartLine, onMinus: () -> 
             Text(line.quantity.toString(), fontWeight = FontWeight.Bold, modifier = Modifier.widthIn(min = 24.dp), textAlign = TextAlign.Center)
             OutlinedButton(onClick = onPlus, shape = RoundedCornerShape(14.dp), contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)) { Text("+") }
             IconButton(onClick = onRemove) { Icon(Icons.Default.Delete, contentDescription = "Remove") }
-        }
-    }
-}
-
-@Composable
-private fun EquipmentPremiumHero(onBack: () -> Unit, canManage: Boolean) {
-    val language = LocalAppLanguage.current
-    Card(
-        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-        shape = RoundedCornerShape(32.dp),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    Brush.linearGradient(
-                        listOf(
-                            Color(0xFF171126).copy(alpha = 0.94f),
-                            Color(0xFF1B2A33).copy(alpha = 0.90f),
-                            Color(0xFF28304A).copy(alpha = 0.88f)
-                        )
-                    ),
-                    RoundedCornerShape(32.dp)
-                )
-                .border(1.dp, Color.White.copy(alpha = 0.10f), RoundedCornerShape(32.dp))
-                .padding(18.dp)
-        ) {
-            Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Back", tint = Color.White)
-                    }
-                    Box(
-                        modifier = Modifier.size(58.dp).background(Color.White.copy(alpha = 0.12f), RoundedCornerShape(20.dp)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(Icons.Default.Storage, contentDescription = null, tint = Color(0xFFB388FF), modifier = Modifier.size(34.dp))
-                    }
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(language.pick("Oružarstvo", "Equipment"), color = Color.White, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-                        Text(language.pick("Isti XLS canonical katalog i Supabase viewovi kao web v6.1.5", "Same XLS canonical catalog and Supabase views as web v6.1.5"), color = Color.White.copy(alpha = 0.72f), style = MaterialTheme.typography.bodyMedium)
-                    }
-                }
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.horizontalScroll(rememberScrollState())) {
-                    EquipmentGlassChip(language.pick("Web v6.1.5 = izvor istine", "Web v6.1.5 = source of truth"), Color(0xFF26A69A))
-                    EquipmentGlassChip(language.pick("XLS canonical 551", "XLS canonical 551"), Color(0xFFB388FF))
-                    EquipmentGlassChip(if (canManage) language.pick("Oružar način", "Armorer mode") else language.pick("Korisnik", "User mode"), Color(0xFFFFCA28))
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun EquipmentSyncStatusCard(message: String, isSyncing: Boolean, onRefresh: () -> Unit) {
-    val language = LocalAppLanguage.current
-    Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.92f)),
-        shape = RoundedCornerShape(24.dp),
-        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF26A69A).copy(alpha = 0.18f)),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(14.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Box(Modifier.size(42.dp).background(Color(0xFF26A69A).copy(alpha = 0.12f), RoundedCornerShape(15.dp)), contentAlignment = Alignment.Center) {
-                Icon(if (isSyncing) Icons.Default.Cloud else Icons.Default.CheckCircle, contentDescription = null, tint = Color(0xFF26A69A))
-            }
-            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text(language.pick("Sync oružarstva", "Equipment sync"), fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
-                Text(message, color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall, maxLines = 2, overflow = TextOverflow.Ellipsis)
-            }
-            TextButton(onClick = onRefresh, enabled = true) { Text(if (isSyncing) language.pick("Ponovi", "Retry") else language.pick("Osvježi", "Refresh")) }
-        }
-    }
-}
-
-@Composable
-private fun EquipmentRoleStrip(canManage: Boolean) {
-    val language = LocalAppLanguage.current
-    Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.92f)),
-        shape = RoundedCornerShape(26.dp),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            Text(
-                if (canManage) language.pick("Oružar u appu obrađuje zahtjeve i inventuru; katalog i kategorije dolaze iz iste baze kao web.", "Armorer handles requests and inventory in app; catalog and categories come from the same database as web.")
-                else language.pick("Pregledaj opremu, provjeri dostupnost i pripremi zahtjev za posudbu.", "Browse equipment, check availability and prepare a loan request."),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.bodyMedium
-            )
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.horizontalScroll(rememberScrollState())) {
-                EquipmentSoftChip(language.pick("Katalog", "Catalog"), Color(0xFF7E57C2))
-                EquipmentSoftChip(language.pick("Zahtjevi", "Requests"), Color(0xFF26A69A))
-                if (canManage) EquipmentSoftChip(language.pick("Inventura", "Inventory"), Color(0xFF66BB6A))
-                if (canManage) EquipmentSoftChip(language.pick("Posudbe", "Loans"), Color(0xFFFFA726))
-            }
         }
     }
 }
@@ -3517,7 +3692,7 @@ private fun equipmentCategorySubtitle(name: String): String = when (canonicalEqu
     "Logor, ekspedicija i kuhinja" -> "bivak · kuhinja · kamp"
     "Oprema za logor" -> "bivak · kuhinja · kamp"
     "Medicinska oprema" -> "prva pomoć · sigurnost"
-    "Sve" -> "cijeli XLS canonical katalog"
+    "Sve" -> "sva oprema"
     else -> "oprema i pribor"
 }
 
@@ -3839,7 +4014,7 @@ private fun EquipmentCatalogResultHeader(title: String, subtitle: String, onBack
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             FilledTonalButton(onClick = onBack, shape = RoundedCornerShape(16.dp)) {
-                Icon(Icons.Default.ArrowBack, contentDescription = null, modifier = Modifier.size(18.dp))
+                Icon(Icons.Default.ArrowBack, contentDescription = "Natrag", modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(6.dp))
                 Text(LocalAppLanguage.current.pick("Kategorije", "Categories"))
             }
@@ -4037,7 +4212,7 @@ private fun EquipmentSubcategoryDeck(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(9.dp)
                 ) {
-                    Icon(summary.icon, contentDescription = null, tint = summary.accent, modifier = Modifier.size(23.dp))
+                    Icon(summary.icon, contentDescription = "Ikona", tint = summary.accent, modifier = Modifier.size(23.dp))
                     Column {
                         Text(summary.name, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
                         Text(if (canManage) "${summary.count} · ${summary.available}/${summary.total}" else equipmentPublicAvailabilityLabel(summary.available), color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.labelSmall)
@@ -4103,7 +4278,7 @@ private fun EquipmentEmptyState(title: String, subtitle: String) {
     Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.92f)), shape = RoundedCornerShape(28.dp), border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.08f))) {
         Column(Modifier.fillMaxWidth().padding(26.dp), verticalArrangement = Arrangement.spacedBy(10.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             Box(Modifier.size(54.dp).background(Color(0xFF7E57C2).copy(alpha = 0.12f), RoundedCornerShape(18.dp)), contentAlignment = Alignment.Center) {
-                Icon(Icons.Default.Search, contentDescription = null, tint = Color(0xFFB388FF), modifier = Modifier.size(32.dp))
+                Icon(Icons.Default.Search, contentDescription = "Pretraga", tint = Color(0xFFB388FF), modifier = Modifier.size(32.dp))
             }
             Text(title, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
             Text(subtitle, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
@@ -4310,7 +4485,7 @@ private fun EquipmentInventoryHeader(
         Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 Box(Modifier.size(52.dp).background(Color(0xFF66BB6A).copy(alpha = 0.14f), RoundedCornerShape(18.dp)), contentAlignment = Alignment.Center) {
-                    Icon(Icons.Default.CheckCircle, contentDescription = null, tint = Color(0xFF66BB6A))
+                    Icon(Icons.Default.CheckCircle, contentDescription = "Potvrđeno", tint = Color(0xFF66BB6A))
                 }
                 Column(Modifier.weight(1f)) {
                     Text("Inventura", color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.ExtraBold)
@@ -4491,11 +4666,20 @@ private fun EquipmentRequestCard(
     onIssue: (() -> Unit)? = null,
     onReturn: (() -> Unit)? = null
 ) {
+    val language = LocalAppLanguage.current
     val statusColor = equipmentStatusColor(request.status)
+    val requesterPrimary = request.requesterName.ifBlank { request.requesterEmail }.ifBlank { language.pick("Nepoznato", "Unknown") }
+    val requesterContact = request.requesterEmail.takeIf { it.isNotBlank() && it != requesterPrimary }
+    val requesterInitials = requesterPrimary
+        .split(Regex("\\s+"))
+        .filter { it.isNotBlank() }
+        .take(2)
+        .joinToString("") { it.first().uppercaseChar().toString() }
+        .ifBlank { "?" }
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.94f)),
         shape = RoundedCornerShape(28.dp),
-        border = androidx.compose.foundation.BorderStroke(1.dp, statusColor.copy(alpha = 0.18f))
+        border = BorderStroke(1.dp, statusColor.copy(alpha = 0.18f))
     ) {
         Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Row(verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -4503,26 +4687,67 @@ private fun EquipmentRequestCard(
                     modifier = Modifier.size(50.dp).background(statusColor.copy(alpha = 0.14f), RoundedCornerShape(18.dp)),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(Icons.Default.CheckCircle, contentDescription = null, tint = statusColor)
+                    Icon(Icons.Default.CheckCircle, contentDescription = "Potvrđeno", tint = statusColor)
                 }
-                Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
+                Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(5.dp)) {
                     Text(request.itemName, color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                    if (canManage) {
+                        Surface(
+                            color = Color(0xFF7E57C2).copy(alpha = 0.12f),
+                            shape = RoundedCornerShape(999.dp),
+                            border = BorderStroke(1.dp, Color(0xFF7E57C2).copy(alpha = 0.26f))
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 7.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Box(
+                                    modifier = Modifier.size(26.dp).background(Color(0xFF7E57C2).copy(alpha = 0.22f), RoundedCornerShape(999.dp)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(requesterInitials, color = Color(0xFF7E57C2), style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Black)
+                                }
+                                Column(Modifier.weight(1f, fill = false)) {
+                                    Text(
+                                        language.pick("Naručitelj: $requesterPrimary", "Requester: $requesterPrimary"),
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                        style = MaterialTheme.typography.labelLarge,
+                                        fontWeight = FontWeight.Bold,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                    requesterContact?.let { contact ->
+                                        Text(
+                                            contact,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            style = MaterialTheme.typography.labelSmall,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
                     if (request.lines.size > 1) {
                         Text(request.lines.take(4).joinToString(" · ") { "${it.name} ×${it.quantity}" } + if (request.lines.size > 4) " · +${request.lines.size - 4}" else "", color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall, maxLines = 2, overflow = TextOverflow.Ellipsis)
                     }
-                    Text("${request.id} · ${request.itemCode} · količina ${request.quantity}", color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
+                    Text("${request.id} · ${request.itemCode} · ${language.pick("količina", "qty")} ${request.quantity}", color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
                     if (request.dateFrom.isNotBlank() || request.dateTo.isNotBlank()) {
                         Text("${request.dateFrom.ifBlank { "?" }} → ${request.dateTo.ifBlank { "?" }}", color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
                     }
-                    Text(request.note, color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                    if (request.note.isNotBlank()) {
+                        Text(request.note, color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                    }
                 }
                 EquipmentSoftChip(request.status, statusColor)
             }
             if (canManage) {
                 Divider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.07f))
                 Row(modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedButton(onClick = { onIssue?.invoke() }, enabled = request.status == "Zatraženo", shape = RoundedCornerShape(16.dp)) { Text("Izdano") }
-                    OutlinedButton(onClick = { onReturn?.invoke() }, enabled = request.status == "Izdano" || request.status == "Djelomično vraćeno", shape = RoundedCornerShape(16.dp)) { Text("Vraćeno") }
+                    OutlinedButton(onClick = { onIssue?.invoke() }, enabled = request.status == "Zatraženo", shape = RoundedCornerShape(16.dp)) { Text(language.pick("Izdano", "Issued")) }
+                    OutlinedButton(onClick = { onReturn?.invoke() }, enabled = request.status == "Izdano" || request.status == "Djelomično vraćeno", shape = RoundedCornerShape(16.dp)) { Text(language.pick("Vraćeno", "Returned")) }
                 }
             }
         }
@@ -4669,7 +4894,7 @@ internal fun ArchiveDrawingsReadOnlyScreen(
                             onValueChange = { query = it },
                             modifier = Modifier.fillMaxWidth(),
                             singleLine = true,
-                            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                            leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Pretraga") },
                             label = { Text("Traži objekt, pločicu, mjesto") }
                         )
                         Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -4759,7 +4984,7 @@ private fun ArchiveWorkItemRow(item: ArchiveWorkItem, selected: Boolean, onClick
         Column(Modifier.fillMaxWidth().padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 Box(Modifier.size(42.dp).background(tint.copy(alpha = 0.16f), RoundedCornerShape(14.dp)), contentAlignment = Alignment.Center) {
-                    Icon(Icons.Default.CollectionsBookmark, contentDescription = null, tint = tint)
+                    Icon(Icons.Default.CollectionsBookmark, contentDescription = "Ikona", tint = tint)
                 }
                 Column(Modifier.weight(1f)) {
                     Text(item.objectName, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
@@ -4790,7 +5015,7 @@ private fun ArchiveWorkItemRow(item: ArchiveWorkItem, selected: Boolean, onClick
                 shape = RoundedCornerShape(14.dp),
                 contentPadding = PaddingValues(vertical = 10.dp)
             ) {
-                Icon(Icons.Default.OpenInNew, contentDescription = null, modifier = Modifier.size(18.dp))
+                Icon(Icons.Default.OpenInNew, contentDescription = "Otvori izvana", modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(8.dp))
                 Text("Detalji i status")
             }
@@ -4892,7 +5117,7 @@ private fun ArchiveHumanKvSection(title: String, rows: List<Pair<String, String>
 private fun ArchiveHumanTextSection(title: String, blocks: List<Pair<String, String>>, initiallyExpanded: Boolean = true) {
     val visibleBlocks = blocks.map { it.first to archiveVisibleValue(it.second) }.filter { it.second.isNotBlank() }
     if (visibleBlocks.isEmpty()) {
-        ArchiveDetailTextSection(title, "Za ovaj objekt baza nema dodatni opisni tekst, samo statusna/tehnička polja.", initiallyExpanded)
+        ArchiveDetailTextSection(title, "Nema dodatnog opisa.", initiallyExpanded)
         return
     }
     var expanded by remember(title, visibleBlocks.joinToString("|")) { mutableStateOf(initiallyExpanded) }
@@ -5026,7 +5251,7 @@ private fun ArchiveSelectedObjectCard(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp)
                 ) {
-                    Icon(Icons.Default.Map, contentDescription = null)
+                    Icon(Icons.Default.Map, contentDescription = "Karta")
                     Spacer(Modifier.width(8.dp))
                     Text("Otvori na TK25 karti")
                 }

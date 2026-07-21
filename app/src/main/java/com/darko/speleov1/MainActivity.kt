@@ -28,6 +28,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -173,6 +174,7 @@ import com.darko.speleov1.util.OfflineTileManager
 import com.darko.speleov1.util.PendingCameraPhoto
 import com.darko.speleov1.util.PhotoStore
 import com.darko.speleov1.util.UserContentStore
+import com.darko.speleov1.util.SovNativeOfflineFolders
 import com.darko.speleov1.util.ImportParser
 import com.darko.speleov1.util.AppSessionStore
 import com.darko.speleov1.util.AppSessionSnapshot
@@ -226,7 +228,7 @@ class MainActivity : ComponentActivity() {
     private val pendingExternalOpenUri = mutableStateOf<Uri?>(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d("SOV_IMPORT", "intent: action=${intent.action} type=${intent.type} data=${intent.data}")
+        debugImportLog("intent: action=${intent.action} type=${intent.type} hasData=${intent.data != null}")
         installSplashScreen()
         super.onCreate(savedInstanceState)
         // WMS performanse: drzi TCP/TLS veze prema tile serverima zive i u poolu, umjesto da
@@ -244,16 +246,37 @@ class MainActivity : ComponentActivity() {
         }
         queueExternalOpenIntent(intent)
         OfflineTileManager.configureOsmdroidPaths(this)
+        // Ne skeniramo velike korisničke foldere sinkrono u onCreate.
+        // To je znalo smrznuti startup na ~49% kod velikih GPX/KML/MBTiles/Moje baze.
         Configuration.getInstance().userAgentValue = packageName
         enableEdgeToEdge()
         setContent {
-            SpeleoTheme(darkTheme = true) {
+            var appThemeMode by rememberSaveable {
+                mutableStateOf(AppSessionStore.load(this@MainActivity).appThemeMode)
+            }
+            val systemDark = isSystemInDarkTheme()
+            SpeleoTheme(darkTheme = appThemeMode.isDark(systemDark)) {
                 SpeleoApp(
                     viewModel = viewModel,
                     incomingOpenUri = pendingExternalOpenUri.value,
-                    onIncomingOpenConsumed = { pendingExternalOpenUri.value = null }
+                    onIncomingOpenConsumed = { pendingExternalOpenUri.value = null },
+                    appThemeMode = appThemeMode,
+                    onThemeModeChange = { mode ->
+                        appThemeMode = mode
+                        val current = AppSessionStore.load(this@MainActivity)
+                        AppSessionStore.save(this@MainActivity, current.copy(appThemeMode = mode))
+                    }
                 )
             }
+        }
+    }
+
+    private fun debugImportLog(message: String, throwable: Throwable? = null) {
+        if (!BuildConfig.DEBUG) return
+        if (throwable != null) {
+            Log.w("SOV_IMPORT", message, throwable)
+        } else {
+            Log.d("SOV_IMPORT", message)
         }
     }
 
@@ -324,7 +347,7 @@ class MainActivity : ComponentActivity() {
             if (target.length() <= 0L) return@runCatching null
             Uri.fromFile(target)
         }.onFailure { throwable ->
-            Log.w("SOV_IMPORT", "Cannot copy external import URI to cache: $uri", throwable)
+            debugImportLog("Cannot copy external import URI to cache: scheme=${uri.scheme.orEmpty()}", throwable)
             runCatching { FirebaseCrashlytics.getInstance().recordException(throwable) }
         }.getOrNull()
     }
@@ -341,13 +364,11 @@ class MainActivity : ComponentActivity() {
             type.contains("gpx") -> "gpx"
             type.contains("kml") || type.contains("google-earth") -> "kml"
             type.contains("kmz") -> "kmz"
-            type.contains("geo+json") || type.contains("geojson") || type.contains("json") -> "geojson"
-            type.contains("csv") -> "csv"
-            type.contains("xml") || type.contains("plain") -> "xml"
-            type.contains("spreadsheet") || type.contains("excel") -> "xlsx"
-            type.contains("geopackage") || type.contains("sqlite") -> "gpkg"
+            type.contains("geo+json") || type.contains("geojson") -> "geojson"
+            type.contains("geopackage") -> "gpkg"
+            type.contains("mbtiles") -> "mbtiles"
+            type.contains("shapefile") -> "shp"
             type.contains("tiff") || type.contains("geotiff") -> "tif"
-            type.contains("zip") -> "zip"
             type.contains("sov.field-package") -> "sovpkg"
             else -> ""
         }
@@ -389,7 +410,7 @@ class MainActivity : ComponentActivity() {
         runCatching {
             contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }.onFailure { throwable ->
-            Log.d("SOV_IMPORT", "External URI has transient or non-persistable read permission: $uri (${throwable.javaClass.simpleName})")
+            debugImportLog("External URI has transient or non-persistable read permission (${throwable.javaClass.simpleName})")
         }
     }
 
@@ -398,32 +419,28 @@ class MainActivity : ComponentActivity() {
         val uriText = uri.toString().lowercase(Locale.ROOT)
         val displayName = getOpenableDisplayName(uri).orEmpty().lowercase(Locale.ROOT)
         val candidate = "$uriText $displayName"
+        // v1.4.41b: generički MIME tipovi (json/xml/txt/zip/octet-stream)
+        // više sami po sebi nisu dovoljni. Provideri ih često koriste za nepovezane
+        // datoteke, pa SOV provjerava stvarni naziv/ekstenziju prije uvoza.
         return type.contains("kml") ||
             type.contains("kmz") ||
             type.contains("gpx") ||
             type.contains("geo+json") ||
-            type.contains("json") ||
-            type.contains("csv") ||
-            type.contains("spreadsheet") ||
-            type.contains("sheet") ||
-            type.contains("xml") ||
-            type.contains("plain") ||
-            type.contains("octet-stream") ||
-            type.contains("openxmlformats-officedocument.spreadsheetml.sheet") ||
-            type.contains("sqlite") ||
+            type.contains("geojson") ||
             type.contains("geopackage") ||
+            type.contains("mbtiles") ||
+            type.contains("shapefile") ||
             type.contains("tiff") ||
             type.contains("geotiff") ||
-            type.contains("zip") ||
             type.contains("vnd.sov.field-package") ||
             candidate.endsWithSupportedImportExtension()
     }
 
     private fun String.endsWithSupportedImportExtension(): Boolean {
         val supported = listOf(
-            ".kml", ".kmz", ".gpx", ".geojson", ".json", ".xml", ".csv",
-            ".xlsx", ".xlsm", ".xls", ".gpkg", ".geopackage", ".sqlite", ".db",
-            ".tif", ".tiff", ".zip", ".mbtiles", ".sovpkg"
+            ".kml", ".kmz", ".gpx", ".geojson",
+            ".gpkg", ".geopackage", ".mbtiles", ".shp",
+            ".tif", ".tiff", ".sovpkg"
         )
         return supported.any { ext -> this.endsWith(ext) || this.contains("$ext?") || this.contains("$ext%") }
     }

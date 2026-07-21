@@ -9,6 +9,7 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -139,6 +140,7 @@ import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
 import kotlin.math.sqrt
+import com.darko.speleov1.util.SovNetworkSecurity
 
 // v1.7: Field Packages / Izleti
 private const val SOV_TRIPS_SHEET_URL = "https://docs.google.com/spreadsheets/d/1g93ZqKOJD2gLcIxZPfHokNcktbDEPivEItp7VRpnfWc/edit?usp=sharing"
@@ -876,6 +878,7 @@ fun FieldPackagesScreen(
     val context = LocalContext.current
     AppContextHolder.context = context
     val language = LocalAppLanguage.current
+    val messenger = LocalSovMessenger.current
     val scope = rememberCoroutineScope()
     var packages by remember { mutableStateOf(FieldPackageManager.list(context)) }
     var showCreate by remember { mutableStateOf(false) }
@@ -938,7 +941,7 @@ fun FieldPackagesScreen(
                     onChanged()
                     Toast.makeText(context, "Uvezeno", Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(context, "Paket nije prepoznat", Toast.LENGTH_SHORT).show()
+                    messenger.error("Paket nije prepoznat")
                 }
                 busy = false
             }
@@ -1006,7 +1009,7 @@ fun FieldPackagesScreen(
                                 Column(Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(3.dp)) {
                                     Text("2", color = Color(0xFFC7A7FF), fontWeight = FontWeight.Bold)
                                     Text(language.pick("Cloud", "Cloud"), color = Color.White, fontWeight = FontWeight.SemiBold)
-                                    Text(language.pick("Supabase", "Supabase"), color = Color.White.copy(alpha = 0.58f), style = MaterialTheme.typography.bodySmall)
+                                    Text(language.pick("Cloud", "Cloud"), color = Color.White.copy(alpha = 0.58f), style = MaterialTheme.typography.bodySmall)
                                 }
                             }
                             Surface(
@@ -1031,7 +1034,7 @@ fun FieldPackagesScreen(
                                 shape = RoundedCornerShape(18.dp),
                                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary)
                             ) {
-                                Icon(Icons.Default.Add, null)
+                                Icon(Icons.Default.Add, contentDescription = "Dodaj")
                                 Spacer(Modifier.size(8.dp))
                                 Text("Novi izlet", fontWeight = FontWeight.Bold)
                             }
@@ -1042,50 +1045,13 @@ fun FieldPackagesScreen(
                                 shape = RoundedCornerShape(18.dp),
                                 border = BorderStroke(1.dp, Color.White.copy(alpha = 0.20f))
                             ) {
-                                Icon(Icons.Default.Refresh, null, tint = Color.White)
+                                Icon(Icons.Default.Refresh, contentDescription = "Osvježi", tint = Color.White)
                                 Spacer(Modifier.size(8.dp))
                                 Text("Osvježi", color = Color.White)
                             }
                         }
                     }
                 }
-            }
-
-            item {
-                SovFieldHubSettingsCard(
-                    settings = hubSettings,
-                    roster = hubRoster,
-                    busy = hubBusy,
-                    message = hubMessage,
-                    onSave = { next ->
-                        SovFieldHubClient.saveSettings(context, next)
-                        hubSettings = SovFieldHubClient.loadSettings(context)
-                        hubMessage = "Hub postavke spremljene."
-                    },
-                    onPing = {
-                        hubBusy = true
-                        hubMessage = null
-                        scope.launch {
-                            val result = withContext(Dispatchers.IO) { runCatching { SovFieldHubClient.ping(hubSettings) } }
-                            hubMessage = result.getOrElse { "Hub nije dostupan: ${it.message ?: "nepoznata greška"}" }
-                            hubBusy = false
-                        }
-                    },
-                    onFetchRoster = {
-                        hubBusy = true
-                        hubMessage = null
-                        scope.launch {
-                            val result = withContext(Dispatchers.IO) { runCatching { SovFieldHubClient.fetchRoster(context, hubSettings) } }
-                            result.onSuccess { roster ->
-                                hubRoster = roster
-                                hubMessage = "Povučeno ${roster.trips.size} izlet${if (roster.trips.size == 1) "" else "a"} s laptopa."
-                            }.onFailure {
-                                hubMessage = "Roster nije povučen: ${it.message ?: "nepoznata greška"}"
-                            }
-                            hubBusy = false
-                        }
-                    }
-                )
             }
 
             val now = System.currentTimeMillis()
@@ -1167,7 +1133,7 @@ fun FieldPackagesScreen(
                     FieldPackageIconBadge(Icons.Default.Share, Color(0xFF8EC5FF), Color(0xFF17334A))
                     Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                         Text(language.pick("SOV Cloud izleti", "SOV Cloud trips"), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = Color.White)
-                        Text(language.pick("Izleti iz Supabasea — isti izvor za web i APK", "Trips from Supabase — same source for web and app"), color = Color.White.copy(alpha = 0.62f), style = MaterialTheme.typography.bodySmall)
+                        Text(language.pick("Izleti iz Clouda — isti izvor za web i APK", "Trips from Cloud — same source for web and app"), color = Color.White.copy(alpha = 0.62f), style = MaterialTheme.typography.bodySmall)
                     }
                     IconButton(
                         onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(SOV_TRIPS_SHEET_URL))) }
@@ -1283,10 +1249,10 @@ fun FieldPackagesScreen(
                         scope.launch {
                             val deleted = FieldPackageSheetSyncClient.deleteTrip(trip)
                             if (deleted) {
-                                Toast.makeText(context, "ADMIN: obrisano iz zajedničkog rasporeda", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "Obrisano", Toast.LENGTH_SHORT).show()
                                 refreshSheetTrips()
                             } else {
-                                Toast.makeText(context, "Brisanje nije uspjelo", Toast.LENGTH_SHORT).show()
+                                messenger.error("Brisanje nije uspjelo")
                             }
                             busy = false
                         }
@@ -1356,10 +1322,10 @@ fun FieldPackagesScreen(
                                 scope.launch {
                                     val deleted = FieldPackageSheetSyncClient.deleteTrip(trip)
                                     if (deleted) {
-                                        Toast.makeText(context, "ADMIN: obrisano iz zajedničkog rasporeda", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(context, "Obrisano", Toast.LENGTH_SHORT).show()
                                         refreshSheetTrips()
                                     } else {
-                                        Toast.makeText(context, "Brisanje nije uspjelo", Toast.LENGTH_SHORT).show()
+                                        messenger.error("Brisanje nije uspjelo")
                                     }
                                     busy = false
                                 }
@@ -1414,13 +1380,13 @@ fun FieldPackagesScreen(
                     if (synced) {
                         Toast.makeText(
                             context,
-                            "✓ Izlet dodan u zajednički raspored.",
+                            "Izlet dodan.",
                             Toast.LENGTH_LONG
                         ).show()
                     } else {
                         Toast.makeText(
                             context,
-                            "Izlet spremljen lokalno — nije još u zajedničkom rasporedu. Provjeri internet i osvježi popis.",
+                            "Spremljeno lokalno. Provjeri internet.",
                             Toast.LENGTH_LONG
                         ).show()
                     }
@@ -1443,7 +1409,7 @@ fun FieldPackagesScreen(
                         signupTrip = null
                         refreshSheetTrips()
                     } else {
-                        Toast.makeText(context, "Prijava nije uspjela", Toast.LENGTH_SHORT).show()
+                        messenger.error("Prijava nije uspjela")
                     }
                     busy = false
                 }
@@ -1504,7 +1470,7 @@ private fun FieldReadinessCard(
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text("Spremno za teren", fontWeight = FontWeight.Bold)
             Text(
-                if (activeMap != null) "Imaš aktivnu offline kartu. Novi izlet može odmah povući objekte iz tog područja." else "Za najbolji paket prvo odaberi područje na karti.",
+                if (activeMap != null) "Offline karta je aktivna." else "Za najbolji paket prvo odaberi područje na karti.",
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
@@ -1635,7 +1601,7 @@ private fun FieldPackageCard(
 
 
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                FieldPackageStatChip(Icons.Default.CheckCircle, if (pkg.sheetSynced) "u SOV Cloudu" else "čeka sync", Color(0xFF8BE9B5), Color(0xFF163425))
+                FieldPackageStatChip(Icons.Default.CheckCircle, if (pkg.sheetSynced) "u Cloudu" else "čeka", Color(0xFF8BE9B5), Color(0xFF163425))
                 FieldPackageStatChip(Icons.Default.Event, pkg.goal.orEmpty().ifBlank { "Izlet" }, Color(0xFFC7A7FF), Color(0xFF2D2340))
             }
 
@@ -1646,7 +1612,7 @@ private fun FieldPackageCard(
                     shape = RoundedCornerShape(16.dp),
                     border = BorderStroke(1.dp, Color.White.copy(alpha = 0.20f))
                 ) {
-                    Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(16.dp), tint = Color.White)
+                    Icon(Icons.Default.Share, contentDescription = "Podijeli", modifier = Modifier.size(16.dp), tint = Color.White)
                     Spacer(Modifier.width(6.dp))
                     Text("Share", color = Color.White, fontWeight = FontWeight.SemiBold)
                 }
@@ -1656,7 +1622,7 @@ private fun FieldPackageCard(
                     shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF83E6C2), contentColor = Color(0xFF07120F))
                 ) {
-                    Icon(Icons.Default.UploadFile, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Icon(Icons.Default.UploadFile, contentDescription = "Uvoz datoteke", modifier = Modifier.size(16.dp))
                     Spacer(Modifier.width(6.dp))
                     Text("Na laptop", fontWeight = FontWeight.Bold)
                 }
@@ -1679,7 +1645,7 @@ private fun FieldPackageStatChip(icon: ImageVector, text: String, tint: Color, b
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            Icon(icon, contentDescription = null, modifier = Modifier.size(16.dp), tint = tint)
+            Icon(icon, contentDescription = "Ikona", modifier = Modifier.size(16.dp), tint = tint)
             Text(text, color = Color.White.copy(alpha = 0.90f), style = MaterialTheme.typography.labelLarge, maxLines = 1)
         }
     }
@@ -1695,7 +1661,7 @@ private fun FieldPackageIconBadge(icon: ImageVector, tint: Color, bg: Color) {
         border = BorderStroke(1.dp, tint.copy(alpha = 0.22f))
     ) {
         Box(contentAlignment = Alignment.Center) {
-            Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(25.dp))
+            Icon(icon, contentDescription = "Ikona", tint = tint, modifier = Modifier.size(25.dp))
         }
     }
 }
@@ -1865,7 +1831,7 @@ private fun SovFieldHubSettingsCard(
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                     Text("Laptop hub", fontWeight = FontWeight.Bold, color = Color.White)
                     Text(
-                        "Lokalni sync bez interneta: paketi mobitel → laptop, ekipe laptop → mobitel.",
+                        "Bez interneta: mobitel ↔ laptop.",
                         color = Color.White.copy(alpha = 0.62f),
                         style = MaterialTheme.typography.bodySmall
                     )
@@ -1910,7 +1876,7 @@ private fun SovFieldHubSettingsCard(
                     shape = RoundedCornerShape(16.dp),
                     border = BorderStroke(1.dp, Color(0xFF83E6C2).copy(alpha = 0.40f))
                 ) {
-                    Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(16.dp), tint = Color(0xFFB8FFD0))
+                    Icon(Icons.Default.Refresh, contentDescription = "Osvježi", modifier = Modifier.size(16.dp), tint = Color(0xFFB8FFD0))
                     Spacer(Modifier.width(6.dp))
                     Text("Test", color = Color(0xFFB8FFD0))
                 }
@@ -1923,14 +1889,14 @@ private fun SovFieldHubSettingsCard(
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF83E6C2), contentColor = Color(0xFF07120F))
             ) {
-                Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(16.dp))
+                Icon(Icons.Default.Refresh, contentDescription = "Osvježi", modifier = Modifier.size(16.dp))
                 Spacer(Modifier.width(7.dp))
-                Text("Povuci ekipe s laptopa", fontWeight = FontWeight.Bold)
+                Text("Povuci", fontWeight = FontWeight.Bold)
             }
 
             if (busy) LinearProgressIndicator(modifier = Modifier.fillMaxWidth(), color = Color(0xFF83E6C2))
             Text(
-                "Roster cache: ${roster.trips.size} izlet${if (roster.trips.size == 1) "" else "a"}, $rosterTeamCount ekip${if (rosterTeamCount == 1) "a" else "a"}",
+                "Spremljeno: ${roster.trips.size} izleta, $rosterTeamCount ekipa",
                 color = Color.White.copy(alpha = 0.62f),
                 style = MaterialTheme.typography.bodySmall
             )
@@ -1964,6 +1930,7 @@ private fun SheetTripCard(
 ) {
     val context = LocalContext.current
     val language = LocalAppLanguage.current
+    val messenger = LocalSovMessenger.current
     val scope = rememberCoroutineScope()
     var descExpanded by remember(trip.rowNumber, trip.description) { mutableStateOf(false) }
     var tripExpanded by rememberSaveable(trip.rowNumber, trip.date, trip.location) { mutableStateOf(false) }
@@ -1984,7 +1951,6 @@ private fun SheetTripCard(
     var weatherError by remember(trip.rowNumber) { mutableStateOf<String?>(null) }
     val sheetTripStartMillis = remember(trip.rowNumber, trip.date) { parseSheetTripStartMillis(trip.date) }
     val sheetTripEndMillis = remember(trip.rowNumber, trip.date) { parseSheetTripEndMillis(trip.date) ?: sheetTripStartMillis }
-    // If the shared Sheet date cannot be parsed, still try weather from location using today as fallback.
     val weatherFetchMillis = sheetTripStartMillis ?: System.currentTimeMillis()
     val weatherFetchEndMillis = sheetTripEndMillis ?: (weatherFetchMillis + 24L * 60 * 60 * 1000L)
     val sheetWeatherCoords = remember(
@@ -2017,25 +1983,6 @@ private fun SheetTripCard(
     val canFetchWeather = canShowWeatherSection && !weatherTooFarAhead &&
         (trip.weatherCity.isNotBlank() || trip.location.length >= 3 || sheetWeatherCoords != null)
 
-    LaunchedEffect(trip.rowNumber, rasporedKey, rasporedUrl, trip.rasporedUrl, localPackage?.id, localPackage?.rasporedUrl, mine) {
-        if (false && rasporedUrl == null && mine && !rasporedLoading) {
-            rasporedLoading = true
-            val createdUrl = if (localPackage != null) {
-                FieldPackageSheetSyncClient.kreirajRasporedTab(localPackage)
-            } else {
-                FieldPackageSheetSyncClient.kreirajRasporedTab(trip)
-            }
-            if (!createdUrl.isNullOrBlank()) {
-                spremRasporedUrl(context, rasporedKey, createdUrl)
-                if (trip.rowNumber > 0) spremRasporedUrl(context, trip.rowNumber.toString(), createdUrl)
-                localPackage?.id?.let { spremRasporedUrl(context, it, createdUrl) }
-                if (trip.rowNumber >= 2) FieldPackageSheetSyncClient.updateRasporedUrlOnSheet(trip.rowNumber, createdUrl)
-                rasporedUrl = createdUrl
-            }
-            rasporedLoading = false
-        }
-    }
-
     fun openOrCreateRaspored() {
         rasporedUrl?.takeIf { it.isNotBlank() }?.let { url ->
             context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
@@ -2057,7 +2004,7 @@ private fun SheetTripCard(
                 rasporedUrl = createdUrl
                 context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(createdUrl)))
             } else {
-                Toast.makeText(context, "Nisam uspio otvoriti tablicu prijevoza. Provjeri internet i pokušaj opet.", Toast.LENGTH_LONG).show()
+                messenger.error(language.pick("Prijevoz nije dostupan.", "Transport is not available."))
             }
             rasporedLoading = false
         }
@@ -2092,9 +2039,12 @@ private fun SheetTripCard(
         if (weatherResult != null) {
             weatherResult?.let { onWeatherFetched?.invoke(it) }
         } else if (result.isFailure) {
-            weatherError = "Prognoza trenutno nije dostupna. Provjeri internet ili lokaciju izleta."
+            weatherError = language.pick("Prognoza nije dostupna.", "Forecast is not available.")
         } else {
-            weatherError = "Prognoza nije pronađena za ovu lokaciju. Dodaj grad/regiju u izlet."
+            weatherError = language.pick(
+                "Prognoza nije pronađena za ovu lokaciju. Dodaj grad/regiju u izlet.",
+                "Forecast was not found for this location. Add a city/region to the trip."
+            )
         }
     }
 
@@ -2104,14 +2054,80 @@ private fun SheetTripCard(
 
     val accent = if (mine) Color(0xFF72E0C4) else Color(0xFF8EC5FF)
     val bg = if (mine) Color(0xFF10281E) else Color(0xFF111B27)
+    val infoAccent = Color(0xFFFFD36F)
+    val weatherAccent = Color(0xFF8EC5FF)
+    val terrainAccent = Color(0xFF67D6B1)
+    val trackingAccent = Color(0xFF6AB7FF)
+    val messagesAccent = Color(0xFF7FE2D1)
+    val materialsAccent = Color(0xFF8EC5FF)
+    val manageAccent = Color(0xFFD7F66F)
+    val infoCtaAvailable = onTransport != null || onSignup != null
+    val infoCtaLabel = when {
+        onTransport != null && onSignup != null -> language.pick("Prijave i prijevoz", "Signups and transport")
+        onSignup != null -> language.pick("Prijavi se i prijevoz", "Sign up and transport")
+        onTransport != null -> language.pick("Pregled prijava i prijevoza", "View signups and transport")
+        else -> language.pick("Prijave i prijevoz", "Signups and transport")
+    }
+    val infoCtaHint = when {
+        onTransport != null -> language.pick(
+            "Otvara popis prijavljenih, vozača i gumb za tvoju prijavu.",
+            "Opens participants, drivers, and your signup button."
+        )
+        onSignup != null -> language.pick(
+            "Otvara tvoju prijavu s izborom prijevoza.",
+            "Opens your signup with transport choice."
+        )
+        else -> language.pick("Prijave trenutno nisu dostupne.", "Signups are not available right now.")
+    }
+
+    @Composable
+    fun SectionShell(
+        title: String,
+        subtitle: String,
+        icon: ImageVector,
+        sectionAccent: Color,
+        sectionBg: Color,
+        content: @Composable () -> Unit
+    ) {
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            color = sectionBg,
+            shape = RoundedCornerShape(22.dp),
+            border = BorderStroke(1.dp, sectionAccent.copy(alpha = 0.26f))
+        ) {
+            Column(Modifier.fillMaxWidth().padding(12.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    FieldPackageIconBadge(icon, sectionAccent, sectionAccent.copy(alpha = 0.13f))
+                    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                        Text(title, fontWeight = FontWeight.Bold, color = Color.White)
+                        if (subtitle.isNotBlank()) {
+                            Text(
+                                subtitle,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color.White.copy(alpha = 0.62f)
+                            )
+                        }
+                    }
+                }
+                content()
+            }
+        }
+    }
 
     if (showSheetDeleteConfirm && onDeleteFromSheet != null) {
         AlertDialog(
             onDismissRequest = { showSheetDeleteConfirm = false },
-            title = { Text("Obriši iz zajedničkog rasporeda?") },
+            title = { Text(language.pick("Obriši?", "Delete?")) },
             text = {
                 Text(
-                    "Izlet ${trip.location.ifBlank { "iz rasporeda" }} (${trip.date.ifBlank { "bez datuma" }}) bit će obrisan. Nastaviti?"
+                    language.pick(
+                        "Izlet ${trip.location.ifBlank { "iz rasporeda" }} (${trip.date.ifBlank { "bez datuma" }}) bit će obrisan. Nastaviti?",
+                        "Trip ${trip.location.ifBlank { "from schedule" }} (${trip.date.ifBlank { "no date" }}) will be deleted. Continue?"
+                    )
                 )
             },
             confirmButton = {
@@ -2119,11 +2135,11 @@ private fun SheetTripCard(
                     showSheetDeleteConfirm = false
                     onDeleteFromSheet()
                 }) {
-                    Text("Obriši", color = Color(0xFFFFA0A0), fontWeight = FontWeight.SemiBold)
+                    Text(language.pick("Obriši", "Delete"), color = Color(0xFFFFA0A0), fontWeight = FontWeight.SemiBold)
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showSheetDeleteConfirm = false }) { Text("Odustani") }
+                TextButton(onClick = { showSheetDeleteConfirm = false }) { Text(language.pick("Odustani", "Cancel")) }
             }
         )
     }
@@ -2133,7 +2149,13 @@ private fun SheetTripCard(
         colors = CardDefaults.cardColors(containerColor = bg, contentColor = MaterialTheme.colorScheme.onSurface),
         border = BorderStroke(1.dp, accent.copy(alpha = if (mine) 0.34f else 0.22f))
     ) {
-        Column(Modifier.fillMaxWidth().padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(14.dp)
+                .animateContentSize(),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -2151,15 +2173,15 @@ private fun SheetTripCard(
                             border = BorderStroke(1.dp, accent.copy(alpha = 0.26f))
                         ) {
                             Text(
-                                if (mine) "MOJ" else "SOV CLOUD",
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                                style = MaterialTheme.typography.labelSmall,
+                                if (mine) language.pick("MOJ", "MINE") else "CLOUD",
+                                modifier = Modifier.padding(horizontal = 9.dp, vertical = 4.dp),
+                                fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold
                             )
                         }
                         Text(
-                            trip.date.ifBlank { "Bez datuma" },
-                            style = MaterialTheme.typography.labelMedium,
+                            trip.date.ifBlank { language.pick("bez datuma", "no date") },
+                            style = MaterialTheme.typography.bodySmall,
                             fontWeight = FontWeight.SemiBold,
                             color = Color.White.copy(alpha = 0.70f),
                             maxLines = 1,
@@ -2167,14 +2189,15 @@ private fun SheetTripCard(
                         )
                     }
                     Text(
-                        trip.location.ifBlank { "Izlet iz rasporeda" },
+                        trip.location.ifBlank { language.pick("Izlet iz rasporeda", "Scheduled trip") },
                         fontWeight = FontWeight.Bold,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         color = Color.White
                     )
                     Text(
-                        "Cilj: " + trip.goal.ifBlank { "—" } + "  •  Voditelj: " + trip.leader.ifBlank { "—" },
+                        language.pick("Cilj: ", "Goal: ") + trip.goal.ifBlank { "—" } + "  •  " +
+                            language.pick("Voditelj: ", "Leader: ") + trip.leader.ifBlank { "—" },
                         style = MaterialTheme.typography.bodySmall,
                         color = Color.White.copy(alpha = 0.62f),
                         maxLines = 1,
@@ -2183,12 +2206,12 @@ private fun SheetTripCard(
                 }
                 Icon(
                     if (tripExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                    contentDescription = if (tripExpanded) "Sakrij izlet" else "Prikaži izlet",
+                    contentDescription = if (tripExpanded) language.pick("Sakrij izlet", "Collapse trip") else language.pick("Prikaži izlet", "Expand trip"),
                     tint = Color.White.copy(alpha = 0.76f)
                 )
             }
 
-            if (!tripExpanded) {
+            if (trip.participants.isNotBlank() || trip.drivers.isNotBlank()) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -2206,7 +2229,7 @@ private fun SheetTripCard(
                                 modifier = Modifier.padding(horizontal = 10.dp, vertical = 7.dp),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = Color.White.copy(alpha = 0.76f),
-                                maxLines = 1,
+                                maxLines = if (tripExpanded) 2 else 1,
                                 overflow = TextOverflow.Ellipsis
                             )
                         }
@@ -2223,237 +2246,236 @@ private fun SheetTripCard(
                                 modifier = Modifier.padding(horizontal = 10.dp, vertical = 7.dp),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = Color.White.copy(alpha = 0.76f),
-                                maxLines = 1,
+                                maxLines = if (tripExpanded) 2 else 1,
                                 overflow = TextOverflow.Ellipsis
                             )
                         }
                     }
-                    if (trip.participants.isBlank() && trip.drivers.isBlank()) {
-                        Text(
-                            "Dodirni za detalje, prijave, prijevoz, pakete i prognozu.",
-                            modifier = Modifier.padding(horizontal = 2.dp, vertical = 2.dp),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.White.copy(alpha = 0.50f)
-                        )
-                    }
                 }
+            } else if (!tripExpanded) {
+                Text(
+                    language.pick(
+                        "Dodirni za opis, prognozu, teren, materijale i prijave.",
+                        "Tap for description, forecast, field teams, materials, and signups."
+                    ),
+                    modifier = Modifier.padding(horizontal = 2.dp, vertical = 2.dp),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.White.copy(alpha = 0.50f)
+                )
             }
 
             if (tripExpanded) {
-                if (trip.description.isNotBlank()) {
-                    Surface(
-                        color = Color.White.copy(alpha = 0.055f),
-                        shape = RoundedCornerShape(18.dp),
-                        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.08f)),
-                        modifier = Modifier.clickable { descExpanded = !descExpanded }
-                    ) {
-                        Column(Modifier.padding(12.dp)) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.Top
-                            ) {
-                                Text(
-                                    trip.description,
-                                    color = Color.White.copy(alpha = 0.72f),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    maxLines = if (descExpanded) Int.MAX_VALUE else 2,
-                                    overflow = if (descExpanded) TextOverflow.Clip else TextOverflow.Ellipsis,
-                                    modifier = Modifier.weight(1f)
-                                )
-                                Icon(
-                                    if (descExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                                    contentDescription = if (descExpanded) "Zatvori" else "Proširi",
-                                    tint = Color.White.copy(alpha = 0.45f),
-                                    modifier = Modifier.size(18.dp).padding(start = 4.dp)
-                                )
-                            }
-                        }
-                    }
-                }
-
-                OutlinedButton(
-                    onClick = { onTransport?.invoke() },
-                    enabled = onTransport != null,
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    border = BorderStroke(1.dp, Color(0xFFFFC46B).copy(alpha = 0.50f)),
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFFFFD27A))
+                SectionShell(
+                    title = language.pick("Info i prijave", "Info and signups"),
+                    subtitle = language.pick("Opis, prognoza i jedan ulaz za prijavu/prijevoz.", "Description, forecast, and one signup/transport entry."),
+                    icon = Icons.Default.WbSunny,
+                    sectionAccent = infoAccent,
+                    sectionBg = Color(0xFF211C10)
                 ) {
-                    Icon(Icons.Default.DirectionsCar, contentDescription = null, modifier = Modifier.size(16.dp), tint = Color(0xFFFFD27A))
-                    Spacer(Modifier.width(6.dp))
-                    Text("🚗 Prijave i prijevoz", fontWeight = FontWeight.SemiBold)
-                }
-
-                FieldTripTeamsCard(trip = trip)
-
-                FieldTripHubCard(
-                    trip = trip,
-                    localPackage = localPackage,
-                    records = records,
-                    markedPoints = markedPoints,
-                    savedTracks = savedTracks
-                )
-
-                FieldTrackingLiteTripCard(trip = trip)
-
-                TripAssetsCloudCard(
-                    trip = trip,
-                    localPackage = localPackage,
-                    records = records,
-                    markedPoints = markedPoints,
-                    savedTracks = savedTracks
-                )
-
-                Button(
-                    onClick = { sendTripAnnouncementMail(context, trip) },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD7F66F), contentColor = Color(0xFF132000))
-                ) {
-                    Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(17.dp))
-                    Spacer(Modifier.width(7.dp))
-                    Text("📧 Pošalji najavu na mailing listu", fontWeight = FontWeight.Bold)
-                }
-
-                if (trip.participants.isNotBlank()) {
-                    Surface(
-                        color = Color(0xFFFFC46B).copy(alpha = 0.11f),
-                        shape = RoundedCornerShape(16.dp),
-                        border = BorderStroke(1.dp, Color(0xFFFFC46B).copy(alpha = 0.26f))
-                    ) {
-                        Text(
-                            text = "👥 Prijavljeni: " + trip.participants,
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.White.copy(alpha = 0.82f),
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-                }
-
-                if (trip.drivers.isNotBlank()) {
-                    Surface(
-                        color = Color(0xFF72E0C4).copy(alpha = 0.10f),
-                        shape = RoundedCornerShape(16.dp),
-                        border = BorderStroke(1.dp, Color(0xFF72E0C4).copy(alpha = 0.24f))
-                    ) {
-                        Text(
-                            text = "🚗 Voze: " + trip.drivers,
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.White.copy(alpha = 0.82f),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-                }
-
-                if (mine && onEdit != null) {
-                    Column(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-                        OutlinedButton(
-                            onClick = onEdit,
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(16.dp),
-                            border = BorderStroke(1.dp, Color(0xFF72E0C4).copy(alpha = 0.40f))
+                    if (trip.description.isNotBlank()) {
+                        Surface(
+                            color = Color.White.copy(alpha = 0.055f),
+                            shape = RoundedCornerShape(18.dp),
+                            border = BorderStroke(1.dp, Color.White.copy(alpha = 0.08f)),
+                            modifier = Modifier.clickable { descExpanded = !descExpanded }
                         ) {
-                            Icon(Icons.Default.Edit, null, modifier = Modifier.size(18.dp), tint = Color(0xFF72E0C4))
-                            Spacer(Modifier.size(8.dp))
-                            Text("Uredi", color = Color.White)
-                        }
-                        if (onSignup != null) {
-                            OutlinedButton(
-                                onClick = onSignup,
-                                modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(16.dp),
-                                border = BorderStroke(1.dp, Color(0xFFFFC46B).copy(alpha = 0.46f))
-                            ) {
-                                Text("👥 Prijava", color = Color(0xFFFFE0A3), fontWeight = FontWeight.SemiBold)
-                            }
-                        }
-                        if (onDeleteFromSheet != null) {
-                            OutlinedButton(
-                                onClick = { showSheetDeleteConfirm = true },
-                                modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(16.dp),
-                                border = BorderStroke(1.dp, Color(0xFFFFA0A0).copy(alpha = 0.42f))
-                            ) {
-                                Icon(Icons.Default.Delete, null, modifier = Modifier.size(18.dp), tint = Color(0xFFFFA0A0))
-                                Spacer(Modifier.size(8.dp))
-                                Text("Obriši iz zajedničkog rasporeda", color = Color(0xFFFFD0D0), fontWeight = FontWeight.SemiBold)
-                            }
-                        }
-                    }
-                } else {
-                    Column(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-                        if (onSignup != null) {
-                            Button(
-                                onClick = onSignup,
-                                modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(16.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFC46B), contentColor = Color(0xFF241A00))
-                            ) {
-                                Text("👥 Prijava na izlet", fontWeight = FontWeight.Bold)
-                            }
-                        }
-                    }
-                }
-
-                if (canShowWeatherSection) {
-                    Divider(
-                        modifier = Modifier.padding(vertical = 4.dp),
-                        color = Color.White.copy(alpha = 0.08f)
-                    )
-                    Surface(
-                        color = Color(0xFF0B1824),
-                        shape = RoundedCornerShape(18.dp),
-                        border = BorderStroke(1.dp, Color(0xFF4A90D9).copy(alpha = 0.28f)),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text("🌦 Prognoza", fontWeight = FontWeight.Bold, color = Color.White.copy(alpha = 0.92f))
-                                TextButton(
-                                    onClick = { scope.launch { loadTripWeather(force = true) } },
-                                    enabled = canFetchWeather && !weatherLoading
+                            Column(Modifier.padding(12.dp)) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.Top
                                 ) {
-                                    Text("Osvježi", color = Color(0xFF8EC5FF), fontSize = 12.sp)
+                                    Text(
+                                        trip.description,
+                                        color = Color.White.copy(alpha = 0.72f),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        maxLines = if (descExpanded) Int.MAX_VALUE else 3,
+                                        overflow = if (descExpanded) TextOverflow.Clip else TextOverflow.Ellipsis,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                    Icon(
+                                        if (descExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                                        contentDescription = if (descExpanded) language.pick("Zatvori opis", "Collapse description") else language.pick("Proširi opis", "Expand description"),
+                                        tint = Color.White.copy(alpha = 0.45f),
+                                        modifier = Modifier.size(18.dp).padding(start = 4.dp)
+                                    )
                                 }
                             }
+                        }
+                    } else {
+                        Text(
+                            language.pick("Opis nije upisan.", "No description entered."),
+                            color = Color.White.copy(alpha = 0.58f),
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
 
-                            if (!canFetchWeather) {
-                                Text(
-                                    if (weatherTooFarAhead) {
-                                        "Prognoza je dostupna tek oko 16 dana prije izleta."
-                                    } else {
-                                        "Za prognozu dodaj grad/regiju ili lokaciju izleta."
-                                    },
-                                    fontSize = 12.sp,
-                                    color = Color.White.copy(alpha = 0.62f)
-                                )
-                            } else if (weatherLoading) {
+                    if (canShowWeatherSection) {
+                        Surface(
+                            color = Color(0xFF0B1824),
+                            shape = RoundedCornerShape(18.dp),
+                            border = BorderStroke(1.dp, weatherAccent.copy(alpha = 0.28f)),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                 Row(
-                                    Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                                    horizontalArrangement = Arrangement.Center,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp, color = Color(0xFF4A90D9))
-                                    Spacer(Modifier.size(8.dp))
-                                    Text("Učitavam prognozu…", fontSize = 12.sp, color = Color.White.copy(alpha = 0.65f))
+                                    Text(language.pick("Prognoza", "Forecast"), fontWeight = FontWeight.Bold, color = Color.White.copy(alpha = 0.92f))
+                                    TextButton(
+                                        onClick = { scope.launch { loadTripWeather(force = true) } },
+                                        enabled = canFetchWeather && !weatherLoading
+                                    ) {
+                                        Text(language.pick("Osvježi", "Refresh"), color = weatherAccent, fontSize = 12.sp)
+                                    }
                                 }
-                            } else if (weatherResult != null && weatherResult!!.days.isNotEmpty()) {
-                                FieldWeatherCard(weather = weatherResult!!)
-                            } else {
-                                Text(
-                                    weatherError ?: "Prognoza će se učitati nakon otvaranja izleta.",
-                                    fontSize = 12.sp,
-                                    color = Color.White.copy(alpha = 0.62f)
-                                )
+
+                                if (!canFetchWeather) {
+                                    Text(
+                                        if (weatherTooFarAhead) {
+                                            language.pick(
+                                                "Prognoza je dostupna tek oko 16 dana prije izleta.",
+                                                "Forecast is available about 16 days before the trip."
+                                            )
+                                        } else {
+                                            language.pick(
+                                                "Za prognozu dodaj grad/regiju ili lokaciju izleta.",
+                                                "For forecast, add a city/region or trip location."
+                                            )
+                                        },
+                                        fontSize = 12.sp,
+                                        color = Color.White.copy(alpha = 0.62f)
+                                    )
+                                } else if (weatherLoading) {
+                                    Row(
+                                        Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                                        horizontalArrangement = Arrangement.Center,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp, color = weatherAccent)
+                                        Spacer(Modifier.size(8.dp))
+                                        Text(language.pick("Učitavam prognozu…", "Loading forecast…"), fontSize = 12.sp, color = Color.White.copy(alpha = 0.65f))
+                                    }
+                                } else if (weatherResult != null && weatherResult!!.days.isNotEmpty()) {
+                                    FieldWeatherCard(weather = weatherResult!!)
+                                } else {
+                                    Text(
+                                        weatherError ?: language.pick(
+                                            "Prognoza će se učitati nakon otvaranja izleta.",
+                                            "Forecast will load after opening the trip."
+                                        ),
+                                        fontSize = 12.sp,
+                                        color = Color.White.copy(alpha = 0.62f)
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    Button(
+                        onClick = {
+                            when {
+                                onTransport != null -> onTransport.invoke()
+                                onSignup != null -> onSignup.invoke()
+                            }
+                        },
+                        enabled = infoCtaAvailable,
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = infoAccent, contentColor = Color(0xFF241A00))
+                    ) {
+                        Icon(Icons.Default.DirectionsCar, contentDescription = "Prijevoz", modifier = Modifier.size(17.dp))
+                        Spacer(Modifier.width(7.dp))
+                        Text(infoCtaLabel, fontWeight = FontWeight.Bold)
+                    }
+                    Text(infoCtaHint, color = Color.White.copy(alpha = 0.56f), style = MaterialTheme.typography.bodySmall)
+                }
+
+                SectionShell(
+                    title = language.pick("Teren", "Field"),
+                    subtitle = language.pick("Ekipe, tracking i poruke ekipe na jednom mjestu.", "Teams, tracking, and team messages in one place."),
+                    icon = Icons.Default.Terrain,
+                    sectionAccent = terrainAccent,
+                    sectionBg = Color(0xFF071A17)
+                ) {
+                    FieldTripTeamsCard(trip = trip)
+                    FieldTrackingLiteTripCard(
+                        trip = trip,
+                        showMessagesEntry = false,
+                        accent = trackingAccent,
+                        containerColor = Color(0xFF071722)
+                    )
+                    FieldTripMessagesEntry(
+                        trip = trip,
+                        accent = messagesAccent,
+                        containerColor = Color(0xFF0C211D)
+                    )
+                }
+
+                SectionShell(
+                    title = language.pick("Materijali", "Materials"),
+                    subtitle = language.pick(
+                        "Cloud paketi imaju zaseban plavi toggle unutar ove sekcije.",
+                        "Cloud packages have a separate blue toggle inside this section."
+                    ),
+                    icon = Icons.Default.FolderOpen,
+                    sectionAccent = materialsAccent,
+                    sectionBg = Color(0xFF081926)
+                ) {
+                    TripAssetsCloudCard(
+                        trip = trip,
+                        localPackage = localPackage,
+                        records = records,
+                        markedPoints = markedPoints,
+                        savedTracks = savedTracks
+                    )
+                }
+
+                if (mine) {
+                    SectionShell(
+                        title = language.pick("Upravljanje", "Management"),
+                        subtitle = language.pick("Administracija izleta odvojena od podataka za teren.", "Trip administration separated from field data."),
+                        icon = Icons.Default.Edit,
+                        sectionAccent = manageAccent,
+                        sectionBg = Color(0xFF172007)
+                    ) {
+                        Button(
+                            onClick = { sendTripAnnouncementMail(context, trip) },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(16.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = manageAccent, contentColor = Color(0xFF132000))
+                        ) {
+                            Icon(Icons.Default.Share, contentDescription = "Podijeli", modifier = Modifier.size(17.dp))
+                            Spacer(Modifier.width(7.dp))
+                            Text(language.pick("Pošalji najavu", "Send announcement"), fontWeight = FontWeight.Bold)
+                        }
+
+                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            if (onEdit != null) {
+                                OutlinedButton(
+                                    onClick = onEdit,
+                                    modifier = Modifier.weight(1f),
+                                    shape = RoundedCornerShape(16.dp),
+                                    border = BorderStroke(1.dp, accent.copy(alpha = 0.40f))
+                                ) {
+                                    Icon(Icons.Default.Edit, contentDescription = "Uredi", modifier = Modifier.size(18.dp), tint = accent)
+                                    Spacer(Modifier.size(8.dp))
+                                    Text(language.pick("Uredi", "Edit"), color = Color.White)
+                                }
+                            }
+                            if (onDeleteFromSheet != null) {
+                                OutlinedButton(
+                                    onClick = { showSheetDeleteConfirm = true },
+                                    modifier = Modifier.weight(1f),
+                                    shape = RoundedCornerShape(16.dp),
+                                    border = BorderStroke(1.dp, Color(0xFFFFA0A0).copy(alpha = 0.42f))
+                                ) {
+                                    Icon(Icons.Default.Delete, contentDescription = "Obriši", modifier = Modifier.size(18.dp), tint = Color(0xFFFFA0A0))
+                                    Spacer(Modifier.size(8.dp))
+                                    Text(language.pick("Obriši", "Delete"), color = Color(0xFFFFD0D0), fontWeight = FontWeight.SemiBold)
+                                }
                             }
                         }
                     }
@@ -2462,6 +2484,7 @@ private fun SheetTripCard(
         }
     }
 }
+
 
 
 
@@ -2531,7 +2554,7 @@ private fun TripAssetsCloudCard(
                         color = Color(0xFFCDE8FF)
                     )
                 }
-                Icon(if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore, null, tint = Color.White.copy(alpha = 0.70f))
+                Icon(if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore, contentDescription = "Akcija", tint = Color.White.copy(alpha = 0.70f))
             }
 
             if (expanded) {
@@ -2556,7 +2579,7 @@ private fun TripAssetsCloudCard(
                         shape = RoundedCornerShape(16.dp),
                         border = BorderStroke(1.dp, Color(0xFF8EC5FF).copy(alpha = 0.35f))
                     ) {
-                        Icon(Icons.Default.Refresh, null, modifier = Modifier.size(16.dp), tint = Color(0xFFCDE8FF))
+                        Icon(Icons.Default.Refresh, contentDescription = "Osvježi", modifier = Modifier.size(16.dp), tint = Color(0xFFCDE8FF))
                         Spacer(Modifier.width(6.dp))
                         Text("Osvježi", color = Color(0xFFCDE8FF))
                     }
@@ -2575,7 +2598,7 @@ private fun TripAssetsCloudCard(
                                             tripId = tripId,
                                             file = file,
                                             title = pkg.name.ifBlank { trip.location.ifBlank { "Paket izleta" } },
-                                            description = "Offline paket za izlet ${trip.location.ifBlank { pkg.locationName }}"
+                                            description = "Paket izleta"
                                         )
                                     }
                                 }
@@ -2592,7 +2615,7 @@ private fun TripAssetsCloudCard(
                         shape = RoundedCornerShape(16.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8EC5FF), contentColor = Color(0xFF06151B))
                     ) {
-                        Icon(Icons.Default.UploadFile, null, modifier = Modifier.size(16.dp))
+                        Icon(Icons.Default.UploadFile, contentDescription = "Uvoz datoteke", modifier = Modifier.size(16.dp))
                         Spacer(Modifier.width(6.dp))
                         Text("Objavi paket", fontWeight = FontWeight.Bold)
                     }
@@ -2647,7 +2670,7 @@ private fun TripAssetsCloudCard(
                                                         FieldPackageManager.save(context, next)
                                                         message = "Paket preuzet i otvoren lokalno: ${imported.name}"
                                                     } else {
-                                                        message = "Paket preuzet u cache aplikacije."
+                                                        message = "Paket preuzet."
                                                     }
                                                 }.onFailure {
                                                     message = "Preuzimanje nije uspjelo: ${it.message ?: "nepoznato"}"
@@ -2659,7 +2682,7 @@ private fun TripAssetsCloudCard(
                                         shape = RoundedCornerShape(14.dp),
                                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF72E0C4), contentColor = Color(0xFF06130F))
                                     ) {
-                                        Icon(Icons.Default.FolderOpen, null, modifier = Modifier.size(16.dp))
+                                        Icon(Icons.Default.FolderOpen, contentDescription = "Otvori mapu", modifier = Modifier.size(16.dp))
                                         Spacer(Modifier.width(6.dp))
                                         Text(if (TripAssetCloudRepository.isAssetDownloaded(context, asset)) "Otvori offline" else "Skini i otvori", fontWeight = FontWeight.Bold)
                                     }
@@ -2709,7 +2732,7 @@ private fun FieldTripHubCard(
         Column(Modifier.fillMaxWidth().padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                    Text("Laptop hub sync", fontWeight = FontWeight.Bold, color = Color.White)
+                    Text("Laptop hub", fontWeight = FontWeight.Bold, color = Color.White)
                     Text(
                         settings.normalizedBaseUrl.ifBlank { "Adresa/PIN se postavljaju gore u kartici Laptop hub." },
                         color = Color.White.copy(alpha = 0.58f),
@@ -2748,9 +2771,9 @@ private fun FieldTripHubCard(
                     shape = RoundedCornerShape(16.dp),
                     border = BorderStroke(1.dp, Color(0xFF8EC5FF).copy(alpha = 0.40f))
                 ) {
-                    Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(16.dp), tint = Color(0xFFCDE8FF))
+                    Icon(Icons.Default.Refresh, contentDescription = "Osvježi", modifier = Modifier.size(16.dp), tint = Color(0xFFCDE8FF))
                     Spacer(Modifier.width(6.dp))
-                    Text("Povuci ekipe", color = Color(0xFFCDE8FF), fontWeight = FontWeight.SemiBold)
+                    Text("Povuci", color = Color(0xFFCDE8FF), fontWeight = FontWeight.SemiBold)
                 }
                 Button(
                     onClick = {
@@ -2777,7 +2800,7 @@ private fun FieldTripHubCard(
                     shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8EC5FF), contentColor = Color(0xFF06121F))
                 ) {
-                    Icon(Icons.Default.UploadFile, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Icon(Icons.Default.UploadFile, contentDescription = "Uvoz datoteke", modifier = Modifier.size(16.dp))
                     Spacer(Modifier.width(6.dp))
                     Text("Na laptop", fontWeight = FontWeight.Bold)
                 }
@@ -2787,7 +2810,7 @@ private fun FieldTripHubCard(
 
             if (matchingTeams.isEmpty()) {
                 Text(
-                    "Nema lokalno povučenih ekipa za ovaj izlet. Na laptopu složi ekipe, zatim ovdje klikni Povuci ekipe.",
+                    "Nema ekipa. Klikni Povuci.",
                     color = Color.White.copy(alpha = 0.58f),
                     style = MaterialTheme.typography.bodySmall
                 )
@@ -2959,7 +2982,12 @@ private fun FieldTripTeamsCard(trip: FieldPackageSheetTrip) {
 }
 
 @Composable
-private fun FieldTrackingLiteTripCard(trip: FieldPackageSheetTrip) {
+private fun FieldTrackingLiteTripCard(
+    trip: FieldPackageSheetTrip,
+    showMessagesEntry: Boolean = true,
+    accent: Color = Color(0xFF6AB7FF),
+    containerColor: Color = Color(0xFF071722)
+) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var busy by remember { mutableStateOf(false) }
@@ -2973,25 +3001,30 @@ private fun FieldTrackingLiteTripCard(trip: FieldPackageSheetTrip) {
 
     Card(
         shape = RoundedCornerShape(22.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF071A17), contentColor = Color.White),
-        border = BorderStroke(1.dp, Color(0xFF83E6C2).copy(alpha = 0.24f))
+        colors = CardDefaults.cardColors(containerColor = containerColor, contentColor = Color.White),
+        border = BorderStroke(1.dp, accent.copy(alpha = 0.24f))
     ) {
         Column(Modifier.fillMaxWidth().padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
-                    Text("Teren i ekipa", fontWeight = FontWeight.Bold, color = Color.White)
+                    Text("Tracking", fontWeight = FontWeight.Bold, color = Color.White)
+                    Text(
+                        "Naziv teama, mod praćenja i join kod.",
+                        color = Color.White.copy(alpha = 0.58f),
+                        style = MaterialTheme.typography.bodySmall
+                    )
                 }
                 Surface(
-                    color = Color(0xFF83E6C2).copy(alpha = 0.10f),
+                    color = accent.copy(alpha = 0.10f),
                     shape = RoundedCornerShape(999.dp),
-                    border = BorderStroke(1.dp, Color(0xFF83E6C2).copy(alpha = 0.25f))
+                    border = BorderStroke(1.dp, accent.copy(alpha = 0.25f))
                 ) {
-                    Text("TEAM", modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp), fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Color(0xFFB8FFD0))
+                    Text("TRACK", modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp), fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Color(0xFFD6EEFF))
                 }
             }
 
             if (tripId.isBlank()) {
-                Text("Teamovi se mogu formirati samo za Supabase/cloud izlete. Ovaj izlet još nema cloud ID.", color = Color.White.copy(alpha = 0.62f), style = MaterialTheme.typography.bodySmall)
+                Text("Tracking radi za Cloud izlete.", color = Color.White.copy(alpha = 0.62f), style = MaterialTheme.typography.bodySmall)
             } else {
                 OutlinedTextField(
                     value = teamName,
@@ -3045,13 +3078,15 @@ private fun FieldTrackingLiteTripCard(trip: FieldPackageSheetTrip) {
                         },
                         modifier = Modifier.weight(1f),
                         shape = RoundedCornerShape(16.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF83E6C2), contentColor = Color(0xFF07120F))
+                        colors = ButtonDefaults.buttonColors(containerColor = accent, contentColor = Color(0xFF07120F))
                     ) {
                         if (busy) CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp, color = Color(0xFF07120F)) else Text("Formiraj team", fontWeight = FontWeight.Bold)
                     }
                 }
 
-                FieldTripMessagesEntry(trip = trip)
+                if (showMessagesEntry) {
+                    FieldTripMessagesEntry(trip = trip)
+                }
 
                 Divider(color = Color.White.copy(alpha = 0.08f))
                 OutlinedTextField(
@@ -3076,7 +3111,7 @@ private fun FieldTrackingLiteTripCard(trip: FieldPackageSheetTrip) {
                     },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
-                    border = BorderStroke(1.dp, Color(0xFF83E6C2).copy(alpha = 0.40f))
+                    border = BorderStroke(1.dp, accent.copy(alpha = 0.40f))
                 ) { Text("Pridruži se kodom") }
             }
 
@@ -3092,8 +3127,13 @@ private fun FieldTrackingLiteTripCard(trip: FieldPackageSheetTrip) {
 }
 
 
+
 @Composable
-private fun FieldTripMessagesEntry(trip: FieldPackageSheetTrip) {
+private fun FieldTripMessagesEntry(
+    trip: FieldPackageSheetTrip,
+    accent: Color = Color(0xFF7FE2D1),
+    containerColor: Color = Color(0xFF10231F)
+) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val tripId = trip.cloudId.trim()
@@ -3123,9 +3163,9 @@ private fun FieldTripMessagesEntry(trip: FieldPackageSheetTrip) {
 
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        color = Color(0xFF10231F),
+        color = containerColor,
         shape = RoundedCornerShape(18.dp),
-        border = BorderStroke(1.dp, Color(0xFF83E6C2).copy(alpha = 0.22f))
+        border = BorderStroke(1.dp, accent.copy(alpha = 0.24f))
     ) {
         Row(
             modifier = Modifier.fillMaxWidth().clickable(enabled = tripId.isNotBlank()) { open = true }.padding(12.dp),
@@ -3146,7 +3186,7 @@ private fun FieldTripMessagesEntry(trip: FieldPackageSheetTrip) {
                 )
             }
             Surface(
-                color = if (pendingCount > 0) Color(0xFFFFC46B) else Color(0xFF83E6C2),
+                color = if (pendingCount > 0) Color(0xFFFFC46B) else accent,
                 shape = RoundedCornerShape(999.dp)
             ) {
                 Text(
@@ -3170,6 +3210,7 @@ private fun FieldTripMessagesEntry(trip: FieldPackageSheetTrip) {
         )
     }
 }
+
 
 @Composable
 private fun FieldTripMessagesDialog(
@@ -3821,7 +3862,7 @@ private fun fieldWeatherDateRange(startMillis: Long, endMillis: Long): Pair<Stri
 }
 
 private fun openMeteoReadText(url: String): String? {
-    val conn = (java.net.URL(url).openConnection() as java.net.HttpURLConnection).apply {
+    val conn = SovNetworkSecurity.openHttpConnection(url, "Vremenska prognoza").apply {
         requestMethod = "GET"
         connectTimeout = FIELD_WEATHER_CONNECT_TIMEOUT_MS
         readTimeout = FIELD_WEATHER_READ_TIMEOUT_MS
@@ -3996,7 +4037,7 @@ private fun FieldWeatherCard(weather: FieldWeatherResult) {
     ) {
         Column(Modifier.fillMaxWidth().padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Icon(Icons.Default.WbSunny, null, tint = Color(0xFFFFC46B), modifier = Modifier.size(20.dp))
+                Icon(Icons.Default.WbSunny, contentDescription = "Ikona", tint = Color(0xFFFFC46B), modifier = Modifier.size(20.dp))
                 Text("Vremenska prognoza", fontWeight = FontWeight.Bold, fontSize = 14.sp)
                 Spacer(Modifier.weight(1f))
                 Column(horizontalAlignment = Alignment.End) {
@@ -4078,19 +4119,19 @@ private fun FieldAreaPickerCard(
     ) {
         Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                Icon(Icons.Default.Map, null, tint = premiumIconTint("field map", active = true), modifier = Modifier.size(30.dp))
+                Icon(Icons.Default.Map, contentDescription = "Karta", tint = premiumIconTint("field map", active = true), modifier = Modifier.size(30.dp))
                 Column(Modifier.weight(1f)) {
                     Text("Karta i područje", fontWeight = FontWeight.Bold)
-                    Text("Klik otvara kartu u SOV-only download modu. Označi područje i vrati se u ovaj flow.", color = Color.White.copy(alpha = 0.72f))
+                    Text("Označi područje na karti.", color = Color.White.copy(alpha = 0.72f))
                 }
             }
             Button(onClick = onFindAreaOnMap, modifier = Modifier.fillMaxWidth()) {
-                Icon(Icons.Default.Map, null, modifier = Modifier.size(18.dp))
+                Icon(Icons.Default.Map, contentDescription = "Karta", modifier = Modifier.size(18.dp))
                 Spacer(Modifier.size(8.dp))
                 Text("Izaberi područje na karti")
             }
             OutlinedButton(onClick = onUseGps, modifier = Modifier.fillMaxWidth()) {
-                Icon(Icons.Default.MyLocation, null, modifier = Modifier.size(18.dp))
+                Icon(Icons.Default.MyLocation, contentDescription = "Moja lokacija", modifier = Modifier.size(18.dp))
                 Spacer(Modifier.size(8.dp))
                 Text(if (currentUserLocation != null || useCurrentLocation) "GPS centar" else "Upali GPS")
             }
@@ -4118,7 +4159,7 @@ private fun FieldTrackPickerCard(
     ) {
         Column(Modifier.fillMaxWidth().padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                Icon(Icons.Default.Route, null, tint = premiumIconTint("field tracks", active = includeTracks), modifier = Modifier.size(26.dp))
+                Icon(Icons.Default.Route, contentDescription = "Ikona", tint = premiumIconTint("field tracks", active = includeTracks), modifier = Modifier.size(26.dp))
                 Column(Modifier.weight(1f)) {
                     Text("Trackovi", fontWeight = FontWeight.SemiBold)
                     Text(
@@ -4141,7 +4182,7 @@ private fun FieldTrackPickerCard(
                         if (manualTrackSelection) onToggleManual()
                     },
                     label = { Text("Automatski iz područja") },
-                    leadingIcon = { Icon(Icons.Default.CheckCircle, null, modifier = Modifier.size(16.dp)) }
+                    leadingIcon = { Icon(Icons.Default.CheckCircle, contentDescription = "Potvrđeno", modifier = Modifier.size(16.dp)) }
                 )
                 FilterChip(
                     selected = includeTracks && manualTrackSelection,
@@ -4150,17 +4191,17 @@ private fun FieldTrackPickerCard(
                         if (!manualTrackSelection) onToggleManual()
                     },
                     label = { Text("Ručno odaberi") },
-                    leadingIcon = { Icon(Icons.Default.Route, null, modifier = Modifier.size(16.dp)) }
+                    leadingIcon = { Icon(Icons.Default.Route, contentDescription = "Ikona", modifier = Modifier.size(16.dp)) }
                 )
                 FilterChip(
                     selected = !includeTracks,
                     onClick = { onIncludeTracksChanged(false) },
                     label = { Text("Bez trackova") },
-                    leadingIcon = { Icon(Icons.Default.Delete, null, modifier = Modifier.size(16.dp)) }
+                    leadingIcon = { Icon(Icons.Default.Delete, contentDescription = "Obriši", modifier = Modifier.size(16.dp)) }
                 )
             }
             OutlinedButton(onClick = onImportTrack, modifier = Modifier.fillMaxWidth()) {
-                Icon(Icons.Default.UploadFile, null, modifier = Modifier.size(18.dp))
+                Icon(Icons.Default.UploadFile, contentDescription = "Uvoz datoteke", modifier = Modifier.size(18.dp))
                 Spacer(Modifier.size(8.dp))
                 Text("Dodaj GPX/KML track s mobitela")
             }
@@ -4182,7 +4223,7 @@ private fun FieldTrackPickerCard(
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     trailingIcon = if (trackFilter.isNotBlank()) {
-                        { IconButton(onClick = { trackFilter = "" }) { Icon(Icons.Default.Clear, null, modifier = Modifier.size(16.dp)) } }
+                        { IconButton(onClick = { trackFilter = "" }) { Icon(Icons.Default.Clear, contentDescription = "Očisti", modifier = Modifier.size(16.dp)) } }
                     } else null
                 )
 
@@ -4204,7 +4245,7 @@ private fun FieldTrackPickerCard(
                 }
                 if (filteredTracks.size > 25) {
                     Text(
-                        "Prikazujem prvih 25 od ${filteredTracks.size} trackova (poredano od najnovijeg).",
+                        "Prvih 25 trackova.",
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         style = MaterialTheme.typography.bodySmall
                     )
@@ -4248,7 +4289,7 @@ private fun TripOptionalAddonsCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                Icon(Icons.Default.UploadFile, null, tint = Color(0xFF8EC5FF), modifier = Modifier.size(24.dp))
+                Icon(Icons.Default.UploadFile, contentDescription = "Uvoz datoteke", tint = Color(0xFF8EC5FF), modifier = Modifier.size(24.dp))
                 Column(Modifier.weight(1f)) {
                     Text("Dodaci po želji", fontWeight = FontWeight.Bold)
                     Text(
@@ -4257,7 +4298,7 @@ private fun TripOptionalAddonsCard(
                         style = MaterialTheme.typography.bodySmall
                     )
                 }
-                Icon(if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore, null, tint = Color(0xFF8EC5FF))
+                Icon(if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore, contentDescription = "Akcija", tint = Color(0xFF8EC5FF))
             }
             if (expanded) {
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -4266,21 +4307,21 @@ private fun TripOptionalAddonsCard(
                         onClick = { onAttachActiveMapChanged(!attachActiveMap) },
                         enabled = activeMapName != null,
                         label = { Text(activeMapName?.let { "Aktivna karta: $it" } ?: "Nema aktivne karte") },
-                        leadingIcon = { Icon(Icons.Default.Map, null, modifier = Modifier.size(16.dp)) }
+                        leadingIcon = { Icon(Icons.Default.Map, contentDescription = "Karta", modifier = Modifier.size(16.dp)) }
                     )
                     FilterChip(
                         selected = includeSavedTracks,
                         onClick = { onIncludeTracksChanged(!includeSavedTracks) },
                         enabled = savedTracks.isNotEmpty(),
                         label = { Text(if (savedTracks.isEmpty()) "Nema spremljenih trackova" else "Spremljeni trackovi") },
-                        leadingIcon = { Icon(Icons.Default.Route, null, modifier = Modifier.size(16.dp)) }
+                        leadingIcon = { Icon(Icons.Default.Route, contentDescription = "Ikona", modifier = Modifier.size(16.dp)) }
                     )
                     if (includeSavedTracks && savedTracks.isNotEmpty()) {
                         FilterChip(
                             selected = manualTrackSelection,
                             onClick = onToggleManual,
                             label = { Text(if (manualTrackSelection) "Ručno: ${selectedTrackIds.size}" else "Auto / bez ručnog odabira") },
-                            leadingIcon = { Icon(Icons.Default.CheckCircle, null, modifier = Modifier.size(16.dp)) }
+                            leadingIcon = { Icon(Icons.Default.CheckCircle, contentDescription = "Potvrđeno", modifier = Modifier.size(16.dp)) }
                         )
                     }
                 }
@@ -4301,12 +4342,12 @@ private fun TripOptionalAddonsCard(
                             }
                         }
                         if (savedTracks.size > visible.size) {
-                            Text("Prikazujem zadnjih ${visible.size} trackova. Ostale dodaj kasnije kroz detalje izleta.", color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
+                            Text("Zadnji trackovi.", color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
                         }
                     }
                 }
                 Text(
-                    "GPX/KML file s mobitela dodavat ćemo kroz detalje izleta; web već podržava upload fileova. Ovo ne vraća stari wizard za izradu izleta.",
+                    "GPX/KML dodaj iz detalja izleta.",
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     style = MaterialTheme.typography.bodySmall
                 )
@@ -4326,7 +4367,7 @@ private fun FieldGoalPicker(goal: String, onGoalChanged: (String) -> Unit) {
                     selected = goal == item,
                     onClick = { onGoalChanged(item) },
                     label = { Text(item) },
-                    leadingIcon = if (goal == item) ({ Icon(Icons.Default.CheckCircle, null, modifier = Modifier.size(16.dp)) }) else null
+                    leadingIcon = if (goal == item) ({ Icon(Icons.Default.CheckCircle, contentDescription = "Potvrđeno", modifier = Modifier.size(16.dp)) }) else null
                 )
             }
         }
@@ -4366,12 +4407,12 @@ private fun FieldDateRangePicker(
         Text("Datum / trajanje", fontWeight = FontWeight.SemiBold)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
             OutlinedButton(onClick = { openPicker(startMillis, onStartChanged) }, modifier = Modifier.weight(1f)) {
-                Icon(Icons.Default.CalendarToday, contentDescription = null, modifier = Modifier.size(16.dp))
+                Icon(Icons.Default.CalendarToday, contentDescription = "Kalendar", modifier = Modifier.size(16.dp))
                 Spacer(Modifier.size(6.dp))
                 Text("Početak: ${if (startMillis != null) formatFieldTripDate(startMillis) else "Odaberi"}")
             }
             OutlinedButton(onClick = { openPicker(endMillis ?: startMillis, onEndChanged) }, modifier = Modifier.weight(1f), enabled = startMillis != null) {
-                Icon(Icons.Default.CalendarToday, contentDescription = null, modifier = Modifier.size(16.dp))
+                Icon(Icons.Default.CalendarToday, contentDescription = "Kalendar", modifier = Modifier.size(16.dp))
                 Spacer(Modifier.size(6.dp))
                 Text("Kraj: ${if (endMillis != null) formatFieldTripDate(endMillis) else if (startMillis != null) formatFieldTripDate(startMillis) else "—"}")
             }
@@ -4444,7 +4485,7 @@ private fun FieldWizardStepHeader(step: Int) {
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    if (done) Icon(Icons.Default.CheckCircle, null, modifier = Modifier.size(15.dp), tint = accent)
+                    if (done) Icon(Icons.Default.CheckCircle, contentDescription = "Potvrđeno", modifier = Modifier.size(15.dp), tint = accent)
                     Text(label, style = MaterialTheme.typography.labelLarge, fontWeight = if (active) FontWeight.Bold else FontWeight.SemiBold)
                 }
             }

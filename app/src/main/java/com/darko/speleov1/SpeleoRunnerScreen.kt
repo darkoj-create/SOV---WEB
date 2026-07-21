@@ -104,18 +104,19 @@ private val SPELE_INK         = Color(0xFF1A0A00)
 private enum class RunnerPhase { HORIZONTAL, TRANSITION, VERTICAL, EXIT_VERTICAL, LAKE }
 private enum class RunnerObstacleType { PIT, BLIND_PIT, LOW_CEILING, ICE_PATCH, STALAGMITE }
 
-private data class RunnerObstacle(
+private class RunnerObstacle(
     val id: Int,
     val type: RunnerObstacleType,
-    val x: Float,
-    val width: Float
+    var x: Float,
+    val width: Float,
+    val lane: Int = 1
 )
 
-private data class RunnerToken(
+private class RunnerToken(
     val id: Int,
-    val x: Float,
+    var x: Float,
     val yFactor: Float,
-    val collected: Boolean = false
+    var collected: Boolean = false
 )
 
 private data class RunnerCollectFlash(
@@ -149,6 +150,25 @@ private var _smoothedRunnerDt = 0.016f
 
 private val _textPaintCache = HashMap<Long, android.graphics.Paint>()
 private val _shadowPaintCache = HashMap<Long, android.graphics.Paint>()
+private var _scanlineShaderPaint: android.graphics.Paint? = null
+private var _scanlineShaderPx = -1f
+
+private fun scanlinePaint(px: Float): android.graphics.Paint {
+    if (_scanlineShaderPaint == null || _scanlineShaderPx != px) {
+        val lineH = (3f * px).toInt().coerceAtLeast(2)
+        val bmp = android.graphics.Bitmap.createBitmap(1, lineH, android.graphics.Bitmap.Config.ARGB_8888)
+        bmp.setPixel(0, 0, android.graphics.Color.argb((0.055f * 255).toInt(), 0, 0, 0))
+        _scanlineShaderPaint = android.graphics.Paint().apply {
+            shader = android.graphics.BitmapShader(
+                bmp,
+                android.graphics.Shader.TileMode.REPEAT,
+                android.graphics.Shader.TileMode.REPEAT
+            )
+        }
+        _scanlineShaderPx = px
+    }
+    return _scanlineShaderPaint!!
+}
 
 private fun cachedTextPaint(
     color: Int,
@@ -433,21 +453,12 @@ private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawInkPath(path: P
 }
 
 private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawPaperGrain(w: Float, h: Float, px: Float, phaseTime: Float) {
-    // VGA scanlines — horizontalne linije svakih 3px, blaga tamnost
-    val lineSpacing = 3f * px
-    var scanY = 0f
-    while (scanY < h) {
-        drawLine(
-            Color.Black.copy(alpha = 0.055f),
-            Offset(0f, scanY),
-            Offset(w, scanY),
-            strokeWidth = px
-        )
-        scanY += lineSpacing
-    }
-    // Subtle pixel shimmer — mali bijeli pikseli na rubovima
+    // VGA scanlines as a tiled shader: one native drawRect instead of hundreds of drawLine calls per frame.
+    drawContext.canvas.nativeCanvas.drawRect(0f, 0f, w, h, scanlinePaint(px))
+
+    // Subtle pixel shimmer — intentionally capped to keep the overlay cheap.
     val tick = (phaseTime * 6f).toInt()
-    repeat(28) { i ->
+    repeat(10) { i ->
         val x = ((i * 153.7f + tick * 31f) * px) % w
         val y = ((i * 89.3f + tick * 17f) * px) % h
         drawRect(
@@ -514,6 +525,20 @@ private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawRunnerBiomeCard
 internal fun SpeleoRunnerScreen() {
     val context = LocalContext.current
     val density = LocalDensity.current
+    val horizontalBackgrounds = listOf(
+        ImageBitmap.imageResource(R.drawable.speleo_runner_horizontal_bg_01),
+        ImageBitmap.imageResource(R.drawable.speleo_runner_horizontal_bg_02),
+        ImageBitmap.imageResource(R.drawable.speleo_runner_horizontal_bg_03),
+        ImageBitmap.imageResource(R.drawable.speleo_runner_horizontal_bg_04),
+        ImageBitmap.imageResource(R.drawable.speleo_runner_horizontal_bg_05)
+    )
+    val verticalBackgrounds = listOf(
+        ImageBitmap.imageResource(R.drawable.speleo_runner_vertical_bg_01),
+        ImageBitmap.imageResource(R.drawable.speleo_runner_vertical_bg_02),
+        ImageBitmap.imageResource(R.drawable.speleo_runner_vertical_bg_03),
+        ImageBitmap.imageResource(R.drawable.speleo_runner_vertical_bg_04),
+        ImageBitmap.imageResource(R.drawable.speleo_runner_vertical_bg_05)
+    )
     val prefs = remember { context.getSharedPreferences("speleo_runner", Context.MODE_PRIVATE) }
 
     var status by remember { mutableStateOf(RunnerStatus.READY) }
@@ -530,6 +555,8 @@ internal fun SpeleoRunnerScreen() {
     var playerLift by remember { mutableFloatStateOf(0f) }
     var playerVelocity by remember { mutableFloatStateOf(0f) }
     var crawlLeft by remember { mutableFloatStateOf(0f) }
+    var coyoteTimer by remember { mutableFloatStateOf(0f) }
+    var jumpBufferTimer by remember { mutableFloatStateOf(0f) }
     var crawlPressed by remember { mutableStateOf(false) }
     var spawnCooldown by remember { mutableFloatStateOf(1.35f) }
     var tokenCooldown by remember { mutableFloatStateOf(0.95f) }
@@ -594,6 +621,17 @@ internal fun SpeleoRunnerScreen() {
     val lakeGravity = 520f
     var lakeSharkEscaped by remember { mutableStateOf(false) }
     var lakePaddleTapCount by remember { mutableIntStateOf(0) }
+    var lakeLane by remember { mutableIntStateOf(1) }
+    var lakeLaneVisual by remember { mutableFloatStateOf(1f) }
+    var lakeLastPaddleSide by remember { mutableIntStateOf(-1) }
+    var lakeRhythmStreak by remember { mutableIntStateOf(0) }
+    var lakeAmbushTimer by remember { mutableFloatStateOf(0f) }
+    var lakeAmbushLane by remember { mutableIntStateOf(-1) }
+    var lakeAmbushWarning by remember { mutableFloatStateOf(0f) }
+    var lakeAmbushSplashTimer by remember { mutableFloatStateOf(0f) }
+    var lakeAmbushSplashLane by remember { mutableIntStateOf(-1) }
+    var lakeBeachingTime by remember { mutableFloatStateOf(0f) }
+    var lakeTutorialTimer by remember { mutableFloatStateOf(0f) }
     var fallingObstacle by remember { mutableStateOf<RunnerObstacle?>(null) }
     var fallAnimationTime by remember { mutableFloatStateOf(0f) }
     var shakeOffset by remember { mutableStateOf(Offset.Zero) }
@@ -644,7 +682,7 @@ internal fun SpeleoRunnerScreen() {
             try {
                 SpeleoRunnerLeaderboardClient.submitOrQueue(context, playerName, scoreToSubmit, batsToSubmit)
                 leaderboard = SpeleoRunnerLeaderboardClient.refresh(context)
-                leaderboardStatus = if (leaderboard.isEmpty()) "Score spremljen lokalno; leaderboard će se osvježiti kad bude dostupan." else "Zadnji dostupni high scoreovi"
+                leaderboardStatus = if (leaderboard.isEmpty()) "Score spremljen." else "Zadnji dostupni high scoreovi"
             } catch (_: Throwable) {
                 leaderboardStatus = "Score je ostao lokalno; leaderboard trenutno nije dostupan."
             }
@@ -678,6 +716,8 @@ internal fun SpeleoRunnerScreen() {
         playerLift = 0f
         playerVelocity = 0f
         crawlLeft = 0f
+        coyoteTimer = 0f
+        jumpBufferTimer = 0f
         crawlPressed = false
         spawnCooldown = 4.85f
         tokenCooldown = 4.95f
@@ -716,7 +756,7 @@ internal fun SpeleoRunnerScreen() {
         caveCeilingOffset = 0f
         caveCeilingTarget = 0f
         caveCeilingChangeTimer = Random.nextDouble(8.0, 18.0).toFloat()
-        lakeDuration = 10f
+        lakeDuration = 14f
         lakeBoatLift = 0f
         lakeBoatVelocity = 0f
         lakePaddleTimer = 0f
@@ -726,10 +766,21 @@ internal fun SpeleoRunnerScreen() {
         lakeSharkTimer = 99f
         lakePaddleBoost = 0f
         lakeRockObstacles = emptyList()
-        lakeRockCooldown = 999f
+        lakeRockCooldown = 1.8f
         lakeJumpVelocity = 0f
         lakeSharkEscaped = false
         lakePaddleTapCount = 0
+        lakeLane = 1
+        lakeLaneVisual = 1f
+        lakeLastPaddleSide = -1
+        lakeRhythmStreak = 0
+        lakeAmbushTimer = 0f
+        lakeAmbushLane = -1
+        lakeAmbushWarning = 0f
+        lakeAmbushSplashTimer = 0f
+        lakeAmbushSplashLane = -1
+        lakeBeachingTime = 0f
+        lakeTutorialTimer = 0f
         fallingObstacle = null
         fallAnimationTime = 0f
         shakeOffset = Offset.Zero
@@ -763,6 +814,8 @@ internal fun SpeleoRunnerScreen() {
         playerLift = 0f
         playerVelocity = 0f
         crawlLeft = 0f
+        coyoteTimer = 0f
+        jumpBufferTimer = 0f
         crawlPressed = false
         slowdownTimer = 0f
         speedBoostTimer = 0f
@@ -785,6 +838,8 @@ internal fun SpeleoRunnerScreen() {
         playerLift = 0f
         playerVelocity = 0f
         crawlLeft = 0f
+        coyoteTimer = 0f
+        jumpBufferTimer = 0f
         crawlPressed = false
         playerLane = 1
         hazardLane = Random.nextInt(0, 3)
@@ -831,6 +886,8 @@ internal fun SpeleoRunnerScreen() {
         playerLift = 0f
         playerVelocity = 0f
         crawlLeft = 0f
+        coyoteTimer = 0f
+        jumpBufferTimer = 0f
         crawlPressed = false
         nextFallingRockDepth = Random.nextDouble(7.5, 11.5).toFloat()
         fallingRockLane = Random.nextInt(0, 3)
@@ -855,10 +912,21 @@ internal fun SpeleoRunnerScreen() {
         lakeSharkTimer = 99f
         lakePaddleBoost = 0f
         lakeRockObstacles = emptyList()
-        lakeRockCooldown = 999f
+        lakeRockCooldown = 1.8f
         lakeJumpVelocity = 0f
         lakeSharkEscaped = false
         lakePaddleTapCount = 0
+        lakeLane = 1
+        lakeLaneVisual = 1f
+        lakeLastPaddleSide = -1
+        lakeRhythmStreak = 0
+        lakeAmbushTimer = 0f
+        lakeAmbushLane = -1
+        lakeAmbushWarning = 0f
+        lakeAmbushSplashTimer = 0f
+        lakeAmbushSplashLane = -1
+        lakeBeachingTime = 0f
+        lakeTutorialTimer = 0f
     }
 
     fun startLakePhase() {
@@ -866,7 +934,7 @@ internal fun SpeleoRunnerScreen() {
         phaseSequenceLevel += 1
         phase = RunnerPhase.LAKE
         phaseTime = 0f
-        lakeDuration = 10f
+        lakeDuration = 14f
         lakeBoatLift = 0f
         lakeBoatVelocity = 0f
         lakePaddleTimer = 0f
@@ -876,10 +944,22 @@ internal fun SpeleoRunnerScreen() {
         lakeSharkTimer = 99f
         lakePaddleBoost = 0f
         lakeRockObstacles = emptyList()
-        lakeRockCooldown = 999f
+        lakeRockCooldown = 1.6f
         lakeJumpVelocity = 0f
         lakeSharkEscaped = false
         lakePaddleTapCount = 0
+        lakeLane = 1
+        lakeLaneVisual = 1f
+        lakeLastPaddleSide = -1
+        lakeRhythmStreak = 0
+        lakeAmbushTimer = 0f
+        lakeAmbushLane = -1
+        lakeAmbushWarning = 0f
+        lakeAmbushSplashTimer = 0f
+        lakeAmbushSplashLane = -1
+        lakeBeachingTime = 0f
+        lakeTutorialTimer = if (prefs.getBoolean("lake_tutorial_seen", false)) 0f else 2.5f
+        if (lakeTutorialTimer > 0f) prefs.edit().putBoolean("lake_tutorial_seen", true).apply()
         spawnCooldown = 1.25f
         tokenCooldown = 1.15f
         obstacles = emptyList()
@@ -887,7 +967,30 @@ internal fun SpeleoRunnerScreen() {
         playerLift = 0f
         playerVelocity = 0f
         crawlLeft = 0f
+        coyoteTimer = 0f
+        jumpBufferTimer = 0f
         crawlPressed = false
+    }
+
+    fun paddleLake(side: Int) {
+        if (status == RunnerStatus.READY || status == RunnerStatus.GAME_OVER) {
+            requestStart()
+            return
+        }
+        if (runnerPaused || phase != RunnerPhase.LAKE) return
+        if (lakeLastPaddleSide == side) {
+            lakeLane = (lakeLane + if (side == 0) 1 else -1).coerceIn(0, 2)
+            lakeRhythmStreak = 0
+            lakePaddleBoost = (lakePaddleBoost + 12f).coerceAtMost(210f)
+        } else {
+            lakeRhythmStreak = (lakeRhythmStreak + 1).coerceAtMost(8)
+            val strokePower = 30f + lakeRhythmStreak * 4f
+            lakePaddleBoost = (lakePaddleBoost + strokePower).coerceAtMost(210f)
+        }
+        lakeLastPaddleSide = side
+        lakePaddleTapCount++
+        lakePaddleTimer = 0.32f
+        playRunnerTone(ToneGenerator.TONE_PROP_BEEP, 35)
     }
 
     fun jump() {
@@ -904,11 +1007,7 @@ internal fun SpeleoRunnerScreen() {
             return
         }
         if (phase == RunnerPhase.LAKE) {
-            // LAKE action = PADDLE only. No jump in lake mode.
-            lakePaddleBoost = (lakePaddleBoost + 46f).coerceAtMost(210f)
-            lakePaddleTapCount++
-            lakePaddleTimer = 0.32f
-            playRunnerTone(ToneGenerator.TONE_PROP_BEEP, 35)
+            paddleLake(0)
             return
         }
         if (phase == RunnerPhase.EXIT_VERTICAL) return
@@ -916,10 +1015,14 @@ internal fun SpeleoRunnerScreen() {
             playerLane = (playerLane - 1).coerceAtLeast(0)
             return
         }
-        if (playerLift <= 1.5f) {
+        // Buffered jump: the simulation consumes this within a short window.
+        jumpBufferTimer = 0.12f
+        if (playerLift <= 1.5f || coyoteTimer > 0f) {
             playerVelocity = jumpVelocity
             crawlLeft = 0f
             crawlPressed = false
+            jumpBufferTimer = 0f
+            coyoteTimer = 0f
         }
     }
 
@@ -1008,9 +1111,7 @@ internal fun SpeleoRunnerScreen() {
                 lastFrame = now
                 continue
             }
-            val rawDt = ((now - lastFrame) / 1_000_000_000f).coerceIn(0.001f, 0.05f)
-            _smoothedRunnerDt = _smoothedRunnerDt * 0.85f + rawDt * 0.15f
-            val dt = _smoothedRunnerDt.coerceIn(0.008f, 0.028f)
+            val dt = ((now - lastFrame) / 1_000_000_000f).coerceIn(0.001f, 0.05f)
             lastFrame = now
 
             if (runnerPaused) {
@@ -1061,6 +1162,19 @@ internal fun SpeleoRunnerScreen() {
                 playerVelocity -= gravity * dt
                 playerLift = max(0f, playerLift + playerVelocity * dt)
                 if (playerLift <= 0f && playerVelocity < 0f) playerVelocity = 0f
+                if (playerLift <= 0f) {
+                    coyoteTimer = 0.08f
+                } else {
+                    coyoteTimer = max(0f, coyoteTimer - dt)
+                }
+                jumpBufferTimer = max(0f, jumpBufferTimer - dt)
+                if (jumpBufferTimer > 0f && coyoteTimer > 0f) {
+                    playerVelocity = jumpVelocity
+                    crawlLeft = 0f
+                    crawlPressed = false
+                    jumpBufferTimer = 0f
+                    coyoteTimer = 0f
+                }
                 if (crawlPressed && playerLift <= 10f) {
                     // True hold-to-crawl: the speleologist stays down while the player keeps CRAWL pressed.
                     crawlLeft = 0.20f
@@ -1073,13 +1187,13 @@ internal fun SpeleoRunnerScreen() {
 
                 _activeObstaclesBuffer.clear()
                 obstacles.forEach { obstacle ->
-                    val moved = obstacle.copy(x = obstacle.x - pxSpeed * dt)
-                    if (moved.x + moved.width > -40f) _activeObstaclesBuffer.add(moved)
+                    obstacle.x -= pxSpeed * dt
+                    if (obstacle.x + obstacle.width > -40f) _activeObstaclesBuffer.add(obstacle)
                 }
                 _activeTokensBuffer.clear()
                 tokens.forEach { token ->
-                    val moved = token.copy(x = token.x - pxSpeed * dt)
-                    if (moved.x > -40f && !moved.collected) _activeTokensBuffer.add(moved)
+                    token.x -= pxSpeed * dt
+                    if (token.x > -40f && !token.collected) _activeTokensBuffer.add(token)
                 }
                 val newObstacles = _activeObstaclesBuffer
                 val newTokens = _activeTokensBuffer
@@ -1260,60 +1374,127 @@ internal fun SpeleoRunnerScreen() {
                 val px = with(density) { 1.dp.toPx() }
                 val waterY = height * 0.60f
                 val boatX = width * 0.50f
+                val laneDiff = lakeLane.toFloat() - lakeLaneVisual
+                lakeLaneVisual += laneDiff * (dt * 8f).coerceIn(0f, 1f)
+                val boatY = waterY + (lakeLaneVisual - 1f) * 26f * px
                 val baseSpeed = 115f + difficultyLevel * 4f
                 val boostSpeed = baseSpeed + lakePaddleBoost
                 lakePaddleBoost = (lakePaddleBoost - dt * 95f).coerceAtLeast(0f)
                 lakePaddleTimer = max(0f, lakePaddleTimer - dt)
+                lakeTutorialTimer = max(0f, lakeTutorialTimer - dt)
+                lakeAmbushSplashTimer = max(0f, lakeAmbushSplashTimer - dt)
 
-                // Lake mode is shark-only: no boat jump and no rock obstacles.
                 lakeBoatLift = 0f
                 lakeJumpVelocity = 0f
-                lakeRockObstacles = emptyList()
-                lakeRockCooldown = 999f
 
-                // Shark chase.
-                if (!lakeSharkActive) {
-                    lakeSharkTimer -= dt
-                    if (lakeSharkTimer <= 0f) {
-                        lakeSharkActive = true
-                        lakeSharkX = -90f * px
-                        lakeSharkEscaped = false
-                        lakePaddleTapCount = 0
-                    }
+                val beachingStartsAt = lakeDuration - 2f
+                if (phaseTime >= beachingStartsAt) {
+                    lakeBeachingTime = (phaseTime - beachingStartsAt).coerceAtLeast(0f)
+                    lakeSharkActive = false
+                    lakeSharkEscaped = false
+                    lakeAmbushLane = -1
+                    lakeAmbushWarning = 0f
                 } else {
-                    val sharkBaseSpeed = baseSpeed * 0.70f
-                    val sharkRamp = (phaseTime / lakeDuration).coerceIn(0f, 1f)
-                    val sharkActualSpeed = (sharkBaseSpeed + difficultyLevel * 3.0f + sharkRamp * 46f).coerceAtMost(168f)
-                    // Shark accelerates during the lake chase, but regular paddling can always keep the boat safe.
-                    lakeSharkX += sharkActualSpeed * dt - lakePaddleBoost * dt
-                    val sharkFin = lakeSharkX + 120f * px
-                    if (sharkFin >= boatX - 22f * px) {
-                        gameOver()
-                        continue
+                    // Rocks now create lane choices. A rock hit is a penalty, not instant game over.
+                    lakeRockCooldown -= dt
+                    _activeObstaclesBuffer.clear()
+                    lakeRockObstacles.forEach { rock ->
+                        rock.x -= with(density) { boostSpeed.dp.toPx() } * dt
+                        if (rock.x + rock.width > -60f * px) _activeObstaclesBuffer.add(rock)
                     }
-                    val gap = boatX - (lakeSharkX + 120f * px)
-                    if (sharkFin > 0f && gap > width * 0.62f) {
-                        lakeSharkActive = false
-                        lakeSharkEscaped = true
-                        lakeSharkTimer = 99f
-                        lakePaddleBoost = 0f
+                    val newLakeRocks = _activeObstaclesBuffer
+                    if (lakeRockCooldown <= 0f) {
+                        val lane = Random.nextInt(0, 3)
+                        newLakeRocks.add(
+                            RunnerObstacle(
+                                id = nextId++,
+                                type = RunnerObstacleType.STALAGMITE,
+                                x = width + 60f * px,
+                                width = 34f * px,
+                                lane = lane
+                            )
+                        )
+                        lakeRockCooldown = (Random.nextDouble(1.6, 2.8).toFloat() - difficultyLevel * 0.08f).coerceAtLeast(1.05f)
+                    }
+                    val rockIterator = newLakeRocks.iterator()
+                    while (rockIterator.hasNext()) {
+                        val rock = rockIterator.next()
+                        val rockCenter = rock.x + rock.width * 0.5f
+                        if (rock.lane == lakeLane && abs(rockCenter - boatX) < 30f * px) {
+                            lakePaddleBoost = 0f
+                            lakeRhythmStreak = 0
+                            lakeSharkX += 55f * px
+                            shakeOffset = Offset(sin(phaseTime * 80f) * 5f * px, cos(phaseTime * 63f) * 3f * px)
+                            playRunnerTone(ToneGenerator.TONE_PROP_NACK, 70)
+                            rockIterator.remove()
+                        }
+                    }
+                    lakeRockObstacles = newLakeRocks.toList()
+
+                    // Proteus chase + ambush. Game over remains only from the cave monster.
+                    if (!lakeSharkActive) {
+                        if (lakeSharkEscaped && phaseTime < lakeDuration - 2.5f) {
+                            if (lakeAmbushLane == -1) {
+                                lakeAmbushTimer -= dt
+                                if (lakeAmbushTimer <= 0f) {
+                                    lakeAmbushLane = Random.nextInt(0, 3)
+                                    lakeAmbushWarning = 1.0f
+                                }
+                            } else {
+                                lakeAmbushWarning -= dt
+                                if (lakeAmbushWarning <= 0f) {
+                                    if (lakeAmbushLane == lakeLane) {
+                                        gameOver()
+                                        continue
+                                    }
+                                    lakeAmbushSplashTimer = 0.6f
+                                    lakeAmbushSplashLane = lakeAmbushLane
+                                    lakeAmbushLane = -1
+                                    lakeAmbushWarning = 0f
+                                    lakeSharkEscaped = false
+                                    lakeSharkActive = true
+                                    lakeSharkX = -140f * px
+                                    lakePaddleTapCount = 0
+                                }
+                            }
+                        }
+                    } else {
+                        val sharkBaseSpeed = baseSpeed * 0.70f
+                        val sharkRamp = (phaseTime / lakeDuration).coerceIn(0f, 1f)
+                        val sharkActualSpeed = (sharkBaseSpeed + difficultyLevel * 3.0f + sharkRamp * 46f).coerceAtMost(168f)
+                        lakeSharkX += sharkActualSpeed * dt - lakePaddleBoost * dt
+                        val sharkFin = lakeSharkX + 120f * px
+                        if (sharkFin >= boatX - 22f * px) {
+                            gameOver()
+                            continue
+                        }
+                        val gap = boatX - (lakeSharkX + 120f * px)
+                        if (sharkFin > 0f && gap > width * 0.62f && phaseTime < lakeDuration - 2.5f) {
+                            lakeSharkActive = false
+                            lakeSharkEscaped = true
+                            lakeAmbushTimer = Random.nextDouble(2.0, 4.0).toFloat()
+                            lakeAmbushLane = -1
+                            lakeAmbushWarning = 0f
+                            lakePaddleBoost = 0f
+                        }
                     }
                 }
 
-                // Collectible golden shells. Keep them separate from rock/shark threat.
+                // Collectible golden shells remain active through the whole lake phase.
                 tokenCooldown -= dt
                 val pxSpeed = with(density) { boostSpeed.dp.toPx() }
                 _newTokensBuffer.clear()
                 tokens.forEach { token ->
-                    val moved = token.copy(x = token.x - pxSpeed * dt)
-                    if (moved.x > -40f && !moved.collected) _newTokensBuffer.add(moved)
+                    token.x -= pxSpeed * dt
+                    if (token.x > -40f && !token.collected) _newTokensBuffer.add(token)
                 }
                 val newTokens = _newTokensBuffer
-                if (tokenCooldown <= 0f && !lakeSharkActive) {
-                    newTokens.add(RunnerToken(nextId++, width + Random.nextInt(90, 220), Random.nextDouble(0.47, 0.55).toFloat()))
-                    tokenCooldown = Random.nextDouble(1.35, 2.25).toFloat()
+                if (tokenCooldown <= 0f && phaseTime < lakeDuration - 1.2f) {
+                    val lane = Random.nextInt(0, 3)
+                    newTokens.add(RunnerToken(nextId++, width + Random.nextInt(90, 220), 0.60f + (lane - 1) * 0.048f))
+                    tokenCooldown = Random.nextDouble(1.05, 1.85).toFloat()
                 }
-                val boatRect = Rect(Offset(boatX - 26f * px, waterY + lakeBoatLift - 36f * px), Size(64f * px, 38f * px))
+                val boatRect = Rect(Offset(boatX - 32f * px, boatY - 36f * px), Size(70f * px, 44f * px))
                 var collectedLake = 0
                 val lakeTokenIterator = newTokens.iterator()
                 while (lakeTokenIterator.hasNext()) {
@@ -1522,6 +1703,15 @@ internal fun SpeleoRunnerScreen() {
                     lakeSharkX = lakeSharkX,
                     lakePaddleBoost = lakePaddleBoost,
                     lakePaddleTapCount = lakePaddleTapCount,
+                    lakeLaneVisual = lakeLaneVisual,
+                    lakeLane = lakeLane,
+                    lakeRhythmStreak = lakeRhythmStreak,
+                    lakeAmbushLane = lakeAmbushLane,
+                    lakeAmbushWarning = lakeAmbushWarning,
+                    lakeAmbushSplashTimer = lakeAmbushSplashTimer,
+                    lakeAmbushSplashLane = lakeAmbushSplashLane,
+                    lakeBeachingTime = lakeBeachingTime,
+                    lakeTutorialTimer = lakeTutorialTimer,
                     lakeJumpVelocity = lakeJumpVelocity,
                     jumpVelocity = jumpVelocity,
                     gravity = gravity,
@@ -1530,7 +1720,9 @@ internal fun SpeleoRunnerScreen() {
                     highScore = highScore,
                     highScoreBats = highScoreBats,
                     playerName = playerName,
-                    leaderboard = leaderboard
+                    leaderboard = leaderboard,
+                    horizontalBackgrounds = horizontalBackgrounds,
+                    verticalBackgrounds = verticalBackgrounds
                 )
 
                 SpeleoRunnerHudBar(
@@ -1678,7 +1870,7 @@ internal fun SpeleoRunnerScreen() {
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        if (phase == RunnerPhase.VERTICAL) "LEFT" else if (phase == RunnerPhase.LAKE) "PADDLE" else if (phase == RunnerPhase.TRANSITION) "⚓" else if (phase == RunnerPhase.EXIT_VERTICAL) "WAIT" else "JUMP",
+                        if (phase == RunnerPhase.VERTICAL) "LEFT" else if (phase == RunnerPhase.LAKE) "⟵ VESLAJ" else if (phase == RunnerPhase.TRANSITION) "⚓" else if (phase == RunnerPhase.EXIT_VERTICAL) "WAIT" else "JUMP",
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFFFFE0A0),
                         fontFamily = FontFamily.Monospace
@@ -1707,12 +1899,7 @@ internal fun SpeleoRunnerScreen() {
                                             }
                                         }
                                         phase == RunnerPhase.VERTICAL -> playerLane = (playerLane + 1).coerceAtMost(2)
-                                        phase == RunnerPhase.LAKE -> {
-                                            lakePaddleBoost = (lakePaddleBoost + 46f).coerceAtMost(210f)
-                                            lakePaddleTapCount++
-                                            lakePaddleTimer = 0.32f
-                                            playRunnerTone(ToneGenerator.TONE_PROP_BEEP, 35)
-                                        }
+                                        phase == RunnerPhase.LAKE -> paddleLake(1)
                                         phase == RunnerPhase.HORIZONTAL && playerLift <= 10f -> {
                                             crawlPressed = true
                                             crawlLeft = 0.20f
@@ -1729,7 +1916,7 @@ internal fun SpeleoRunnerScreen() {
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        if (phase == RunnerPhase.VERTICAL) "RIGHT" else if (phase == RunnerPhase.LAKE) "PADDLE" else if (phase == RunnerPhase.TRANSITION) { if (anchorPressed) "CLIPPED" else "ANCHOR" } else if (phase == RunnerPhase.EXIT_VERTICAL) "ANCHOR" else "HOLD CRAWL",
+                        if (phase == RunnerPhase.VERTICAL) "RIGHT" else if (phase == RunnerPhase.LAKE) "VESLAJ ⟶" else if (phase == RunnerPhase.TRANSITION) { if (anchorPressed) "CLIPPED" else "ANCHOR" } else if (phase == RunnerPhase.EXIT_VERTICAL) "ANCHOR" else "HOLD CRAWL",
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFFFFE0A0),
                         fontFamily = FontFamily.Monospace
@@ -2185,6 +2372,15 @@ private fun RunnerCanvas(
     lakeSharkX: Float = -200f,
     lakePaddleBoost: Float = 0f,
     lakePaddleTapCount: Int = 0,
+    lakeLaneVisual: Float = 1f,
+    lakeLane: Int = 1,
+    lakeRhythmStreak: Int = 0,
+    lakeAmbushLane: Int = -1,
+    lakeAmbushWarning: Float = 0f,
+    lakeAmbushSplashTimer: Float = 0f,
+    lakeAmbushSplashLane: Int = -1,
+    lakeBeachingTime: Float = 0f,
+    lakeTutorialTimer: Float = 0f,
     lakeJumpVelocity: Float = 0f,
     jumpVelocity: Float = 0f,
     gravity: Float = 1f,
@@ -2193,7 +2389,9 @@ private fun RunnerCanvas(
     highScore: Int,
     highScoreBats: Int,
     playerName: String,
-    leaderboard: List<SpeleoRunnerLeaderboardEntry>
+    leaderboard: List<SpeleoRunnerLeaderboardEntry>,
+    horizontalBackgrounds: List<ImageBitmap> = emptyList(),
+    verticalBackgrounds: List<ImageBitmap> = emptyList()
 ) {
     val density = LocalDensity.current
 
@@ -2234,7 +2432,8 @@ private fun RunnerCanvas(
                     phaseTime = phaseTime,
                     status = status,
                     biomeIndex = verticalBackgroundIndex,
-                    difficultyLevel = difficultyLevel
+                    difficultyLevel = difficultyLevel,
+                    background = verticalBackgrounds.getOrNull(verticalBackgroundIndex % verticalBackgrounds.size.coerceAtLeast(1))
                 )
                 drawRunnerBiomeCard(w, h, px, phaseTime, status, verticalBackgroundIndex, (totalMeters / 60) + 1)
             }
@@ -2251,7 +2450,8 @@ private fun RunnerCanvas(
                     nextIcyRopeDepth = nextIcyRopeDepth, depthMeters = depthMeters,
                     phaseTime = phaseTime, status = status, biomeIndex = verticalBackgroundIndex,
                     difficultyLevel = difficultyLevel,
-                    drawPlayer = verticalExitTime < 0.55f
+                    drawPlayer = verticalExitTime < 0.55f,
+                    background = verticalBackgrounds.getOrNull(verticalBackgroundIndex % verticalBackgrounds.size.coerceAtLeast(1))
                 )
                 drawVerticalExitToHorizontal(w, h, px, verticalExitTime, verticalBackgroundIndex, status)
             }
@@ -2297,7 +2497,8 @@ private fun RunnerCanvas(
                     horizontalPhaseDuration = horizontalPhaseDuration,
                     jumpVelocity = jumpVelocity,
                     gravity = gravity,
-                    phase = phase
+                    phase = phase,
+                    background = horizontalBackgrounds.getOrNull(horizontalBackgroundIndex % horizontalBackgrounds.size.coerceAtLeast(1))
                 )
                 drawRunnerBiomeCard(w, h, px, phaseTime, status, horizontalBackgroundIndex, (totalMeters / 60) + 1)
             }
@@ -2313,6 +2514,16 @@ private fun RunnerCanvas(
                     sharkX = lakeSharkX,
                     paddleBoost = lakePaddleBoost,
                     paddleTapCount = lakePaddleTapCount,
+                    lakePaddleTimer = lakePaddleTimer,
+                    lakeLaneVisual = lakeLaneVisual,
+                    lakeLane = lakeLane,
+                    rhythmStreak = lakeRhythmStreak,
+                    ambushLane = lakeAmbushLane,
+                    ambushWarning = lakeAmbushWarning,
+                    ambushSplashTimer = lakeAmbushSplashTimer,
+                    ambushSplashLane = lakeAmbushSplashLane,
+                    beachingTime = lakeBeachingTime,
+                    tutorialTimer = lakeTutorialTimer,
                     jumpVelocity = lakeJumpVelocity,
                     biomeIndex = horizontalBackgroundIndex,
                     difficultyLevel = difficultyLevel,
@@ -2818,90 +3029,137 @@ private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawLakeCave(
     sharkX: Float,
     paddleBoost: Float,
     paddleTapCount: Int,
+    lakePaddleTimer: Float = 0f,
+    lakeLaneVisual: Float = 1f,
+    lakeLane: Int = 1,
+    rhythmStreak: Int = 0,
+    ambushLane: Int = -1,
+    ambushWarning: Float = 0f,
+    ambushSplashTimer: Float = 0f,
+    ambushSplashLane: Int = -1,
+    beachingTime: Float = 0f,
+    tutorialTimer: Float = 0f,
     jumpVelocity: Float,
     biomeIndex: Int,
     difficultyLevel: Int,
     status: RunnerStatus,
-    lakeDuration: Float = 10f,
+    lakeDuration: Float = 14f,
     collectFlashes: List<RunnerCollectFlash> = emptyList(),
     tokens: List<RunnerToken> = emptyList()
 ) {
     val palette = runnerSierraPalette(biomeIndex)
+    val waterY = h * 0.60f
+    val caveBg = blendColor(palette.darkest, Color.Black, 0.40f)
 
-    // --- POZADINA ---
-    drawRect(Color(0xFF060E14), size = Size(w, h * 0.38f))
+    // --- SIERRA VGA CAVE BACKDROP ---
+    drawRect(caveBg, size = Size(w, h * 0.38f))
     repeat(10) { i ->
         val sx = w * (0.05f + i * 0.10f)
         val sh = (32f + (i % 4) * 14f) * px
         val sw = (7f + i % 3 * 4f) * px
-        val sp = Path().apply {
-            moveTo(sx - sw, 0f)
-            lineTo(sx + sw, 0f)
-            lineTo(sx + sw * 0.4f, sh)
-            lineTo(sx - sw * 0.4f, sh)
-            close()
-        }
-        drawPath(sp, Color(0xFF0D1F2D))
-        drawPath(sp, Color.Black, style = Stroke(width = 1.8f * px))
-        drawLine(
-            Color(0xFF1A4A6A).copy(alpha = 0.55f),
-            Offset(sx - sw * 0.5f, 2f * px),
-            Offset(sx - sw * 0.2f, sh - 4f * px),
-            strokeWidth = 1.1f * px
-        )
+        _pathA.reset()
+        _pathA.moveTo(sx - sw, 0f)
+        _pathA.lineTo(sx + sw, 0f)
+        _pathA.lineTo(sx + sw * 0.4f, sh)
+        _pathA.lineTo(sx - sw * 0.4f, sh)
+        _pathA.close()
+        drawPath(_pathA, palette.dark)
+        drawPath(_pathA, palette.outline, style = Stroke(width = 1.8f * px))
+        drawLine(palette.midLight.copy(alpha = 0.45f), Offset(sx - sw * 0.5f, 2f * px), Offset(sx - sw * 0.2f, sh - 4f * px), strokeWidth = 1.1f * px)
     }
+    drawRect(palette.darkest, topLeft = Offset(0f, 0f), size = Size(18f * px, h))
+    drawRect(palette.darkest, topLeft = Offset(w - 18f * px, 0f), size = Size(18f * px, h))
 
-    drawRect(Color(0xFF0A1A24), topLeft = Offset(0f, 0f), size = Size(18f * px, h))
-    drawRect(Color(0xFF0A1A24), topLeft = Offset(w - 18f * px, 0f), size = Size(18f * px, h))
-
-    val waterY = h * 0.60f
-    drawRect(Color(0xFF041E30), topLeft = Offset(0f, waterY), size = Size(w, h - waterY))
-    repeat(3) { wave ->
-        val wy = waterY + wave * 3.5f * px
-        val wAmp = (2.5f - wave * 0.6f) * px
+    // --- WATER BANDS, NOT GRADIENTS ---
+    val bandH = (h - waterY) / 4f
+    val bandColors = listOf(palette.dark, palette.mid, palette.midLight.copy(alpha = 0.78f), palette.dark)
+    bandColors.forEachIndexed { band, color ->
+        val top = waterY + band * bandH
+        _wobblyPath.reset()
+        _wobblyPath.moveTo(0f, top)
         var x = 0f
-        while (x < w) {
-            val y1 = wy + sin(phaseTime * 2.2f + x / (w * 0.18f) + wave) * wAmp
-            val y2 = wy + sin(phaseTime * 2.2f + (x + w * 0.05f) / (w * 0.18f) + wave) * wAmp
-            drawLine(
-                Color(0xFF1A6B8A).copy(alpha = 0.48f - wave * 0.10f),
-                Offset(x, y1),
-                Offset(x + w * 0.05f, y2),
-                strokeWidth = 1.2f * px
-            )
-            x += w * 0.05f
+        while (x <= w + 24f * px) {
+            val y = top + sin((phaseTime * (1.2f + band * 0.18f) + x / (70f * px + band * 11f * px)).toDouble()).toFloat() * (3f + band) * px
+            _wobblyPath.lineTo(x, y)
+            x += 22f * px
+        }
+        _wobblyPath.lineTo(w, top + bandH + 8f * px)
+        _wobblyPath.lineTo(0f, top + bandH + 8f * px)
+        _wobblyPath.close()
+        drawPath(_wobblyPath, color)
+    }
+    drawLine(palette.floorEdge, Offset(0f, waterY), Offset(w, waterY), strokeWidth = 2.4f * px)
+    repeat(10) { i ->
+        val sx = ((i * 149.3f + phaseTime * 19f) * px) % w
+        val sy = waterY + ((i * 53.1f + phaseTime * 7f) * px) % ((h - waterY).coerceAtLeast(1f))
+        drawRect(palette.highlight.copy(alpha = 0.25f), Offset(sx, sy), Size((1f + i % 2) * px, px))
+    }
+
+    fun laneY(laneFloat: Float): Float = waterY + (laneFloat - 1f) * 26f * px
+    fun laneY(lane: Int): Float = laneY(lane.toFloat())
+
+    val boatX = w * 0.50f
+    val boatY = laneY(lakeLaneVisual) + boatLift
+    val boatW = 84f * px
+    val boatH = 19f * px
+    val exitAlpha = (beachingTime / 2f).coerceIn(0f, 1f)
+    if (exitAlpha > 0f) {
+        val light = blendColor(palette.highlight, Color(0xFFFFF59D), 0.50f).copy(alpha = 0.20f + exitAlpha * 0.34f)
+        drawCircle(light, radius = (44f + 72f * exitAlpha) * px, center = Offset(w - 16f * px, waterY - 10f * px))
+        _pathA.reset()
+        _pathA.moveTo(w - 92f * px, h)
+        _pathA.lineTo(w, h)
+        _pathA.lineTo(w, waterY + 18f * px - exitAlpha * 18f * px)
+        _pathA.lineTo(w - 72f * px, waterY + 40f * px)
+        _pathA.close()
+        drawPath(_pathA, palette.darkest)
+        drawPath(_pathA, palette.outline, style = Stroke(width = 2f * px))
+    }
+
+    // --- AMBUSH TELEGRAPH ---
+    if (ambushLane >= 0) {
+        val progress = (1f - ambushWarning.coerceIn(0f, 1f)).coerceIn(0f, 1f)
+        val cx = boatX + 82f * px
+        val cy = laneY(ambushLane)
+        repeat(3) { ring ->
+            val radius = (16f + ring * 12f + progress * 22f) * px
+            val alpha = (0.55f * (1f - progress)).coerceIn(0f, 0.55f)
+            repeat(12) { seg ->
+                val a1 = (seg * 30f + phaseTime * 55f) * PI.toFloat() / 180f
+                val a2 = a1 + 0.18f
+                drawLine(
+                    palette.highlight.copy(alpha = alpha),
+                    Offset(cx + cos(a1) * radius, cy + sin(a1) * radius * 0.48f),
+                    Offset(cx + cos(a2) * radius, cy + sin(a2) * radius * 0.48f),
+                    strokeWidth = 1.4f * px,
+                    cap = StrokeCap.Round
+                )
+            }
+        }
+        repeat(6) { b ->
+            val bx = cx + (b - 2.5f) * 7f * px + sin((phaseTime * 5f + b).toDouble()).toFloat() * 3f * px
+            val by = cy + 14f * px - progress * (18f + b * 2f) * px
+            drawRect(palette.highlight.copy(alpha = 0.45f * (1f - progress)), Offset(bx, by), Size((1f + b % 2) * px, (1f + b % 2) * px))
         }
     }
-    drawLine(Color.White.copy(alpha = 0.12f), Offset(0f, waterY), Offset(w, waterY), strokeWidth = 1.0f * px)
 
-    // --- KAMENCI ---
+    // --- ROCKS IN LANES ---
     rockObstacles.forEach { rock ->
-        val rockH = 12f * px + rock.width * 0.30f
-        val rockTop = waterY - rockH
-        val rp = Path().apply {
-            moveTo(rock.x, waterY)
-            lineTo(rock.x + rock.width * 0.12f, rockTop + rockH * 0.3f)
-            lineTo(rock.x + rock.width * 0.32f, rockTop)
-            lineTo(rock.x + rock.width * 0.58f, rockTop + rockH * 0.15f)
-            lineTo(rock.x + rock.width * 0.82f, rockTop + rockH * 0.08f)
-            lineTo(rock.x + rock.width, waterY)
-            close()
-        }
-        drawOval(Color.Black.copy(alpha = 0.28f), Offset(rock.x + 4f * px, waterY - 3f * px), Size(rock.width - 8f * px, 7f * px))
-        drawPath(rp, Color(0xFF4A4A4A))
-        drawPath(rp, Color.Black, style = Stroke(width = 2.2f * px))
-        drawLine(
-            Color(0xFF9E9E9E).copy(alpha = 0.65f),
-            Offset(rock.x + rock.width * 0.12f, rockTop + rockH * 0.3f),
-            Offset(rock.x + rock.width * 0.42f, rockTop + rockH * 0.05f),
-            strokeWidth = 1.4f * px
-        )
-        drawLine(
-            Color.Black.copy(alpha = 0.55f),
-            Offset(rock.x + rock.width * 0.55f, rockTop + rockH * 0.25f),
-            Offset(rock.x + rock.width * 0.68f, rockTop + rockH * 0.55f),
-            strokeWidth = 1.0f * px
-        )
+        val ry = laneY(rock.lane)
+        val rockH = 20f * px + rock.width * 0.42f
+        val rockTop = ry - rockH * 0.72f
+        _pathA.reset()
+        _pathA.moveTo(rock.x, ry + 9f * px)
+        _pathA.lineTo(rock.x + rock.width * 0.12f, rockTop + rockH * 0.35f)
+        _pathA.lineTo(rock.x + rock.width * 0.32f, rockTop)
+        _pathA.lineTo(rock.x + rock.width * 0.58f, rockTop + rockH * 0.15f)
+        _pathA.lineTo(rock.x + rock.width * 0.82f, rockTop + rockH * 0.08f)
+        _pathA.lineTo(rock.x + rock.width, ry + 9f * px)
+        _pathA.close()
+        drawOval(palette.darkest.copy(alpha = 0.38f), Offset(rock.x + 4f * px, ry + 2f * px), Size(rock.width - 8f * px, 7f * px))
+        drawPath(_pathA, palette.mid)
+        drawPath(_pathA, palette.outline, style = Stroke(width = 2.2f * px))
+        drawLine(palette.light.copy(alpha = 0.65f), Offset(rock.x + rock.width * 0.12f, rockTop + rockH * 0.35f), Offset(rock.x + rock.width * 0.42f, rockTop + rockH * 0.05f), strokeWidth = 1.4f * px)
     }
 
     tokens.forEach { drawGoldenShell(it.x, h * it.yFactor, px) }
@@ -2909,163 +3167,156 @@ private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawLakeCave(
         val age = (phaseTime - flash.timestamp).coerceAtLeast(0f)
         if (age < 0.55f) {
             val alpha = (1f - age / 0.55f).coerceIn(0f, 1f)
-            drawCircle(Color(0xFFFFE57F).copy(alpha = alpha * 0.42f), radius = (8f + age * 60f) * px, center = Offset(flash.x, flash.y))
+            drawCircle(palette.highlight.copy(alpha = alpha * 0.42f), radius = (8f + age * 60f) * px, center = Offset(flash.x, flash.y))
         }
     }
 
-    // --- ČAMAC I SPELEOLOG ---
-    val boatX = w * 0.50f
-    val boatY = waterY + boatLift
-    val boatW = 84f * px
-    val boatH = 19f * px
-    val paddleAngle = if (paddleBoost > 0f) sin(phaseTime * 14f) * 38f else sin(phaseTime * 3.5f) * 12f
+    // --- PROTEUS: giant cave olm instead of shark ---
+    val proteusColor = blendColor(palette.highlight, Color(0xFFF8BBD0), 0.55f)
+    val gillColor = blendColor(Color(0xFFE57373), palette.light, 0.30f)
+    fun drawProteus(sx: Float, laneFloat: Float, emerging: Boolean) {
+        val sy = laneY(laneFloat) - 9f * px
+        val tailWave = sin((phaseTime * 5.4f).toDouble()).toFloat() * 5f * px
+        // underwater soft silhouette
+        _pathA.reset()
+        _pathA.moveTo(sx - 12f * px, sy + 18f * px)
+        _pathA.cubicTo(sx + 28f * px, sy + 6f * px + tailWave, sx + 78f * px, sy + 10f * px - tailWave, sx + 126f * px, sy + 18f * px)
+        _pathA.cubicTo(sx + 80f * px, sy + 28f * px + tailWave, sx + 26f * px, sy + 30f * px - tailWave, sx - 12f * px, sy + 18f * px)
+        _pathA.close()
+        drawPath(_pathA, palette.midLight.copy(alpha = 0.35f))
+        // surface ridge
+        _pathB.reset()
+        _pathB.moveTo(sx + 5f * px, sy)
+        _pathB.cubicTo(sx + 32f * px, sy - 9f * px, sx + 78f * px, sy - 7f * px, sx + 110f * px, sy - 1f * px)
+        _pathB.cubicTo(sx + 76f * px, sy + 7f * px, sx + 33f * px, sy + 6f * px, sx + 5f * px, sy)
+        _pathB.close()
+        drawInkPath(_pathB, proteusColor, px)
+        // V wake behind it
+        drawLine(palette.highlight.copy(alpha = 0.34f), Offset(sx - 10f * px, sy + 5f * px), Offset(sx - 44f * px, sy - 8f * px), strokeWidth = 1.2f * px)
+        drawLine(palette.highlight.copy(alpha = 0.24f), Offset(sx - 8f * px, sy + 7f * px), Offset(sx - 40f * px, sy + 18f * px), strokeWidth = 1.2f * px)
+        if (emerging) {
+            _pathC.reset()
+            _pathC.moveTo(sx + 92f * px, sy - 10f * px)
+            _pathC.cubicTo(sx + 124f * px, sy - 20f * px, sx + 150f * px, sy - 4f * px, sx + 150f * px, sy + 14f * px)
+            _pathC.cubicTo(sx + 128f * px, sy + 23f * px, sx + 100f * px, sy + 16f * px, sx + 92f * px, sy - 10f * px)
+            _pathC.close()
+            drawPath(_pathC, proteusColor)
+            drawPath(_pathC, palette.outline, style = Stroke(width = 2.5f * px))
+            repeat(3) { pair ->
+                val gy = sy - 2f * px + pair * 7f * px
+                val wiggle = sin((phaseTime * 8f + pair).toDouble()).toFloat() * 3f * px
+                drawLine(palette.outline, Offset(sx + 120f * px, gy), Offset(sx + 100f * px, gy - 7f * px + wiggle), strokeWidth = 2.4f * px, cap = StrokeCap.Round)
+                drawLine(gillColor, Offset(sx + 120f * px, gy), Offset(sx + 100f * px, gy - 7f * px + wiggle), strokeWidth = 1.5f * px, cap = StrokeCap.Round)
+                drawLine(palette.outline, Offset(sx + 122f * px, gy + 2f * px), Offset(sx + 101f * px, gy + 8f * px - wiggle), strokeWidth = 2.4f * px, cap = StrokeCap.Round)
+                drawLine(gillColor, Offset(sx + 122f * px, gy + 2f * px), Offset(sx + 101f * px, gy + 8f * px - wiggle), strokeWidth = 1.5f * px, cap = StrokeCap.Round)
+            }
+        }
+    }
 
+    if (sharkActive && sharkX > -180f * px) drawProteus(sharkX, lakeLaneVisual, true)
+    if (ambushSplashTimer > 0f && ambushSplashLane >= 0) drawProteus(boatX + 80f * px, ambushSplashLane.toFloat(), true)
+
+    // --- BOAT + SPELEOLOG ---
+    val paddlePulse = sin((lakePaddleTimer / 0.32f * PI.toFloat()).toDouble()).toFloat().coerceAtLeast(0f)
+    val boatTilt = paddlePulse * if (paddleTapCount % 2 == 0) 3f else -3f
+    val tiltOffset = sin((boatTilt * PI.toFloat() / 180f).toDouble()).toFloat() * 3f * px
+    val paddleAngle = if (paddleBoost > 0f) {
+        sin((phaseTime * 14f).toDouble()).toFloat() * 38f
+    } else {
+        sin((phaseTime * 3.5f).toDouble()).toFloat() * 12f
+    }
     val paddlePivotX = boatX - boatW * 0.28f
-    val paddlePivotY = boatY - 8f * px
+    val paddlePivotY = boatY - 8f * px + tiltOffset
     val paddleLen = 28f * px
     val paddleAngleRad = Math.toRadians(paddleAngle.toDouble()).toFloat()
-    val paddleEndX = paddlePivotX + cos(paddleAngleRad + 1.2f) * paddleLen
-    val paddleEndY = paddlePivotY + sin(paddleAngleRad + 1.2f) * paddleLen
-    drawLine(Color.Black, Offset(paddlePivotX, paddlePivotY), Offset(paddleEndX, paddleEndY), strokeWidth = 5.0f * px, cap = StrokeCap.Round)
-    drawLine(Color(0xFF5D3A1A), Offset(paddlePivotX, paddlePivotY), Offset(paddleEndX, paddleEndY), strokeWidth = 3.5f * px, cap = StrokeCap.Round)
-    drawOval(Color(0xFF4A2800), Offset(paddleEndX - 7f * px, paddleEndY - 4f * px), Size(14f * px, 8f * px))
-    drawOval(Color.Black, Offset(paddleEndX - 7f * px, paddleEndY - 4f * px), Size(14f * px, 8f * px), style = Stroke(width = 1.5f * px))
+    val paddleEndX = paddlePivotX + cos((paddleAngleRad + 1.2f).toDouble()).toFloat() * paddleLen
+    val paddleEndY = paddlePivotY + sin((paddleAngleRad + 1.2f).toDouble()).toFloat() * paddleLen
+    val wood = Color(0xFF4A2800)
+    val woodLight = blendColor(wood, Color.White, 0.38f)
+    val woodDark = blendColor(wood, Color.Black, 0.34f)
 
+    drawOval(palette.darkest.copy(alpha = 0.30f), Offset(boatX - boatW * 0.42f, boatY + 3f * px), Size(boatW * 0.92f, 9f * px))
+    drawLine(palette.outline, Offset(paddlePivotX, paddlePivotY), Offset(paddleEndX, paddleEndY), strokeWidth = 5.0f * px, cap = StrokeCap.Round)
+    drawLine(woodLight, Offset(paddlePivotX, paddlePivotY), Offset(paddleEndX, paddleEndY), strokeWidth = 3.5f * px, cap = StrokeCap.Round)
+    drawOval(wood, Offset(paddleEndX - 7f * px, paddleEndY - 4f * px), Size(14f * px, 8f * px))
+    drawOval(palette.outline, Offset(paddleEndX - 7f * px, paddleEndY - 4f * px), Size(14f * px, 8f * px), style = Stroke(width = 1.5f * px))
     if (paddleBoost > 20f) {
-        repeat(4) { i ->
-            val sx = paddleEndX + (-8f + i * 5f) * px
-            val sy = paddleEndY + sin(phaseTime * 18f + i) * 3f * px
-            drawCircle(Color(0xFFB2EBF2).copy(alpha = 0.55f), radius = (1.2f + i % 2) * px, center = Offset(sx, sy))
+        repeat(6) { i ->
+            val age = (lakePaddleTimer / 0.32f).coerceIn(0f, 1f)
+            val sx = paddleEndX + (-8f + i * 4f) * px
+            val sy = paddleEndY - age * (6f + i) * px + sin((phaseTime * 18f + i).toDouble()).toFloat() * 3f * px
+            drawRect(palette.highlight.copy(alpha = 0.42f * age), Offset(sx, sy), Size((1f + i % 2) * px, (1f + i % 2) * px))
         }
     }
 
-    val hullPath = Path().apply {
-        moveTo(boatX - boatW * 0.5f, boatY)
-        lineTo(boatX - boatW * 0.42f, boatY - boatH)
-        lineTo(boatX + boatW * 0.48f, boatY - boatH)
-        lineTo(boatX + boatW * 0.58f, boatY)
-        close()
-    }
-    drawPath(hullPath, Color(0xFF4A2800))
-    drawPath(hullPath, Color.Black, style = Stroke(width = 2.5f * px))
-    drawLine(Color(0xFF8D5524), Offset(boatX - boatW * 0.42f, boatY - boatH + px), Offset(boatX + boatW * 0.48f, boatY - boatH + px), strokeWidth = 2.2f * px)
+    _pathA.reset()
+    _pathA.moveTo(boatX - boatW * 0.5f, boatY)
+    _pathA.lineTo(boatX - boatW * 0.42f, boatY - boatH - tiltOffset)
+    _pathA.lineTo(boatX + boatW * 0.48f, boatY - boatH + tiltOffset)
+    _pathA.lineTo(boatX + boatW * 0.58f, boatY)
+    _pathA.close()
+    drawPath(_pathA, woodDark)
+    drawPath(Path().apply { addPath(_pathA, Offset(0f, -1.5f * px)) }, wood)
+    drawPath(_pathA, palette.outline, style = Stroke(width = 2.5f * px))
+    drawLine(woodLight, Offset(boatX - boatW * 0.42f, boatY - boatH + px - tiltOffset), Offset(boatX + boatW * 0.48f, boatY - boatH + px + tiltOffset), strokeWidth = 2.2f * px)
     repeat(3) { plank ->
         val plankX = boatX - boatW * 0.28f + plank * boatW * 0.22f
-        drawLine(Color(0xFF3A1F00).copy(alpha = 0.55f), Offset(plankX, boatY - boatH + 3f * px), Offset(plankX, boatY - 2f * px), strokeWidth = 1.0f * px)
-    }
-    repeat(4) { w2 ->
-        val wx = boatX - boatW * 0.3f + w2 * boatW * 0.22f
-        val wy2 = waterY + boatLift * 0.15f + sin(phaseTime * 4f + w2) * 2.0f * px
-        drawLine(Color(0xFF4DD0E1).copy(alpha = 0.28f - w2 * 0.04f), Offset(wx - 8f * px, wy2), Offset(wx + 8f * px, wy2 + 1.5f * px), strokeWidth = 1.3f * px)
+        drawLine(blendColor(wood, Color.Black, 0.55f), Offset(plankX, boatY - boatH + 3f * px), Offset(plankX, boatY - 2f * px), strokeWidth = 1.0f * px)
     }
 
     val spelX = boatX + 4f * px
     val spelY = boatY - boatH - 28f * px
-    drawRect(Color.Black, Offset(spelX - 9f * px, spelY + 6f * px), Size(18f * px, 22f * px))
+    drawRect(palette.outline, Offset(spelX - 9f * px, spelY + 6f * px), Size(18f * px, 22f * px))
     drawRect(Color(0xFFE53935), Offset(spelX - 8f * px, spelY + 7f * px), Size(16f * px, 20f * px))
-    drawRect(Color.Black, Offset(spelX - 8f * px, spelY + 7f * px), Size(16f * px, 20f * px), style = Stroke(width = 1.5f * px))
-    drawLine(Color.Black, Offset(spelX - 7f * px, spelY + 26f * px), Offset(spelX + 12f * px, spelY + 26f * px), strokeWidth = 6f * px)
-    drawLine(Color(0xFF1565C0), Offset(spelX - 6f * px, spelY + 26f * px), Offset(spelX + 11f * px, spelY + 26f * px), strokeWidth = 4f * px)
-    drawOval(Color.Black, Offset(spelX - 11f * px, spelY - 12f * px), Size(22f * px, 20f * px))
+    drawRect(palette.outline, Offset(spelX - 8f * px, spelY + 7f * px), Size(16f * px, 20f * px), style = Stroke(width = 1.5f * px))
+    drawLine(palette.outline, Offset(spelX - 7f * px, spelY + 26f * px), Offset(spelX + 12f * px, spelY + 26f * px), strokeWidth = 6f * px)
+    drawLine(blendColor(palette.midLight, Color(0xFF1565C0), 0.35f), Offset(spelX - 6f * px, spelY + 26f * px), Offset(spelX + 11f * px, spelY + 26f * px), strokeWidth = 4f * px)
+    drawOval(palette.outline, Offset(spelX - 11f * px, spelY - 12f * px), Size(22f * px, 20f * px))
     drawOval(Color(0xFFFFD54F), Offset(spelX - 10f * px, spelY - 11f * px), Size(20f * px, 18f * px))
-    drawOval(Color.Black, Offset(spelX - 10f * px, spelY - 11f * px), Size(20f * px, 18f * px), style = Stroke(width = 1.5f * px))
-    drawCircle(Color.Black, radius = 4.5f * px, center = Offset(spelX + 8f * px, spelY - 5f * px))
+    drawOval(palette.outline, Offset(spelX - 10f * px, spelY - 11f * px), Size(20f * px, 18f * px), style = Stroke(width = 1.5f * px))
+    drawCircle(palette.outline, radius = 4.5f * px, center = Offset(spelX + 8f * px, spelY - 5f * px))
     drawCircle(Color(0xFFFFF176), radius = 3.0f * px, center = Offset(spelX + 8f * px, spelY - 5f * px))
-    val beamPath = Path().apply {
-        moveTo(spelX + 10f * px, spelY - 5f * px)
-        lineTo(spelX + 55f * px, spelY - 18f * px)
-        lineTo(spelX + 55f * px, spelY + 4f * px)
-        close()
-    }
-    drawPath(beamPath, Color(0xFFFFF59D).copy(alpha = 0.20f))
+    _pathB.reset()
+    _pathB.moveTo(spelX + 10f * px, spelY - 5f * px)
+    _pathB.lineTo(spelX + 55f * px, spelY - 18f * px)
+    _pathB.lineTo(spelX + 55f * px, spelY + 4f * px)
+    _pathB.close()
+    drawPath(_pathB, blendColor(palette.highlight, Color(0xFFFFF59D), 0.35f).copy(alpha = 0.20f))
 
-    // --- SPELEO SHARK ---
-    if (sharkActive && sharkX > -160f * px) {
-        val sx = sharkX
-        val sy = waterY - 8f * px
-        val sharkBody = Path().apply {
-            moveTo(sx, sy)
-            lineTo(sx + 20f * px, sy - 18f * px)
-            lineTo(sx + 90f * px, sy - 14f * px)
-            lineTo(sx + 110f * px, sy - 4f * px)
-            lineTo(sx + 120f * px, sy - 22f * px)
-            lineTo(sx + 130f * px, sy - 2f * px)
-            lineTo(sx + 120f * px, sy + 8f * px)
-            lineTo(sx + 90f * px, sy + 10f * px)
-            lineTo(sx + 20f * px, sy + 8f * px)
-            close()
-        }
-        drawPath(sharkBody, Color(0xFF1A2A3A))
-        drawPath(sharkBody, Color.Black, style = Stroke(width = 2.5f * px))
-        val sharkBelly = Path().apply {
-            moveTo(sx + 22f * px, sy + 5f * px)
-            lineTo(sx + 88f * px, sy + 7f * px)
-            lineTo(sx + 88f * px, sy + 4f * px)
-            lineTo(sx + 22f * px, sy + 3f * px)
-            close()
-        }
-        drawPath(sharkBelly, Color(0xFF3A5060))
-        val fin = Path().apply {
-            moveTo(sx + 55f * px, sy - 14f * px)
-            lineTo(sx + 68f * px, sy - 42f * px)
-            lineTo(sx + 82f * px, sy - 14f * px)
-            close()
-        }
-        drawPath(fin, Color(0xFF152030))
-        drawPath(fin, Color.Black, style = Stroke(width = 2.0f * px))
-        drawLine(Color(0xFF2A4A5A).copy(alpha = 0.62f), Offset(sx + 58f * px, sy - 14f * px), Offset(sx + 68f * px, sy - 38f * px), strokeWidth = 1.2f * px)
-
-        val antennaBaseX = sx + 112f * px
-        val antennaBaseY = sy - 16f * px
-        val antennaTipX = sx + 148f * px
-        val antennaTipY = sy - 36f * px
-        drawLine(Color.Black, Offset(antennaBaseX, antennaBaseY), Offset(antennaTipX, antennaTipY), strokeWidth = 2.8f * px)
-        drawLine(Color(0xFF4A3A20), Offset(antennaBaseX, antennaBaseY), Offset(antennaTipX, antennaTipY), strokeWidth = 1.8f * px)
-        drawCircle(Color(0xFFFFF176).copy(alpha = 0.35f + sin(phaseTime * 6f) * 0.15f), radius = 9f * px, center = Offset(antennaTipX, antennaTipY))
-        drawCircle(Color(0xFFFFF176), radius = 3.5f * px, center = Offset(antennaTipX, antennaTipY))
-        drawCircle(Color.White, radius = 1.5f * px, center = Offset(antennaTipX - px, antennaTipY - px))
-
-        val eyeX = sx + 106f * px
-        val eyeY = sy - 8f * px
-        drawCircle(Color(0xFF00E5FF).copy(alpha = 0.40f + sin(phaseTime * 4f) * 0.12f), radius = 7f * px, center = Offset(eyeX, eyeY))
-        drawCircle(Color(0xFF00BCD4), radius = 3.5f * px, center = Offset(eyeX, eyeY))
-        drawCircle(Color.Black, radius = 1.8f * px, center = Offset(eyeX, eyeY))
-        drawCircle(Color.White, radius = 0.9f * px, center = Offset(eyeX - px, eyeY - px))
-
-        repeat(5) { t ->
-            val tx = sx + 104f * px + t * 3.5f * px
-            val ty = sy + 4f * px
-            val tooth = Path().apply {
-                moveTo(tx, ty)
-                lineTo(tx + 1.5f * px, ty + 6f * px)
-                lineTo(tx + 3f * px, ty)
-                close()
-            }
-            drawPath(tooth, Color.White)
-            drawPath(tooth, Color.Black, style = Stroke(width = 0.8f * px))
-        }
-        repeat(5) { sp ->
-            val spX = sx + (35f + sp * 14f) * px
-            val spY = waterY + sin(phaseTime * 8f + sp) * 2.5f * px
-            drawCircle(Color(0xFF80DEEA).copy(alpha = 0.32f), radius = (2.5f + sp % 2) * px, center = Offset(spX, spY))
-        }
-        val gap = boatX - (sx + 120f * px)
-        if (gap < w * 0.35f) {
-            val dangerAlpha = (1f - gap / (w * 0.35f)).coerceIn(0f, 1f)
-            drawRoundRect(Color(0xCC3D0000).copy(alpha = dangerAlpha * 0.85f), Offset(w * 0.5f - 64f * px, h * 0.14f), Size(128f * px, 26f * px), CornerRadius(999f))
-            drawIndieRunnerText("⚠ PADDLAJ BRZO!", w * 0.5f, h * 0.14f + 18f * px, 11.5f * px, android.graphics.Color.rgb(255, 82, 82))
-        }
-    }
-
-    drawRoundRect(Color(0xAA07111F), Offset(w * 0.5f - 70f * px, 14f * px), Size(140f * px, 28f * px), CornerRadius(999f))
+    // --- LAKE HUD ---
+    drawRoundRect(palette.outline.copy(alpha = 0.88f), Offset(w * 0.5f - 72f * px, 14f * px), Size(144f * px, 29f * px), CornerRadius(999f))
+    drawRoundRect(palette.darkest.copy(alpha = 0.92f), Offset(w * 0.5f - 70f * px, 16f * px), Size(140f * px, 25f * px), CornerRadius(999f))
     val lakeSecondsLeft = (lakeDuration - phaseTime).toInt().coerceAtLeast(0)
-    drawIndieRunnerText("🚣 JEZERO  ${lakeSecondsLeft}s", w * 0.5f, 34f * px, 12.5f * px, android.graphics.Color.rgb(178, 235, 242))
+    drawIndieRunnerText("🚣 JEZERO  ${lakeSecondsLeft}s", w * 0.5f, 34f * px, 12.5f * px, palette.highlight.toArgb())
     if (paddleBoost > 5f) {
         val boostFrac = (paddleBoost / 210f).coerceIn(0f, 1f)
-        drawRoundRect(Color(0xFF0D2A3A), Offset(w * 0.5f - 55f * px, 46f * px), Size(110f * px, 7f * px), CornerRadius(999f))
-        drawRoundRect(Color(0xFF00BCD4), Offset(w * 0.5f - 55f * px, 46f * px), Size(110f * px * boostFrac, 7f * px), CornerRadius(999f))
+        drawRoundRect(palette.darkest, Offset(w * 0.5f - 55f * px, 46f * px), Size(110f * px, 7f * px), CornerRadius(999f))
+        drawRoundRect(palette.highlight, Offset(w * 0.5f - 55f * px, 46f * px), Size(110f * px * boostFrac, 7f * px), CornerRadius(999f))
+    }
+    if (rhythmStreak > 1) {
+        drawIndieRunnerText("RITAM ×${rhythmStreak.coerceAtMost(8)}", w * 0.5f, 66f * px, 10.5f * px, palette.light.toArgb())
+    }
+    if (sharkActive || ambushLane >= 0) {
+        val gap = if (sharkActive) (boatX - (sharkX + 120f * px)) else (if (ambushLane == lakeLane) w * 0.12f else w * 0.42f)
+        val gapFrac = (gap / (w * 0.62f)).coerceIn(0f, 1f)
+        val card = Offset(w - 132f * px, 18f * px)
+        drawRoundRect(palette.outline, card, Size(112f * px, 31f * px), CornerRadius(8f * px))
+        drawRoundRect(palette.darkest, card + Offset(2f * px, 2f * px), Size(108f * px, 27f * px), CornerRadius(7f * px))
+        drawRoundRect(blendColor(Color(0xFFE53935), Color(0xFF66BB6A), gapFrac), card + Offset(8f * px, 20f * px), Size(88f * px * gapFrac, 5f * px), CornerRadius(999f))
+        drawIndieRunnerText("NEMAN", card.x + 54f * px, card.y + 15f * px, 9.5f * px, palette.highlight.toArgb())
+        if (gapFrac < 0.22f) {
+            val alpha = (0.16f + sin((phaseTime * 12.56f).toDouble()).toFloat() * 0.08f).coerceIn(0.06f, 0.24f)
+            drawRect(Color(0xFF5A0000).copy(alpha = alpha), size = Size(w, h))
+        }
+    }
+    if (tutorialTimer > 0f) {
+        val alpha = (tutorialTimer / 2.5f).coerceIn(0f, 1f)
+        drawRoundRect(palette.darkest.copy(alpha = 0.78f * alpha), Offset(w * 0.08f, h * 0.22f), Size(w * 0.84f, 43f * px), CornerRadius(12f * px))
+        drawRoundRect(palette.outline.copy(alpha = 0.85f * alpha), Offset(w * 0.08f, h * 0.22f), Size(w * 0.84f, 43f * px), CornerRadius(12f * px), style = Stroke(width = 2f * px))
+        drawIndieRunnerText("IZMJENIČNO VESLAJ · ISTA STRANA = SKRENI", w * 0.5f, h * 0.22f + 27f * px, 10.5f * px, android.graphics.Color.argb((255 * alpha).toInt(), 255, 248, 225))
     }
 }
+
 
 
 private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawPetzlStop(
@@ -3836,25 +4087,37 @@ private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawHorizontalCave(
     lakePaddleTimer: Float = 0f,
     jumpVelocity: Float = 0f,
     gravity: Float = 1f,
-    phase: RunnerPhase = RunnerPhase.HORIZONTAL
+    phase: RunnerPhase = RunnerPhase.HORIZONTAL,
+    background: ImageBitmap? = null
 ) {
-    drawStableHorizontalBackground(
-        w = w,
-        h = h,
-        groundY = groundY,
-        walkMeters = score.toFloat(),
-        px = px,
-        difficultyLevel = difficultyLevel,
-        biomeIndex = biomeIndex
-    )
-    drawBiomeAtmosphere(biomeIndex, w, h, px, score.toFloat(), phaseTime)
-
     if (score < 14 && phaseTime < 6.2f && biomeIndex % 5 == 0) {
         // Continuous opening run: the player starts outside, passes the campfire and enters the cave.
-        // Return here so the intro is not just an overlay on top of the cave runner.
         drawForestCaveStartIntro(w, h, groundY, px, phaseTime, status)
         return
     }
+
+    if (background != null) {
+        drawAiCaveHorizontalBackground(
+            caveBackground = background,
+            w = w,
+            h = h,
+            groundY = groundY,
+            walkMeters = score.toFloat(),
+            px = px,
+            difficultyLevel = difficultyLevel
+        )
+    } else {
+        drawStableHorizontalBackground(
+            w = w,
+            h = h,
+            groundY = groundY,
+            walkMeters = score.toFloat(),
+            px = px,
+            difficultyLevel = difficultyLevel,
+            biomeIndex = biomeIndex
+        )
+    }
+    drawBiomeAtmosphere(biomeIndex, w, h, px, score.toFloat(), phaseTime)
 
     val baseCeilingH = 168f * px - caveCeilingOffset
     val tunnelCeilingY = (groundY - baseCeilingH + sin(drift * 5.7f) * 6f * px)
@@ -4768,17 +5031,29 @@ private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawVerticalShaft(
     status: RunnerStatus,
     biomeIndex: Int = 0,
     difficultyLevel: Int = 0,
-    drawPlayer: Boolean = true
+    drawPlayer: Boolean = true,
+    background: ImageBitmap? = null
 ) {
-    drawStableVerticalBackground(
-        w = w,
-        h = h,
-        segmentDepth = segmentDepth,
-        px = px,
-        alpha = 0.92f,
-        biomeIndex = biomeIndex,
-        difficultyLevel = difficultyLevel
-    )
+    if (background != null) {
+        drawAiCaveVerticalBackground(
+            verticalBackground = background,
+            w = w,
+            h = h,
+            segmentDepth = segmentDepth,
+            px = px,
+            alpha = 0.92f
+        )
+    } else {
+        drawStableVerticalBackground(
+            w = w,
+            h = h,
+            segmentDepth = segmentDepth,
+            px = px,
+            alpha = 0.92f,
+            biomeIndex = biomeIndex,
+            difficultyLevel = difficultyLevel
+        )
+    }
     drawBiomeAtmosphere(biomeIndex, w, h, px, segmentDepth * 16f, phaseTime)
 
     val laneXs = listOf(w * 0.28f, w * 0.50f, w * 0.72f)

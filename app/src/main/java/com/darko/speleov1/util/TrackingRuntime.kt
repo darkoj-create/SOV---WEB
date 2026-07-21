@@ -26,6 +26,7 @@ object TrackingRuntime {
         val currentLocation: GeoPoint? = null,
         val accuracyM: Double? = null,
         val altitudeM: Double? = null,
+        val demAltitudeM: Double? = null,
         val provider: String? = null,
         val speedMps: Double? = null,
         val gpsBearingDeg: Float? = null,
@@ -70,11 +71,12 @@ object TrackingRuntime {
         )
     }
 
-    fun onLocation(location: Location) {
+    fun onLocation(location: Location, demAltitudeM: Double? = null) {
         val current = _state.value
         val nextPoint = TrackPoint(
             point = GeoPoint(location.latitude, location.longitude),
             altitudeM = location.takeIf { it.hasAltitude() }?.altitude,
+            demAltitudeM = demAltitudeM,
         )
         val appendResult = appendTrackPoint(
             existing = current.points,
@@ -89,6 +91,7 @@ object TrackingRuntime {
             currentLocation = nextPoint.point,
             accuracyM = if (location.hasAccuracy()) location.accuracy.toDouble() else current.accuracyM,
             altitudeM = if (location.hasAltitude()) location.altitude else current.altitudeM,
+            demAltitudeM = demAltitudeM ?: current.demAltitudeM,
             provider = location.provider,
             speedMps = if (location.hasSpeed()) location.speed.toDouble() else current.speedMps,
             gpsBearingDeg = if (location.hasBearing()) location.bearing else current.gpsBearingDeg,

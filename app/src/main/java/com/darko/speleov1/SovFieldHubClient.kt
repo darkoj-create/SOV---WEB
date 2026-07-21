@@ -11,6 +11,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.util.Locale
 import java.util.UUID
+import com.darko.speleov1.util.SovNetworkSecurity
 
 internal data class SovFieldHubSettings(
     val baseUrl: String = "",
@@ -109,7 +110,7 @@ internal object SovFieldHubClient {
         if (!file.exists() || !file.isFile) error("Paket nije pronađen.")
         if (!file.name.endsWith(".sovpkg", ignoreCase = true)) error("Hub prima samo .sovpkg pakete.")
         val boundary = "SOV-${UUID.randomUUID()}"
-        val conn = (URL("$base/upload").openConnection() as HttpURLConnection).apply {
+        val conn = SovNetworkSecurity.openHttpConnection("$base/upload", "SOV Field Hub").apply {
             requestMethod = "POST"
             connectTimeout = CONNECT_TIMEOUT_MS
             readTimeout = READ_TIMEOUT_MS * 6
@@ -160,7 +161,7 @@ internal object SovFieldHubClient {
     }
 
     private fun getJson(url: String, pin: String): String {
-        val conn = (URL(url).openConnection() as HttpURLConnection).apply {
+        val conn = SovNetworkSecurity.openHttpConnection(url, "SOV network").apply {
             requestMethod = "GET"
             connectTimeout = CONNECT_TIMEOUT_MS
             readTimeout = READ_TIMEOUT_MS
@@ -233,6 +234,7 @@ internal object SovFieldHubClient {
     private fun requireBaseUrl(settings: SovFieldHubSettings): String {
         val url = settings.normalizedBaseUrl
         if (url.isBlank()) error("Upiši adresu laptop huba.")
+        SovNetworkSecurity.requireCleartextAllowed(url, "SOV Field Hub")
         return url
     }
 }

@@ -65,7 +65,7 @@ internal object SovTileHttp {
         readTimeoutMs: Int
     ): Result {
         val url = URL(urlText)
-        val connection = (url.openConnection() as HttpURLConnection).apply {
+        val connection = SovNetworkSecurity.openHttpConnection(url, "Karta/WMS tile").apply {
             connectTimeout = connectTimeoutMs
             readTimeout = readTimeoutMs
             requestMethod = "GET"

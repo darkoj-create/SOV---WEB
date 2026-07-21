@@ -104,8 +104,8 @@ internal fun SovCloudLoginScreen(
                 SovPermissionsStore.savePermissions(context, savedPermissions)
                 session = signedSession
                 permissions = savedPermissions
-                message = language.pick("Prijavljen si kao ${savedPermissions.roleLabel}.", "Signed in as ${savedPermissions.roleLabel}.")
-                Toast.makeText(context, language.pick("SOV Cloud prijava spremljena", "SOV Cloud sign-in saved"), Toast.LENGTH_SHORT).show()
+                message = language.pick("Prijava uspješna.", "Signed in.")
+                Toast.makeText(context, language.pick("Prijavljeno", "Signed in"), Toast.LENGTH_SHORT).show()
                 onLoggedIn()
             }.onFailure { throwable ->
                 message = throwable.message ?: language.pick("Prijava nije uspjela.", "Sign-in failed.")
@@ -119,7 +119,7 @@ internal fun SovCloudLoginScreen(
         session = SovAuthSession()
         permissions = SovAppPermissions()
         password = ""
-        message = language.pick("Odjavljen si. App će koristiti offline cache dok se opet ne prijaviš.", "Signed out. The app will use offline cache until you sign in again.")
+        message = language.pick("Odjavljen si.", "Signed out.")
     }
 
     LaunchedEffect(Unit) {
@@ -157,7 +157,7 @@ internal fun SovCloudLoginScreen(
                     }
                 }
                 Text(
-                    language.pick("SOV Cloud prijava", "SOV Cloud sign-in"),
+                    language.pick("Prijava", "Sign in"),
                     color = Color.White,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
@@ -193,13 +193,13 @@ internal fun SovCloudLoginScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.AccountCircle,
-                            contentDescription = language.pick("Ikona prijave korisnika", "User sign-in icon"),
+                            contentDescription = language.pick("Prijava", "Sign in"),
                             tint = Color(0xFF8BE9B5),
                             modifier = Modifier.size(82.dp)
                         )
                     }
                     Text(
-                        text = if (session.isLoggedIn) language.pick("Prijava je spremljena", "Sign-in is saved") else language.pick("Prijava za SOV Cloud", "SOV Cloud sign-in"),
+                        text = if (session.isLoggedIn) language.pick("Prijavljen si", "Signed in") else language.pick("Prijava", "Sign in"),
                         color = MaterialTheme.colorScheme.onSurface,
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
@@ -207,8 +207,8 @@ internal fun SovCloudLoginScreen(
                     )
                     Text(
                         text = language.pick(
-                            if (session.isLoggedIn) "Pritisni Nastavi i otvaram Cloud." else "Prijavi se jednom. Nakon prijave automatski otvaram Cloud.",
-                            if (session.isLoggedIn) "Tap Continue and I will open Cloud." else "Sign in once. After sign-in I will open Cloud automatically."
+                            if (session.isLoggedIn) "Otvori Cloud." else "Prijavi se za Cloud.",
+                            if (session.isLoggedIn) "Open Cloud." else "Sign in for Cloud."
                         ),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         style = MaterialTheme.typography.bodyMedium,
@@ -227,11 +227,11 @@ internal fun SovCloudLoginScreen(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
-                                Icon(Icons.Default.CheckCircle, contentDescription = null, tint = Color(0xFF81C784), modifier = Modifier.size(28.dp))
+                                Icon(Icons.Default.CheckCircle, contentDescription = "Potvrđeno", tint = Color(0xFF81C784), modifier = Modifier.size(28.dp))
                                 Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
                                     Text(permissions.roleLabel, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold)
                                     Text(session.email.ifBlank { permissions.email.ifBlank { permissions.status } }, color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
-                                    Text(language.pick("Zadnji sync: ${SovPermissionsStore.lastSyncLabel(context)}", "Last sync: ${SovPermissionsStore.lastSyncLabel(context)}"), color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.78f), style = MaterialTheme.typography.labelSmall)
+                                    Text(language.pick("Zadnje: ${SovPermissionsStore.lastSyncLabel(context)}", "Last: ${SovPermissionsStore.lastSyncLabel(context)}"), color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.78f), style = MaterialTheme.typography.labelSmall)
                                 }
                             }
                         }
@@ -241,7 +241,7 @@ internal fun SovCloudLoginScreen(
                             contentPadding = PaddingValues(vertical = 14.dp),
                             shape = RoundedCornerShape(18.dp)
                         ) {
-                            Icon(Icons.Default.Cloud, contentDescription = null)
+                            Icon(Icons.Default.Cloud, contentDescription = "Cloud")
                             Spacer(Modifier.width(8.dp))
                             Text(language.pick("Nastavi u Cloud", "Continue to Cloud"))
                         }
@@ -252,9 +252,9 @@ internal fun SovCloudLoginScreen(
                             contentPadding = PaddingValues(vertical = 12.dp),
                             shape = RoundedCornerShape(18.dp)
                         ) {
-                            Icon(Icons.Default.Delete, contentDescription = null, tint = MaterialTheme.colorScheme.error)
+                            Icon(Icons.Default.Delete, contentDescription = "Obriši", tint = MaterialTheme.colorScheme.error)
                             Spacer(Modifier.width(8.dp))
-                            Text(language.pick("Odjavi ovaj uređaj", "Sign out this device"), color = MaterialTheme.colorScheme.error)
+                            Text(language.pick("Odjavi se", "Sign out"), color = MaterialTheme.colorScheme.error)
                         }
                     } else {
                         OutlinedTextField(
@@ -263,7 +263,7 @@ internal fun SovCloudLoginScreen(
                             modifier = Modifier.fillMaxWidth(),
                             enabled = !busy,
                             singleLine = true,
-                            leadingIcon = { Icon(Icons.Default.Mail, contentDescription = null) },
+                            leadingIcon = { Icon(Icons.Default.Mail, contentDescription = "Email") },
                             label = { Text("Email") }
                         )
                         OutlinedTextField(
@@ -272,7 +272,7 @@ internal fun SovCloudLoginScreen(
                             modifier = Modifier.fillMaxWidth(),
                             enabled = !busy,
                             singleLine = true,
-                            leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
+                            leadingIcon = { Icon(Icons.Default.Lock, contentDescription = "Lozinka") },
                             visualTransformation = PasswordVisualTransformation(),
                             label = { Text(language.pick("Lozinka", "Password")) }
                         )
@@ -283,9 +283,9 @@ internal fun SovCloudLoginScreen(
                             contentPadding = PaddingValues(vertical = 15.dp),
                             shape = RoundedCornerShape(18.dp)
                         ) {
-                            if (busy) CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp) else Icon(Icons.Default.AccountCircle, contentDescription = null)
+                            if (busy) CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp) else Icon(Icons.Default.AccountCircle, contentDescription = "Prijava")
                             Spacer(Modifier.width(8.dp))
-                            Text(language.pick("Prijavi me i otvori Cloud", "Sign in and open Cloud"), fontWeight = FontWeight.Bold)
+                            Text(language.pick("Prijavi se", "Sign in"), fontWeight = FontWeight.Bold)
                         }
                     }
 
@@ -308,8 +308,8 @@ internal fun SovCloudLoginScreen(
 
             Text(
                 text = language.pick(
-                    "Prijava se sprema lokalno na uređaj. Nema ručnog synca u Postavkama — aplikacija sama osvježava prava.",
-                    "Sign-in is saved locally on this device. There is no manual sync in Settings — the app refreshes permissions automatically."
+                    "",
+                    "Signed in locally on this device. There is no manual sync in Settings — the app refreshes permissions automatically."
                 ),
                 color = Color.White.copy(alpha = 0.70f),
                 style = MaterialTheme.typography.bodySmall,

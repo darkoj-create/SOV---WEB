@@ -22,7 +22,7 @@ internal object SovHttpClient {
     private const val READ_TIMEOUT_MS = 25_000
     private const val REFRESH_WINDOW_MS = 60_000L
     private const val EXPIRED_LOGIN_MESSAGE =
-        "Prijava je istekla. Otvori Moj SOV Cloud i prijavi se ponovo."
+        "Prijava je istekla."
 
     private val refreshLock = Any()
 
@@ -128,16 +128,21 @@ internal object SovHttpClient {
         SovClientLogger.logHandledError(
             context = context,
             screen = inferScreen(url),
-            action = "$method ${url.substringAfter("/rest/v1/").take(120)}",
+            action = "$method ${safeEndpointLabel(url)}",
             message = "HTTP $code: ${text.ifBlank { "bez detalja" }.take(700)}",
             severity = if (code >= 500) "error" else "warning",
             details = org.json.JSONObject()
-                .put("url", url.take(500))
+                .put("url_path", safeEndpointLabel(url).take(500))
                 .put("method", method)
                 .put("code", code)
                 .put("response", text.take(1500))
         )
     }
+
+    private fun safeEndpointLabel(url: String): String = url
+        .substringAfter("/rest/v1/", missingDelimiterValue = url.substringAfter("/rpc/", missingDelimiterValue = "request"))
+        .substringBefore("?")
+        .take(120)
 
     private fun inferScreen(url: String): String = when {
         url.contains("sov_trips") || url.contains("trip") -> "Izleti"
@@ -154,7 +159,7 @@ internal object SovHttpClient {
         token: String?,
         bodyWriter: (HttpURLConnection) -> Unit
     ): String {
-        val conn = (URL(url).openConnection() as HttpURLConnection).apply {
+        val conn = SovNetworkSecurity.openHttpConnection(url, "Supabase REST").apply {
             requestMethod = method
             connectTimeout = CONNECT_TIMEOUT_MS
             readTimeout = READ_TIMEOUT_MS * 3
@@ -167,7 +172,7 @@ internal object SovHttpClient {
         val stream = if (code in 200..299) conn.inputStream else conn.errorStream
         val text = stream?.bufferedReader(StandardCharsets.UTF_8)?.use { it.readText() }.orEmpty()
         conn.disconnect()
-        if (code !in 200..299) error("Supabase HTTP $code: ${text.ifBlank { "bez detalja" }}")
+        if (code !in 200..299) error("Greška mreže ($code)")
         return text
     }
 
@@ -181,7 +186,7 @@ internal object SovHttpClient {
         prefer: String?,
         contentType: String
     ): ResponseText {
-        val conn = (URL(url).openConnection() as HttpURLConnection).apply {
+        val conn = SovNetworkSecurity.openHttpConnection(url, "Supabase REST").apply {
             requestMethod = method
             connectTimeout = CONNECT_TIMEOUT_MS
             readTimeout = READ_TIMEOUT_MS
@@ -204,7 +209,7 @@ internal object SovHttpClient {
 
     private data class ResponseText(val code: Int, val text: String) {
         fun textOrThrow(): String {
-            if (code !in 200..299) error("Supabase HTTP $code: ${text.ifBlank { "bez detalja" }}")
+            if (code !in 200..299) error("Greška mreže ($code)")
             return text
         }
     }

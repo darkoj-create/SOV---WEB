@@ -295,7 +295,7 @@ fun CoordinateCalculatorScreen() {
     ) {
         Text("Kalkulator koordinata", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
         Text(
-            "Terenski konverter za najčešće speleo/GIS formate: WGS84, DMS, DM, HTRS96/TM, UTM i Web Mercator.",
+            "Pretvori koordinate.",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -348,7 +348,7 @@ fun CoordinateCalculatorScreen() {
                     }
                 }
                 Button(onClick = { convert() }, modifier = Modifier.fillMaxWidth()) {
-                    Icon(Icons.Default.Calculate, contentDescription = null)
+                    Icon(Icons.Default.Calculate, contentDescription = "Kalkulator")
                     Spacer(Modifier.size(8.dp))
                     Text("Konvertiraj")
                 }
@@ -368,7 +368,7 @@ fun CoordinateCalculatorScreen() {
                     CoordinateResultLine("UTM", output.utm)
                     CoordinateResultLine("Web Mercator", output.webMercator)
                     OutlinedButton(onClick = { openGoogleMaps(context, output.lat, output.lon) }, modifier = Modifier.fillMaxWidth()) {
-                        Icon(Icons.Default.OpenInNew, contentDescription = null)
+                        Icon(Icons.Default.OpenInNew, contentDescription = "Otvori izvana")
                         Spacer(Modifier.size(8.dp))
                         Text("Open in Google Maps")
                     }
@@ -492,9 +492,9 @@ private fun inputHintForMode(mode: String): String = when (mode) {
     "WGS84 decimal" -> "Primjer: 44.870100 i 15.535200"
     "WGS84 DMS" -> "Primjer: 44° 52' 12.5\" N i 15° 32' 10\" E"
     "WGS84 DM" -> "Primjer: 44° 52.125' N i 15° 32.250' E"
-    "HTRS96/TM" -> "Unesi X/Easting i Y/Northing iz HTRS96/TM sustava."
-    "UTM" -> "Za Hrvatsku su najčešće zone 33N i 34N."
-    "Web Mercator" -> "EPSG:3857 metri, često iz web mapa i tile sustava."
+    "HTRS96/TM" -> "Unesi HTRS96/TM."
+    "UTM" -> "Najčešće: 33N / 34N."
+    "Web Mercator" -> "Web mapa metri."
     else -> ""
 }
 

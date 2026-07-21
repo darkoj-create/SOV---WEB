@@ -625,11 +625,11 @@ object TopoDroidBridgeStore {
         return runCatching {
             when (ext) {
                 "zip" -> context.contentResolver.openInputStream(uri)?.use { analyzeZip(it) } ?: TopoDroidAnalysis(qcWarnings = listOf("Ne mogu pročitati ZIP"))
-                "tdr" -> TopoDroidAnalysis(hasPlanDrawing = filename.lowercase(Locale.ROOT).contains("p.tdr") || filename.lowercase(Locale.ROOT).contains("-p"), hasProfileDrawing = filename.lowercase(Locale.ROOT).contains("s.tdr") || filename.lowercase(Locale.ROOT).contains("-s"), qcWarnings = listOf("TDR crtež je spremljen, puni render ovisi o TopoDroid exportu"))
+                "tdr" -> TopoDroidAnalysis(hasPlanDrawing = filename.lowercase(Locale.ROOT).contains("p.tdr") || filename.lowercase(Locale.ROOT).contains("-p"), hasProfileDrawing = filename.lowercase(Locale.ROOT).contains("s.tdr") || filename.lowercase(Locale.ROOT).contains("-s"), qcWarnings = listOf("Crtež spremljen."))
                 "png", "jpg", "jpeg", "pdf", "svg" -> TopoDroidAnalysis(hasImageOrPdfPreview = true)
                 else -> TopoDroidAnalysis()
             }
-        }.getOrElse { TopoDroidAnalysis(qcWarnings = listOf("Ne mogu analizirati datoteku: ${it.message.orEmpty()}")) }
+        }.getOrElse { TopoDroidAnalysis(qcWarnings = listOf("Ne mogu učitati datoteku.")) }
     }
 
     private fun analyzeZip(input: InputStream): TopoDroidAnalysis {
@@ -659,9 +659,9 @@ object TopoDroidBridgeStore {
             }
         }
         val sql = surveySql
-        val base = if (sql != null) analyzeSurveySql(sql) else TopoDroidAnalysis(qcWarnings = listOf("ZIP nema survey.sql — spremljen je samo kao originalni paket"))
+        val base = if (sql != null) analyzeSurveySql(sql) else TopoDroidAnalysis(qcWarnings = listOf("ZIP spremljen."))
         val warnings = base.qcWarnings.toMutableList()
-        if (!hasPreview && (hasPlan || hasProfile)) warnings.add("Paket ima TDR crtež, ali nema PNG/PDF/SVG preview za brzi prikaz")
+        if (!hasPreview && (hasPlan || hasProfile)) warnings.add("Nema brzog pregleda.")
         if (!hasPlan && entryNames.any { it.lowercase(Locale.ROOT).endsWith(".tdr") }) warnings.add("Nije sigurno prepoznat plan crtež")
         return base.copy(
             hasSurveySql = sql != null,
@@ -709,9 +709,9 @@ object TopoDroidBridgeStore {
         val duplicatePairs = centerline.groupBy { "${it.from}→${it.to}" }.filter { it.value.size > 1 }.keys
         val warnings = mutableListOf<String>()
         if (shots.isEmpty()) warnings.add("Nema mjerenja u survey.sql")
-        if (centerline.isEmpty() && shots.isNotEmpty()) warnings.add("Nema jasnih centerline mjerenja — većina su splay/pomoćna mjerenja")
+        if (centerline.isEmpty() && shots.isNotEmpty()) warnings.add("Nema dovoljno mjerenja.")
         if (duplicatePairs.isNotEmpty()) warnings.add("Ponovljena centerline mjerenja: ${duplicatePairs.take(3).joinToString()}")
-        if (stationSet.size > 80 || (centerline.size > 0 && centerline.size.toDouble() / stationSet.size.coerceAtLeast(1) > 3.0)) warnings.add("Složena topologija — plan može biti netočan za granate jame s petljama")
+        if (stationSet.size > 80 || (centerline.size > 0 && centerline.size.toDouble() / stationSet.size.coerceAtLeast(1) > 3.0)) warnings.add("Plan može biti netočan.")
         return TopoDroidAnalysis(
             surveyName = surveyName,
             surveyDate = surveyDate,

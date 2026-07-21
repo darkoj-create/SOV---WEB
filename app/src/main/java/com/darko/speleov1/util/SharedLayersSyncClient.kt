@@ -57,12 +57,13 @@ object SharedLayersSyncClient {
 
     suspend fun fetchLayers(): List<SharedLayerEntry> = withContext(Dispatchers.IO) {
         return@withContext try {
-            val url = "$WEBAPP_URL?action=listLayers"
-            val conn = (URL(url).openConnection() as HttpURLConnection).apply {
+            val url = SovAppsScriptAuth.withKeyQuery("$WEBAPP_URL?action=listLayers")
+            val conn = SovNetworkSecurity.openHttpConnection(url, "Zajednički slojevi").apply {
                 requestMethod = "GET"
                 connectTimeout = 9000
                 readTimeout = 9000
                 instanceFollowRedirects = true
+                SovAppsScriptAuth.applyTo(this)
             }
             val code = conn.responseCode
             val body = if (code in 200..299)
@@ -221,16 +222,18 @@ object SharedLayersSyncClient {
 
     private fun postJson(fields: Map<String, String>): Boolean {
         return try {
-            val body = fields.entries.joinToString("&") { (k, v) ->
+            val securedFields = fields.toMutableMap().also { SovAppsScriptAuth.addToForm(it) }
+            val body = securedFields.entries.joinToString("&") { (k, v) ->
                 URLEncoder.encode(k, "UTF-8") + "=" + URLEncoder.encode(v, "UTF-8")
             }
-            val conn = (URL(WEBAPP_URL).openConnection() as HttpURLConnection).apply {
+            val conn = SovNetworkSecurity.openHttpConnection(WEBAPP_URL, "Zajednički slojevi").apply {
                 requestMethod = "POST"
                 connectTimeout = 9000
                 readTimeout = 9000
                 doOutput = true
                 instanceFollowRedirects = true
                 setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
+                SovAppsScriptAuth.applyTo(this)
             }
             OutputStreamWriter(conn.outputStream, Charsets.UTF_8).use { it.write(body) }
             val code = conn.responseCode
