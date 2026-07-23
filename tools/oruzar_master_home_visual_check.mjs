@@ -37,13 +37,29 @@ async function capture(name,viewport){
   await page.goto(`${baseUrl}/oruzar-master.html`,{waitUntil:'networkidle',timeout:60000});
   await page.waitForSelector('.cm-grid-dashboard .cm-card-posudbe',{timeout:30000});
   await page.screenshot({path:`${outDir}/${name}.png`,fullPage:true});
-  const report=await page.evaluate(()=>({
-    title:document.title,
-    bodyBackground:getComputedStyle(document.body).backgroundColor,
-    horizontalOverflow:Math.max(0,document.documentElement.scrollWidth-document.documentElement.clientWidth),
-    cards:[...document.querySelectorAll('.cm-grid-dashboard .cm-card')].filter(el=>getComputedStyle(el).display!=='none').map(el=>({className:el.className,title:el.querySelector('h2')?.innerText||'',height:Math.round(el.getBoundingClientRect().height)})),
-    heroHeight:Math.round(document.querySelector('.cm-hero')?.getBoundingClientRect().height||0)
-  }));
+  const report=await page.evaluate(()=>{
+    const describe=el=>{
+      if(!el)return null;
+      const cs=getComputedStyle(el);const r=el.getBoundingClientRect();
+      return {text:el.innerText||'',display:cs.display,visibility:cs.visibility,opacity:cs.opacity,width:Math.round(r.width),height:Math.round(r.height),left:Math.round(r.left),right:Math.round(r.right)};
+    };
+    return {
+      title:document.title,
+      bodyBackground:getComputedStyle(document.body).backgroundColor,
+      horizontalOverflow:Math.max(0,document.documentElement.scrollWidth-document.documentElement.clientWidth),
+      cards:[...document.querySelectorAll('.cm-grid-dashboard .cm-card')].filter(el=>getComputedStyle(el).display!=='none').map(el=>({className:el.className,title:el.querySelector('h2')?.innerText||'',height:Math.round(el.getBoundingClientRect().height)})),
+      heroHeight:Math.round(document.querySelector('.cm-hero')?.getBoundingClientRect().height||0),
+      header:{
+        top:describe(document.querySelector('.sov-member-top')),
+        brand:describe(document.querySelector('.sov-member-brand')),
+        logo:describe(document.querySelector('.sov-member-logo')),
+        nav:describe(document.querySelector('.sov-member-nav')),
+        publicLink:describe(document.querySelector('.sov-member-link[href="index.html"]')),
+        dashboardLink:describe(document.querySelector('.sov-member-link[href="dashboard.html"]')),
+        logout:describe(document.querySelector('.sov-member-logout'))
+      }
+    };
+  });
   await fs.writeFile(`${outDir}/${name}.json`,JSON.stringify(report,null,2));
   await browser.close();
 }
