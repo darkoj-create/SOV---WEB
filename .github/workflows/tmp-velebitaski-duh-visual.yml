@@ -1,0 +1,103 @@
+name: Temporary Velebitaski duh visual check
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  visual:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Start local server
+        run: |
+          python -m http.server 4173 --bind 127.0.0.1 > /tmp/spirit-http.log 2>&1 &
+          sleep 2
+      - name: Capture desktop and mobile
+        run: |
+          mkdir -p SPIRIT_VISUAL
+          node <<'JS'
+          const { chromium } = require('playwright');
+          const fs = require('fs');
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            const cases=[
+              {name:'desktop',viewport:{width:1440,height:1000}},
+              {name:'mobile',viewport:{width:390,height:844},isMobile:true,hasTouch:true},
+            ];
+            const report=[];
+            for(const item of cases){
+              const context=await browser.newContext({viewport:item.viewport,isMobile:!!item.isMobile,hasTouch:!!item.hasTouch});
+              const page=await context.newPage();
+              const consoleErrors=[];
+              const failedRequests=[];
+              page.on('console',m=>{if(m.type()==='error') consoleErrors.push(m.text())});
+              page.on('pageerror',e=>consoleErrors.push(e.message));
+              page.on('requestfailed',r=>failedRequests.push(`${r.url()} :: ${r.failure()?.errorText||'failed'}`));
+              const response=await page.goto('http://127.0.0.1:4173/velebitaski-duh.html',{waitUntil:'networkidle',timeout:30000});
+              await page.screenshot({path:`SPIRIT_VISUAL/velebitaski-duh-${item.name}-top.png`});
+              const images=page.locator('.spirit-main img');
+              for(let i=0;i<await images.count();i++){
+                await images.nth(i).scrollIntoViewIfNeeded();
+                await page.waitForTimeout(450);
+              }
+              await page.waitForTimeout(1200);
+              await page.evaluate(()=>scrollTo(0,0));
+              await page.waitForTimeout(250);
+              await page.screenshot({path:`SPIRIT_VISUAL/velebitaski-duh-${item.name}.png`,fullPage:true});
+              await page.locator('#pajo').scrollIntoViewIfNeeded();
+              await page.waitForTimeout(250);
+              await page.screenshot({path:`SPIRIT_VISUAL/velebitaski-duh-${item.name}-pajo.png`});
+              await page.locator('#crtezi').scrollIntoViewIfNeeded();
+              await page.waitForTimeout(350);
+              await page.screenshot({path:`SPIRIT_VISUAL/velebitaski-duh-${item.name}-crtezi.png`});
+              const data=await page.evaluate(()=>({
+                width:innerWidth,
+                scrollWidth:document.documentElement.scrollWidth,
+                height:document.documentElement.scrollHeight,
+                title:document.querySelector('.spirit-hero h1')?.textContent?.replace(/\s+/g,' ').trim()||'',
+                byline:document.querySelector('.spirit-byline')?.textContent?.replace(/\s+/g,' ').trim()||'',
+                imageCount:document.querySelectorAll('.spirit-main img').length,
+                loadedImages:[...document.querySelectorAll('.spirit-main img')].filter(i=>i.complete&&i.naturalWidth>0).length,
+                sketchCount:document.querySelectorAll('.spirit-sketch-wall figure').length,
+                navCount:document.querySelectorAll('.spirit-nav a').length,
+                oldArticle:document.querySelectorAll('.article,.quote,.gallery,.song pre').length,
+                lyric:document.querySelector('.spirit-song-sheet')?.textContent||'',
+              }));
+              report.push({name:item.name,status:response?.status()||0,...data,consoleErrors,failedRequests});
+              fs.writeFileSync('SPIRIT_VISUAL/report.json',JSON.stringify(report,null,2));
+              if((response?.status()||0)>=400) throw new Error(`${item.name}: HTTP ${response?.status()}`);
+              if(data.scrollWidth>data.width+4) throw new Error(`${item.name}: horizontal overflow ${data.scrollWidth} > ${data.width}`);
+              if(!data.title.includes('Velebitaški duh')) throw new Error(`${item.name}: hero title missing`);
+              if(!data.byline.includes('Marijan Čepelak Maligan')) throw new Error(`${item.name}: byline missing`);
+              if(data.imageCount!==data.loadedImages) throw new Error(`${item.name}: only ${data.loadedImages}/${data.imageCount} images loaded`);
+              if(data.sketchCount!==5) throw new Error(`${item.name}: expected 5 sketches, found ${data.sketchCount}`);
+              if(data.oldArticle) throw new Error(`${item.name}: legacy article elements remain`);
+              if(!data.lyric.includes('kobasice i kruh')||!data.lyric.includes('proziran k’o zrak')) throw new Error(`${item.name}: lyrics incomplete`);
+              if(consoleErrors.length) throw new Error(`${item.name}: console errors: ${consoleErrors.join(' | ')}`);
+              if(failedRequests.length) throw new Error(`${item.name}: failed requests: ${failedRequests.join(' | ')}`);
+              await context.close();
+            }
+            await browser.close();
+            console.log(JSON.stringify(report,null,2));
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: velebitaski-duh-visual
+          path: SPIRIT_VISUAL/
+          if-no-files-found: error
+          retention-days: 3
