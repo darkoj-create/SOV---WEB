@@ -34,35 +34,27 @@
       card.setAttribute('data-dash-visible','user,editor,oruzar,arhivar,admin,webmaster');
       card.setAttribute('data-dash-ability','drawings');
       card.style.setProperty('--accent','rgba(171,196,255,.18)');
-      card.innerHTML='<div class="sov-icon">📐</div><h3>Nacrt Generator</h3><p>Učitaj TopoDroid ZIP i izradi semantički SOV nacrt s točnim materijalima, drvećem, kamenjem, scrapovima i Velebitovim logotipima.</p><div class="sov-module-foot"><span class="sov-tag">Cloud</span><span class="sov-soft">Otvori</span></div>';
+      card.innerHTML='<div class="sov-icon">📐</div><h3>Nacrt</h3><div class="sov-module-foot"><span class="sov-soft">Otvori</span></div>';
       grid.appendChild(card);
     }catch(e){console.warn('Nacrt dashboard card skipped',e);}
   }
 
-  function injectTripsHumanLayer(){
+  function injectTripsUi(){
     try{
       const path=String(location.pathname||'').toLowerCase();
       if(!path.endsWith('/izleti-cloud.html')&&!path.endsWith('izleti-cloud.html')) return;
-      if(!document.querySelector('link[data-sov-trips-human]')){
-        const link=document.createElement('link');
-        link.rel='stylesheet';
-        link.href='assets/sov-trips-human-v6146.css?v=6.1.46';
-        link.setAttribute('data-sov-trips-human','');
-        document.head.appendChild(link);
-      }
-      if(!document.querySelector('script[data-sov-trips-human]')){
-        const script=document.createElement('script');
-        script.src='assets/sov-trips-human-v6146.js?v=6.1.46';
-        script.setAttribute('data-sov-trips-human','');
-        document.body.appendChild(script);
-      }
-    }catch(e){console.warn('Trips human layer skipped',e);}
+      if(document.querySelector('script[data-sov-trips-human]'))return;
+      const script=document.createElement('script');
+      script.src='assets/sov-trips-human-v6146.js?v=6.1.50';
+      script.setAttribute('data-sov-trips-human','');
+      document.body.appendChild(script);
+    }catch(e){console.warn('Trips UI layer skipped',e);}
   }
 
   async function loadManifest(){
     applyVersion(FALLBACK_VERSION,FALLBACK_BUILD,FALLBACK_NAME);
     injectNacrtDashboardCard();
-    injectTripsHumanLayer();
+    injectTripsUi();
     try{
       const res=await fetch('/update.json?cb='+Date.now(),{cache:'no-store'});
       if(!res.ok)throw new Error('HTTP '+res.status);
@@ -80,12 +72,11 @@
       window.dispatchEvent(new CustomEvent('sov:version',{detail:{ok:false,expected:FALLBACK_VERSION,error:String(err&&err.message||err)}}));
     }
     injectNacrtDashboardCard();
-    injectTripsHumanLayer();
+    injectTripsUi();
   }
 
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',loadManifest);
   else loadManifest();
   setTimeout(injectNacrtDashboardCard,350);
   setTimeout(injectNacrtDashboardCard,1200);
-  setTimeout(injectTripsHumanLayer,80);
 })();
