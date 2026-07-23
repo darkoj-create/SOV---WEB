@@ -1,0 +1,95 @@
+name: Temporary Pridruži nam se visual check
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  visual:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Start local server
+        run: |
+          python -m http.server 4173 --bind 127.0.0.1 > /tmp/join-http.log 2>&1 &
+          sleep 2
+      - name: Capture desktop and mobile views
+        run: |
+          mkdir -p JOIN_VISUAL
+          node <<'JS'
+          const { chromium } = require('playwright');
+          const fs = require('fs');
+          (async()=>{
+            const browser = await chromium.launch({headless:true});
+            const cases = [
+              {name:'desktop', viewport:{width:1440,height:1000}},
+              {name:'mobile', viewport:{width:390,height:844}, isMobile:true, hasTouch:true},
+            ];
+            const report=[];
+            for (const item of cases){
+              const context=await browser.newContext({viewport:item.viewport,isMobile:!!item.isMobile,hasTouch:!!item.hasTouch,javaScriptEnabled:true});
+              const page=await context.newPage();
+              const consoleErrors=[];
+              const failedRequests=[];
+              page.on('console',msg=>{if(msg.type()==='error') consoleErrors.push(msg.text())});
+              page.on('pageerror',err=>consoleErrors.push(err.message));
+              page.on('requestfailed',request=>failedRequests.push(`${request.url()} :: ${request.failure()?.errorText||'failed'}`));
+              const response=await page.goto('http://127.0.0.1:4173/pridruzi-nam-se.html',{waitUntil:'networkidle',timeout:30000});
+              await page.screenshot({path:`JOIN_VISUAL/pridruzi-${item.name}-top.png`});
+              await page.evaluate(async()=>{
+                const step=Math.max(300,Math.floor(innerHeight*.8));
+                for(let y=0;y<document.documentElement.scrollHeight;y+=step){scrollTo(0,y);await new Promise(r=>setTimeout(r,80));}
+                scrollTo(0,0);await new Promise(r=>setTimeout(r,200));
+              });
+              await page.screenshot({path:`JOIN_VISUAL/pridruzi-${item.name}.png`,fullPage:true});
+              const layout=await page.evaluate(()=>({
+                title:document.title,
+                width:innerWidth,
+                scrollWidth:document.documentElement.scrollWidth,
+                height:document.documentElement.scrollHeight,
+                heroTitle:document.querySelector('.sov-join-hero h1')?.textContent?.trim()||'',
+                navCount:document.querySelectorAll('.sov-join-nav a').length,
+                imageCount:document.querySelectorAll('.sov-join-main img').length,
+                loadedImageCount:[...document.querySelectorAll('.sov-join-main img')].filter(img=>img.complete&&img.naturalWidth>0).length,
+                oldCards:document.querySelectorAll('.join-card,.info-grid,.soft-note,.join-btn').length,
+                priceText:document.querySelector('.sov-join-price-grid')?.textContent||'',
+                footerText:document.querySelector('.footer')?.textContent||'',
+                faqCount:document.querySelectorAll('.sov-join-faq-list details').length,
+              }));
+              report.push({name:item.name,status:response?.status()||0,...layout,consoleErrors,failedRequests});
+              if((response?.status()||0)>=400) throw new Error(`${item.name}: HTTP ${response?.status()}`);
+              if(layout.scrollWidth>layout.width+4) throw new Error(`${item.name}: horizontal overflow ${layout.scrollWidth} > ${layout.width}`);
+              if(!layout.heroTitle.includes('Samo dođi')) throw new Error(`${item.name}: hero title missing`);
+              if(layout.imageCount!==layout.loadedImageCount) throw new Error(`${item.name}: only ${layout.loadedImageCount}/${layout.imageCount} images loaded`);
+              if(layout.oldCards) throw new Error(`${item.name}: legacy glass card elements remain`);
+              if(!layout.priceText.includes('15,80')||!layout.priceText.includes('7,80')) throw new Error(`${item.name}: 2026 membership prices missing`);
+              if(layout.footerText.includes('v4.4')) throw new Error(`${item.name}: version text remains in footer`);
+              if(layout.faqCount!==4) throw new Error(`${item.name}: expected 4 FAQ items, found ${layout.faqCount}`);
+              if(consoleErrors.length) throw new Error(`${item.name}: console errors: ${consoleErrors.join(' | ')}`);
+              if(failedRequests.length) throw new Error(`${item.name}: failed requests: ${failedRequests.join(' | ')}`);
+              await context.close();
+            }
+            await browser.close();
+            fs.writeFileSync('JOIN_VISUAL/report.json',JSON.stringify(report,null,2));
+            console.log(JSON.stringify(report,null,2));
+          })().catch(err=>{console.error(err);process.exit(1)});
+          JS
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pridruzi-human-visual
+          path: JOIN_VISUAL/
+          if-no-files-found: error
+          retention-days: 3
