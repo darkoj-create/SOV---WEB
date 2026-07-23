@@ -21,6 +21,7 @@ def fetch_bytes(url: str) -> bytes:
         return response.read()
 
 
+# Refresh snapshot after the debug-enabled workflow trigger.
 payload = json.loads(fetch_bytes(RUNS_URL).decode("utf-8"))
 runs = []
 for run in payload.get("workflow_runs", []):
