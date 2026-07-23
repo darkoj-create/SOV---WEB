@@ -2,6 +2,8 @@ name: Temporary Member UI Sweep
 on:
   push:
     branches: [agent/member-ui-human-sweep]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 jobs:
@@ -18,9 +20,10 @@ jobs:
           node --check assets/sov-trips-human-v6146.js
           node --check assets/sov-article-member-v6150.js
           node --check assets/sov-version.js
+          node --check assets/sov-public-header-v6145q.js
           python3 - <<'PY'
           from pathlib import Path
-          import re, subprocess, tempfile
+          import re, subprocess
           for name in ['assets/sov-trips-human-v6146.css','assets/sov-member-header-v6145ai.css']:
               text=Path(name).read_text(encoding='utf-8')
               assert text.count('{')==text.count('}'), f'unbalanced CSS: {name}'
@@ -111,6 +114,10 @@ jobs:
                 }
                 if(path==='nacrt.html'){
                   for(const id of ['fTitle','fDate','fTeam','fClub','fCadNum','fLocation','btnRender','btnSvg','btnPng','preview','parseInfo'])if(!(await page.locator('#'+id).count()))throw new Error('Nacrt: missing #'+id);
+                }
+                if(path==='index.html'){
+                  if(await page.locator('.portal-sub').count())throw new Error('Naslovnica: hero subtitle still present');
+                  if(await page.locator('.news-copy em').count())throw new Error('Naslovnica: card excerpts still present');
                 }
                 await page.screenshot({path:`member-ui-artifacts/${path.replace('.html','')}-${vp.name}.png`,fullPage:true});
                 console.log(JSON.stringify({path,label,viewport:vp.name,...metrics}));
