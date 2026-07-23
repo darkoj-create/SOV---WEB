@@ -1,9 +1,76 @@
-/* v6.1.45af — Oružarstvo UX microcopy/safety polish + dashboard icons. No database structure changes. */
-.cm-logo{font-size:24px!important;color:#06110f}.cm-logo:after{content:""}.cm-grid-dashboard .cm-card{gap:12px}.cm-card .ico.cm-card-icon{display:inline-grid!important;place-items:center;width:56px;height:56px;border-radius:20px;background:linear-gradient(135deg,rgba(215,246,111,.22),rgba(125,211,252,.12));border:1px solid rgba(220,255,235,.18);box-shadow:0 18px 44px rgba(0,0,0,.22);font-size:30px!important;line-height:1}.cm-card-button{text-align:left;width:100%;font-family:inherit}.cm-card:hover .cm-card-icon{transform:translateY(-1px) scale(1.03)}.cm-card-icon{transition:.18s ease}.loan-items-collapsed{width:100%;border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:8px 10px;background:rgba(255,255,255,.045)}.loan-items-collapsed summary{cursor:pointer;font-weight:900;color:#e8f7ef;list-style:none}.loan-items-collapsed summary::-webkit-details-marker{display:none}.loan-items-expanded{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}.cm-toast-action{border:0;background:transparent;color:#7ff0b2;font-weight:950;text-decoration:underline;cursor:pointer;padding:0 0 0 6px}.cm-toast{max-width:min(720px,calc(100vw - 32px));line-height:1.45}
+/* v6.1.52c — Oružarstvo UX: simple, operational and human. No database or workflow changes. */
+.cm-logo{font-size:24px!important;color:#06110f}.cm-logo:after{content:""}.cm-card-button{text-align:left;width:100%;font-family:inherit}.loan-items-collapsed{width:100%;border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:8px 10px;background:rgba(255,255,255,.045)}.loan-items-collapsed summary{cursor:pointer;font-weight:900;color:#e8f7ef;list-style:none}.loan-items-collapsed summary::-webkit-details-marker{display:none}.loan-items-expanded{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}.cm-toast-action{border:0;background:transparent;color:#7ff0b2;font-weight:950;text-decoration:underline;cursor:pointer;padding:0 0 0 6px}.cm-toast{max-width:min(720px,calc(100vw - 32px));line-height:1.45}
 
-/* v6.1.45af — main dashboard card polish */
-.cm-card-button{cursor:pointer;color:var(--text)}
-.cm-grid-dashboard .cm-card h2{letter-spacing:-.035em}
-.cm-grid-dashboard .cm-card p{font-size:14px}
-.cm-grid-dashboard .cm-card span:not(.ico){color:#f4ffd1}
-@media(max-width:640px){.cm-card .ico.cm-card-icon{width:50px;height:50px;border-radius:18px;font-size:27px!important}}
+body.clean-armory:has(#masterRoot){--armory-card:#fffdf7;--armory-ink:#252a24;--armory-muted:#676b64;--armory-line:#c9c0ae;--armory-forest:#193b32;--armory-forest-2:#25493e;--armory-rust:#9a5037;margin:0!important;background:linear-gradient(180deg,#e8e0d3 0,#f4efe6 44%,#ebe3d6 100%)!important;color:var(--armory-ink)!important;font-family:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif!important}
+body.clean-armory:has(#masterRoot)::before{display:none!important}
+body.clean-armory:has(#masterRoot) .cm-shell{width:min(1180px,calc(100% - 32px))!important;margin:0 auto!important;padding:0 0 56px!important}
+body.clean-armory:has(#masterRoot) .sov-member-top{width:100%!important;margin-bottom:8px!important}
+body.clean-armory:has(#masterRoot) .sov-member-brand{font-size:0!important}
+body.clean-armory:has(#masterRoot) .sov-member-brand>*:not(.sov-member-logo){display:none!important}
+body.clean-armory:has(#masterRoot) .sov-member-brand::after{content:"SOV Velebit";color:#252a24;font:700 16px/1 Georgia,"Times New Roman",serif}
+body.clean-armory:has(#masterRoot) .sov-member-link[href="dashboard.html"]{font-size:0!important}
+body.clean-armory:has(#masterRoot) .sov-member-link[href="dashboard.html"]::after{content:"Članski dio";font-size:12px}
+
+body.clean-armory:has(#masterRoot) .cm-hero{margin:0 0 18px!important;padding:22px 0 17px!important;border:0!important;border-bottom:1px solid var(--armory-line)!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
+body.clean-armory:has(#masterRoot) .cm-hero::before{content:"OPREMA";display:block;margin-bottom:6px;color:var(--armory-rust);font-size:11px;font-weight:900;line-height:1.2;letter-spacing:.15em}
+body.clean-armory:has(#masterRoot) .cm-hero::after{display:none!important}
+body.clean-armory:has(#masterRoot) .cm-hero h1{margin:0!important;color:var(--armory-forest)!important;font-size:0!important;font-weight:760!important;line-height:.96!important;letter-spacing:-.05em!important}
+body.clean-armory:has(#masterRoot) .cm-hero h1::after{content:"Oružarstvo";font-size:clamp(38px,5vw,54px)}
+body.clean-armory:has(#masterRoot) .cm-hero p,body.clean-armory:has(#masterRoot) .cm-hero .eyebrow,body.clean-armory:has(#masterRoot) .cm-kpis{display:none!important}
+
+body.clean-armory:has(#masterRoot) .armory-db-loading{min-height:170px!important;padding:24px!important;display:grid!important;align-content:center!important;gap:12px!important;border:1px solid var(--armory-line)!important;border-radius:5px!important;background:var(--armory-card)!important;color:var(--armory-ink)!important;box-shadow:none!important}
+body.clean-armory:has(#masterRoot) .armory-db-loading h2{color:var(--armory-forest)!important;font-size:23px!important}
+body.clean-armory:has(#masterRoot) .armory-db-loading p{color:var(--armory-muted)!important}
+body.clean-armory:has(#masterRoot) .armory-db-bar{height:5px!important;border-radius:0!important;background:#ddd5c7!important}
+body.clean-armory:has(#masterRoot) .armory-db-bar::before{border-radius:0!important;background:var(--armory-forest)!important}
+
+body.clean-armory:has(#masterRoot) .cm-grid-dashboard{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}
+body.clean-armory:has(#masterRoot) .cm-grid-dashboard::before{content:"Odaberi radnju";grid-column:1/-1;margin:2px 0;color:#4f5751;font-size:13px;font-weight:850}
+body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card{min-height:126px!important;padding:19px!important;display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;grid-template-areas:"title action" "copy action"!important;align-content:center!important;align-items:center!important;column-gap:20px!important;row-gap:8px!important;overflow:hidden!important;border:1px solid var(--armory-line)!important;border-radius:5px!important;background:var(--armory-card)!important;color:var(--armory-ink)!important;box-shadow:0 7px 18px rgba(59,49,34,.07)!important;text-decoration:none!important;transition:border-color .15s ease,background .15s ease,transform .15s ease!important}
+body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card:hover{transform:translateY(-1px)!important;border-color:#9e927f!important;background:#fff!important}
+body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card::after,body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-icon{display:none!important}
+body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card h2{grid-area:title;margin:0!important;color:var(--armory-forest)!important;font-size:24px!important;font-weight:740!important;line-height:1.05!important;letter-spacing:-.035em!important}
+body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card p{grid-area:copy;margin:0!important;max-width:48ch;color:var(--armory-muted)!important;font-size:13px!important;line-height:1.42!important}
+body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card>span:not(.ico){grid-area:action;align-self:center;margin:0!important;padding:9px 11px!important;border:1px solid #bcb29f!important;border-radius:3px!important;background:#f4eee3!important;color:var(--armory-forest)!important;font-size:12px!important;font-weight:850!important;line-height:1!important;white-space:nowrap!important}
+
+body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-posudbe{order:1!important;grid-column:1/-1!important;min-height:154px!important;padding:23px 24px!important;background:var(--armory-forest)!important;border-color:var(--armory-forest)!important;color:#fffaf0!important;box-shadow:0 12px 24px rgba(25,59,50,.17)!important}
+body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-posudbe:hover{background:var(--armory-forest-2)!important;border-color:var(--armory-forest-2)!important}
+body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-posudbe h2{color:#fffaf0!important;font-size:31px!important}
+body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-posudbe h2::before{content:"GLAVNI POSAO";display:block;margin-bottom:7px;color:#e4bd77;font-size:10px;font-weight:900;letter-spacing:.13em}
+body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-posudbe p{color:#dbe7e1!important;font-size:13px!important}
+body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-posudbe p b{color:#fff!important;font-size:22px!important;line-height:1!important}
+body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-posudbe>span:not(.ico){padding:11px 14px!important;border-color:#d6b16f!important;background:#e4bd77!important;color:#173129!important}
+
+body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-inventar{order:2!important}
+body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-inventura{order:3!important}
+body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-inventar p,body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-inventura p{display:none!important}
+body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-return{order:4!important;grid-column:1/-1!important;min-height:74px!important;max-height:90px!important;padding:14px 17px!important;border-style:dashed!important;background:rgba(255,253,247,.56)!important;box-shadow:none!important}
+body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-return h2{font-size:0!important}
+body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-return h2::after{content:"Povrat bez otvorene posudbe";font-size:18px}
+body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-return p{display:none!important}
+body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-return>span:not(.ico){background:transparent!important}
+body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-notes{display:none!important}
+body.clean-armory:has(#masterRoot) .cm-card-button{cursor:pointer!important}
+body.clean-armory:has(#masterRoot) .cm-card:focus-visible{outline:3px solid var(--armory-rust)!important;outline-offset:3px!important}
+
+@media(max-width:760px){
+  body.clean-armory:has(#masterRoot) .cm-shell{width:min(100% - 20px,1180px)!important;padding-bottom:40px!important}
+  body.clean-armory:has(#masterRoot) .sov-member-top{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:8px!important}
+  body.clean-armory:has(#masterRoot) .sov-member-brand{display:flex!important;flex:0 0 40px!important;width:40px!important;min-width:40px!important}
+  body.clean-armory:has(#masterRoot) .sov-member-logo{display:block!important;width:40px!important;height:40px!important;opacity:1!important}
+  body.clean-armory:has(#masterRoot) .sov-member-brand::after{display:none!important}
+  body.clean-armory:has(#masterRoot) .sov-member-nav{display:flex!important;width:auto!important;flex:0 0 auto!important;gap:3px!important;overflow:visible!important}
+  body.clean-armory:has(#masterRoot) .sov-member-link[href="index.html"]{display:none!important}
+  body.clean-armory:has(#masterRoot) .sov-member-link[href="dashboard.html"],body.clean-armory:has(#masterRoot) .sov-member-logout{display:inline-flex!important;width:auto!important;min-height:36px!important}
+  body.clean-armory:has(#masterRoot) .cm-hero{padding:15px 0 13px!important;margin-bottom:13px!important}
+  body.clean-armory:has(#masterRoot) .cm-hero h1::after{font-size:39px!important}
+  body.clean-armory:has(#masterRoot) .cm-grid-dashboard{grid-template-columns:1fr!important;gap:9px!important}
+  body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card{grid-column:1!important;min-height:100px!important;padding:16px!important;grid-template-columns:minmax(0,1fr) auto!important;column-gap:12px!important}
+  body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-posudbe{min-height:138px!important;padding:18px!important}
+  body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-posudbe h2{font-size:28px!important}
+  body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card h2{font-size:22px!important}
+  body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-return{min-height:72px!important;max-height:82px!important}
+  body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-return h2{font-size:0!important}
+  body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-return h2::after{font-size:18px!important}
+}
+@media(max-width:430px){body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card{grid-template-columns:1fr!important;grid-template-areas:"title" "copy" "action"!important;align-items:start!important}body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card>span:not(.ico){justify-self:start!important}body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-posudbe p b{font-size:20px!important}body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-return{grid-template-areas:"title action"!important;grid-template-columns:minmax(0,1fr) auto!important;align-items:center!important}}
