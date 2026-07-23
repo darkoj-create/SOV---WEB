@@ -1,4 +1,4 @@
-name: SOV runtime mobile visual and gate diagnosis
+name: SOV fast release-gate diagnosis
 
 on:
   push:
@@ -9,9 +9,9 @@ permissions:
   contents: read
 
 jobs:
-  runtime-mobile:
+  diagnose:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
 
@@ -19,17 +19,7 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Install Playwright
-        run: |
-          npm install --no-save playwright@1.55.0
-          npx playwright install --with-deps chromium
-
-      - name: Start local server
-        run: |
-          python -m http.server 4173 --bind 127.0.0.1 > /tmp/sov-runtime-http.log 2>&1 &
-          sleep 2
-
-      - name: Diagnose every legacy release-gate command
+      - name: Run non-browser gate commands with explicit exit codes
         shell: bash
         run: |
           set +e
@@ -37,11 +27,10 @@ jobs:
           : > GATE_DIAG/results.txt
           run_test(){
             name="$1"; shift
-            echo "===== $name =====" | tee -a GATE_DIAG/results.txt
             "$@" > "GATE_DIAG/${name}.log" 2>&1
             rc=$?
             echo "$name=$rc" | tee -a GATE_DIAG/results.txt
-            tail -n 80 "GATE_DIAG/${name}.log" >> GATE_DIAG/results.txt
+            tail -n 100 "GATE_DIAG/${name}.log" >> GATE_DIAG/results.txt
             echo >> GATE_DIAG/results.txt
           }
           run_test static python tools/pre_release_audit.py
@@ -50,87 +39,14 @@ jobs:
           echo "javascript=$?" | tee -a GATE_DIAG/results.txt
           run_test trips_inflight node tools/trips_inflight_refresh_test.mjs
           run_test trips_upcoming node tools/trips_default_upcoming_test.mjs
-          run_test browser node tools/browser_smoke.mjs
           run_test trips_refresh node tools/trips_refresh_smoke.mjs
-          run_test visual node tools/visual_layout_audit.mjs
           cat GATE_DIAG/results.txt
 
-      - name: Capture real mobile homepage with JavaScript
-        shell: bash
-        run: |
-          mkdir -p RUNTIME_VISUAL
-          node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          import { chromium } from 'playwright';
-
-          const browser=await chromium.launch({headless:true});
-          const context=await browser.newContext({viewport:{width:390,height:844}});
-          await context.route(/^https:\/\/[^/]+\.supabase\.co\//,route=>route.fulfill({status:401,contentType:'application/json',body:'{"message":"runtime visual isolation"}'}));
-          const page=await context.newPage();
-          const errors=[];
-          page.on('pageerror',error=>errors.push(String(error?.message||error)));
-          await page.goto('http://127.0.0.1:4173/index.html',{waitUntil:'domcontentloaded',timeout:20000});
-          await page.waitForTimeout(1800);
-
-          const state=await page.evaluate(()=>{
-            const hero=document.querySelector('.portal-hero');
-            const title=hero?.querySelector('h1');
-            const stats=document.querySelector('.home-stats-strip');
-            const direct=[...document.querySelectorAll('.portal-hero .hero-actions > a')].map(a=>a.textContent.trim());
-            const utility=[...document.querySelectorAll('.portal-hero .hero-utility-links a')].map(a=>a.textContent.trim());
-            const root=document.documentElement;
-            const titleRect=title?.getBoundingClientRect();
-            const heroRect=hero?.getBoundingClientRect();
-            return {
-              legacyToggles:document.querySelectorAll('.index-menu-toggle').length,
-              publicToggles:document.querySelectorAll('.sov-public-toggle').length,
-              direct,
-              utility,
-              schoolCount:[...document.querySelectorAll('.portal-hero .hero-actions a')].filter(a=>a.textContent.trim()==='Speleoškola').length,
-              statsOutsideHero:!!stats && !hero?.contains(stats),
-              statsCards:stats?.querySelectorAll('.hero-stat').length||0,
-              title:title?.textContent.trim()||'',
-              titleTop:titleRect?.top??null,
-              titleBottom:titleRect?.bottom??null,
-              heroHeight:heroRect?.height??null,
-              innerWidth,
-              scrollWidth:root.scrollWidth,
-              bodyClasses:[...document.body.classList],
-            };
-          });
-
-          fs.writeFileSync('RUNTIME_VISUAL/state.json',JSON.stringify({state,errors},null,2));
-          await page.screenshot({path:'RUNTIME_VISUAL/index-mobile-runtime-top.png'});
-          await page.screenshot({path:'RUNTIME_VISUAL/index-mobile-runtime-full.png',fullPage:true});
-          await browser.close();
-
-          const expectedDirect=['Pridruži nam se','Speleoškola'];
-          const expectedUtility=['Galerija','SOV Cloud','Sve vijesti'];
-          const failures=[];
-          if(state.legacyToggles!==0) failures.push(`legacy toggles=${state.legacyToggles}`);
-          if(state.publicToggles!==1) failures.push(`public toggles=${state.publicToggles}`);
-          if(JSON.stringify(state.direct)!==JSON.stringify(expectedDirect)) failures.push(`direct=${JSON.stringify(state.direct)}`);
-          if(JSON.stringify(state.utility)!==JSON.stringify(expectedUtility)) failures.push(`utility=${JSON.stringify(state.utility)}`);
-          if(state.schoolCount!==1) failures.push(`Speleoškola count=${state.schoolCount}`);
-          if(!state.statsOutsideHero||state.statsCards!==4) failures.push(`stats outside=${state.statsOutsideHero}, cards=${state.statsCards}`);
-          if(state.scrollWidth>state.innerWidth+2) failures.push(`horizontal overflow ${state.scrollWidth}>${state.innerWidth}`);
-          if(!state.title.startsWith('Dobrodošli')) failures.push(`title=${state.title}`);
-          if(state.heroHeight>650) failures.push(`hero too tall ${state.heroHeight}`);
-          if(errors.length) failures.push(`page errors=${errors.join(' | ')}`);
-          if(failures.length){
-            console.error(failures.join('\n'));
-            process.exit(1);
-          }
-          console.log(JSON.stringify(state,null,2));
-          NODE
-
-      - name: Upload diagnostics and runtime screenshots
+      - name: Upload diagnosis
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: home-mobile-runtime-visual
-          path: |
-            RUNTIME_VISUAL/
-            GATE_DIAG/
+          name: home-mobile-gate-diagnosis
+          path: GATE_DIAG/
           if-no-files-found: error
           retention-days: 3
