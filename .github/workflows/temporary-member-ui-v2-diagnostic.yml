@@ -1,0 +1,38 @@
+name: Temporary Member UI V2 Diagnostic
+on:
+  push:
+    branches: [agent/member-ui-human-sweep-v2]
+  workflow_dispatch:
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Chromium
+        run: |
+          npm install --no-save --silent playwright@1.52.0 >/tmp/npm.log 2>&1
+          npx playwright install --with-deps chromium >/tmp/browser.log 2>&1
+      - name: Build diagnostic report
+        run: |
+          mkdir -p member-ui-v2-diagnostic
+          python3 -m http.server 4173 >/tmp/http.log 2>&1 &
+          cat > /tmp/diagnose.cjs <<'JS'
+          const { chromium }=require(process.cwd()+'/node_modules/playwright');
+          const fs=require('fs');
+          const targets=['dashboard.html','karta.html','predaj-novu-jamu.html','izleti-cloud.html','oruzarstvo.html','dokumenti.html','napisi-clanak.html','nacrt.html','tracking.html','index.html'];
+          const trips=[{id:'trip-1',start_date:'2026-08-08',end_date:'2026-08-09',title:'Ravni Dabar',leader_name:'Test',location_name:'Ravni Dabar',objective:'Istraživanje',description:'Opis',status:'planned',visibility:'club',trip_category:'Izlet',meta:{}}];
+          const bootstrap=`(()=>{window.__rpcCalls=0;const user={id:'u1',email:'test@example.com'};const profile={id:'u1',user_id:'u1',email:user.email,full_name:'Test Član',role:'webmaster',status:'approved',permissions:{can_manage_equipment:true,can_write_news:true,can_view_archive:true}};const result=data=>Promise.resolve({data,error:null,count:Array.isArray(data)?data.length:null});function query(data=[]){let q;q=new Proxy({}, {get(_t,p){if(p==='then')return(ok,bad)=>result(data).then(ok,bad);if(p==='catch')return bad=>result(data).catch(bad);if(p==='finally')return fn=>result(data).finally(fn);if(p==='single'||p==='maybeSingle')return()=>result(Array.isArray(data)?(data[0]||null):data);return()=>q}});return q}const client={rpc(name){window.__rpcCalls++;return query(name==='sov_list_trips_feed'?${JSON.stringify(trips)}:[])},from(name){return query(name==='profiles'?[profile]:[])},channel(){return{on(){return this},subscribe(){return this},unsubscribe(){return this}}},removeChannel(){},storage:{from(){return{upload(){return result({path:'x'})},remove(){return result([])},list(){return result([])},download(){return result(new Blob())},getPublicUrl(){return{data:{publicUrl:'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=='}}}}}},auth:{getSession(){return result({session:{user}})},getUser(){return result({user})},signOut(){return result(null)},onAuthStateChange(){return{data:{subscription:{unsubscribe(){}}}}}}};window.supabase={createClient(){return client}};const base={ready:async()=>true,requireApproved:async()=>user,getClient:()=>client,getProfile:async()=>profile,getUser:async()=>user,getSession:async()=>({user}),logout:async()=>true,isApproved:async()=>true,getRole:async()=>profile.role,getPermissions:async()=>profile.permissions,hasRole:async()=>true,hasAnyRole:async()=>true};window.SOVAuth=new Proxy(base,{get(t,p){if(p in t)return t[p];return async()=>null}})})();`;
+          (async()=>{const browser=await chromium.launch({headless:true});const report=[];for(const path of targets){const context=await browser.newContext({viewport:{width:390,height:844}});await context.route('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2*',r=>r.fulfill({status:200,contentType:'application/javascript',body:bootstrap}));await context.route('**/assets/auth.js*',r=>r.fulfill({status:200,contentType:'application/javascript',body:'/* stubbed */'}));const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));let status=null,navError=null;try{const res=await page.goto('http://127.0.0.1:4173/'+path,{waitUntil:'domcontentloaded',timeout:30000});status=res&&res.status();await page.waitForTimeout(path==='izleti-cloud.html'?3600:1800)}catch(e){navError=e.message}let metrics={};try{metrics=await page.evaluate(()=>({url:location.pathname,scrollWidth:document.documentElement.scrollWidth,clientWidth:document.documentElement.clientWidth,rpcCalls:window.__rpcCalls||0,tripsCss:document.querySelectorAll('link[data-sov-trips-human]').length,tripsJs:document.querySelectorAll('script[data-sov-trips-human]').length,bodyVisibility:getComputedStyle(document.body).visibility,title:document.title}))}catch(e){metrics.evalError=e.message}report.push({path,status,navError,errors,metrics});try{await page.screenshot({path:'member-ui-v2-diagnostic/'+path.replace('.html','')+'.png',fullPage:true})}catch(e){}await context.close()}await browser.close();fs.writeFileSync('member-ui-v2-diagnostic/report.json',JSON.stringify(report,null,2));console.log('Diagnostic pages:',report.length)})().catch(e=>{fs.writeFileSync('member-ui-v2-diagnostic/fatal.txt',e.stack||String(e));process.exitCode=1});
+          JS
+          node /tmp/diagnose.cjs
+      - name: Upload diagnostic
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: member-ui-v2-diagnostic
+          path: member-ui-v2-diagnostic
