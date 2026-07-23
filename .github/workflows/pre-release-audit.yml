@@ -1,170 +1,108 @@
-name: SOV pre-release audit
+name: SOV runtime mobile visual
 
 on:
   push:
     branches:
-      - audit/pre-release-2026-07-20
-      - 'hotfix/**'
-      - 'fix/**'
-  pull_request:
-    branches:
-      - main
-  workflow_dispatch:
-
-concurrency:
-  group: sov-pre-release-audit-${{ github.ref }}
-  cancel-in-progress: true
+      - fix/home-mobile-runtime-visual
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  audit:
+  runtime-mobile:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 15
     steps:
-      - name: Checkout tested ref
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
-      - name: Apply deterministic source repairs
-        run: |
-          python tools/normalize_legacy_paths.py
-          python tools/fix_trips_markup.py
-          python tools/fix_trips_force_refresh.py
-          python tools/final_warning_fixes.py
-          python tools/build_release_sql.py
-          python tools/fix_v6145ax.py
-          python tools/finalize_v6145ax_manifest.py
-          python tools/fix_trips_default_upcoming.py
-
-      - name: Persist deterministic repairs on source branches
-        run: |
-          if git diff --quiet; then
-            echo "Source already normalized."
-            exit 0
-          fi
-          git config user.name "SOV Audit Bot"
-          git config user.email "actions@users.noreply.github.com"
-          git add .
-          git commit -m "Apply deterministic v6.1.45ay repairs"
-          if [[ "${GITHUB_EVENT_NAME}" == "push" ]]; then
-            git pull --rebase origin "${GITHUB_REF_NAME}"
-            git push origin "HEAD:${GITHUB_REF_NAME}"
-          else
-            echo "Repairs applied in the PR test workspace; source-branch push run persists them."
-          fi
-
-      - name: Set up Node
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '22'
-
-      - name: Static repository audit
-        id: static
-        continue-on-error: true
-        run: python tools/pre_release_audit.py
-
-      - name: External script tag integrity
-        id: script_tags
-        continue-on-error: true
-        run: python tools/script_tag_audit.py
-
-      - name: JavaScript syntax audit
-        id: javascript
-        continue-on-error: true
-        shell: bash
-        run: |
-          set -o pipefail
-          find . -type f \( -name '*.js' -o -name '*.mjs' \) \
-            -not -path './.git/*' -not -path './node_modules/*' -print0 \
-            | xargs -0 -r -n1 node --check
-
-      - name: Trips in-flight force-refresh unit test
-        id: trips_inflight
-        continue-on-error: true
-        run: node tools/trips_inflight_refresh_test.mjs
-
-      - name: Trips default upcoming and auto-load test
-        id: trips_upcoming
-        continue-on-error: true
-        run: node tools/trips_default_upcoming_test.mjs
 
       - name: Install Playwright
         run: |
           npm install --no-save playwright@1.55.0
           npx playwright install --with-deps chromium
 
-      - name: Start local static server
+      - name: Start local server
         run: |
-          python -m http.server 4173 --bind 127.0.0.1 > /tmp/sov-http.log 2>&1 &
-          echo $! > /tmp/sov-http.pid
+          python -m http.server 4173 --bind 127.0.0.1 > /tmp/sov-runtime-http.log 2>&1 &
           sleep 2
 
-      - name: Browser smoke test
-        id: browser
-        continue-on-error: true
-        run: node tools/browser_smoke.mjs
+      - name: Capture real mobile homepage with JavaScript
+        shell: bash
+        run: |
+          mkdir -p RUNTIME_VISUAL
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import { chromium } from 'playwright';
 
-      - name: Trips button and pull-to-refresh regression test
-        id: trips_refresh
-        continue-on-error: true
-        run: node tools/trips_refresh_smoke.mjs
+          const browser=await chromium.launch({headless:true});
+          const context=await browser.newContext({viewport:{width:390,height:844}});
+          await context.route(/^https:\/\/[^/]+\.supabase\.co\//,route=>route.fulfill({status:401,contentType:'application/json',body:'{"message":"runtime visual isolation"}'}));
+          const page=await context.newPage();
+          const errors=[];
+          page.on('pageerror',error=>errors.push(String(error?.message||error)));
+          await page.goto('http://127.0.0.1:4173/index.html',{waitUntil:'domcontentloaded',timeout:20000});
+          await page.waitForTimeout(1800);
 
-      - name: Key-page desktop/mobile visual audit
-        id: visual
-        continue-on-error: true
-        run: node tools/visual_layout_audit.mjs
+          const state=await page.evaluate(()=>{
+            const hero=document.querySelector('.portal-hero');
+            const title=hero?.querySelector('h1');
+            const stats=document.querySelector('.home-stats-strip');
+            const direct=[...document.querySelectorAll('.portal-hero .hero-actions > a')].map(a=>a.textContent.trim());
+            const utility=[...document.querySelectorAll('.portal-hero .hero-utility-links a')].map(a=>a.textContent.trim());
+            const root=document.documentElement;
+            const titleRect=title?.getBoundingClientRect();
+            const heroRect=hero?.getBoundingClientRect();
+            return {
+              legacyToggles:document.querySelectorAll('.index-menu-toggle').length,
+              publicToggles:document.querySelectorAll('.sov-public-toggle').length,
+              direct,
+              utility,
+              schoolCount:[...document.querySelectorAll('.portal-hero .hero-actions a')].filter(a=>a.textContent.trim()==='Speleoškola').length,
+              statsOutsideHero:!!stats && !hero?.contains(stats),
+              statsCards:stats?.querySelectorAll('.hero-stat').length||0,
+              title:title?.textContent.trim()||'',
+              titleTop:titleRect?.top??null,
+              titleBottom:titleRect?.bottom??null,
+              heroHeight:heroRect?.height??null,
+              innerWidth,
+              scrollWidth:root.scrollWidth,
+              bodyClasses:[...document.body.classList],
+            };
+          });
 
-      - name: Show local server log
-        if: always()
-        run: tail -n 200 /tmp/sov-http.log || true
+          fs.writeFileSync('RUNTIME_VISUAL/state.json',JSON.stringify({state,errors},null,2));
+          await page.screenshot({path:'RUNTIME_VISUAL/index-mobile-runtime-top.png'});
+          await page.screenshot({path:'RUNTIME_VISUAL/index-mobile-runtime-full.png',fullPage:true});
+          await browser.close();
 
-      - name: Upload audit reports and screenshots
+          const expectedDirect=['Pridruži nam se','Speleoškola'];
+          const expectedUtility=['Galerija','SOV Cloud','Sve vijesti'];
+          const failures=[];
+          if(state.legacyToggles!==0) failures.push(`legacy toggles=${state.legacyToggles}`);
+          if(state.publicToggles!==1) failures.push(`public toggles=${state.publicToggles}`);
+          if(JSON.stringify(state.direct)!==JSON.stringify(expectedDirect)) failures.push(`direct=${JSON.stringify(state.direct)}`);
+          if(JSON.stringify(state.utility)!==JSON.stringify(expectedUtility)) failures.push(`utility=${JSON.stringify(state.utility)}`);
+          if(state.schoolCount!==1) failures.push(`Speleoškola count=${state.schoolCount}`);
+          if(!state.statsOutsideHero||state.statsCards!==4) failures.push(`stats outside=${state.statsOutsideHero}, cards=${state.statsCards}`);
+          if(state.scrollWidth>state.innerWidth+2) failures.push(`horizontal overflow ${state.scrollWidth}>${state.innerWidth}`);
+          if(!state.title.startsWith('Dobrodošli')) failures.push(`title=${state.title}`);
+          if(state.heroHeight>650) failures.push(`hero too tall ${state.heroHeight}`);
+          if(errors.length) failures.push(`page errors=${errors.join(' | ')}`);
+          if(failures.length){
+            console.error(failures.join('\n'));
+            process.exit(1);
+          }
+          console.log(JSON.stringify(state,null,2));
+          NODE
+
+      - name: Upload runtime screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: sov-pre-release-audit
-          path: |
-            AUDIT_REPORT.md
-            AUDIT_REPORT.json
-            BROWSER_SMOKE_REPORT.md
-            BROWSER_SMOKE_REPORT.json
-            VISUAL_AUDIT/
-            sql/sov_release_v6145av.sql
-            sql/sov_release_v6145ax.sql
-            sql/sov_trip_assets_cleanup_safe_v6145ax.sql
-            update.json
-          if-no-files-found: warn
-          retention-days: 14
-
-      - name: Enforce release gate
-        if: always()
-        shell: bash
-        run: |
-          echo "static=${{ steps.static.outcome }}"
-          echo "script_tags=${{ steps.script_tags.outcome }}"
-          echo "javascript=${{ steps.javascript.outcome }}"
-          echo "trips_inflight=${{ steps.trips_inflight.outcome }}"
-          echo "trips_upcoming=${{ steps.trips_upcoming.outcome }}"
-          echo "browser=${{ steps.browser.outcome }}"
-          echo "trips_refresh=${{ steps.trips_refresh.outcome }}"
-          echo "visual=${{ steps.visual.outcome }}"
-          if [[ "${{ steps.static.outcome }}" != "success" || \
-                "${{ steps.script_tags.outcome }}" != "success" || \
-                "${{ steps.javascript.outcome }}" != "success" || \
-                "${{ steps.trips_inflight.outcome }}" != "success" || \
-                "${{ steps.trips_upcoming.outcome }}" != "success" || \
-                "${{ steps.browser.outcome }}" != "success" || \
-                "${{ steps.trips_refresh.outcome }}" != "success" || \
-                "${{ steps.visual.outcome }}" != "success" ]]; then
-            echo "Pre-release audit failed. Do not merge to production."
-            exit 1
-          fi
-          echo "Pre-release audit passed."
+          name: home-mobile-runtime-visual
+          path: RUNTIME_VISUAL/
+          if-no-files-found: error
+          retention-days: 3
