@@ -3,6 +3,7 @@ import base64, gzip, json, re, shutil, subprocess, sys
 from pathlib import Path
 
 ROOT = Path.cwd()
+BASE_SHA = '4a000ba3cf46cfdb38499f98fff0c3414d10ce74'
 EMBEDDED = ROOT / '.github/workflows/public-human-pass.yml'
 REPORT = ROOT / 'human-pass-build-report.txt'
 
@@ -19,7 +20,8 @@ def main() -> None:
     for payload, target in matches:
         Path(target).write_bytes(gzip.decompress(base64.b64decode(payload)))
 
-    run('git', 'fetch', 'origin', 'main:refs/remotes/origin/main')
+    run('git', 'cat-file', '-e', BASE_SHA + '^{commit}')
+    run('git', 'update-ref', 'refs/remotes/origin/main', BASE_SHA)
     shutil.copy2('/tmp/sov-human.css', ROOT / 'sov-human.css')
     run('git', 'config', 'user.name', 'vercel-human-pass')
     run('git', 'config', 'user.email', 'vercel-human-pass@invalid.local')
