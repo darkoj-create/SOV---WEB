@@ -4,6 +4,7 @@ import json
 import urllib.request
 from pathlib import Path
 
+# Snapshot latest fix/public-human-pass workflow runs.
 URL = "https://api.github.com/repos/darkoj-create/SOV---WEB/actions/runs?branch=fix%2Fpublic-human-pass&per_page=20"
 request = urllib.request.Request(
     URL,
