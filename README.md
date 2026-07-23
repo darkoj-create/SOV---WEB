@@ -1,4 +1,13 @@
-# SOV web build v6.1.48
+# SOV web build v6.1.49
+
+## v6.1.49 — Izleti single-loader hotfix
+
+- uklonjen je dodatni `loadTrips` wrapper iz novog vizualnog sloja;
+- izvorna Izleti stranica ponovno je jedini vlasnik Supabase učitavanja, cachea i autosynca;
+- vizualni sloj više ne prepisuje refresh gumb niti pokreće vlastite pozive bazi;
+- uklonjena je MutationObserver DOM petlja na karticama;
+- human CSS i JS učitavaju se jednom, uz kratko skrivanje starog stila dok novi nije spreman;
+- release audit više nema write pristup i ne smije automatski prepisivati source ni vraćati staru verziju.
 
 ## v6.1.48 — Oružarstvo
 

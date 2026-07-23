@@ -2,10 +2,10 @@
 // Also injects the approved-member Nacrt Generator entry on the main Cloud dashboard.
 (function(){
   'use strict';
-  const FALLBACK_VERSION='6.1.47';
-  const FALLBACK_CACHE='6147-cloud-preuzimanja';
-  const FALLBACK_BUILD='sov-web-build-v6.1.47-cloud-preuzimanja';
-  const FALLBACK_NAME='v6.1.47-cloud-preuzimanja';
+  const FALLBACK_VERSION='6.1.49';
+  const FALLBACK_CACHE='6149-trips-single-loader';
+  const FALLBACK_BUILD='sov-web-build-v6.1.49-trips-single-loader';
+  const FALLBACK_NAME='v6.1.49-trips-single-loader';
   window.SOV_BUILD={version:FALLBACK_VERSION,versionName:FALLBACK_NAME,build:FALLBACK_BUILD,cacheBust:FALLBACK_CACHE};
 
   function safeSetText(sel,value){
@@ -39,30 +39,52 @@
     }catch(e){console.warn('Nacrt dashboard card skipped',e);}
   }
 
-  function injectTripsHumanLayer(){
+  function injectTripsHumanLayerOnce(){
     try{
       const path=String(location.pathname||'').toLowerCase();
-      if(!path.endsWith('/izleti-cloud.html')&&!path.endsWith('izleti-cloud.html')) return;
-      if(!document.querySelector('link[data-sov-trips-human]')){
-        const link=document.createElement('link');
-        link.rel='stylesheet';
-        link.href='assets/sov-trips-human-v6146.css?v=6.1.46';
-        link.setAttribute('data-sov-trips-human','');
-        document.head.appendChild(link);
-      }
-      if(!document.querySelector('script[data-sov-trips-human]')){
+      if(!path.endsWith('/izleti-cloud.html')&&!path.endsWith('izleti-cloud.html'))return;
+      if(window.__SOV_TRIPS_HUMAN_LAYER)return;
+      window.__SOV_TRIPS_HUMAN_LAYER=true;
+
+      const root=document.documentElement;
+      root.classList.add('sov-trips-style-pending');
+      const veil=document.createElement('style');
+      veil.id='sovTripsStyleVeil';
+      veil.textContent='html.sov-trips-style-pending body{visibility:hidden!important}';
+      document.head.appendChild(veil);
+
+      const reveal=()=>{
+        if(document.body)document.body.classList.add('sov-trips-human');
+        root.classList.remove('sov-trips-style-pending');
+        if(veil.isConnected)veil.remove();
+      };
+      const loadScript=()=>{
+        if(document.querySelector('script[data-sov-trips-human]'))return;
         const script=document.createElement('script');
-        script.src='assets/sov-trips-human-v6146.js?v=6.1.46';
+        script.src='assets/sov-trips-human-v6146.js?v=6.1.49';
         script.setAttribute('data-sov-trips-human','');
+        script.onload=reveal;
+        script.onerror=reveal;
         document.body.appendChild(script);
-      }
-    }catch(e){console.warn('Trips human layer skipped',e);}
+      };
+
+      const link=document.createElement('link');
+      link.rel='stylesheet';
+      link.href='assets/sov-trips-human-v6146.css?v=6.1.49';
+      link.setAttribute('data-sov-trips-human','');
+      link.onload=()=>{reveal();loadScript();};
+      link.onerror=()=>{reveal();loadScript();};
+      document.head.appendChild(link);
+      setTimeout(()=>{reveal();loadScript();},2500);
+    }catch(e){
+      document.documentElement.classList.remove('sov-trips-style-pending');
+      console.warn('Trips human layer skipped',e);
+    }
   }
 
   async function loadManifest(){
     applyVersion(FALLBACK_VERSION,FALLBACK_BUILD,FALLBACK_NAME);
     injectNacrtDashboardCard();
-    injectTripsHumanLayer();
     try{
       const res=await fetch('/update.json?cb='+Date.now(),{cache:'no-store'});
       if(!res.ok)throw new Error('HTTP '+res.status);
@@ -80,12 +102,11 @@
       window.dispatchEvent(new CustomEvent('sov:version',{detail:{ok:false,expected:FALLBACK_VERSION,error:String(err&&err.message||err)}}));
     }
     injectNacrtDashboardCard();
-    injectTripsHumanLayer();
   }
 
+  injectTripsHumanLayerOnce();
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',loadManifest);
   else loadManifest();
   setTimeout(injectNacrtDashboardCard,350);
   setTimeout(injectNacrtDashboardCard,1200);
-  setTimeout(injectTripsHumanLayer,80);
 })();
