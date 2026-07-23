@@ -1,0 +1,99 @@
+name: Temporary Speleoškola visual check
+
+on:
+  push:
+    branches:
+      - agent/speleoskola-human-pass
+
+permissions:
+  contents: read
+
+jobs:
+  visual:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Start local server
+        run: |
+          python -m http.server 4173 --bind 127.0.0.1 > /tmp/school-http.log 2>&1 &
+          sleep 2
+      - name: Capture real desktop and mobile views
+        run: |
+          mkdir -p SCHOOL_VISUAL
+          node <<'JS'
+          const { chromium } = require('playwright');
+          const fs = require('fs');
+          (async()=>{
+            const browser = await chromium.launch({headless:true});
+            const cases = [
+              {name:'desktop', viewport:{width:1440,height:1000}},
+              {name:'mobile', viewport:{width:390,height:844}, isMobile:true, hasTouch:true},
+            ];
+            const report=[];
+            for (const item of cases){
+              const context=await browser.newContext({viewport:item.viewport,isMobile:!!item.isMobile,hasTouch:!!item.hasTouch,javaScriptEnabled:true});
+              const page=await context.newPage();
+              const consoleErrors=[];
+              const failedRequests=[];
+              page.on('console',msg=>{if(msg.type()==='error') consoleErrors.push(msg.text())});
+              page.on('pageerror',err=>consoleErrors.push(err.message));
+              page.on('requestfailed',request=>failedRequests.push(`${request.url()} :: ${request.failure()?.errorText||'failed'}`));
+              const response=await page.goto('http://127.0.0.1:4173/speleoskola.html',{waitUntil:'networkidle',timeout:30000});
+              await page.screenshot({path:`SCHOOL_VISUAL/speleoskola-${item.name}.png`,fullPage:true});
+              const layout=await page.evaluate(()=>({
+                title:document.title,
+                width:innerWidth,
+                scrollWidth:document.documentElement.scrollWidth,
+                height:document.documentElement.scrollHeight,
+                heroTitle:document.querySelector('.sov-school-hero h1')?.textContent?.trim()||'',
+                heroRect:document.querySelector('.sov-school-hero h1')?.getBoundingClientRect().toJSON()||null,
+                navCount:document.querySelectorAll('.sov-school-nav a').length,
+                imageCount:document.querySelectorAll('.sov-school-main img').length,
+                loadedImageCount:[...document.querySelectorAll('.sov-school-main img')].filter(img=>img.complete&&img.naturalWidth>0).length,
+                externalWpImages:[...document.images].map(img=>img.currentSrc||img.src).filter(src=>src.includes('i0.wp.com')),
+                statusText:document.querySelector('.sov-school-status h2')?.textContent?.trim()||'',
+                oldNewsCards:document.querySelectorAll('.news-card,.news-grid,.portal-hero').length,
+                actionCount:document.querySelectorAll('.sov-school-hero .sov-school-actions a').length,
+                mobileToggleCount:document.querySelectorAll('button[aria-label*="izbornik" i],button[aria-label*="menu" i],.nav-toggle,.mobile-nav-toggle').length,
+              }));
+              if(item.name==='mobile'){
+                const toggle=page.locator('button[aria-label*="izbornik" i],button[aria-label*="menu" i],.nav-toggle,.mobile-nav-toggle').first();
+                if(await toggle.count()){
+                  await toggle.click();
+                  await page.waitForTimeout(250);
+                  await page.screenshot({path:'SCHOOL_VISUAL/speleoskola-mobile-menu.png'});
+                }
+              }
+              report.push({name:item.name,status:response?.status()||0,...layout,consoleErrors,failedRequests});
+              if((response?.status()||0)>=400) throw new Error(`${item.name}: HTTP ${response?.status()}`);
+              if(layout.scrollWidth>layout.width+4) throw new Error(`${item.name}: horizontal overflow ${layout.scrollWidth} > ${layout.width}`);
+              if(!layout.heroTitle.includes('PowerPoint')) throw new Error(`${item.name}: hero title missing or replaced`);
+              if(!layout.statusText.includes('završena')) throw new Error(`${item.name}: closed-registration status missing`);
+              if(layout.imageCount!==layout.loadedImageCount) throw new Error(`${item.name}: only ${layout.loadedImageCount}/${layout.imageCount} content images loaded`);
+              if(layout.externalWpImages.length) throw new Error(`${item.name}: WordPress CDN images remain: ${layout.externalWpImages.join(', ')}`);
+              if(layout.oldNewsCards) throw new Error(`${item.name}: legacy news landing elements remain`);
+              if(layout.actionCount!==2) throw new Error(`${item.name}: unexpected hero CTA count ${layout.actionCount}`);
+              if(consoleErrors.length) throw new Error(`${item.name}: console errors: ${consoleErrors.join(' | ')}`);
+              if(failedRequests.length) throw new Error(`${item.name}: failed requests: ${failedRequests.join(' | ')}`);
+              await context.close();
+            }
+            await browser.close();
+            fs.writeFileSync('SCHOOL_VISUAL/report.json',JSON.stringify(report,null,2));
+            console.log(JSON.stringify(report,null,2));
+          })().catch(err=>{console.error(err);process.exit(1)});
+          JS
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: speleoskola-human-visual
+          path: SCHOOL_VISUAL/
+          if-no-files-found: error
+          retention-days: 3
