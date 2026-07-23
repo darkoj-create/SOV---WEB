@@ -1,4 +1,4 @@
-// SOV member article draft protection v6.1.50.
+// SOV member article draft protection v6.1.50a.
 (function(){
   'use strict';
   if(window.__SOV_ARTICLE_MEMBER_V6150)return;
