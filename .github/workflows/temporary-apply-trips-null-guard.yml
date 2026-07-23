@@ -1,0 +1,33 @@
+name: Temporary Apply Trips Null Guard
+on:
+  push:
+    branches: [agent/member-ui-human-sweep-v2]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/member-ui-human-sweep-v2
+      - name: Add safe file preview guard
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('izleti-cloud.html')
+          text=p.read_text(encoding='utf-8')
+          old="function renderFilePreview(){const el=$('filePreview'); if(!selectedTripFiles.length){el.innerHTML='';return}"
+          new="function renderFilePreview(){const el=$('filePreview'); if(!el)return; if(!selectedTripFiles.length){el.innerHTML='';return}"
+          if old in text:
+              p.write_text(text.replace(old,new,1),encoding='utf-8')
+          elif new not in text:
+              raise SystemExit('Expected renderFilePreview pattern not found')
+          PY
+          if git diff --quiet -- izleti-cloud.html; then exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add izleti-cloud.html
+          git commit -m "fix(trips): guard missing file preview element"
+          git push origin HEAD:agent/member-ui-human-sweep-v2
