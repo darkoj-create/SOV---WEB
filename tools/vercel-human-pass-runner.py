@@ -24,10 +24,23 @@ def main() -> None:
     script = script_path.read_text(encoding='utf-8')
     script = script.replace('if credit_count != 4:', 'if credit_count != 3:')
     script = script.replace('očekivana 4 potpisa fotografa', 'očekivana 3 potpisa fotografa')
+    old_extract = '''def extract_remote_urls(source: str) -> list[str]:
+    urls = re.findall(r"https?://(?:i0\\.wp\\.com/sovelebit\\.wordpress\\.com|sovelebit\\.wordpress\\.com)/[^\\"'<> )]+", source, re.I)
+    return sorted(set(html_lib.unescape(u) for u in urls))
+'''
+    new_extract = '''def extract_remote_urls(source: str) -> list[str]:
+    urls = re.findall(r"https?://(?:i0\\.wp\\.com/sovelebit\\.wordpress\\.com|sovelebit\\.wordpress\\.com)/[^\\"'<> )]+", source, re.I)
+    clean = (html_lib.unescape(u) for u in urls)
+    return sorted(set(u for u in clean if re.search(r"\\.(?:jpe?g|png|webp|gif|tiff?)(?:\\?|$)", u, re.I)))
+'''
+    if old_extract not in script:
+        raise RuntimeError('Image URL extractor hotfix target not found')
+    script = script.replace(old_extract, new_extract)
     script_path.write_text(script, encoding='utf-8')
 
     run('git', 'cat-file', '-e', BASE_SHA + '^{commit}')
     run('git', 'update-ref', 'refs/remotes/origin/main', BASE_SHA)
+    shutil.rmtree(ROOT / '.vercel', ignore_errors=True)
     shutil.copy2('/tmp/sov-human.css', ROOT / 'sov-human.css')
     run('git', 'config', 'user.name', 'vercel-human-pass')
     run('git', 'config', 'user.email', 'vercel-human-pass@invalid.local')
