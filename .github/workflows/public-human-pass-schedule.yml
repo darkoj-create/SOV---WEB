@@ -14,7 +14,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Restore embedded script and accepted CSS
+      - name: Restore and harden embedded script
         shell: bash
         run: |
           set -euo pipefail
@@ -23,12 +23,30 @@ jobs:
           python - <<'PY'
           import base64, gzip, re
           from pathlib import Path
+
           text = Path('/tmp/embedded-workflow.yml').read_text()
           matches = re.findall(r"printf '%s' '([^']+)' \| base64 -d \| gzip -d > (/tmp/[^\n]+)", text)
           if len(matches) != 2:
               raise SystemExit(f'Expected 2 embedded payloads, found {len(matches)}')
           for payload, target in matches:
               Path(target).write_bytes(gzip.decompress(base64.b64decode(payload)))
+
+          script_path = Path('/tmp/apply_public_human_pass.py')
+          script = script_path.read_text(encoding='utf-8')
+          script = script.replace('if credit_count != 4:', 'if credit_count != 3:')
+          script = script.replace('očekivana 4 potpisa fotografa', 'očekivana 3 potpisa fotografa')
+          old_extract = '''def extract_remote_urls(source: str) -> list[str]:
+              urls = re.findall(r"https?://(?:i0\\.wp\\.com/sovelebit\\.wordpress\\.com|sovelebit\\.wordpress\\.com)/[^\\"'<> )]+", source, re.I)
+              return sorted(set(html_lib.unescape(u) for u in urls))
+          '''
+          new_extract = '''def extract_remote_urls(source: str) -> list[str]:
+              urls = re.findall(r"https?://(?:i0\\.wp\\.com/sovelebit\\.wordpress\\.com|sovelebit\\.wordpress\\.com)/[^\\"'<> )]+", source, re.I)
+              clean = (html_lib.unescape(u) for u in urls)
+              return sorted(set(u for u in clean if re.search(r"\\.(?:jpe?g|png|webp|gif|tiff?)(?:\\?|$)", u, re.I)))
+          '''
+          if old_extract not in script:
+              raise SystemExit('Image URL extractor hotfix target not found')
+          script_path.write_text(script.replace(old_extract, new_extract), encoding='utf-8')
           PY
       - name: Build clean human-pass branch
         shell: bash
@@ -38,6 +56,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -B agent/public-human-pass origin/main
           rm .github/workflows/public-human-pass-schedule.yml
+          rm -rf .vercel
           cp /tmp/sov-human.css sov-human.css
           python /tmp/apply_public_human_pass.py
           git push --force origin HEAD:agent/public-human-pass
