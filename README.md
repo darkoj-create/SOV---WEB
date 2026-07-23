@@ -1,4 +1,14 @@
-# SOV web build v6.1.45ax
+# SOV web build v6.1.48
+
+## v6.1.48 — Oružarstvo
+
+- članski katalog opreme dobio je topliji, jednostavniji SOV izgled bez neon/SaaS estetike;
+- filteri, kategorije i podkategorije složeni su u čišći pregled;
+- korisnici vide samo dostupnost, bez točnih količina inventara;
+- košarica i zahtjevi rade urednije na desktopu i mobitelu;
+- katalog i zahtjevi automatski se osvježavaju pri povratku na stranicu, povratku interneta, Supabase promjenama i svakih 60 sekundi;
+- poslovna logika, Supabase tablice, RLS i autentikacija nisu mijenjani.
+
 
 ## v6.1.45ax — Gmail, Izleti, status i vizualno čišćenje
 
