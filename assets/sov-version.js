@@ -1,5 +1,5 @@
 // SOV Web version helper.
-// Also injects the approved-member Nacrt Generator entry on the main Cloud dashboard.
+// Also injects approved, page-specific member helpers.
 (function(){
   'use strict';
   const FALLBACK_VERSION='6.1.49';
@@ -21,6 +21,21 @@
     try{document.title=document.title.replace(/v\d+\.\d+(?:\.\d+)?/g,'v'+v);}catch(e){}
   }
 
+  function normalizeMemberPageCopy(){
+    try{
+      const path=String(location.pathname||'').toLowerCase();
+      const set=(title,selector='h1')=>{const el=document.querySelector(selector);if(el)el.textContent=title;document.title=title+' — SOV Velebit';};
+      if(path.endsWith('/dokumenti.html')||path.endsWith('dokumenti.html'))set('Dokumenti','.docs-hero h1');
+      else if(path.endsWith('/tracking.html')||path.endsWith('tracking.html'))set('Praćenje izleta','.tracking-hero-card h1');
+      else if(path.endsWith('/predaj-novu-jamu.html')||path.endsWith('predaj-novu-jamu.html'))set('Predaj novu jamu','.sf-hero h1');
+      else if(path.endsWith('/napisi-clanak.html')||path.endsWith('napisi-clanak.html'))set('Napiši članak','.hero h1');
+      else if(path.endsWith('/nacrt.html')||path.endsWith('nacrt.html')){
+        set('Nacrt','.nacrt-head h1');
+        if(document.body){document.body.style.setProperty('background','linear-gradient(180deg,#e9e2d5,#f5f0e7 52%,#e8e0d2)','important');document.body.style.setProperty('color','#252a24','important');}
+      }
+    }catch(e){console.warn('Member page copy cleanup skipped',e);}
+  }
+
   function injectNacrtDashboardCard(){
     try{
       if(!document.body||!document.body.classList.contains('dashboard-page')) return;
@@ -34,9 +49,21 @@
       card.setAttribute('data-dash-visible','user,editor,oruzar,arhivar,admin,webmaster');
       card.setAttribute('data-dash-ability','drawings');
       card.style.setProperty('--accent','rgba(171,196,255,.18)');
-      card.innerHTML='<div class="sov-icon">📐</div><h3>Nacrt Generator</h3><p>Učitaj TopoDroid ZIP i izradi semantički SOV nacrt s točnim materijalima, drvećem, kamenjem, scrapovima i Velebitovim logotipima.</p><div class="sov-module-foot"><span class="sov-tag">Cloud</span><span class="sov-soft">Otvori</span></div>';
+      card.innerHTML='<div class="sov-icon">📐</div><h3>Nacrt</h3><div class="sov-module-foot"><span class="sov-soft">Otvori</span></div>';
       grid.appendChild(card);
     }catch(e){console.warn('Nacrt dashboard card skipped',e);}
+  }
+
+  function injectArticleDraftHelper(){
+    try{
+      const path=String(location.pathname||'').toLowerCase();
+      if(!path.endsWith('/napisi-clanak.html')&&!path.endsWith('napisi-clanak.html'))return;
+      if(document.querySelector('script[data-sov-article-member]'))return;
+      const script=document.createElement('script');
+      script.src='assets/sov-article-member-v6150.js?v=6.1.50';
+      script.setAttribute('data-sov-article-member','');
+      document.body.appendChild(script);
+    }catch(e){console.warn('Article draft helper skipped',e);}
   }
 
   function injectTripsHumanLayerOnce(){
@@ -52,6 +79,11 @@
       veil.id='sovTripsStyleVeil';
       veil.textContent='html.sov-trips-style-pending body{visibility:hidden!important}';
       document.head.appendChild(veil);
+
+      const clean=document.createElement('style');
+      clean.id='sovTripsCopyCleanup';
+      clean.textContent='body.sov-trips-human .trips-hero-subtitle,body.sov-trips-human .heroText>.muted,body.sov-trips-human .heroStat,body.sov-trips-human .tripCard .desc,body.sov-trips-human .trip-assets-head p,body.sov-trips-human .trip-assets-note{display:none!important}body.sov-trips-human .tripCard{min-height:118px!important}';
+      document.head.appendChild(clean);
 
       const reveal=()=>{
         if(document.body)document.body.classList.add('sov-trips-human');
@@ -84,7 +116,9 @@
 
   async function loadManifest(){
     applyVersion(FALLBACK_VERSION,FALLBACK_BUILD,FALLBACK_NAME);
+    normalizeMemberPageCopy();
     injectNacrtDashboardCard();
+    injectArticleDraftHelper();
     try{
       const res=await fetch('/update.json?cb='+Date.now(),{cache:'no-store'});
       if(!res.ok)throw new Error('HTTP '+res.status);
@@ -101,7 +135,9 @@
       document.documentElement.dataset.sovVersionContract='unknown';
       window.dispatchEvent(new CustomEvent('sov:version',{detail:{ok:false,expected:FALLBACK_VERSION,error:String(err&&err.message||err)}}));
     }
+    normalizeMemberPageCopy();
     injectNacrtDashboardCard();
+    injectArticleDraftHelper();
   }
 
   injectTripsHumanLayerOnce();

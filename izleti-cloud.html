@@ -189,7 +189,7 @@ function plusDaysIso(n){const d=new Date(); d.setDate(d.getDate()+n); return d.t
 function todayHr(){return fmtDateSlash(todayIso())}
 function plusDaysHr(n){return fmtDateSlash(plusDaysIso(n))}
 function clearForm(){['leader','location','objective','weatherCity','description'].forEach(id=>$(id).value=''); $('startDate').value=todayHr(); $('endDate').value=plusDaysHr(1); $('formStatus').value='planned'; $('visibility').value='club'; if($('tripCategory')) $('tripCategory').value='Izlet'; selectedTripFiles=[]; renderFilePreview();}
-function renderFilePreview(){const el=$('filePreview'); if(!selectedTripFiles.length){el.innerHTML='';return} el.innerHTML=selectedTripFiles.map(f=>`<div class="fileRow"><span>${esc(f.name)}</span><span class="muted">${Math.round(f.size/1024)} KB</span></div>`).join('')}
+function renderFilePreview(){const el=$('filePreview'); if(!el)return; if(!selectedTripFiles.length){el.innerHTML='';return} el.innerHTML=selectedTripFiles.map(f=>`<div class="fileRow"><span>${esc(f.name)}</span><span class="muted">${Math.round(f.size/1024)} KB</span></div>`).join('')}
 function renderEditFilePreview(){const el=$('editFilePreview'); if(!el)return; if(!selectedTripFiles.length){el.innerHTML='';return} el.innerHTML=selectedTripFiles.map(f=>`<div class="fileRow"><span>${esc(f.name)}</span><span class="muted">${Math.round(f.size/1024)} KB</span></div>`).join('')}
 
 function setTripsFromRows(rows, opts={}){
