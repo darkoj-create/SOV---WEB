@@ -46,13 +46,14 @@ jobs:
               await page.waitForFunction(()=>document.body.classList.contains('sov-armory-human'));
               await page.waitForSelector('.cat-card');
               const first=await page.evaluate(()=>({path:location.pathname,width:innerWidth,scrollWidth:document.documentElement.scrollWidth,categories:document.querySelectorAll('.cat-card').length,css:document.querySelectorAll('link[data-sov-armory-human]').length,js:document.querySelectorAll('script[data-sov-armory-human]').length,captured:typeof window.__SOV_ARMORY_PAGE_INIT,sync:document.getElementById('armorySyncText')?.textContent||'',auth:typeof window.SOVAuth}));
-              if(first.path!='/oruzarstvo.html'||first.scrollWidth>first.width+1||first.categories<6||first.css!==3||first.js!==1||first.captured!=='function')throw new Error('bad initial '+JSON.stringify(first));
+              if(first.path!='/oruzarstvo.html'||first.scrollWidth>first.width+1||first.categories<6||first.css!==2||first.js!==1||first.captured!=='function')throw new Error('bad initial '+JSON.stringify(first));
               await page.screenshot({path:`armory-fast/${label}-categories.png`,fullPage:true});
-              await page.locator('.cat-card').filter({hasText:'Užad'}).click();await page.locator('.sub-card').first().click();await page.waitForSelector('.item-card');
+              await page.locator('.cat-card').filter({hasText:'Užad'}).click();await page.locator('.sub-card').filter({hasText:'Statička užad'}).click();await page.waitForSelector('.item-card');
               const txt=await page.locator('.item-card').first().innerText();if(/Dostupno\s+\d/i.test(txt))throw new Error('quantity visible '+txt);
-              await page.locator('.item-card [data-add]').first().click();await page.waitForTimeout(150);if(await page.locator('#drawer').evaluate(e=>e.classList.contains('open')))throw new Error('drawer remained open');
+              await page.locator('.item-card [data-add]:not([disabled])').first().click();await page.waitForTimeout(150);if(await page.locator('#drawer').evaluate(e=>e.classList.contains('open')))throw new Error('drawer remained open');
               await page.locator('#heroCart').click();await page.waitForTimeout(80);if(!(await page.locator('#drawer').evaluate(e=>e.classList.contains('open'))))throw new Error('drawer did not open');await page.keyboard.press('Escape');
               await page.locator('.tab[data-tab="requests"]').click();await page.waitForSelector('.request-card');
+              await page.locator('#armoryRefreshNow').click();await page.waitForFunction(()=>document.getElementById('armorySyncText')?.textContent.includes('Automatski osvježeno'));
               if(width<=680){if(await page.locator('.filters').isVisible())throw new Error('mobile filters visible');await page.locator('#armoryFilterToggle').click();if(!(await page.locator('.filters').isVisible()))throw new Error('mobile toggle failed')}
               await page.screenshot({path:`armory-fast/${label}-final.png`,fullPage:true});
               fs.writeFileSync(`armory-fast/${label}.json`,JSON.stringify({first,errors,requests},null,2));
