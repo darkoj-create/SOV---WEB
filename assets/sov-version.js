@@ -21,6 +21,21 @@
     try{document.title=document.title.replace(/v\d+\.\d+(?:\.\d+)?/g,'v'+v);}catch(e){}
   }
 
+  function normalizeMemberPageCopy(){
+    try{
+      const path=String(location.pathname||'').toLowerCase();
+      const set=(title,selector='h1')=>{const el=document.querySelector(selector);if(el)el.textContent=title;document.title=title+' — SOV Velebit';};
+      if(path.endsWith('/dokumenti.html')||path.endsWith('dokumenti.html'))set('Dokumenti','.docs-hero h1');
+      else if(path.endsWith('/tracking.html')||path.endsWith('tracking.html'))set('Praćenje izleta','.tracking-hero-card h1');
+      else if(path.endsWith('/predaj-novu-jamu.html')||path.endsWith('predaj-novu-jamu.html'))set('Predaj novu jamu','.sf-hero h1');
+      else if(path.endsWith('/napisi-clanak.html')||path.endsWith('napisi-clanak.html'))set('Napiši članak','.hero h1');
+      else if(path.endsWith('/nacrt.html')||path.endsWith('nacrt.html')){
+        set('Nacrt','.nacrt-head h1');
+        if(document.body){document.body.style.setProperty('background','linear-gradient(180deg,#e9e2d5,#f5f0e7 52%,#e8e0d2)','important');document.body.style.setProperty('color','#252a24','important');}
+      }
+    }catch(e){console.warn('Member page copy cleanup skipped',e);}
+  }
+
   function injectNacrtDashboardCard(){
     try{
       if(!document.body||!document.body.classList.contains('dashboard-page')) return;
@@ -101,6 +116,7 @@
 
   async function loadManifest(){
     applyVersion(FALLBACK_VERSION,FALLBACK_BUILD,FALLBACK_NAME);
+    normalizeMemberPageCopy();
     injectNacrtDashboardCard();
     injectArticleDraftHelper();
     try{
@@ -119,6 +135,7 @@
       document.documentElement.dataset.sovVersionContract='unknown';
       window.dispatchEvent(new CustomEvent('sov:version',{detail:{ok:false,expected:FALLBACK_VERSION,error:String(err&&err.message||err)}}));
     }
+    normalizeMemberPageCopy();
     injectNacrtDashboardCard();
     injectArticleDraftHelper();
   }
