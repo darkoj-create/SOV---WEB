@@ -1,9 +1,9 @@
 name: Temporary Speleoškola visual check
 
 on:
-  push:
+  pull_request:
     branches:
-      - agent/speleoskola-human-pass
+      - main
 
 permissions:
   contents: read
