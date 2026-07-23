@@ -1,23 +1,23 @@
 {
   "app": "SOV web",
-  "version": "6.1.47",
-  "versionName": "v6.1.47-cloud-preuzimanja",
-  "build": "sov-web-build-v6.1.47-cloud-preuzimanja",
-  "createdAt": "2026-07-21T03:20:00+02:00",
-  "cacheBust": "6147-cloud-preuzimanja",
-  "base": "sov-web-build-v6.1.46-objekti-izleti-karta-ui",
-  "requiresSql": true,
-  "sqlFiles": [
-    "SUPABASE_SYNC_APK_OBJEKTI_20260721.sql"
-  ],
-  "releaseType": "dashboard-downloads",
+  "version": "6.1.45ay",
+  "versionName": "v6.1.45ay-trips-auto-upcoming",
+  "build": "sov-web-build-v6.1.45ay-trips-auto-upcoming",
+  "createdAt": "2026-07-21T00:10:00+02:00",
+  "cacheBust": "6145ay-trips-auto-upcoming",
+  "base": "sov-web-build-v6.1.45ax-gmail-trips-status-visual",
+  "requiresSql": false,
+  "sqlFiles": [],
+  "releaseType": "trips-default-and-autoload",
   "changedFiles": [
-    "dashboard.html",
-    "assets/sov-refine-v6146.css",
-    "assets/sov-version.js",
+    "izleti-cloud.html",
+    "tools/fix_trips_default_upcoming.py",
+    "tools/trips_default_upcoming_test.mjs",
+    ".github/workflows/pre-release-audit.yml",
     "VERSION.txt",
     "BUILD_VERSION.txt",
+    "assets/sov-version.js",
     "update.json"
   ],
-  "notes": "Cloud naslovnica: dvije nove kartice za preuzimanje - SOV 2.0 Android (APK) i SOV Field Hub (Windows), s inline SVG ikonama, otvaraju se u novoj kartici."
+  "notes": "Trips now force-load fresh data on entry, keep cached rows visible while loading, auto-refresh in the background, and default to upcoming planned/active trips in the visible month."
 }
