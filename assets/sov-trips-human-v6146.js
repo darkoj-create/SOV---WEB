@@ -2,7 +2,8 @@
   'use strict';
   const $=id=>document.getElementById(id);
   const LAST_SYNC='sov_trips_last_sync_at_v6146';
-  let lastSync=Number(localStorage.getItem(LAST_SYNC)||0)||0;
+  let lastSync=0;
+  try{lastSync=Number(localStorage.getItem(LAST_SYNC)||0)||0;}catch(e){}
   let loadInFlight=null,loadQueued=false,autoTimer=null;
 
   function ensureSyncUi(){
@@ -20,7 +21,7 @@
     text.textContent=label||({ok:'Automatski osvježeno',syncing:'Osvježavam',offline:'Offline — spremljeni podaci',error:'Prikazujem zadnje podatke'}[mode]);
     ago.textContent=mode==='ok'&&lastSync?'· '+age():'';
   }
-  function markOk(){lastSync=Date.now();try{localStorage.setItem(LAST_SYNC,String(lastSync));}catch(e){}syncUi('ok');}
+  function markOk(){lastSync=Date.now();try{localStorage.setItem(LAST_SYNC,String(lastSync))}catch(e){}syncUi('ok');}
 
   function installLoadQueue(){
     if(typeof window.loadTrips!=='function'||window.loadTrips.__sovHumanQueue)return;
@@ -76,12 +77,19 @@
     if($('search'))$('search').placeholder='Traži lokaciju, voditelja ili cilj';
     if($('refreshBtn')){$('refreshBtn').textContent='Provjeri sad';$('refreshBtn').title='Izleti se inače osvježavaju automatski.';}
     label($('formStatus'),'planned','Planirano');label($('formStatus'),'draft','Nacrt');label($('formStatus'),'active','Aktivno');label($('formStatus'),'done','Završeno');label($('formStatus'),'cancelled','Otkazano');
-    ensureSyncUi();navigator.onLine===false?syncUi('offline'):(lastSync?syncUi('ok'):syncUi('syncing','Učitavam izlete'));
+    ensureSyncUi();
+    const statusText=String($('status')?.textContent||'').toLowerCase();
+    if(navigator.onLine===false)syncUi('offline');
+    else if(lastSync)syncUi('ok');
+    else if(statusText&&!statusText.includes('učitavam')&&!statusText.includes('nisu dostupni'))markOk();
+    else syncUi('syncing','Učitavam izlete');
     installDrawer();cards();const list=$('listWrap');if(list)new MutationObserver(cards).observe(list,{childList:true,subtree:true});
   }
   function autoSync(){
-    if(autoTimer)return;const run=()=>{if(document.visibilityState!=='hidden'&&navigator.onLine!==false)refresh('auto');};
-    autoTimer=setInterval(run,45000);window.addEventListener('focus',run);window.addEventListener('online',()=>{syncUi('syncing','Veza vraćena — osvježavam');run();});window.addEventListener('offline',()=>syncUi('offline'));document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')run();});setTimeout(run,2500);setInterval(()=>{if(lastSync&&navigator.onLine!==false&&!document.querySelector('.trips-sync-state.is-syncing'))syncUi('ok');},15000);
+    if(autoTimer)return;
+    autoTimer=setInterval(()=>{if(lastSync&&navigator.onLine!==false&&!document.querySelector('.trips-sync-state.is-syncing'))syncUi('ok');},15000);
+    window.addEventListener('online',()=>syncUi('syncing','Veza vraćena — osvježavam'));
+    window.addEventListener('offline',()=>syncUi('offline'));
   }
   function install(){friendlyUi();installLoadQueue();if($('refreshBtn'))$('refreshBtn').onclick=()=>refresh('button');autoSync();}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
