@@ -1,23 +1,21 @@
 {
   "app": "SOV web",
-  "version": "6.1.45ay",
-  "versionName": "v6.1.45ay-trips-auto-upcoming",
-  "build": "sov-web-build-v6.1.45ay-trips-auto-upcoming",
-  "createdAt": "2026-07-21T00:10:00+02:00",
-  "cacheBust": "6145ay-trips-auto-upcoming",
-  "base": "sov-web-build-v6.1.45ax-gmail-trips-status-visual",
+  "version": "6.1.49",
+  "versionName": "v6.1.49-trips-single-loader",
+  "build": "sov-web-build-v6.1.49-trips-single-loader",
+  "createdAt": "2026-07-23T20:40:00+02:00",
+  "cacheBust": "6149-trips-single-loader",
+  "base": "sov-web-build-v6.1.48",
   "requiresSql": false,
   "sqlFiles": [],
-  "releaseType": "trips-default-and-autoload",
+  "releaseType": "trips-single-loader-hotfix",
   "changedFiles": [
-    "izleti-cloud.html",
-    "tools/fix_trips_default_upcoming.py",
-    "tools/trips_default_upcoming_test.mjs",
-    ".github/workflows/pre-release-audit.yml",
+    "assets/sov-trips-human-v6146.js",
+    "assets/sov-version.js",
+    "README.md",
     "VERSION.txt",
     "BUILD_VERSION.txt",
-    "assets/sov-version.js",
     "update.json"
   ],
-  "notes": "Trips now force-load fresh data on entry, keep cached rows visible while loading, auto-refresh in the background, and default to upcoming planned/active trips in the visible month."
+  "notes": "Izleti human layer is presentation-only again: it no longer wraps loadTrips, starts database refreshes, replaces the original refresh handler, or loops on identical DOM mutations. The original page remains the single owner of Supabase loading, cache and autosync."
 }
