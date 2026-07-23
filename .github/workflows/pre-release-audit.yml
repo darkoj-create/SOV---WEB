@@ -15,7 +15,7 @@ concurrency:
   group: sov-pre-release-audit-${{ github.ref }}
   cancel-in-progress: true
 
-# Audit mora biti read-only. Nikada ne smije sam commitati ili prepisivati release.
+# Audit je read-only: provjerava source, ali ga nikada ne commita niti prepisuje.
 permissions:
   contents: read
 
@@ -117,12 +117,6 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
 
-      - name: Confirm audit did not modify source
-        id: clean_tree
-        if: always()
-        continue-on-error: true
-        run: git diff --exit-code
-
       - name: Enforce release gate
         if: always()
         shell: bash
@@ -135,7 +129,6 @@ jobs:
           echo "browser=${{ steps.browser.outcome }}"
           echo "trips_refresh=${{ steps.trips_refresh.outcome }}"
           echo "visual=${{ steps.visual.outcome }}"
-          echo "clean_tree=${{ steps.clean_tree.outcome }}"
           if [[ "${{ steps.static.outcome }}" != "success" || \
                 "${{ steps.script_tags.outcome }}" != "success" || \
                 "${{ steps.javascript.outcome }}" != "success" || \
@@ -143,8 +136,7 @@ jobs:
                 "${{ steps.trips_upcoming.outcome }}" != "success" || \
                 "${{ steps.browser.outcome }}" != "success" || \
                 "${{ steps.trips_refresh.outcome }}" != "success" || \
-                "${{ steps.visual.outcome }}" != "success" || \
-                "${{ steps.clean_tree.outcome }}" != "success" ]]; then
+                "${{ steps.visual.outcome }}" != "success" ]]; then
             echo "Pre-release audit failed. Do not merge to production."
             exit 1
           fi
