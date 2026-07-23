@@ -25,7 +25,7 @@
     if(!box||!text)return;
     box.classList.remove('is-syncing','is-offline','is-error');
     if(mode!=='ok')box.classList.add('is-'+mode);
-    text.textContent=label;
+    if(text.textContent!==label)text.textContent=label;
   }
 
   function syncFromOriginalStatus(){
@@ -46,8 +46,8 @@
     document.querySelectorAll('.tripCard').forEach(card=>{
       const open=card.querySelector('[data-open]');
       const mail=card.querySelector('[data-mail]');
-      if(open)open.textContent='Otvori';
-      if(mail)mail.textContent='Najava';
+      if(open&&open.textContent!=='Otvori')open.textContent='Otvori';
+      if(mail&&mail.textContent!=='Najava')mail.textContent='Najava';
       if(card.dataset.humanReady)return;
       card.dataset.humanReady='1';
       card.tabIndex=0;
@@ -84,7 +84,7 @@
 
   function label(select,value,text){
     const option=Array.from(select?.options||[]).find(item=>item.value===value);
-    if(option)option.textContent=text;
+    if(option&&option.textContent!==text)option.textContent=text;
   }
 
   function installObservers(){
@@ -111,10 +111,10 @@
       subtitle.textContent='Nadolazeći izleti, prijave, prijevoz i priprema za teren na jednom mjestu.';
       hero.appendChild(subtitle);
     }
-    if($('sideAddBtn'))$('sideAddBtn').textContent='+ Novi izlet';
+    if($('sideAddBtn')&&$('sideAddBtn').textContent!=='+ Novi izlet')$('sideAddBtn').textContent='+ Novi izlet';
     if($('search'))$('search').placeholder='Traži lokaciju, voditelja ili cilj';
     if($('refreshBtn')){
-      $('refreshBtn').textContent='Provjeri sad';
+      if($('refreshBtn').textContent!=='Provjeri sad')$('refreshBtn').textContent='Provjeri sad';
       $('refreshBtn').title='Izleti se osvježavaju izvornim mehanizmom stranice.';
     }
     label($('formStatus'),'planned','Planirano');
