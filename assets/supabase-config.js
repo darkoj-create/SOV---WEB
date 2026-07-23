@@ -33,7 +33,6 @@ window.SOV_TRIPS_WEBAPP_URL = window.SOV_TRIPS_WEBAPP_URL || 'https://script.goo
     };
 
     [
-      'assets/sov-armory-human-v6148.css?v=6.1.48',
       'assets/sov-armory-human-v6148-compat-a.css?v=6.1.48',
       'assets/sov-armory-human-v6148-compat-b.css?v=6.1.48'
     ].forEach(href=>{
