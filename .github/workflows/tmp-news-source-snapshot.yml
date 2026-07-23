@@ -1,0 +1,39 @@
+name: Temporary news source snapshot
+
+on:
+  push:
+    branches:
+      - agent/import-burinka-dabarski
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Collect news source files
+        run: |
+          mkdir -p SOURCE_SNAPSHOT/assets SOURCE_SNAPSHOT/novosti
+          cp index.html vijesti.html SOURCE_SNAPSHOT/
+          cp novosti/sve-sto-je-lijepo-kratko-traje-osim-puta-do-velebitaskog-duha.html SOURCE_SNAPSHOT/novosti/template.html
+          find assets -maxdepth 1 -type f \( -iname '*news*.js' -o -iname '*vijest*.js' -o -iname '*news*.json' -o -iname '*vijest*.json' \) -exec cp {} SOURCE_SNAPSHOT/assets/ \;
+          grep -RIlE "news-featured|news-side-card|news-card|from\(['\"](news|vijest)|news_articles|vijesti" --include='*.js' --include='*.json' assets . 2>/dev/null | head -100 > SOURCE_SNAPSHOT/matches.txt || true
+          while IFS= read -r f; do
+            [ -f "$f" ] || continue
+            safe=$(printf '%s' "$f" | sed 's#^\./##; s#/#__#g')
+            cp "$f" "SOURCE_SNAPSHOT/assets/$safe"
+          done < SOURCE_SNAPSHOT/matches.txt
+          grep -oE '<script[^>]+src="[^"]+"' index.html > SOURCE_SNAPSHOT/index-scripts.txt || true
+          grep -oE '<script[^>]+src="[^"]+"' vijesti.html > SOURCE_SNAPSHOT/vijesti-scripts.txt || true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: news-source-snapshot
+          path: SOURCE_SNAPSHOT/
+          if-no-files-found: error
+          retention-days: 3
