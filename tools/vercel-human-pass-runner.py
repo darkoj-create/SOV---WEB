@@ -19,6 +19,7 @@ def main() -> None:
     for payload, target in matches:
         Path(target).write_bytes(gzip.decompress(base64.b64decode(payload)))
 
+    run('git', 'fetch', 'origin', 'main:refs/remotes/origin/main')
     shutil.copy2('/tmp/sov-human.css', ROOT / 'sov-human.css')
     run('git', 'config', 'user.name', 'vercel-human-pass')
     run('git', 'config', 'user.email', 'vercel-human-pass@invalid.local')
