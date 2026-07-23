@@ -1,0 +1,133 @@
+/* SOV — "human pass" override
+   Cilj: maknuti neon + glassmorphism, vratiti toplu, fotografsku, malo prljavu estetiku.
+   Sve je override preko postojecih stilova — brisanjem ovog fajla vraca se staro stanje. */
+
+:root{
+  --sov-ink:#0d0b09;          /* topla crna, ne plavkasta */
+  --sov-ink-2:#171310;
+  --sov-ink-3:#221c17;
+  --sov-line:#332a22;
+  --sov-text:#ece7df;         /* topla bijela */
+  --sov-mute:#a89c8e;
+  --sov-accent:#e8b464;       /* karbitka / headlamp */
+  --sov-accent-2:#c8763a;     /* glina, blato */
+}
+
+/* ---- 1. GASENJE STAKLA ------------------------------------------------- */
+*,*::before,*::after{ backdrop-filter:none !important; -webkit-backdrop-filter:none !important; }
+
+/* ---- 2. PODLOGA -------------------------------------------------------- */
+html,body{ background:var(--sov-ink) !important; color:var(--sov-text) !important; }
+body::before,body::after{ display:none !important; }   /* neon aure iz sov-wow */
+
+/* ---- 3. NEON VAN ------------------------------------------------------- */
+.topbar,.nav,.nav-menu{
+  background:rgba(13,11,9,.94) !important;
+  border-color:var(--sov-line) !important;
+  box-shadow:none !important;
+}
+.navlinks a{ color:var(--sov-text) !important; }
+.navlinks a:hover{ color:var(--sov-accent) !important; }
+.navlinks a.login{
+  background:none !important; border:1px solid var(--sov-accent) !important;
+  color:var(--sov-accent) !important; border-radius:3px !important; font-weight:600 !important;
+}
+.navlinks a.login:hover{ background:var(--sov-accent) !important; color:var(--sov-ink) !important; }
+
+.hero-join,.yt-button,.news-edit-entry a,.expedition-banner-cta{
+  background:var(--sov-accent) !important;
+  color:var(--sov-ink) !important;
+  border-radius:3px !important;
+  box-shadow:none !important;
+  font-weight:700 !important;
+  letter-spacing:.01em !important;
+}
+.yt-button.secondary,.hero-ghost{
+  background:none !important; color:var(--sov-text) !important;
+  border:1px solid var(--sov-line) !important; border-radius:3px !important;
+}
+.section-head a{ color:var(--sov-accent) !important; }
+
+/* ---- 4. HERO S FOTKOM -------------------------------------------------- */
+.portal-hero{
+  position:relative !important; background:var(--sov-ink) !important;
+  padding:0 !important; border:0 !important; min-height:clamp(340px,58vh,560px);
+  display:flex !important; align-items:flex-end !important; overflow:hidden;
+}
+.hero-photo{
+  position:absolute; inset:0;
+  background-image:var(--hero-src); background-size:cover; background-position:center 42%;
+  filter:saturate(.9) contrast(1.05);
+}
+.hero-photo::after{
+  content:""; position:absolute; inset:0;
+  background:linear-gradient(180deg,rgba(13,11,9,.55) 0%,rgba(13,11,9,.25) 40%,rgba(13,11,9,.92) 100%);
+}
+.portal-hero-inner{
+  position:relative; z-index:2; width:100%;
+  max-width:1180px; margin:0 auto; padding:0 18px 44px !important;
+}
+.portal-hero h1{
+  font-size:clamp(2rem,5.2vw,3.6rem) !important; line-height:1.02 !important;
+  margin:0 0 12px !important; color:#fff !important;
+  text-shadow:0 2px 24px rgba(0,0,0,.7); letter-spacing:-.02em;
+}
+.portal-hero .portal-sub{
+  color:#ded6ca !important; max-width:56ch; font-size:1.02rem !important;
+  margin:0 0 20px !important;
+}
+.hero-actions{ display:flex; gap:10px; flex-wrap:wrap; }
+.hero-actions a{ padding:11px 20px !important; text-decoration:none; display:inline-block; }
+.hero-credit{
+  position:absolute; right:16px; bottom:10px; z-index:3;
+  font-size:.7rem; color:rgba(255,255,255,.5); letter-spacing:.04em;
+}
+
+/* ---- 5. UVODNI TEKST (vracen sa starog WP-a) --------------------------- */
+.intro-band{ background:var(--sov-ink) !important; padding:48px 18px 8px; }
+.intro-inner{ max-width:720px; margin:0 auto; }
+.intro-inner h2{
+  font-size:clamp(1.4rem,3.2vw,2rem) !important; margin:0 0 18px !important;
+  color:var(--sov-accent) !important; letter-spacing:-.01em;
+}
+.intro-inner p{
+  font-size:1.06rem; line-height:1.72; color:#d9d1c6; margin:0 0 16px;
+}
+.intro-inner .intro-lead{ font-size:1.2rem; color:#fff; font-weight:600; }
+.intro-inner .intro-sign{
+  font-size:1.35rem; color:var(--sov-accent); font-weight:700; margin-top:22px;
+}
+.intro-rule{ max-width:720px; margin:34px auto 0; border:0; border-top:1px solid var(--sov-line); }
+
+/* ---- 6. KARTICE: manje "produkt", vise "arhiva" ------------------------ */
+.news-card,.news-side-card,.news-featured,.link-card,.contact-card,.video-mini,.quick-inner a{
+  background:var(--sov-ink-2) !important;
+  border:1px solid var(--sov-line) !important;
+  border-radius:4px !important;
+  box-shadow:none !important;
+}
+.news-card:hover,.news-side-card:hover,.news-featured:hover,.link-card:hover,.video-mini:hover,.quick-inner a:hover{
+  border-color:var(--sov-accent) !important; transform:none !important;
+}
+.news-meta{ color:var(--sov-accent-2) !important; letter-spacing:.06em; text-transform:uppercase; font-size:.7rem !important; }
+.news-copy strong{ color:#fff !important; font-weight:700 !important; }
+.news-copy em{ color:var(--sov-mute) !important; font-style:normal !important; }
+.photo-tile{ border-radius:4px !important; }
+.photo-tile span{ background:rgba(13,11,9,.8) !important; border-radius:0 !important; }
+
+/* ---- 7. NASLOVI SEKCIJA ------------------------------------------------ */
+.section-head h2{
+  color:#fff !important; letter-spacing:-.01em;
+  border-bottom:1px solid var(--sov-line); padding-bottom:10px;
+}
+.gallery-band,.video-band,.contact-band,.links-band,.news-section,.quick-links{
+  background:var(--sov-ink) !important;
+}
+.eyebrow{ color:var(--sov-accent-2) !important; }
+.footer{ background:var(--sov-ink) !important; color:var(--sov-mute) !important; border-top:1px solid var(--sov-line); }
+
+/* ---- 8. POTPISI AUTORA ------------------------------------------------- */
+.byline{
+  display:block; margin-top:6px; font-size:.72rem; color:var(--sov-mute);
+  letter-spacing:.03em;
+}
