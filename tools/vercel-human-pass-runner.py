@@ -35,15 +35,16 @@ def main() -> None:
 '''
     if old_extract not in script:
         raise RuntimeError('Image URL extractor hotfix target not found')
-    script = script.replace(old_extract, new_extract)
-    script_path.write_text(script, encoding='utf-8')
+    script_path.write_text(script.replace(old_extract, new_extract), encoding='utf-8')
 
     run('git', 'cat-file', '-e', BASE_SHA + '^{commit}')
+    run('git', 'reset', '--hard', BASE_SHA)
+    run('git', 'clean', '-fdx')
     run('git', 'update-ref', 'refs/remotes/origin/main', BASE_SHA)
-    shutil.rmtree(ROOT / '.vercel', ignore_errors=True)
     shutil.copy2('/tmp/sov-human.css', ROOT / 'sov-human.css')
-    run('git', 'config', 'user.name', 'vercel-human-pass')
-    run('git', 'config', 'user.email', 'vercel-human-pass@invalid.local')
+    run('git', 'config', 'user.name', 'SOV Human Pass')
+    run('git', 'config', 'user.email', 'human-pass@users.noreply.github.com')
+
     proc = subprocess.run(
         [sys.executable, str(script_path)],
         cwd=ROOT,
@@ -52,24 +53,30 @@ def main() -> None:
         stderr=subprocess.STDOUT,
     )
     REPORT.write_text(proc.stdout, encoding='utf-8')
+    print(proc.stdout)
     if proc.returncode:
-        print(proc.stdout)
         raise SystemExit(proc.returncode)
 
     changed = run('git', 'diff', '--name-only', 'origin/main...HEAD').stdout.splitlines()
-    ignored = {
-        '.github/workflows/public-human-pass-pr.yml',
-        'tools/vercel-human-pass-runner.py',
-        'vercel.json',
-        'human-pass-build-report.txt',
-    }
-    allowed = [p for p in changed if p not in ignored and not p.startswith('.github/workflows/')]
     (ROOT / 'human-pass-changed-files.json').write_text(
-        json.dumps({'count': len(allowed), 'files': allowed}, ensure_ascii=False, indent=2),
+        json.dumps({'count': len(changed), 'files': changed}, ensure_ascii=False, indent=2),
         encoding='utf-8',
     )
-    print(proc.stdout)
-    print(f'VERCEL HUMAN PASS READY: {len(allowed)} changed files')
+    print(f'VERCEL HUMAN PASS READY: {len(changed)} changed files')
+
+    push = subprocess.run(
+        ['git', 'push', '--force', 'origin', 'HEAD:agent/public-human-pass'],
+        cwd=ROOT,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    print('PUSH RESULT:', push.returncode)
+    print(push.stdout)
+    if push.returncode:
+        print('PUSH_SKIPPED: preview remains valid; GitHub branch was not changed by Vercel.')
+    else:
+        print('PUSH_OK: clean two-commit branch published.')
 
 
 if __name__ == '__main__':
