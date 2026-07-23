@@ -1,4 +1,4 @@
-name: SOV runtime mobile visual
+name: SOV runtime mobile visual and gate diagnosis
 
 on:
   push:
@@ -11,7 +11,7 @@ permissions:
 jobs:
   runtime-mobile:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
 
@@ -28,6 +28,32 @@ jobs:
         run: |
           python -m http.server 4173 --bind 127.0.0.1 > /tmp/sov-runtime-http.log 2>&1 &
           sleep 2
+
+      - name: Diagnose every legacy release-gate command
+        shell: bash
+        run: |
+          set +e
+          mkdir -p GATE_DIAG
+          : > GATE_DIAG/results.txt
+          run_test(){
+            name="$1"; shift
+            echo "===== $name =====" | tee -a GATE_DIAG/results.txt
+            "$@" > "GATE_DIAG/${name}.log" 2>&1
+            rc=$?
+            echo "$name=$rc" | tee -a GATE_DIAG/results.txt
+            tail -n 80 "GATE_DIAG/${name}.log" >> GATE_DIAG/results.txt
+            echo >> GATE_DIAG/results.txt
+          }
+          run_test static python tools/pre_release_audit.py
+          run_test script_tags python tools/script_tag_audit.py
+          bash -lc 'set -o pipefail; find . -type f \( -name "*.js" -o -name "*.mjs" \) -not -path "./.git/*" -not -path "./node_modules/*" -print0 | xargs -0 -r -n1 node --check' > GATE_DIAG/javascript.log 2>&1
+          echo "javascript=$?" | tee -a GATE_DIAG/results.txt
+          run_test trips_inflight node tools/trips_inflight_refresh_test.mjs
+          run_test trips_upcoming node tools/trips_default_upcoming_test.mjs
+          run_test browser node tools/browser_smoke.mjs
+          run_test trips_refresh node tools/trips_refresh_smoke.mjs
+          run_test visual node tools/visual_layout_audit.mjs
+          cat GATE_DIAG/results.txt
 
       - name: Capture real mobile homepage with JavaScript
         shell: bash
@@ -98,11 +124,13 @@ jobs:
           console.log(JSON.stringify(state,null,2));
           NODE
 
-      - name: Upload runtime screenshots
+      - name: Upload diagnostics and runtime screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: home-mobile-runtime-visual
-          path: RUNTIME_VISUAL/
+          path: |
+            RUNTIME_VISUAL/
+            GATE_DIAG/
           if-no-files-found: error
           retention-days: 3
