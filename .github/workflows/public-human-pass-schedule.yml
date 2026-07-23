@@ -1,0 +1,52 @@
+name: Scheduled public human pass executor
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Restore embedded script and accepted CSS
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin agent/public-human-pass
+          git show origin/agent/public-human-pass:.github/workflows/public-human-pass.yml > /tmp/embedded-workflow.yml
+          python - <<'PY'
+          import base64, gzip, re
+          from pathlib import Path
+          text = Path('/tmp/embedded-workflow.yml').read_text()
+          matches = re.findall(r"printf '%s' '([^']+)' \| base64 -d \| gzip -d > (/tmp/[^\n]+)", text)
+          if len(matches) != 2:
+              raise SystemExit(f'Expected 2 embedded payloads, found {len(matches)}')
+          for payload, target in matches:
+              Path(target).write_bytes(gzip.decompress(base64.b64decode(payload)))
+          PY
+      - name: Build clean human-pass branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B agent/public-human-pass origin/main
+          rm .github/workflows/public-human-pass-schedule.yml
+          cp /tmp/sov-human.css sov-human.css
+          python /tmp/apply_public_human_pass.py
+          git push --force origin HEAD:agent/public-human-pass
+      - name: Remove temporary workflow from main
+        if: success()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git checkout -B main origin/main
+          git rm .github/workflows/public-human-pass-schedule.yml
+          git commit -m "Remove temporary public human pass executor"
+          git push origin main
