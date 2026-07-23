@@ -52,6 +52,7 @@ jobs:
           (out / 'latest-posts.json').write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding='utf-8')
           summary = []
           selected = []
+          wanted_ids = {6924, 6907}
           for post in data:
               title = html.unescape(re.sub('<[^>]+>', '', post.get('title', {}).get('rendered', ''))).strip()
               excerpt_html = post.get('excerpt', {}).get('rendered', '')
@@ -68,9 +69,10 @@ jobs:
                   'excerpt': excerpt, 'featured': featured,
               }
               summary.append(item)
-              lower = title.lower()
-              if 'burinc' in lower or 'dabars' in lower or 'kukov' in lower:
+              if post.get('id') in wanted_ids:
                   selected.append(post)
+          if {p.get('id') for p in selected} != wanted_ids:
+              raise SystemExit(f'Missing wanted posts: {wanted_ids - {p.get("id") for p in selected}}')
           (out / 'summary.json').write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding='utf-8')
           (out / 'selected-posts.json').write_text(json.dumps(selected, ensure_ascii=False, indent=2), encoding='utf-8')
 
