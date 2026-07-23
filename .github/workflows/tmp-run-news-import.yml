@@ -33,7 +33,9 @@ jobs:
       - name: Import the two latest WordPress articles
         id: importer
         continue-on-error: true
-        run: python tools/tmp_import_wp_news.py > WORDPRESS_IMPORT.log 2>&1
+        run: |
+          sed -i 's#https://sovelebit.wordpress.com/wp-json/wp/v2/posts?per_page=10&_embed#https://public-api.wordpress.com/wp/v2/sites/sovelebit.wordpress.com/posts?per_page=10\&_embed#' tools/tmp_import_wp_news.py
+          python tools/tmp_import_wp_news.py > WORDPRESS_IMPORT.log 2>&1
       - name: Upload importer log on failure
         if: steps.importer.outcome != 'success'
         uses: actions/upload-artifact@v4
