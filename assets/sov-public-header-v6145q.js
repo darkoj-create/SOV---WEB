@@ -1,3 +1,4 @@
+// Homepage retro loader is also backed by a direct HTML stylesheet link.
 (function(){
   const navItems=[
     ['index.html','Novosti'],
@@ -13,6 +14,16 @@
     if(p==='') p='index.html';
     return p;
   }
+  function loadHomepageRetroStyle(){
+    if(pageName()!=='index.html')return;
+    if(document.querySelector('link[data-sov-home-retro]'))return;
+    const link=document.createElement('link');
+    link.rel='stylesheet';
+    link.href='assets/sov-home-retro-v6151.css?v=6.1.51';
+    link.setAttribute('data-sov-home-retro','');
+    document.head.appendChild(link);
+  }
+  loadHomepageRetroStyle();
   function isActive(href,current){
     if(current==='index.html' && href==='index.html') return true;
     if(current==='vijest.html' && href==='vijesti.html') return true;
@@ -50,6 +61,7 @@
   }
   function normalizeHomepageHero(){
     if(pageName()!=='index.html') return;
+    document.body.classList.add('sov-home-retro');
     document.body.classList.remove('index-menu-open');
     document.querySelectorAll('.index-menu-toggle,.index-hero-chips').forEach(el=>el.remove());
     const hero=document.querySelector('.portal-hero');

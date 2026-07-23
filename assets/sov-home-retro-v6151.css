@@ -1,0 +1,448 @@
+/* SOV naslovnica — planinarski / klupski retro pass.
+   Samo naslovnica: body.sov-home-retro. Bez promjene podataka ili sadržaja vijesti. */
+
+body.sov-home-retro{
+  --home-paper:#eee8dc;
+  --home-paper-2:#e2dacb;
+  --home-paper-3:#f7f2e9;
+  --home-ink:#22231e;
+  --home-muted:#69665d;
+  --home-line:rgba(34,35,30,.24);
+  --home-forest:#1c3029;
+  --home-forest-2:#263b31;
+  --home-rust:#a45436;
+  --home-gold:#c59a56;
+  background:
+    radial-gradient(circle at 14% 4%,rgba(164,84,54,.055),transparent 26rem),
+    linear-gradient(180deg,var(--home-paper),var(--home-paper-3) 52%,var(--home-paper-2));
+  color:var(--home-ink);
+}
+
+body.sov-home-retro::before,
+body.sov-home-retro::after{display:none!important}
+
+body.sov-home-retro .topbar.sov-public-header{
+  background:#17241f!important;
+  border-bottom:1px solid rgba(197,154,86,.55)!important;
+  box-shadow:none!important;
+}
+body.sov-home-retro .sov-public-brand strong,
+body.sov-home-retro .sov-public-links a{color:#f1ecdf!important}
+body.sov-home-retro .sov-public-brand small{color:#c9bea8!important}
+body.sov-home-retro .sov-public-links a:hover,
+body.sov-home-retro .sov-public-links a[aria-current="page"]{color:#e0b66d!important}
+body.sov-home-retro .sov-public-links .member-link{
+  border-color:#d0aa68!important;
+  color:#e0b66d!important;
+  border-radius:2px!important;
+  background:transparent!important;
+}
+
+/* Hero: velika stvarna fotografija, naslov kao stari planinarski godišnjak. */
+body.sov-home-retro .portal-hero{
+  min-height:min(820px,88svh)!important;
+  background:#121914!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+}
+body.sov-home-retro .portal-hero::after{
+  content:"";
+  position:absolute;
+  left:0;right:0;bottom:0;
+  height:9px;
+  z-index:4;
+  background:linear-gradient(90deg,var(--home-rust) 0 28%,var(--home-gold) 28% 45%,var(--home-forest) 45% 100%);
+}
+body.sov-home-retro .hero-photo{
+  filter:saturate(.72) sepia(.10) contrast(1.06) brightness(.88)!important;
+  background-position:center 38%!important;
+}
+body.sov-home-retro .hero-photo::after{
+  background:
+    linear-gradient(90deg,rgba(9,14,11,.72) 0%,rgba(9,14,11,.30) 53%,rgba(9,14,11,.10) 75%),
+    linear-gradient(180deg,rgba(9,14,11,.08),rgba(9,14,11,.12) 42%,rgba(9,14,11,.88) 100%)!important;
+}
+body.sov-home-retro .portal-hero-inner{
+  width:min(1180px,calc(100% - 48px))!important;
+  max-width:1180px!important;
+  padding:150px 0 70px!important;
+}
+body.sov-home-retro .portal-hero-inner::before{
+  content:"SO PDS VELEBIT  ·  ZAGREB  ·  OD 1954.";
+  display:block;
+  width:max-content;
+  max-width:100%;
+  margin:0 0 20px;
+  padding:7px 10px 6px;
+  border-top:1px solid rgba(255,255,255,.58);
+  border-bottom:1px solid rgba(255,255,255,.38);
+  color:#f2d49d;
+  font-size:11px;
+  font-weight:850;
+  letter-spacing:.18em;
+  line-height:1.3;
+}
+body.sov-home-retro .portal-hero h1{
+  max-width:850px!important;
+  margin:0 0 28px!important;
+  font-family:Georgia,"Times New Roman",serif!important;
+  font-size:clamp(58px,8.8vw,116px)!important;
+  font-weight:500!important;
+  line-height:.89!important;
+  letter-spacing:-.058em!important;
+  color:#fffaf0!important;
+  text-shadow:0 3px 26px rgba(0,0,0,.52)!important;
+  text-wrap:balance;
+}
+body.sov-home-retro .portal-hero .hero-actions{
+  display:grid!important;
+  grid-template-columns:auto auto!important;
+  justify-content:start!important;
+  gap:10px 12px!important;
+}
+body.sov-home-retro .portal-hero .hero-actions>a{
+  min-height:48px!important;
+  padding:0 19px!important;
+  border-radius:2px!important;
+  box-shadow:none!important;
+  font-size:14px!important;
+  letter-spacing:.01em!important;
+}
+body.sov-home-retro .portal-hero .hero-join{
+  background:#d4a65f!important;
+  border:1px solid #d4a65f!important;
+  color:#1b211b!important;
+}
+body.sov-home-retro .portal-hero .hero-ghost{
+  background:rgba(18,25,20,.3)!important;
+  border:1px solid rgba(255,255,255,.58)!important;
+  color:#fff!important;
+}
+body.sov-home-retro .hero-utility-links{
+  grid-column:1/-1;
+  margin-top:8px!important;
+  gap:7px 20px!important;
+}
+body.sov-home-retro .hero-utility-links a{
+  color:#e6dfd2!important;
+  border-bottom-color:rgba(224,182,109,.62)!important;
+}
+body.sov-home-retro .hero-credit{color:rgba(255,255,255,.66)!important}
+
+/* Uvod: urednički, kao tekst iz starog planinarskog časopisa. */
+body.sov-home-retro .intro-band{
+  padding:0!important;
+  background:var(--home-paper)!important;
+  color:var(--home-ink)!important;
+}
+body.sov-home-retro .intro-inner{
+  width:min(1100px,calc(100% - 48px));
+  max-width:none!important;
+  margin:0 auto!important;
+  padding:92px 0 86px!important;
+  display:grid;
+  grid-template-columns:minmax(200px,.62fr) minmax(0,1.5fr);
+  column-gap:72px;
+}
+body.sov-home-retro .intro-inner h2{
+  position:relative;
+  margin:0!important;
+  padding-top:8px;
+  font-family:system-ui,-apple-system,"Segoe UI",sans-serif!important;
+  font-size:12px!important;
+  line-height:1.45!important;
+  letter-spacing:.18em!important;
+  text-transform:uppercase;
+  color:var(--home-rust)!important;
+}
+body.sov-home-retro .intro-inner h2::before{
+  content:"";
+  display:block;
+  width:58px;
+  height:2px;
+  margin-bottom:18px;
+  background:var(--home-rust);
+}
+body.sov-home-retro .intro-inner p{
+  grid-column:2;
+  max-width:780px;
+  margin:0 0 20px!important;
+  font-family:Georgia,"Times New Roman",serif!important;
+  font-size:clamp(19px,2vw,26px)!important;
+  line-height:1.58!important;
+  color:#35352f!important;
+}
+body.sov-home-retro .intro-inner h2+p{margin-top:0!important}
+body.sov-home-retro .intro-inner .intro-lead{
+  font-size:clamp(27px,3vw,42px)!important;
+  line-height:1.14!important;
+  color:var(--home-forest)!important;
+  font-style:italic;
+}
+body.sov-home-retro .intro-inner .intro-sign{
+  color:var(--home-rust)!important;
+  font-size:22px!important;
+  font-weight:700!important;
+}
+body.sov-home-retro .intro-rule{
+  width:min(1100px,calc(100% - 48px));
+  max-width:none!important;
+  margin:0 auto!important;
+  border-top:1px solid var(--home-line)!important;
+}
+
+/* Ekspedicija kao oglas s klupske oglasne ploče, ne marketinški banner. */
+body.sov-home-retro .expedition-banner-section{
+  padding:54px 24px!important;
+  background:var(--home-paper)!important;
+}
+body.sov-home-retro .expedition-banner-link{
+  width:min(1100px,100%);
+  margin:0 auto;
+  padding:10px!important;
+  border:1px solid rgba(34,35,30,.45)!important;
+  border-radius:0!important;
+  background:#d8d0c0!important;
+  box-shadow:8px 9px 0 rgba(28,48,41,.18)!important;
+}
+body.sov-home-retro .expedition-banner-link img{
+  display:block;
+  width:100%;
+  filter:saturate(.80) contrast(1.03) sepia(.05);
+}
+body.sov-home-retro .expedition-banner-cta{
+  right:22px!important;
+  bottom:22px!important;
+  border:1px solid #f4dfb6!important;
+  border-radius:1px!important;
+  background:#8d482f!important;
+  color:#fff7e8!important;
+}
+
+/* Novosti: klupski časopis / arhiva, bez SaaS kartica. */
+body.sov-home-retro .news-section{
+  padding:88px 24px 110px!important;
+  background:var(--home-paper-3)!important;
+  color:var(--home-ink)!important;
+}
+body.sov-home-retro .news-section>.section-head,
+body.sov-home-retro .news-section>.news-lead,
+body.sov-home-retro .news-section>.news-grid,
+body.sov-home-retro .news-section>.news-edit-entry{
+  width:min(1180px,100%);
+  max-width:1180px;
+  margin-left:auto!important;
+  margin-right:auto!important;
+}
+body.sov-home-retro .section-head{
+  align-items:flex-end!important;
+  margin-bottom:28px!important;
+  padding-bottom:14px;
+  border-bottom:1px solid var(--home-line)!important;
+}
+body.sov-home-retro .section-head h2{
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  font-family:Georgia,"Times New Roman",serif!important;
+  font-size:clamp(45px,6vw,76px)!important;
+  font-weight:500!important;
+  line-height:.92!important;
+  letter-spacing:-.05em!important;
+  color:var(--home-forest)!important;
+}
+body.sov-home-retro .section-head a{
+  color:var(--home-rust)!important;
+  font-size:13px!important;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+body.sov-home-retro .news-lead{
+  display:grid!important;
+  grid-template-columns:minmax(0,1.45fr) minmax(330px,.72fr)!important;
+  gap:14px!important;
+}
+body.sov-home-retro .news-featured,
+body.sov-home-retro .news-side-card,
+body.sov-home-retro .news-card{
+  overflow:hidden;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  color:var(--home-ink)!important;
+}
+body.sov-home-retro .news-featured{
+  display:grid!important;
+  grid-template-rows:minmax(410px,54vw) auto!important;
+  border-bottom:1px solid var(--home-line)!important;
+}
+body.sov-home-retro .news-featured .news-img{
+  min-height:0!important;
+  filter:saturate(.76) contrast(1.04);
+}
+body.sov-home-retro .news-featured .news-copy{
+  padding:20px 0 8px!important;
+}
+body.sov-home-retro .news-featured .news-copy strong{
+  max-width:19ch;
+  font-family:Georgia,"Times New Roman",serif!important;
+  font-size:clamp(32px,4vw,55px)!important;
+  font-weight:500!important;
+  line-height:1.02!important;
+  letter-spacing:-.04em!important;
+  color:var(--home-forest)!important;
+}
+body.sov-home-retro .news-stack{
+  display:grid!important;
+  grid-template-rows:1fr 1fr!important;
+  gap:14px!important;
+}
+body.sov-home-retro .news-side-card{
+  display:grid!important;
+  grid-template-columns:minmax(120px,.85fr) minmax(0,1.15fr)!important;
+  min-height:0!important;
+  border-bottom:1px solid var(--home-line)!important;
+}
+body.sov-home-retro .news-side-card .news-img{
+  min-height:220px!important;
+  filter:saturate(.72) contrast(1.04);
+}
+body.sov-home-retro .news-side-card .news-copy{
+  padding:13px 0 13px 16px!important;
+}
+body.sov-home-retro .news-copy .news-meta{
+  color:var(--home-rust)!important;
+  font-size:11px!important;
+  letter-spacing:.09em!important;
+}
+body.sov-home-retro .news-side-card .news-copy strong,
+body.sov-home-retro .news-card .news-copy strong{
+  font-family:Georgia,"Times New Roman",serif!important;
+  font-weight:500!important;
+  line-height:1.14!important;
+  color:var(--home-forest)!important;
+}
+body.sov-home-retro .news-side-card .news-copy strong{font-size:clamp(21px,2.1vw,30px)!important}
+body.sov-home-retro .news-grid{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:38px 18px!important;
+  margin-top:58px!important;
+}
+body.sov-home-retro .news-card{
+  display:grid!important;
+  grid-template-rows:auto 1fr!important;
+  padding-top:12px!important;
+  border-top:1px solid var(--home-line)!important;
+}
+body.sov-home-retro .news-card .news-img{
+  aspect-ratio:4/3!important;
+  min-height:0!important;
+  filter:saturate(.70) contrast(1.04);
+}
+body.sov-home-retro .news-card .news-copy{padding:14px 0 0!important}
+body.sov-home-retro .news-card .news-copy strong{font-size:24px!important}
+body.sov-home-retro .news-card:hover .news-img,
+body.sov-home-retro .news-side-card:hover .news-img,
+body.sov-home-retro .news-featured:hover .news-img{filter:saturate(.88) contrast(1.02)!important}
+
+/* Donje sekcije: izmjena papira i tamnog šumskog reza. */
+body.sov-home-retro .gallery-band{
+  background:var(--home-forest)!important;
+  color:#f3eee3!important;
+  border-top:8px solid var(--home-rust)!important;
+}
+body.sov-home-retro .gallery-band .section-head h2,
+body.sov-home-retro .contact-band .section-head h2{color:#f5efe3!important}
+body.sov-home-retro .gallery-band .section-head,
+body.sov-home-retro .contact-band .section-head{border-bottom-color:rgba(255,255,255,.22)!important}
+body.sov-home-retro .photo-tile{
+  border-radius:0!important;
+  border:1px solid rgba(255,255,255,.20)!important;
+  box-shadow:none!important;
+}
+body.sov-home-retro .photo-tile span{
+  background:linear-gradient(180deg,transparent,rgba(15,24,19,.88))!important;
+  font-family:Georgia,"Times New Roman",serif;
+}
+body.sov-home-retro .video-band,
+body.sov-home-retro .quick-links,
+body.sov-home-retro .links-band{
+  background:var(--home-paper)!important;
+  color:var(--home-ink)!important;
+}
+body.sov-home-retro .video-mini,
+body.sov-home-retro .quick-inner a,
+body.sov-home-retro .link-card{
+  border:0!important;
+  border-top:1px solid var(--home-line)!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  color:var(--home-ink)!important;
+}
+body.sov-home-retro .video-mini strong,
+body.sov-home-retro .quick-inner a strong,
+body.sov-home-retro .link-card strong{
+  font-family:Georgia,"Times New Roman",serif!important;
+  color:var(--home-forest)!important;
+}
+body.sov-home-retro .contact-band{
+  background:#26352d!important;
+  color:#f1eadc!important;
+  border-top:1px solid #18251f!important;
+}
+body.sov-home-retro .contact-card{
+  border:1px solid rgba(255,255,255,.2)!important;
+  border-radius:0!important;
+  background:rgba(255,255,255,.035)!important;
+  box-shadow:none!important;
+}
+body.sov-home-retro .footer{
+  background:#15231d!important;
+  color:#c8c0b2!important;
+  border-top:1px solid rgba(197,154,86,.42)!important;
+}
+
+@media(max-width:980px){
+  body.sov-home-retro .intro-inner{grid-template-columns:1fr;gap:28px}
+  body.sov-home-retro .intro-inner p{grid-column:1}
+  body.sov-home-retro .news-lead{grid-template-columns:1fr!important}
+  body.sov-home-retro .news-stack{grid-template-columns:1fr 1fr!important;grid-template-rows:auto!important}
+  body.sov-home-retro .news-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+
+@media(max-width:680px){
+  body.sov-home-retro .portal-hero{min-height:72svh!important}
+  body.sov-home-retro .portal-hero-inner{width:calc(100% - 28px)!important;padding:110px 0 38px!important}
+  body.sov-home-retro .portal-hero-inner::before{font-size:9px;letter-spacing:.13em}
+  body.sov-home-retro .portal-hero h1{max-width:8.7ch!important;font-size:clamp(48px,15vw,66px)!important;margin-bottom:22px!important}
+  body.sov-home-retro .portal-hero .hero-actions{width:100%!important;grid-template-columns:1fr 1fr!important}
+  body.sov-home-retro .portal-hero .hero-actions>a{width:100%!important;padding:0 8px!important}
+  body.sov-home-retro .intro-inner{width:calc(100% - 30px);padding:64px 0 58px!important}
+  body.sov-home-retro .intro-inner p{font-size:19px!important;line-height:1.62!important}
+  body.sov-home-retro .intro-inner .intro-lead{font-size:28px!important}
+  body.sov-home-retro .intro-rule{width:calc(100% - 30px)}
+  body.sov-home-retro .expedition-banner-section{padding:34px 15px!important}
+  body.sov-home-retro .expedition-banner-link{padding:6px!important;box-shadow:5px 6px 0 rgba(28,48,41,.16)!important}
+  body.sov-home-retro .expedition-banner-cta{position:static!important;display:flex!important;margin-top:6px!important;justify-content:center!important}
+  body.sov-home-retro .news-section{padding:64px 15px 82px!important}
+  body.sov-home-retro .section-head{align-items:flex-start!important;gap:12px!important}
+  body.sov-home-retro .section-head h2{font-size:48px!important}
+  body.sov-home-retro .news-featured{grid-template-rows:68vw auto!important}
+  body.sov-home-retro .news-stack{grid-template-columns:1fr!important}
+  body.sov-home-retro .news-side-card{grid-template-columns:42% 1fr!important}
+  body.sov-home-retro .news-side-card .news-img{min-height:165px!important}
+  body.sov-home-retro .news-grid{grid-template-columns:1fr!important;gap:34px!important;margin-top:44px!important}
+  body.sov-home-retro .news-card .news-copy strong{font-size:26px!important}
+}
+
+@media(max-width:390px){
+  body.sov-home-retro .portal-hero .hero-actions{grid-template-columns:1fr!important}
+  body.sov-home-retro .hero-utility-links{grid-column:1!important}
+  body.sov-home-retro .news-side-card{grid-template-columns:1fr!important}
+  body.sov-home-retro .news-side-card .news-img{min-height:210px!important}
+  body.sov-home-retro .news-side-card .news-copy{padding:14px 0!important}
+}
