@@ -1,3 +1,4 @@
+// Homepage retro loader is also backed by a direct HTML stylesheet link.
 (function(){
   const navItems=[
     ['index.html','Novosti'],
