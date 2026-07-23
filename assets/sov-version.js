@@ -1,5 +1,5 @@
 // SOV Web version helper.
-// Also injects the approved-member Nacrt Generator entry on the main Cloud dashboard.
+// Also injects approved, page-specific member helpers.
 (function(){
   'use strict';
   const FALLBACK_VERSION='6.1.49';
@@ -34,9 +34,21 @@
       card.setAttribute('data-dash-visible','user,editor,oruzar,arhivar,admin,webmaster');
       card.setAttribute('data-dash-ability','drawings');
       card.style.setProperty('--accent','rgba(171,196,255,.18)');
-      card.innerHTML='<div class="sov-icon">📐</div><h3>Nacrt Generator</h3><p>Učitaj TopoDroid ZIP i izradi semantički SOV nacrt s točnim materijalima, drvećem, kamenjem, scrapovima i Velebitovim logotipima.</p><div class="sov-module-foot"><span class="sov-tag">Cloud</span><span class="sov-soft">Otvori</span></div>';
+      card.innerHTML='<div class="sov-icon">📐</div><h3>Nacrt</h3><div class="sov-module-foot"><span class="sov-soft">Otvori</span></div>';
       grid.appendChild(card);
     }catch(e){console.warn('Nacrt dashboard card skipped',e);}
+  }
+
+  function injectArticleDraftHelper(){
+    try{
+      const path=String(location.pathname||'').toLowerCase();
+      if(!path.endsWith('/napisi-clanak.html')&&!path.endsWith('napisi-clanak.html'))return;
+      if(document.querySelector('script[data-sov-article-member]'))return;
+      const script=document.createElement('script');
+      script.src='assets/sov-article-member-v6150.js?v=6.1.50';
+      script.setAttribute('data-sov-article-member','');
+      document.body.appendChild(script);
+    }catch(e){console.warn('Article draft helper skipped',e);}
   }
 
   function injectTripsHumanLayerOnce(){
@@ -85,6 +97,7 @@
   async function loadManifest(){
     applyVersion(FALLBACK_VERSION,FALLBACK_BUILD,FALLBACK_NAME);
     injectNacrtDashboardCard();
+    injectArticleDraftHelper();
     try{
       const res=await fetch('/update.json?cb='+Date.now(),{cache:'no-store'});
       if(!res.ok)throw new Error('HTTP '+res.status);
@@ -102,6 +115,7 @@
       window.dispatchEvent(new CustomEvent('sov:version',{detail:{ok:false,expected:FALLBACK_VERSION,error:String(err&&err.message||err)}}));
     }
     injectNacrtDashboardCard();
+    injectArticleDraftHelper();
   }
 
   injectTripsHumanLayerOnce();
