@@ -5,6 +5,7 @@ on:
   pull_request:
     branches: [main]
 
+# Retrigger after the workflow exists on the PR head.
 jobs:
   diagnose:
     runs-on: ubuntu-latest
