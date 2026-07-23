@@ -24,7 +24,22 @@ jobs:
       - name: Start server and reuse visual script
         run: |
           python3 -m http.server 4173 >/tmp/sov-armory-server.log 2>&1 &
+          sleep 1
+          curl -fsS http://127.0.0.1:4173/assets/sov-armory-human-v6148.js >/dev/null
+          grep -q "member Oružarstvo human UI" assets/supabase-config.js
           sed -n "/cat > \/tmp\/armory-check.js <<'NODE'/,/^[[:space:]]*NODE$/p" .github/workflows/temp-armory-visual.yml | sed '1d;$d;s/^          //' > /tmp/armory-check.js
+          python3 - <<'PY'
+          p='/tmp/armory-check.js'
+          s=open(p,encoding='utf-8').read()
+          old="await page.waitForFunction(()=>document.body.classList.contains('sov-armory-human'));"
+          new="""await page.waitForTimeout(2500);
+            console.log('ARMORY_DEBUG '+JSON.stringify(await page.evaluate(()=>({path:location.pathname,ready:document.readyState,body:document.body.className,config:typeof window.SOV_SUPABASE_URL,captured:typeof window.__SOV_ARMORY_PAGE_INIT,links:[...document.querySelectorAll('link[data-sov-armory-human]')].map(x=>x.href),scripts:[...document.scripts].map(x=>x.src).filter(Boolean)}))));
+            console.log('ARMORY_ERRORS '+JSON.stringify(errors));
+            console.log('ARMORY_FAILED '+JSON.stringify(failed));
+            await page.waitForFunction(()=>document.body.classList.contains('sov-armory-human'),null,{timeout:5000});"""
+          if old not in s: raise SystemExit('wait marker not found')
+          open(p,'w',encoding='utf-8').write(s.replace(old,new))
+          PY
           mkdir -p armory-visual
           set +e
           NODE_PATH="$PWD/node_modules" node /tmp/armory-check.js > armory-visual/test.log 2>&1
