@@ -2,10 +2,10 @@
 // Also injects the approved-member Nacrt Generator entry on the main Cloud dashboard.
 (function(){
   'use strict';
-  const FALLBACK_VERSION='6.1.49';
-  const FALLBACK_CACHE='6149-trips-single-loader';
-  const FALLBACK_BUILD='sov-web-build-v6.1.49-trips-single-loader';
-  const FALLBACK_NAME='v6.1.49-trips-single-loader';
+  const FALLBACK_VERSION='6.1.45ay';
+  const FALLBACK_CACHE='6145ay-trips-auto-upcoming';
+  const FALLBACK_BUILD='sov-web-build-v6.1.45ay-trips-auto-upcoming';
+  const FALLBACK_NAME='v6.1.45ay-trips-auto-upcoming';
   window.SOV_BUILD={version:FALLBACK_VERSION,versionName:FALLBACK_NAME,build:FALLBACK_BUILD,cacheBust:FALLBACK_CACHE};
 
   function safeSetText(sel,value){
