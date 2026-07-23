@@ -104,13 +104,6 @@
 
   function install(){
     document.body.classList.add('sov-trips-human');
-    const hero=document.querySelector('.heroText');
-    if(hero&&!hero.querySelector('.trips-hero-subtitle')){
-      const subtitle=document.createElement('p');
-      subtitle.className='trips-hero-subtitle';
-      subtitle.textContent='Nadolazeći izleti, prijave, prijevoz i priprema za teren na jednom mjestu.';
-      hero.appendChild(subtitle);
-    }
     if($('sideAddBtn')&&$('sideAddBtn').textContent!=='+ Novi izlet')$('sideAddBtn').textContent='+ Novi izlet';
     if($('search'))$('search').placeholder='Traži lokaciju, voditelja ili cilj';
     if($('refreshBtn')){
