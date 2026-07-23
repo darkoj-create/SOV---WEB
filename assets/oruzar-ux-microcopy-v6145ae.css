@@ -22,17 +22,35 @@ body.clean-armory:has(#masterRoot)::before{display:none!important}
 body.clean-armory:has(#masterRoot) .cm-shell{
   width:min(1180px,calc(100% - 32px))!important;
   margin:0 auto!important;
-  padding:0 0 64px!important;
+  padding:0 0 56px!important;
 }
 body.clean-armory:has(#masterRoot) .sov-member-top{
   width:100%!important;
   margin-bottom:8px!important;
 }
+body.clean-armory:has(#masterRoot) .sov-member-brand-text{
+  display:flex!important;
+  flex-direction:column!important;
+  gap:2px!important;
+  font-size:0!important;
+}
+body.clean-armory:has(#masterRoot) .sov-member-brand-text strong,
+body.clean-armory:has(#masterRoot) .sov-member-brand-text small{display:none!important}
+body.clean-armory:has(#masterRoot) .sov-member-brand-text::before{
+  content:"SOV Velebit";
+  color:#252a24;
+  font:700 16px/1.05 Georgia,"Times New Roman",serif;
+}
+body.clean-armory:has(#masterRoot) .sov-member-brand-text::after{
+  content:"Oružarstvo";
+  color:#6d6b62;
+  font:700 12px/1.1 system-ui,-apple-system,"Segoe UI",sans-serif;
+}
 
 /* Quiet page heading instead of a giant dashboard hero. */
 body.clean-armory:has(#masterRoot) .cm-hero{
-  margin:0 0 20px!important;
-  padding:24px 0 18px!important;
+  margin:0 0 18px!important;
+  padding:22px 0 17px!important;
   border:0!important;
   border-bottom:1px solid var(--armory-line)!important;
   border-radius:0!important;
@@ -49,23 +67,23 @@ body.clean-armory:has(#masterRoot) .cm-hero::before{
   line-height:1.2;
   letter-spacing:.15em;
 }
+body.clean-armory:has(#masterRoot) .cm-hero::after{display:none!important}
 body.clean-armory:has(#masterRoot) .cm-hero h1{
   margin:0!important;
   color:var(--armory-forest)!important;
-  font-size:clamp(38px,5vw,56px)!important;
+  font-size:0!important;
   font-weight:760!important;
   line-height:.96!important;
   letter-spacing:-.05em!important;
 }
-body.clean-armory:has(#masterRoot) .cm-hero h1{font-size:0!important}
-body.clean-armory:has(#masterRoot) .cm-hero h1::after{content:"Oružarstvo";font-size:clamp(38px,5vw,56px)}
+body.clean-armory:has(#masterRoot) .cm-hero h1::after{content:"Oružarstvo";font-size:clamp(38px,5vw,54px)}
 body.clean-armory:has(#masterRoot) .cm-hero p,
 body.clean-armory:has(#masterRoot) .cm-hero .eyebrow,
 body.clean-armory:has(#masterRoot) .cm-kpis{display:none!important}
 
 /* Loading state should use the same calm visual language. */
 body.clean-armory:has(#masterRoot) .armory-db-loading{
-  min-height:180px!important;
+  min-height:170px!important;
   padding:24px!important;
   display:grid!important;
   align-content:center!important;
@@ -96,15 +114,15 @@ body.clean-armory:has(#masterRoot) .cm-grid-dashboard::before{
   font-weight:850;
 }
 body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card{
-  min-height:136px!important;
-  padding:20px!important;
+  min-height:126px!important;
+  padding:19px!important;
   display:grid!important;
   grid-template-columns:minmax(0,1fr) auto!important;
   grid-template-areas:"title action" "copy action"!important;
   align-content:center!important;
   align-items:center!important;
-  column-gap:22px!important;
-  row-gap:9px!important;
+  column-gap:20px!important;
+  row-gap:8px!important;
   overflow:hidden!important;
   border:1px solid var(--armory-line)!important;
   border-radius:5px!important;
@@ -125,7 +143,7 @@ body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card h2{
   grid-area:title;
   margin:0!important;
   color:var(--armory-forest)!important;
-  font-size:25px!important;
+  font-size:24px!important;
   font-weight:740!important;
   line-height:1.05!important;
   letter-spacing:-.035em!important;
@@ -154,18 +172,19 @@ body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card>span:not(.ico){
 }
 
 /* Posudbe are the daily primary action. */
-body.clean-armory:has(#masterRoot) .cm-card-posudbe{
+body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-posudbe{
+  order:1!important;
   grid-column:1/-1!important;
-  min-height:164px!important;
-  padding:24px 25px!important;
+  min-height:154px!important;
+  padding:23px 24px!important;
   background:var(--armory-forest)!important;
   border-color:var(--armory-forest)!important;
   color:#fffaf0!important;
   box-shadow:0 12px 24px rgba(25,59,50,.17)!important;
 }
-body.clean-armory:has(#masterRoot) .cm-card-posudbe:hover{background:var(--armory-forest-2)!important;border-color:var(--armory-forest-2)!important}
-body.clean-armory:has(#masterRoot) .cm-card-posudbe h2{color:#fffaf0!important;font-size:31px!important}
-body.clean-armory:has(#masterRoot) .cm-card-posudbe h2::before{
+body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-posudbe:hover{background:var(--armory-forest-2)!important;border-color:var(--armory-forest-2)!important}
+body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-posudbe h2{color:#fffaf0!important;font-size:31px!important}
+body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-posudbe h2::before{
   content:"GLAVNI POSAO";
   display:block;
   margin-bottom:7px;
@@ -174,19 +193,9 @@ body.clean-armory:has(#masterRoot) .cm-card-posudbe h2::before{
   font-weight:900;
   letter-spacing:.13em;
 }
-body.clean-armory:has(#masterRoot) .cm-card-posudbe p{font-size:0!important;color:#dbe7e1!important}
-body.clean-armory:has(#masterRoot) .cm-card-posudbe p b{
-  display:inline-flex;
-  align-items:baseline;
-  gap:5px;
-  margin:3px 9px 0 0;
-  color:#fff!important;
-  font-size:24px!important;
-  line-height:1!important;
-}
-body.clean-armory:has(#masterRoot) .cm-card-posudbe p b:first-child::after{content:" za izdati";color:#d9e3de;font-size:12px;font-weight:750}
-body.clean-armory:has(#masterRoot) .cm-card-posudbe p b:nth-of-type(2)::after{content:" vani";color:#d9e3de;font-size:12px;font-weight:750}
-body.clean-armory:has(#masterRoot) .cm-card-posudbe>span:not(.ico){
+body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-posudbe p{color:#dbe7e1!important;font-size:13px!important}
+body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-posudbe p b{color:#fff!important;font-size:22px!important;line-height:1!important}
+body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-posudbe>span:not(.ico){
   padding:11px 14px!important;
   border-color:#d6b16f!important;
   background:#e4bd77!important;
@@ -194,17 +203,14 @@ body.clean-armory:has(#masterRoot) .cm-card-posudbe>span:not(.ico){
 }
 
 /* Secondary tools: concise and equal. */
-body.clean-armory:has(#masterRoot) .cm-card-inventar p,
-body.clean-armory:has(#masterRoot) .cm-card-inventura p{font-size:0!important}
-body.clean-armory:has(#masterRoot) .cm-card-inventar p::after{content:"Pregled, pretraga i uređivanje sve opreme.";font-size:13px}
-body.clean-armory:has(#masterRoot) .cm-card-inventura p::after{content:"Brojanje i potvrda stvarnog stanja.";font-size:13px}
-body.clean-armory:has(#masterRoot) .cm-card-inventar>span:not(.ico),
-body.clean-armory:has(#masterRoot) .cm-card-inventura>span:not(.ico){font-size:0!important}
-body.clean-armory:has(#masterRoot) .cm-card-inventar>span:not(.ico)::after{content:"Otvori";font-size:12px}
-body.clean-armory:has(#masterRoot) .cm-card-inventura>span:not(.ico)::after{content:"Pokreni";font-size:12px}
+body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-inventar{order:2!important}
+body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-inventura{order:3!important}
+body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-inventar p,
+body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-inventura p{display:none!important}
 
 /* Exceptional legacy return is deliberately less prominent. */
-body.clean-armory:has(#masterRoot) .cm-card-return{
+body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-return{
+  order:4!important;
   grid-column:1/-1!important;
   min-height:76px!important;
   padding:14px 17px!important;
@@ -212,34 +218,34 @@ body.clean-armory:has(#masterRoot) .cm-card-return{
   background:rgba(255,253,247,.56)!important;
   box-shadow:none!important;
 }
-body.clean-armory:has(#masterRoot) .cm-card-return h2{font-size:0!important}
-body.clean-armory:has(#masterRoot) .cm-card-return h2::after{content:"Povrat bez otvorene posudbe";font-size:18px}
-body.clean-armory:has(#masterRoot) .cm-card-return p{font-size:0!important}
-body.clean-armory:has(#masterRoot) .cm-card-return p::after{content:"Koristi samo kada posudba ne postoji u sustavu.";font-size:12px}
-body.clean-armory:has(#masterRoot) .cm-card-return>span:not(.ico){font-size:0!important;background:transparent!important}
-body.clean-armory:has(#masterRoot) .cm-card-return>span:not(.ico)::after{content:"Zaprimi opremu";font-size:12px}
-body.clean-armory:has(#masterRoot) .cm-card-notes{display:none!important}
+body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-return h2{font-size:0!important}
+body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-return h2::after{content:"Povrat bez otvorene posudbe";font-size:18px}
+body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-return p{font-size:0!important}
+body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-return p::after{content:"Koristi samo kada posudba ne postoji u sustavu.";font-size:12px}
+body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-return>span:not(.ico){background:transparent!important}
+body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-notes{display:none!important}
 
 body.clean-armory:has(#masterRoot) .cm-card-button{cursor:pointer!important}
 body.clean-armory:has(#masterRoot) .cm-card:focus-visible{outline:3px solid var(--armory-rust)!important;outline-offset:3px!important}
 
 @media(max-width:760px){
-  body.clean-armory:has(#masterRoot) .cm-shell{width:min(100% - 20px,1180px)!important;padding-bottom:42px!important}
-  body.clean-armory:has(#masterRoot) .cm-hero{padding:16px 0 14px!important;margin-bottom:14px!important}
+  body.clean-armory:has(#masterRoot) .cm-shell{width:min(100% - 20px,1180px)!important;padding-bottom:40px!important}
+  body.clean-armory:has(#masterRoot) .sov-member-brand-text{display:none!important}
+  body.clean-armory:has(#masterRoot) .cm-hero{padding:15px 0 13px!important;margin-bottom:13px!important}
   body.clean-armory:has(#masterRoot) .cm-hero h1::after{font-size:39px!important}
   body.clean-armory:has(#masterRoot) .cm-grid-dashboard{grid-template-columns:1fr!important;gap:9px!important}
   body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card{
     grid-column:1!important;
-    min-height:104px!important;
+    min-height:100px!important;
     padding:16px!important;
     grid-template-columns:minmax(0,1fr) auto!important;
     column-gap:12px!important;
   }
-  body.clean-armory:has(#masterRoot) .cm-card-posudbe{min-height:145px!important;padding:19px!important}
-  body.clean-armory:has(#masterRoot) .cm-card-posudbe h2{font-size:28px!important}
+  body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-posudbe{min-height:138px!important;padding:18px!important}
+  body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-posudbe h2{font-size:28px!important}
   body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card h2{font-size:22px!important}
   body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card>span:not(.ico){padding:9px!important}
-  body.clean-armory:has(#masterRoot) .cm-card-return{min-height:82px!important}
+  body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-return{min-height:80px!important}
 }
 
 @media(max-width:430px){
@@ -249,5 +255,5 @@ body.clean-armory:has(#masterRoot) .cm-card:focus-visible{outline:3px solid var(
     align-items:start!important;
   }
   body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card>span:not(.ico){justify-self:start!important}
-  body.clean-armory:has(#masterRoot) .cm-card-posudbe p b{font-size:21px!important}
+  body.clean-armory:has(#masterRoot) .cm-grid-dashboard .cm-card-posudbe p b{font-size:20px!important}
 }
