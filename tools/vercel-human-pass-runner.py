@@ -3,7 +3,6 @@ import base64, gzip, json, re, shutil, subprocess, sys
 from pathlib import Path
 
 ROOT = Path.cwd()
-BASE_SHA = '4a000ba3cf46cfdb38499f98fff0c3414d10ce74'
 EMBEDDED = ROOT / '.github/workflows/public-human-pass.yml'
 REPORT = ROOT / 'human-pass-build-report.txt'
 
@@ -37,14 +36,41 @@ def main() -> None:
         raise RuntimeError('Image URL extractor hotfix target not found')
     script_path.write_text(script.replace(old_extract, new_extract), encoding='utf-8')
 
-    run('git', 'cat-file', '-e', BASE_SHA + '^{commit}')
-    run('git', 'reset', '--hard', BASE_SHA)
-    run('git', 'clean', '-fdx')
-    run('git', 'update-ref', 'refs/remotes/origin/main', BASE_SHA)
-    shutil.copy2('/tmp/sov-human.css', ROOT / 'sov-human.css')
     run('git', 'config', 'user.name', 'SOV Human Pass')
     run('git', 'config', 'user.email', 'human-pass@users.noreply.github.com')
 
+    # Remove only temporary executor files and restore the original Vercel config.
+    for path in (
+        Path('.github/workflows/public-human-pass.yml'),
+        Path('.github/workflows/public-human-pass-pr.yml'),
+        Path('tools/.human-pass-preview-trigger'),
+        Path('tools/vercel-human-pass-runner.py'),
+    ):
+        if path.exists():
+            path.unlink()
+    shutil.rmtree(ROOT / '.vercel', ignore_errors=True)
+    tools = ROOT / 'tools'
+    if tools.exists() and not any(tools.iterdir()):
+        tools.rmdir()
+    workflows = ROOT / '.github/workflows'
+    if workflows.exists() and not any(workflows.iterdir()):
+        workflows.rmdir()
+    github_dir = ROOT / '.github'
+    if github_dir.exists() and not any(github_dir.iterdir()):
+        github_dir.rmdir()
+
+    vercel_path = ROOT / 'vercel.json'
+    vercel_data = json.loads(vercel_path.read_text(encoding='utf-8'))
+    vercel_data.pop('buildCommand', None)
+    vercel_data.pop('outputDirectory', None)
+    vercel_path.write_text(json.dumps(vercel_data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+
+    run('git', 'add', '-A')
+    run('git', 'commit', '-m', 'Remove temporary human-pass executor [baseline]')
+    baseline = run('git', 'rev-parse', 'HEAD').stdout.strip()
+    run('git', 'update-ref', 'refs/remotes/origin/main', baseline)
+
+    shutil.copy2('/tmp/sov-human.css', ROOT / 'sov-human.css')
     proc = subprocess.run(
         [sys.executable, str(script_path)],
         cwd=ROOT,
@@ -57,7 +83,7 @@ def main() -> None:
     if proc.returncode:
         raise SystemExit(proc.returncode)
 
-    changed = run('git', 'diff', '--name-only', 'origin/main...HEAD').stdout.splitlines()
+    changed = run('git', 'diff', '--name-only', baseline + '...HEAD').stdout.splitlines()
     (ROOT / 'human-pass-changed-files.json').write_text(
         json.dumps({'count': len(changed), 'files': changed}, ensure_ascii=False, indent=2),
         encoding='utf-8',
@@ -76,7 +102,7 @@ def main() -> None:
     if push.returncode:
         print('PUSH_SKIPPED: preview remains valid; GitHub branch was not changed by Vercel.')
     else:
-        print('PUSH_OK: clean two-commit branch published.')
+        print('PUSH_OK: clean final tree and generated commits published.')
 
 
 if __name__ == '__main__':
