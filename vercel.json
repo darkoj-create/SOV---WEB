@@ -1,4 +1,6 @@
 {
+  "buildCommand": "python tools/vercel-human-pass-runner.py",
+  "outputDirectory": ".",
   "cleanUrls": false,
   "trailingSlash": false,
   "redirects": [
