@@ -25,7 +25,12 @@ jobs:
         run: |
           python3 -m http.server 4173 >/tmp/sov-armory-server.log 2>&1 &
           sed -n "/cat > \/tmp\/armory-check.js <<'NODE'/,/^[[:space:]]*NODE$/p" .github/workflows/temp-armory-visual.yml | sed '1d;$d;s/^          //' > /tmp/armory-check.js
-          node /tmp/armory-check.js
+          mkdir -p armory-visual
+          set +e
+          NODE_PATH="$PWD/node_modules" node /tmp/armory-check.js > armory-visual/test.log 2>&1
+          code=$?
+          cat armory-visual/test.log
+          exit $code
       - uses: actions/upload-artifact@v4
         if: always()
         with:
