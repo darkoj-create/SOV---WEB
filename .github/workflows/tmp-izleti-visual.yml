@@ -1,0 +1,87 @@
+name: Temporary Izleti Visual Check
+
+on:
+  push:
+    branches:
+      - agent/izleti-human-autosync
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  visual:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null 2>&1
+      - name: Check preview
+        env:
+          PREVIEW_URL: https://sov-web-git-agent-izleti-human-autosync-djeras-projects.vercel.app/izleti-cloud.html
+        run: |
+          mkdir -p visual-output
+          cat > /tmp/check.mjs <<'EOF'
+          import { chromium } from 'playwright';
+          import fs from 'node:fs';
+          const url=process.env.PREVIEW_URL;
+          const browser=await chromium.launch({headless:true});
+          const report=[];
+          for(const cfg of [{name:'desktop',width:1440,height:1000},{name:'mobile',width:390,height:844}]){
+            const page=await browser.newPage({viewport:{width:cfg.width,height:cfg.height}});
+            const consoleErrors=[]; const failed=[];
+            page.on('console',m=>{if(m.type()==='error')consoleErrors.push(m.text())});
+            page.on('requestfailed',r=>failed.push({url:r.url(),failure:r.failure()?.errorText||''}));
+            const response=await page.goto(url,{waitUntil:'domcontentloaded',timeout:60000});
+            await page.waitForTimeout(8000);
+            const data=await page.evaluate(()=>({
+              bodyClass:document.body.className,
+              width:innerWidth,
+              scrollWidth:document.documentElement.scrollWidth,
+              humanCss:!!document.querySelector('link[data-sov-trips-human]'),
+              humanJs:!!document.querySelector('script[data-sov-trips-human]'),
+              subtitle:document.querySelector('.trips-hero-subtitle')?.textContent||'',
+              sync:document.querySelector('#tripsSyncText')?.textContent||'',
+              addText:document.querySelector('#sideAddBtn')?.textContent||'',
+              status:document.querySelector('#status')?.textContent||'',
+              deleteVisible:[...document.querySelectorAll('[data-delete]')].some(el=>getComputedStyle(el).display!=='none'),
+              humanBackground:getComputedStyle(document.body).backgroundImage.includes('linear-gradient'),
+              heroPhoto:getComputedStyle(document.querySelector('.hero')).backgroundImage.includes('dabarski-kukovi')
+            }));
+            await page.click('#sideAddBtn');
+            await page.waitForTimeout(300);
+            data.drawerOpen=await page.evaluate(()=>document.body.classList.contains('trip-form-open'));
+            data.formOpen=await page.evaluate(()=>document.querySelector('#tripForm')?.classList.contains('open'));
+            await page.keyboard.press('Escape');
+            data.drawerClosed=await page.evaluate(()=>!document.body.classList.contains('trip-form-open'));
+            await page.screenshot({path:`visual-output/izleti-${cfg.name}.png`,fullPage:true});
+            report.push({name:cfg.name,status:response?.status(),data,consoleErrors,failed});
+            await page.close();
+          }
+          await browser.close();
+          fs.writeFileSync('visual-output/report.json',JSON.stringify(report,null,2));
+          for(const r of report){
+            if(r.status!==200)throw new Error(`${r.name}: HTTP ${r.status}`);
+            if(!r.data.humanCss||!r.data.humanJs||!r.data.bodyClass.includes('sov-trips-human'))throw new Error(`${r.name}: human layer missing`);
+            if(r.data.scrollWidth>r.data.width+1)throw new Error(`${r.name}: horizontal overflow ${r.data.scrollWidth}/${r.data.width}`);
+            if(!r.data.drawerOpen||!r.data.formOpen||!r.data.drawerClosed)throw new Error(`${r.name}: drawer interaction failed`);
+            if(r.data.deleteVisible)throw new Error(`${r.name}: destructive action visible in list`);
+            if(!r.data.heroPhoto)throw new Error(`${r.name}: hero photo missing`);
+            if(r.consoleErrors.length)throw new Error(`${r.name}: console errors: ${r.consoleErrors.join(' | ')}`);
+          }
+          console.log(JSON.stringify(report,null,2));
+          EOF
+          node /tmp/check.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: izleti-visual
+          path: visual-output
+          retention-days: 1
