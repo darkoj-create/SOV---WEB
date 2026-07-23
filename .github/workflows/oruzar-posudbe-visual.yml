@@ -30,7 +30,7 @@ jobs:
       - name: Capture desktop and mobile
         run: |
           mkdir -p artifacts/oruzar-posudbe
-          cat > /tmp/posudbe-check.mjs <<'NODE'
+          cat > posudbe-check.mjs <<'NODE'
           import { chromium } from 'playwright';
           import fs from 'node:fs/promises';
           const out='artifacts/oruzar-posudbe';
@@ -82,11 +82,12 @@ jobs:
           await fs.writeFile(`${out}/failures.txt`,failures.join('\n'));
           NODE
           set +e
-          node /tmp/posudbe-check.mjs > artifacts/oruzar-posudbe/runner.log 2>&1
+          node posudbe-check.mjs > artifacts/oruzar-posudbe/runner.log 2>&1
           code=$?
           set -e
           echo "$code" > artifacts/oruzar-posudbe/exit-code.txt
           cat artifacts/oruzar-posudbe/runner.log
+          rm -f posudbe-check.mjs
           exit 0
       - name: Show reports
         run: |
