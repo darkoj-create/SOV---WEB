@@ -1,0 +1,37 @@
+name: Oružar Master home visual check
+
+on:
+  pull_request:
+    paths:
+      - 'assets/oruzar-ux-microcopy-v6145ae.css'
+      - 'oruzar-master.html'
+      - 'tools/oruzar_master_home_visual_check.mjs'
+      - '.github/workflows/oruzar-master-home-visual.yml'
+
+jobs:
+  visual:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Start static server
+        run: |
+          python3 -m http.server 4173 >/tmp/oruzar-server.log 2>&1 &
+          for i in {1..20}; do curl -fsS http://127.0.0.1:4173/oruzar-master.html >/dev/null && exit 0; sleep 1; done
+          cat /tmp/oruzar-server.log
+          exit 1
+      - name: Capture desktop and mobile
+        run: node tools/oruzar_master_home_visual_check.mjs
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: oruzar-master-home-visual
+          path: artifacts/oruzar-master-home
+          retention-days: 14
