@@ -1,0 +1,31 @@
+name: Temporary Member UI Diagnostic
+on:
+  push:
+    branches: [agent/member-ui-human-sweep]
+  pull_request:
+    branches: [main]
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Chromium quietly
+        run: |
+          npm install --no-save --silent playwright@1.52.0 >/tmp/npm.log 2>&1
+          npx playwright install --with-deps chromium >/tmp/playwright-install.log 2>&1
+      - name: Diagnose all pages
+        run: |
+          python3 -m http.server 4173 >/tmp/http.log 2>&1 &
+          cat > /tmp/diagnose.cjs <<'JS'
+          const { chromium }=require(process.cwd()+'/node_modules/playwright');
+          const pages=['dashboard.html','karta.html','predaj-novu-jamu.html','izleti-cloud.html','oruzarstvo.html','dokumenti.html','napisi-clanak.html','nacrt.html','tracking.html','index.html'];
+          const trips=[{id:'t1',start_date:'2026-08-08',end_date:'2026-08-09',title:'Ravni Dabar',leader_name:'Test',location_name:'Ravni Dabar',objective:'Istraživanje',description:'Opis',status:'planned',visibility:'club',trip_category:'Izlet',meta:{}}];
+          const stub=`(()=>{window.__rpcCalls=0;const result=(data=[])=>Promise.resolve({data,error:null});function chain(data=[]){const q={select(){return q},neq(){return q},eq(){return q},in(){return q},gte(){return q},lte(){return q},order(){return q},limit(){return q},insert(){return q},update(){return q},delete(){return q},upsert(){return q},maybeSingle(){return result(data[0]||null)},single(){return result(data[0]||null)},then(a,b){return result(data).then(a,b)}};return q}const client={rpc(name){window.__rpcCalls++;return result(name==='sov_list_trips_feed'?${JSON.stringify(trips)}:[])},from(){return chain([])},channel(){return{on(){return this},subscribe(){return this},unsubscribe(){return this}}},removeChannel(){},storage:{from(){return{upload(){return result({path:'x'})},getPublicUrl(){return{data:{publicUrl:'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=='}}}}}},auth:{getSession(){return result({session:{user:{id:'u1',email:'test@example.com'}}})},getUser(){return result({user:{id:'u1',email:'test@example.com'}})},signOut(){return result(null)},onAuthStateChange(){return{data:{subscription:{unsubscribe(){}}}}}}};window.supabase={createClient(){return client}};window.SOVAuth={ready:async()=>true,requireApproved:async()=>({id:'u1',email:'test@example.com'}),getClient:()=>client,getProfile:async()=>({id:'u1',full_name:'Test Član',role:'webmaster',status:'approved',permissions:{can_manage_equipment:true}}),getUser:async()=>({id:'u1',email:'test@example.com'}),logout:async()=>true};})();`;
+          (async()=>{const browser=await chromium.launch({headless:true});const report=[];for(const path of pages){const context=await browser.newContext({viewport:{width:390,height:844}});await context.route('**/assets/auth.js*',r=>r.fulfill({status:200,contentType:'application/javascript',body:stub}));await context.route('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2*',r=>r.fulfill({status:200,contentType:'application/javascript',body:'window.supabase=window.supabase||{};'}));const page=await context.newPage();const errors=[];page.on('console',m=>{if(m.type()==='error')errors.push('console:'+m.text())});page.on('pageerror',e=>errors.push('page:'+e.message));let nav='ok';try{const res=await page.goto('http://127.0.0.1:4173/'+path,{waitUntil:'domcontentloaded',timeout:30000});nav=String(res&&res.status());await page.waitForTimeout(path==='izleti-cloud.html'?3500:1800)}catch(e){nav='NAV '+e.message}const data=await page.evaluate(()=>({url:location.pathname,scrollWidth:document.documentElement.scrollWidth,clientWidth:document.documentElement.clientWidth,rpcCalls:window.__rpcCalls||0,queued:!!(window.loadTrips&&window.loadTrips.__sovHumanQueue),lateCss:document.querySelectorAll('link[data-sov-trips-human]').length,tripsScripts:document.querySelectorAll('script[data-sov-trips-human]').length,cards:document.querySelectorAll('.tripCard').length})).catch(e=>({evalError:e.message}));report.push({path,nav,errors,data});await context.close()}await browser.close();console.log('MEMBER_UI_DIAGNOSTIC='+JSON.stringify(report));const bad=report.filter(x=>x.nav!=='200'||x.errors.length||x.data?.scrollWidth>x.data?.clientWidth+2);if(bad.length)process.exitCode=1})().catch(e=>{console.error('DIAGNOSTIC_FATAL='+e.stack);process.exit(1)});
+          JS
+          node /tmp/diagnose.cjs
