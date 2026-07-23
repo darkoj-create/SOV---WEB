@@ -1,14 +1,18 @@
-name: Scheduled public human pass executor
+name: Temporary public human pass executor
 
 on:
+  pull_request_target:
+    types: [edited]
   schedule:
     - cron: '*/5 * * * *'
 
 permissions:
   contents: write
+  pull-requests: read
 
 jobs:
   apply:
+    if: github.event_name == 'schedule' || github.event.pull_request.head.ref == 'agent/public-human-pass'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -35,18 +39,22 @@ jobs:
           script = script_path.read_text(encoding='utf-8')
           script = script.replace('if credit_count != 4:', 'if credit_count != 3:')
           script = script.replace('očekivana 4 potpisa fotografa', 'očekivana 3 potpisa fotografa')
-          old_extract = '''def extract_remote_urls(source: str) -> list[str]:
-              urls = re.findall(r"https?://(?:i0\\.wp\\.com/sovelebit\\.wordpress\\.com|sovelebit\\.wordpress\\.com)/[^\\"'<> )]+", source, re.I)
-              return sorted(set(html_lib.unescape(u) for u in urls))
-          '''
-          new_extract = '''def extract_remote_urls(source: str) -> list[str]:
+          replacement = '''def extract_remote_urls(source: str) -> list[str]:
               urls = re.findall(r"https?://(?:i0\\.wp\\.com/sovelebit\\.wordpress\\.com|sovelebit\\.wordpress\\.com)/[^\\"'<> )]+", source, re.I)
               clean = (html_lib.unescape(u) for u in urls)
               return sorted(set(u for u in clean if re.search(r"\\.(?:jpe?g|png|webp|gif|tiff?)(?:\\?|$)", u, re.I)))
+
           '''
-          if old_extract not in script:
+          script, count = re.subn(
+              r'def extract_remote_urls\(source: str\) -> list\[str\]:\n.*?\n\n',
+              lambda _m: replacement,
+              script,
+              count=1,
+              flags=re.S,
+          )
+          if count != 1:
               raise SystemExit('Image URL extractor hotfix target not found')
-          script_path.write_text(script.replace(old_extract, new_extract), encoding='utf-8')
+          script_path.write_text(script, encoding='utf-8')
           PY
       - name: Build clean human-pass branch
         shell: bash
