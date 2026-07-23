@@ -1,5 +1,5 @@
 // SOV Web version helper.
-// Also injects the approved-member Nacrt Generator entry on the main Cloud dashboard.
+// Also injects approved, page-specific member UI helpers.
 (function(){
   'use strict';
   const FALLBACK_VERSION='6.1.47';
@@ -20,6 +20,13 @@
     safeSetText('[data-sov-version-name]',n);
     try{document.title=document.title.replace(/v\d+\.\d+(?:\.\d+)?/g,'v'+v);}catch(e){}
   }
+  function addScript(src,marker){
+    if(document.querySelector('script['+marker+']'))return;
+    const script=document.createElement('script');
+    script.src=src;
+    script.setAttribute(marker,'');
+    document.body.appendChild(script);
+  }
 
   function injectNacrtDashboardCard(){
     try{
@@ -39,22 +46,18 @@
     }catch(e){console.warn('Nacrt dashboard card skipped',e);}
   }
 
-  function injectTripsUi(){
+  function injectPageUi(){
     try{
       const path=String(location.pathname||'').toLowerCase();
-      if(!path.endsWith('/izleti-cloud.html')&&!path.endsWith('izleti-cloud.html')) return;
-      if(document.querySelector('script[data-sov-trips-human]'))return;
-      const script=document.createElement('script');
-      script.src='assets/sov-trips-human-v6146.js?v=6.1.50';
-      script.setAttribute('data-sov-trips-human','');
-      document.body.appendChild(script);
-    }catch(e){console.warn('Trips UI layer skipped',e);}
+      if(path.endsWith('/izleti-cloud.html')||path.endsWith('izleti-cloud.html'))addScript('assets/sov-trips-human-v6146.js?v=6.1.50','data-sov-trips-human');
+      if(path.endsWith('/napisi-clanak.html')||path.endsWith('napisi-clanak.html'))addScript('assets/sov-article-member-v6150.js?v=6.1.50','data-sov-article-member');
+    }catch(e){console.warn('Page UI helper skipped',e);}
   }
 
   async function loadManifest(){
     applyVersion(FALLBACK_VERSION,FALLBACK_BUILD,FALLBACK_NAME);
     injectNacrtDashboardCard();
-    injectTripsUi();
+    injectPageUi();
     try{
       const res=await fetch('/update.json?cb='+Date.now(),{cache:'no-store'});
       if(!res.ok)throw new Error('HTTP '+res.status);
@@ -72,7 +75,7 @@
       window.dispatchEvent(new CustomEvent('sov:version',{detail:{ok:false,expected:FALLBACK_VERSION,error:String(err&&err.message||err)}}));
     }
     injectNacrtDashboardCard();
-    injectTripsUi();
+    injectPageUi();
   }
 
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',loadManifest);
