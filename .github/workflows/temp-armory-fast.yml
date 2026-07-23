@@ -1,0 +1,74 @@
+name: Temporary Armory Fast Check
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  fast:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - name: Install Chromium
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null
+      - name: Test Oružarstvo
+        run: |
+          python3 -m http.server 4173 >/tmp/server.log 2>&1 &
+          cat > armory-fast.cjs <<'NODE'
+          const {chromium}=require('playwright');
+          const fs=require('fs');
+          const items=[
+            ['pojas','Speleo pojas','Osobna oprema','Pojasevi',4],['croll','Croll','Osobna oprema','Penjalice',3],['stop','Petzl Stop','Osobna oprema','Spuštalice',2],['kar','Karabiner','Osobna oprema','Karabineri',12],
+            ['uze','Statičko uže','Užad','Statička užad',1],['uze0','Dinamičko uže','Užad','Dinamička užad',0],['sid','Pločice i spitovi','Sidrišta i opremanje','Sidrišta',6],
+            ['disto','DistoX2','Mjerenje, crtanje i dokumentacija','Mjerni instrumenti',1],['lampa','Čeona svjetiljka','Rasvjeta, elektronika i komunikacija','Rasvjeta',5],['sator','Ekspedicijski šator','Logor, ekspedicija i kuhinja','Šatori',2]
+          ].map((x,i)=>({app_id:x[0],source_id:`00000000-0000-4000-8000-${String(i+1).padStart(12,'0')}`,display_name:x[1],name:x[1],main_category:x[2],subcategory:x[3],location_name:'Klaićeva',total_qty:x[4]+2,available_qty:x[4],unit:'kom',status:'aktivno',availability:x[4]?'dostupno':'nedostupno',member_visible:true,catalog_group_key:x[0],search_text:x.join(' ')}));
+          const authStub=`window.SOVAuth={getClient(){return {auth:{getSession:async()=>({data:{session:{access_token:'test',user:{id:'u1',email:'test@sov.hr'}}}})},channel(){return {on(){return this},subscribe(){return this}}}}},getProfile:async()=>({id:'u1',full_name:'Test član',email:'test@sov.hr',role:'user',permissions:{}})};`;
+          async function test(label,width,height){
+            const browser=await chromium.launch({headless:true});
+            const page=await browser.newPage({viewport:{width,height}});page.setDefaultTimeout(7000);page.setDefaultNavigationTimeout(12000);
+            const errors=[];page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});page.on('pageerror',e=>errors.push(String(e)));
+            await page.route('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2',r=>r.fulfill({status:200,contentType:'application/javascript',body:'window.supabase={};'}));
+            await page.route('**/assets/auth.js*',r=>r.fulfill({status:200,contentType:'application/javascript',body:authStub}));
+            await page.route('https://ncomefzkuixyfixisrhi.supabase.co/**',r=>{const u=r.request().url();let body=[];if(u.includes('sov_equipment_app_catalog_grouped'))body=items;else if(u.includes('equipment_request_items'))body=[{request_id:'r1',item_name:'Statičko uže',quantity:1}];else if(u.includes('equipment_requests'))body=[{id:'r1',trip_name:'Krasno test',status:'pending',created_at:'2026-07-22T10:00:00Z'}];r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(body)})});
+            fs.mkdirSync('armory-fast',{recursive:true});
+            try{
+              await page.goto('http://127.0.0.1:4173/oruzarstvo.html',{waitUntil:'domcontentloaded'});
+              await page.waitForFunction(()=>document.body.classList.contains('sov-armory-human'));
+              await page.waitForSelector('.cat-card');
+              const first=await page.evaluate(()=>({path:location.pathname,width:innerWidth,scrollWidth:document.documentElement.scrollWidth,categories:document.querySelectorAll('.cat-card').length,css:document.querySelectorAll('link[data-sov-armory-human]').length,js:document.querySelectorAll('script[data-sov-armory-human]').length,captured:typeof window.__SOV_ARMORY_PAGE_INIT,sync:document.getElementById('armorySyncText')?.textContent||''}));
+              if(first.path!='/oruzarstvo.html'||first.scrollWidth>first.width+1||first.categories<6||first.css!==3||first.js!==1||first.captured!=='function')throw new Error('bad initial '+JSON.stringify(first));
+              await page.screenshot({path:`armory-fast/${label}-categories.png`,fullPage:true});
+              await page.locator('.cat-card').filter({hasText:'Užad'}).click();await page.locator('.sub-card').first().click();await page.waitForSelector('.item-card');
+              const txt=await page.locator('.item-card').first().innerText();if(/Dostupno\s+\d/i.test(txt))throw new Error('quantity visible '+txt);
+              await page.locator('.item-card [data-add]').first().click();await page.waitForTimeout(150);if(await page.locator('#drawer').evaluate(e=>e.classList.contains('open')))throw new Error('drawer remained open');
+              await page.locator('#heroCart').click();await page.waitForTimeout(80);if(!(await page.locator('#drawer').evaluate(e=>e.classList.contains('open'))))throw new Error('drawer did not open');await page.keyboard.press('Escape');
+              await page.locator('.tab[data-tab="requests"]').click();await page.waitForSelector('.request-card');
+              if(width<=680){if(await page.locator('.filters').isVisible())throw new Error('mobile filters visible');await page.locator('#armoryFilterToggle').click();if(!(await page.locator('.filters').isVisible()))throw new Error('mobile toggle failed')}
+              await page.screenshot({path:`armory-fast/${label}-final.png`,fullPage:true});
+              fs.writeFileSync(`armory-fast/${label}.json`,JSON.stringify({first,errors},null,2));
+              if(errors.length)throw new Error('console '+errors.join(' | '));
+            }catch(e){await page.screenshot({path:`armory-fast/${label}-failure.png`,fullPage:true}).catch(()=>{});throw e}finally{await browser.close()}
+          }
+          (async()=>{await test('desktop',1440,1000);await test('mobile',390,844)})().catch(e=>{console.error(e);process.exit(1)});
+          NODE
+          set +e
+          NODE_PATH="$PWD/node_modules" node armory-fast.cjs > armory-fast.log 2>&1
+          code=$?
+          cat armory-fast.log
+          cp armory-fast.log armory-fast/test.log 2>/dev/null || true
+          exit $code
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: armory-fast
+          path: armory-fast
+          if-no-files-found: warn
