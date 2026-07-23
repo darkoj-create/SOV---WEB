@@ -7,6 +7,27 @@
   let statusObserver=null;
   let listObserver=null;
 
+  function ensureFinalPolish(){
+    const brand=document.querySelector('.top .brand');
+    const strong=brand&&brand.querySelector('strong');
+    const small=brand&&brand.querySelector('small');
+    if(strong)strong.textContent='SOV Velebit';
+    if(small)small.textContent='Članski dio';
+    if($('sovTripsFinalPolish'))return;
+    const style=document.createElement('style');
+    style.id='sovTripsFinalPolish';
+    style.textContent=`
+      body.sov-trips-human .controlTop>.toolbar{padding:4px 7px!important;border:1px solid #c9c0ae!important;border-radius:3px!important;background:#f2ece1!important;box-shadow:none!important}
+      body.sov-trips-human .statusLine,body.sov-trips-human .trips-sync-state,body.sov-trips-human #refreshBtn{color:#596159!important}
+      body.sov-trips-human .trips-sync-state{border-left:1px solid #c9c0ae!important}
+      body.sov-trips-human .trips-sync-dot{background:#4b7b65!important;box-shadow:0 0 0 3px rgba(75,123,101,.12)!important}
+      body.sov-trips-human .trips-sync-state.is-syncing .trips-sync-dot{background:#b58845!important}
+      body.sov-trips-human .trips-sync-state.is-offline .trips-sync-dot,body.sov-trips-human .trips-sync-state.is-error .trips-sync-dot{background:#9a5535!important}
+      @media(max-width:680px){body.sov-trips-human .controlTop>.toolbar{padding:5px 7px!important}body.sov-trips-human .top .brand strong{font-size:14px!important}body.sov-trips-human .top .brand small{font-size:10px!important}}
+    `;
+    document.head.appendChild(style);
+  }
+
   function ensureSyncUi(){
     const toolbar=document.querySelector('.controlTop > .toolbar');
     if(!toolbar||$('tripsSyncState'))return;
@@ -104,6 +125,7 @@
 
   function install(){
     document.body.classList.add('sov-trips-human');
+    ensureFinalPolish();
     if($('sideAddBtn')&&$('sideAddBtn').textContent!=='+ Novi izlet')$('sideAddBtn').textContent='+ Novi izlet';
     if($('search'))$('search').placeholder='Traži lokaciju, voditelja ili cilj';
     if($('refreshBtn')){
