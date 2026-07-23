@@ -13,6 +13,29 @@ window.SOV_GOOGLE_DRIVE_API_KEY = window.SOV_GOOGLE_DRIVE_API_KEY || '';
 // v5.24 hard-restored trips calendar Apps Script endpoint
 window.SOV_TRIPS_WEBAPP_URL = window.SOV_TRIPS_WEBAPP_URL || 'https://script.google.com/macros/s/AKfycbybGi7p6_ImXAXEErJ6P9K0GYHy8lHW850K9cQe2py8yUV2oJO6UW1DJi00quorVTHOGQ/exec';
 
+// v6.1.50: Izleti startup compatibility.
+// Stara forma ponekad nema #filePreview, ali clearForm() ga koristi prije prvog loadTrips().
+// Do DOMContentLoaded vraćamo samo siguran privremeni element, zatim ga dodamo skrivenog
+// i vratimo izvorni getElementById. Ostale stranice i svi drugi ID-evi ostaju netaknuti.
+(function(){
+  try{
+    const path=String(location.pathname||'').toLowerCase();
+    if(!path.endsWith('/izleti-cloud.html')&&!path.endsWith('izleti-cloud.html'))return;
+    const nativeGet=document.getElementById.bind(document);
+    const placeholder=document.createElement('div');
+    placeholder.id='filePreview';
+    placeholder.hidden=true;
+    document.getElementById=function(id){
+      if(id==='filePreview')return nativeGet(id)||placeholder;
+      return nativeGet(id);
+    };
+    document.addEventListener('DOMContentLoaded',()=>{
+      if(!nativeGet('filePreview')&&document.body)document.body.appendChild(placeholder);
+      document.getElementById=nativeGet;
+    },{once:true});
+  }catch(e){console.warn('[SOV trips] startup guard skipped',e);}
+})();
+
 // v6.1.48: member Oružarstvo human UI + captured soft-refresh hook.
 (function(){
   try{
