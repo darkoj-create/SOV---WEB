@@ -2,7 +2,7 @@
 // 1) U Supabase Project settings > API kopiraj Project URL i anon public key.
 // 2) Upisi ih ovdje prije deploya na Vercel.
 window.SOV_SUPABASE_URL = 'https://ncomefzkuixyfixisrhi.supabase.co';
-window.SOV_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXAiLCJyZWYiOiJuY29tZWZ6a3VpeHlmaXhpc3JoaSIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzc5NTg0MDk2LCJleHAiOjIwOTUxNjAwOTZ9.WFSiENYXv48Npaz7vFcY-ksYvg_Ja40iNGsEqb1nUDk';
+window.SOV_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jb21lZnprdWl4eWZpeGlzcmhpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1ODQwOTYsImV4cCI6MjA5NTE2MDA5Nn0.WFSiENYXv48Npaz7vFcY-ksYvg_Ja40iNGsEqb1nUDk';
 
 // v5.30 Nacrti sync endpoint — SOV Drawings Index WebApp v2.0.2 FAST SEARCH.
 // Web sync sada cita cached index preko ?action=listDrawings&limit=2000, ne skenira Drive iz browsera.
