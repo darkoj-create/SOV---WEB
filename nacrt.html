@@ -31,15 +31,69 @@
 <div class="stats-bar" id="statsBar"></div>
 <div class="form-grid">
 <div class="form-group"><label>Naziv objekta</label><input type="text" id="fTitle" placeholder="Naziv objekta"></div>
-<div class="form-group"><label>Autori</label><input type="text" id="fAuthors" placeholder="Ime i prezime"></div>
-<div class="form-group"><label>Datum</label><input type="text" id="fDate" placeholder="dd.mm.gggg."></div>
+<div class="form-group"><label>Datum mjerenja</label><input type="text" id="fDate" placeholder="2026.02.01"></div>
+<div class="form-group"><label>Mjerili</label><input type="text" id="fTeam" placeholder="Imena članova"></div>
+<div class="form-group"><label>Klub</label><input type="text" id="fClub" value="SO Velebit"></div>
+<div class="form-group"><label>Katastarski broj</label><input type="text" id="fCadNum" placeholder="HR-1234"></div>
 <div class="form-group"><label>Lokacija</label><input type="text" id="fLocation" placeholder="Lokalitet"></div>
 </div>
-<div class="btn-row"><button class="btn btn-primary" id="generateBtn">Izradi nacrt</button><button class="btn btn-secondary" id="downloadSvgBtn" style="display:none">SVG</button><button class="btn btn-secondary" id="downloadPngBtn" style="display:none">PNG</button></div>
-<div class="preview-container" id="previewContainer" style="display:none"></div>
+<div class="btn-row"><button class="btn btn-primary" id="btnRender">Izradi nacrt</button><button class="btn btn-secondary" id="btnSvg">SVG</button><button class="btn btn-secondary" id="btnPng">PNG</button></div>
+<div class="preview-container" id="preview"></div>
 <div class="parse-info" id="parseInfo"></div>
 </div>
 </div>
+<script>
+(function() {
+  const dropzone=document.getElementById('dropzone');
+  const fileInput=document.getElementById('fileInput');
+  const statusEl=document.getElementById('status');
+  const formSection=document.getElementById('formSection');
+  const statsBar=document.getElementById('statsBar');
+  const preview=document.getElementById('preview');
+  const parseInfo=document.getElementById('parseInfo');
+  let currentSurvey=null;
+  let currentSvg=null;
+  dropzone.addEventListener('click',()=>fileInput.click());
+  dropzone.addEventListener('dragover',e=>{e.preventDefault();dropzone.classList.add('dragover');});
+  dropzone.addEventListener('dragleave',()=>dropzone.classList.remove('dragover'));
+  dropzone.addEventListener('drop',e=>{e.preventDefault();dropzone.classList.remove('dragover');const file=e.dataTransfer.files[0];if(file)handleFile(file);});
+  fileInput.addEventListener('change',()=>{if(fileInput.files[0])handleFile(fileInput.files[0]);});
+  function showStatus(msg,type){statusEl.className='status '+type;statusEl.textContent=msg;}
+  async function handleFile(file){
+    if(!file.name.toLowerCase().endsWith('.zip')){showStatus('Samo ZIP datoteke su podržane.','error');return;}
+    showStatus('Učitavam ZIP...','info');formSection.classList.remove('visible');preview.innerHTML='';
+    try{
+      currentSurvey=await NacrtParser.parseZip(file);
+      const s=currentSurvey,sql=s.sql;
+      document.getElementById('fTitle').value=s.name||'';
+      document.getElementById('fDate').value=s.date||'';
+      document.getElementById('fTeam').value=s.team||'';
+      const stats=sql.stats;
+      statsBar.innerHTML=[stat('Duljina',stats.duljina.toFixed(1).replace('.',',')+' m'),stat('Horizontalna',stats.horizontalna.toFixed(1).replace('.',',')+' m'),stat('Dubina',stats.dubina.toFixed(1).replace('.',',')+' m'),stat('Mjerenja',sql.legs.length+' leg'+(sql.legs.length!==1?'s':'')),stat('Tlocrt',s.plan?s.plan.stations.length+' st, '+s.plan.lines.length+' ln':'—'),stat('Profil',s.profile?s.profile.stations.length+' st, '+s.profile.lines.length+' ln':'—')].join('');
+      let details=`Ime: ${s.name}\nDatum: ${s.date}\nTim: ${s.team}\n`;
+      details+=`Deklinacija: ${sql.declination} (${sql.survey&&sql.survey.declination===1080?'sentinel → 0':'set'})\n\n`;
+      details+=`Legs (${sql.legs.length}):\n`;
+      sql.legs.forEach(l=>details+=`  ${l.fStation}→${l.tStation}: ${l.distance}m, azimut=${l.bearing}°, nagib=${l.clino}°\n`);
+      details+=`\nIzbrisani (${sql.deleted.length}):\n`;
+      sql.deleted.forEach(d=>details+=`  ${d.fStation}→${d.tStation||'-'}: ${d.distance}m\n`);
+      details+=`\nSplays: ${sql.splays.length}\n\nStanice:\n`;
+      for(const [name,c] of Object.entries(sql.stationCoords))details+=`  ${name}: E=${c.e.toFixed(3)}, N=${c.n.toFixed(3)}, Z=${c.z.toFixed(3)}\n`;
+      parseInfo.innerHTML=`<details><summary>Detalji parsiranja</summary><pre>${escHtml(details)}</pre></details>`;
+      formSection.classList.add('visible');showStatus(`Učitano: ${file.name}`,'ok');doRender();
+    }catch(err){showStatus('Greška: '+err.message,'error');console.error(err);}
+  }
+  function doRender(){if(!currentSurvey)return;const opts={title:document.getElementById('fTitle').value,date:document.getElementById('fDate').value,team:document.getElementById('fTeam').value,club:document.getElementById('fClub').value,cadastreNum:document.getElementById('fCadNum').value,location:document.getElementById('fLocation').value};currentSvg=NacrtRenderer.render(currentSurvey,opts);preview.innerHTML=currentSvg;}
+  function downloadBlob(blob,name){const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},200);}
+  document.getElementById('btnRender').addEventListener('click',doRender);
+  document.getElementById('btnSvg').addEventListener('click',()=>{if(!currentSvg)return doRender();const blob=new Blob([currentSvg],{type:'image/svg+xml'});const name=(currentSurvey?currentSurvey.name:'nacrt').replace(/[^a-zA-Z0-9_čćžšđČĆŽŠĐ -]/g,'_')+'.svg';downloadBlob(blob,name);});
+  document.getElementById('btnPng').addEventListener('click',()=>{if(!currentSvg)doRender();if(!currentSvg)return;const svgBlob=new Blob([currentSvg],{type:'image/svg+xml;charset=utf-8'});const url=URL.createObjectURL(svgBlob);const img=new Image();img.onload=()=>{const scale=2;const canvas=document.createElement('canvas');canvas.width=img.naturalWidth*scale;canvas.height=img.naturalHeight*scale;const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0,canvas.width,canvas.height);canvas.toBlob(blob=>{const name=(currentSurvey?currentSurvey.name:'nacrt').replace(/[^a-zA-Z0-9_čćžšđČĆŽŠĐ -]/g,'_')+'.png';downloadBlob(blob,name);},'image/png');URL.revokeObjectURL(url);};img.onerror=()=>{showStatus('PNG export greška. Pokušaj SVG.','error');URL.revokeObjectURL(url);};img.src=url;});
+  function stat(label,value){return `<div class="stat"><span class="stat-label">${label}</span><span class="stat-value">${value}</span></div>`;}
+  function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+})();
+</script>
+<script defer src="assets/sov-foundation-v55822.js"></script>
+<script defer src="assets/sov-shell-v55825.js"></script>
+<script defer src="assets/sov-polish-v55826.js"></script>
 <script defer src="assets/sov-version.js?v=6.1.50"></script>
 </body>
 </html>
