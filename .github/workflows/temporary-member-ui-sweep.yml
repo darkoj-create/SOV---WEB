@@ -1,0 +1,129 @@
+name: Temporary Member UI Sweep
+on:
+  push:
+    branches: [agent/member-ui-human-sweep]
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Static checks
+        run: |
+          node --check assets/sov-trips-human-v6146.js
+          node --check assets/sov-article-member-v6150.js
+          node --check assets/sov-version.js
+          python3 - <<'PY'
+          from pathlib import Path
+          import re, subprocess, tempfile
+          for name in ['assets/sov-trips-human-v6146.css','assets/sov-member-header-v6145ai.css']:
+              text=Path(name).read_text(encoding='utf-8')
+              assert text.count('{')==text.count('}'), f'unbalanced CSS: {name}'
+          html=Path('nacrt.html').read_text(encoding='utf-8')
+          scripts=re.findall(r'<script(?:\s[^>]*)?>([\s\S]*?)</script>',html,re.I)
+          inline='\n'.join(s for s in scripts if s.strip())
+          p=Path('/tmp/nacrt-inline.js');p.write_text(inline,encoding='utf-8')
+          subprocess.run(['node','--check',str(p)],check=True)
+          required=['fTitle','fDate','fTeam','fClub','fCadNum','fLocation','btnRender','btnSvg','btnPng','preview','parseInfo']
+          for value in required:
+              assert f'id="{value}"' in html, f'missing Nacrt contract id: {value}'
+          print('static checks passed')
+          PY
+      - name: Install browser
+        run: |
+          npm install --no-save playwright@1.52.0
+          npx playwright install --with-deps chromium
+      - name: Run browser sweep
+        run: |
+          python3 -m http.server 4173 >/tmp/sov-http.log 2>&1 &
+          cat > /tmp/member-ui-sweep.cjs <<'JS'
+          const { chromium } = require(process.cwd() + '/node_modules/playwright');
+          const fs = require('fs');
+          const pages = [
+            ['dashboard.html','Dashboard'],
+            ['karta.html','Karta'],
+            ['predaj-novu-jamu.html','Predaja'],
+            ['izleti-cloud.html','Izleti'],
+            ['oruzarstvo.html','Oprema'],
+            ['dokumenti.html','Dokumenti'],
+            ['napisi-clanak.html','Članak'],
+            ['nacrt.html','Nacrt'],
+            ['tracking.html','Tracking'],
+            ['index.html','Naslovnica']
+          ];
+          const sampleTrips=[{id:'trip-1',start_date:'2026-08-08',end_date:'2026-08-09',title:'Ravni Dabar',leader_name:'Test Voditelj',location_name:'Ravni Dabar',objective:'Istraživanje',description:'Testni opis koji novi popis ne mora prikazivati.',status:'planned',visibility:'club',trip_category:'Izlet',meta:{}}];
+          const stub = `
+          (()=>{
+            window.__rpcCalls=0;
+            const result=(data=[])=>Promise.resolve({data,error:null});
+            function chain(data=[]){
+              const q={select(){return q},neq(){return q},eq(){return q},in(){return q},gte(){return q},lte(){return q},order(){return q},limit(){return q},insert(){return q},update(){return q},delete(){return q},upsert(){return q},maybeSingle(){return result(data[0]||null)},single(){return result(data[0]||null)},then(a,b){return result(data).then(a,b)}};
+              return q;
+            }
+            const client={
+              rpc(name){window.__rpcCalls++;if(name==='sov_list_trips_feed')return result(${JSON.stringify(sampleTrips)});return result([])},
+              from(){return chain([])},
+              channel(){return {on(){return this},subscribe(){return this},unsubscribe(){return this}}},
+              removeChannel(){},
+              storage:{from(){return {upload(){return result({path:'test'})},getPublicUrl(){return {data:{publicUrl:'https://example.invalid/test.jpg'}}}}}},
+              auth:{getSession(){return result({session:{user:{id:'u1',email:'test@example.com'}}})},getUser(){return result({user:{id:'u1',email:'test@example.com'}})},signOut(){return result(null)},onAuthStateChange(){return {data:{subscription:{unsubscribe(){}}}}}}
+            };
+            window.supabase={createClient(){return client}};
+            window.SOVAuth={ready:async()=>true,requireApproved:async()=>({id:'u1',email:'test@example.com'}),getClient:()=>client,getProfile:async()=>({id:'u1',full_name:'Test Član',role:'webmaster',status:'approved',permissions:{can_manage_equipment:true}}),getUser:async()=>({id:'u1',email:'test@example.com'}),logout:async()=>true};
+          })();`;
+          (async()=>{
+            fs.mkdirSync('member-ui-artifacts',{recursive:true});
+            const browser=await chromium.launch({headless:true});
+            for(const [path,label] of pages){
+              for(const vp of [{name:'desktop',width:1440,height:1000},{name:'mobile',width:390,height:844}]){
+                const context=await browser.newContext({viewport:{width:vp.width,height:vp.height}});
+                await context.route('**/assets/auth.js',r=>r.fulfill({status:200,contentType:'application/javascript',body:stub}));
+                await context.route('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2',r=>r.fulfill({status:200,contentType:'application/javascript',body:'window.supabase=window.supabase||{};'}));
+                const page=await context.newPage();
+                const errors=[];
+                page.on('console',m=>{if(m.type()==='error')errors.push('console: '+m.text())});
+                page.on('pageerror',e=>errors.push('page: '+e.message));
+                await page.addInitScript(()=>document.addEventListener('DOMContentLoaded',()=>{window.__dclBodyBackground=getComputedStyle(document.body).backgroundColor},{once:true}));
+                const response=await page.goto('http://127.0.0.1:4173/'+path,{waitUntil:'domcontentloaded',timeout:30000});
+                if(!response||!response.ok())throw new Error(`${label} ${vp.name}: HTTP ${response&&response.status()}`);
+                await page.waitForTimeout(path==='izleti-cloud.html'?3500:1800);
+                const metrics=await page.evaluate(()=>({scrollWidth:document.documentElement.scrollWidth,clientWidth:document.documentElement.clientWidth,title:document.title,bodyBg:getComputedStyle(document.body).backgroundColor,dclBg:window.__dclBodyBackground||'',rpcCalls:window.__rpcCalls||0,queued:!!(window.loadTrips&&window.loadTrips.__sovHumanQueue),lateTripsCss:document.querySelectorAll('link[data-sov-trips-human]').length,tripsScripts:document.querySelectorAll('script[data-sov-trips-human]').length}));
+                if(metrics.scrollWidth>metrics.clientWidth+2)throw new Error(`${label} ${vp.name}: horizontal overflow ${metrics.scrollWidth}/${metrics.clientWidth}`);
+                if(errors.length)throw new Error(`${label} ${vp.name}: ${errors.join(' | ')}`);
+                if(path==='izleti-cloud.html'){
+                  if(metrics.queued)throw new Error('Izleti: legacy human load queue still active');
+                  if(metrics.lateTripsCss!==0)throw new Error('Izleti: late CSS overlay injection still present');
+                  if(metrics.tripsScripts!==1)throw new Error(`Izleti: expected one UI helper, got ${metrics.tripsScripts}`);
+                  if(metrics.rpcCalls>2)throw new Error(`Izleti: repeated DB loop, rpcCalls=${metrics.rpcCalls}`);
+                  if(/rgb\((?:2|3|4|5|6|7),/.test(metrics.dclBg))throw new Error(`Izleti: old dark UI visible at DOMContentLoaded (${metrics.dclBg})`);
+                  const cards=await page.locator('.tripCard').count();
+                  if(cards<1)throw new Error('Izleti: sample trip did not render');
+                }
+                if(path==='napisi-clanak.html'){
+                  await page.fill('#title','Skica testa');await page.fill('#body','Tekst skice');await page.waitForTimeout(600);
+                  const saved=await page.evaluate(()=>localStorage.getItem('sov_member_article_draft_v6150'));
+                  if(!saved||!saved.includes('Skica testa'))throw new Error('Članak: local draft not saved');
+                }
+                if(path==='nacrt.html'){
+                  for(const id of ['fTitle','fDate','fTeam','fClub','fCadNum','fLocation','btnRender','btnSvg','btnPng','preview','parseInfo'])if(!(await page.locator('#'+id).count()))throw new Error('Nacrt: missing #'+id);
+                }
+                await page.screenshot({path:`member-ui-artifacts/${path.replace('.html','')}-${vp.name}.png`,fullPage:true});
+                console.log(JSON.stringify({path,label,viewport:vp.name,...metrics}));
+                await context.close();
+              }
+            }
+            await browser.close();
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+          node /tmp/member-ui-sweep.cjs
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: member-ui-sweep
+          path: member-ui-artifacts
