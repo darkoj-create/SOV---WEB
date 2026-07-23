@@ -49,6 +49,31 @@
       document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ header.classList.remove('is-open'); btn.setAttribute('aria-expanded','false'); }});
     }
   }
+  function normalizeHomepageHero(){
+    if(pageName()!=='index.html') return;
+
+    document.body.classList.remove('index-menu-open');
+    document.querySelectorAll('.index-menu-toggle,.index-hero-chips').forEach(el=>el.remove());
+
+    const hero=document.querySelector('.portal-hero');
+    const actions=hero&&hero.querySelector('.hero-actions');
+    if(actions){
+      actions.innerHTML=`
+        <a class="hero-join" href="pridruzi-nam-se.html">Pridruži nam se</a>
+        <a class="hero-ghost" href="speleoskola.html">Speleoškola</a>
+        <div class="hero-utility-links" aria-label="Brzi linkovi">
+          <a href="#galerija">Galerija</a>
+          <a href="dashboard.html">SOV Cloud</a>
+          <a href="vijesti.html">Sve vijesti</a>
+        </div>`;
+    }
+
+    const stats=hero&&hero.querySelector('.hero-stats');
+    if(stats){
+      stats.classList.add('home-stats-strip');
+      hero.insertAdjacentElement('afterend',stats);
+    }
+  }
   function fixAboutSubnav(){
     const nav=document.querySelector('.public-tabs-v609');
     if(!nav) return;
@@ -76,6 +101,7 @@
     document.body.classList.add('sov-public-final');
     normalizeLinks();
     installHeader();
+    normalizeHomepageHero();
     normalizeLinks();
     fixAboutSubnav();
     fixThumbs();
