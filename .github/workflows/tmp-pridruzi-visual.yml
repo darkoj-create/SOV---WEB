@@ -48,11 +48,14 @@ jobs:
               page.on('requestfailed',request=>failedRequests.push(`${request.url()} :: ${request.failure()?.errorText||'failed'}`));
               const response=await page.goto('http://127.0.0.1:4173/pridruzi-nam-se.html',{waitUntil:'networkidle',timeout:30000});
               await page.screenshot({path:`JOIN_VISUAL/pridruzi-${item.name}-top.png`});
-              await page.evaluate(async()=>{
-                const step=Math.max(300,Math.floor(innerHeight*.8));
-                for(let y=0;y<document.documentElement.scrollHeight;y+=step){scrollTo(0,y);await new Promise(r=>setTimeout(r,80));}
-                scrollTo(0,0);await new Promise(r=>setTimeout(r,200));
-              });
+              const images=page.locator('.sov-join-main img');
+              for(let i=0;i<await images.count();i++){
+                await images.nth(i).scrollIntoViewIfNeeded();
+                await page.waitForTimeout(350);
+              }
+              await page.waitForFunction(()=>[...document.querySelectorAll('.sov-join-main img')].every(img=>img.complete&&img.naturalWidth>0),null,{timeout:10000});
+              await page.evaluate(()=>scrollTo(0,0));
+              await page.waitForTimeout(300);
               await page.screenshot({path:`JOIN_VISUAL/pridruzi-${item.name}.png`,fullPage:true});
               const layout=await page.evaluate(()=>({
                 title:document.title,
@@ -69,6 +72,7 @@ jobs:
                 faqCount:document.querySelectorAll('.sov-join-faq-list details').length,
               }));
               report.push({name:item.name,status:response?.status()||0,...layout,consoleErrors,failedRequests});
+              fs.writeFileSync('JOIN_VISUAL/report.json',JSON.stringify(report,null,2));
               if((response?.status()||0)>=400) throw new Error(`${item.name}: HTTP ${response?.status()}`);
               if(layout.scrollWidth>layout.width+4) throw new Error(`${item.name}: horizontal overflow ${layout.scrollWidth} > ${layout.width}`);
               if(!layout.heroTitle.includes('Samo dođi')) throw new Error(`${item.name}: hero title missing`);
@@ -82,7 +86,6 @@ jobs:
               await context.close();
             }
             await browser.close();
-            fs.writeFileSync('JOIN_VISUAL/report.json',JSON.stringify(report,null,2));
             console.log(JSON.stringify(report,null,2));
           })().catch(err=>{console.error(err);process.exit(1)});
           JS
