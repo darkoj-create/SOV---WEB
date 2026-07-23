@@ -65,6 +65,11 @@
       veil.textContent='html.sov-trips-style-pending body{visibility:hidden!important}';
       document.head.appendChild(veil);
 
+      const clean=document.createElement('style');
+      clean.id='sovTripsCopyCleanup';
+      clean.textContent='body.sov-trips-human .trips-hero-subtitle,body.sov-trips-human .heroText>.muted,body.sov-trips-human .heroStat,body.sov-trips-human .tripCard .desc,body.sov-trips-human .trip-assets-head p,body.sov-trips-human .trip-assets-note{display:none!important}body.sov-trips-human .tripCard{min-height:118px!important}';
+      document.head.appendChild(clean);
+
       const reveal=()=>{
         if(document.body)document.body.classList.add('sov-trips-human');
         root.classList.remove('sov-trips-style-pending');
