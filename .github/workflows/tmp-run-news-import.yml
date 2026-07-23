@@ -31,7 +31,22 @@ jobs:
       - name: Install importer dependencies
         run: python -m pip install --disable-pip-version-check beautifulsoup4==4.13.4 pillow==11.3.0
       - name: Import the two latest WordPress articles
-        run: python tools/tmp_import_wp_news.py
+        id: importer
+        continue-on-error: true
+        run: python tools/tmp_import_wp_news.py > WORDPRESS_IMPORT.log 2>&1
+      - name: Upload importer log on failure
+        if: steps.importer.outcome != 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: wordpress-import-error
+          path: WORDPRESS_IMPORT.log
+          if-no-files-found: error
+          retention-days: 3
+      - name: Stop after importer failure
+        if: steps.importer.outcome != 'success'
+        run: |
+          cat WORDPRESS_IMPORT.log
+          exit 1
       - name: Validate imported pages and local media
         run: |
           python - <<'PY'
@@ -69,6 +84,7 @@ jobs:
           rm -f .github/workflows/tmp-news-source-snapshot.yml
           rm -f .github/workflows/tmp-run-news-import.yml
           rm -f tools/tmp_import_wp_news.py
+          rm -f WORDPRESS_IMPORT.log
       - name: Commit imported news and photographs
         run: |
           git config user.name 'SOV WordPress Import'
