@@ -67,7 +67,7 @@ jobs:
                 width:innerWidth,
                 scrollWidth:document.documentElement.scrollWidth,
                 height:document.documentElement.scrollHeight,
-                title:document.querySelector('.spirit-hero h1')?.textContent?.replace(/\s+/g,' ').trim()||'',
+                title:document.querySelector('.spirit-hero h1')?.textContent?.replace(/\s+/g,'').trim()||'',
                 byline:document.querySelector('.spirit-byline')?.textContent?.replace(/\s+/g,' ').trim()||'',
                 imageCount:document.querySelectorAll('.spirit-main img').length,
                 loadedImages:[...document.querySelectorAll('.spirit-main img')].filter(i=>i.complete&&i.naturalWidth>0).length,
@@ -80,7 +80,7 @@ jobs:
               fs.writeFileSync('SPIRIT_VISUAL/report.json',JSON.stringify(report,null,2));
               if((response?.status()||0)>=400) throw new Error(`${item.name}: HTTP ${response?.status()}`);
               if(data.scrollWidth>data.width+4) throw new Error(`${item.name}: horizontal overflow ${data.scrollWidth} > ${data.width}`);
-              if(!data.title.includes('Velebitaški duh')) throw new Error(`${item.name}: hero title missing`);
+              if(data.title!=='Velebitaškiduh') throw new Error(`${item.name}: hero title missing`);
               if(!data.byline.includes('Marijan Čepelak Maligan')) throw new Error(`${item.name}: byline missing`);
               if(data.imageCount!==data.loadedImages) throw new Error(`${item.name}: only ${data.loadedImages}/${data.imageCount} images loaded`);
               if(data.sketchCount!==5) throw new Error(`${item.name}: expected 5 sketches, found ${data.sketchCount}`);
