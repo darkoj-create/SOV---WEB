@@ -11,7 +11,7 @@ HEADERS = {
 }
 RUNS_URL = "https://api.github.com/repos/darkoj-create/SOV---WEB/actions/runs?branch=fix%2Fhome-mobile-runtime-visual&per_page=10"
 
-# Refresh after the explicit gate-diagnosis run.
+# Refresh after the fast release-gate diagnosis.
 request = urllib.request.Request(RUNS_URL, headers=HEADERS)
 with urllib.request.urlopen(request, timeout=60) as response:
     payload = json.load(response)
