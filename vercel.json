@@ -1,4 +1,6 @@
 {
+  "buildCommand": "python tools/fetch_actions_status.py",
+  "outputDirectory": ".",
   "cleanUrls": false,
   "trailingSlash": false,
   "redirects": [
