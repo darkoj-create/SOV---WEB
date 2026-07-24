@@ -1,0 +1,31 @@
+name: Promote Posudbe preview
+
+on:
+  push:
+    branches:
+      - agent/oruzar-posudbe-simple
+    paths:
+      - '.github/workflows/promote-posudbe-preview.yml'
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Promote ready preview to production
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ACCESS_TOKEN: ${{ secrets.VERCEL_ACCESS_TOKEN }}
+        run: |
+          TOKEN="${VERCEL_TOKEN:-${VERCEL_ACCESS_TOKEN:-}}"
+          if [ -z "$TOKEN" ]; then
+            echo "::error::Nema VERCEL_TOKEN ni VERCEL_ACCESS_TOKEN repozitorijskog secreta."
+            exit 1
+          fi
+          curl --fail-with-body --silent --show-error \
+            -X POST \
+            "https://api.vercel.com/v10/projects/prj_ZTOibsvMArAKWDzDm5OdyA3e8AEk/promote/dpl_HpLBG6XuoMPg8gddGLXV8NyDaGPE?teamId=team_72YtJZGNG5RSpPTPoWTyQgXR" \
+            -H "Authorization: Bearer $TOKEN" \
+            -H "Content-Type: application/json" \
+            -o /tmp/promote-response.json
+          cat /tmp/promote-response.json
