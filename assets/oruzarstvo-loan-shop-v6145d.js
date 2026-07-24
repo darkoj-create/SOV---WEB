@@ -1,6 +1,6 @@
 (function(){
   if(window.__SOV_ARMORY_LOAN_SHOP_V6145D__) return; window.__SOV_ARMORY_LOAN_SHOP_V6145D__=true;
-  const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[m]));
+  const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
   const fmt=v=>{try{return window.formatDateHR?formatDateHR(String(v||'').slice(0,10)):String(v||'—').slice(0,10)||'—'}catch(e){return String(v||'—').slice(0,10)||'—'}};
   const toast=m=>{try{window.toast?window.toast(m):console.log(m)}catch(e){console.log(m)}};
   const sKey=s=>{const x=String(s||'pending').toLowerCase(); if(/partial|djelomi/.test(x))return 'partial'; if(/cancel|odbij|reject/.test(x))return 'cancelled'; if(/return|vrać|vrac|zatvor|closed/.test(x))return 'returned'; if(/issued|izdan|vani|active/.test(x))return 'issued'; return 'pending'};
