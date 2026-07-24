@@ -1,4 +1,15 @@
-# SOV web build v6.1.49
+# SOV web build v6.1.53
+
+## v6.1.53 — Oružarstvo: Posudbe
+
+- aktivni posao podijeljen je na jasne redove **Za izdati** i **Izdano vani**;
+- zahtjevi i aktivne posudbe prikazuju se kao jednostavni radni zapisi umjesto webshop kartica;
+- aktivne posudbe sortiraju se po roku, a prošli rok dobiva jasnu oznaku;
+- djelomično vraćena oprema ostaje među aktivnim posudbama;
+- ručni zahtjev i zatvorene posudbe sklopljeni su dok nisu potrebni;
+- plutajuća članska košarica više ne prekriva gumbe na admin ekranu;
+- desktop i mobilni prikaz usklađeni su s novim jednostavnijim Oružarstvom;
+- Supabase struktura, RLS i postojeći postupci izdavanja i povrata nisu mijenjani.
 
 ## v6.1.49 — Izleti single-loader hotfix
 
