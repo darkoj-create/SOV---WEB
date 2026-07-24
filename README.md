@@ -2,6 +2,7 @@
 
 ## v6.1.53 — Oružarstvo: Posudbe
 
+- produkcijski release pokrenut je nakon prolaska cijelog pre-release audita;
 - aktivni posao podijeljen je na jasne redove **Za izdati** i **Izdano vani**;
 - zahtjevi i aktivne posudbe prikazuju se kao jednostavni radni zapisi umjesto webshop kartica;
 - aktivne posudbe sortiraju se po roku, a prošli rok dobiva jasnu oznaku;
