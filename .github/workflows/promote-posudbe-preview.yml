@@ -7,25 +7,45 @@ on:
     paths:
       - '.github/workflows/promote-posudbe-preview.yml'
 
+permissions:
+  contents: write
+
 jobs:
   promote:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Promote ready preview to production
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/oruzar-posudbe-simple
+      - name: Promote final preview and record outcome
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ACCESS_TOKEN: ${{ secrets.VERCEL_ACCESS_TOKEN }}
         run: |
+          set +e
           TOKEN="${VERCEL_TOKEN:-${VERCEL_ACCESS_TOKEN:-}}"
+          RESULT=""
           if [ -z "$TOKEN" ]; then
-            echo "::error::Nema VERCEL_TOKEN ni VERCEL_ACCESS_TOKEN repozitorijskog secreta."
-            exit 1
+            RESULT="NO_VERCEL_TOKEN"
+          else
+            HTTP_CODE=$(curl --silent --show-error \
+              -X POST \
+              "https://api.vercel.com/v10/projects/prj_ZTOibsvMArAKWDzDm5OdyA3e8AEk/promote/dpl_GmFNBdFx5ABSMZWQSzjgc75wuRa7?teamId=team_72YtJZGNG5RSpPTPoWTyQgXR" \
+              -H "Authorization: Bearer $TOKEN" \
+              -H "Content-Type: application/json" \
+              -o /tmp/promote-response.json \
+              -w "%{http_code}")
+            RESULT="HTTP_${HTTP_CODE}"
+            if [ -s /tmp/promote-response.json ]; then
+              RESPONSE=$(tr '\n' ' ' < /tmp/promote-response.json | cut -c1-500)
+              RESULT="${RESULT} ${RESPONSE}"
+            fi
           fi
-          curl --fail-with-body --silent --show-error \
-            -X POST \
-            "https://api.vercel.com/v10/projects/prj_ZTOibsvMArAKWDzDm5OdyA3e8AEk/promote/dpl_HpLBG6XuoMPg8gddGLXV8NyDaGPE?teamId=team_72YtJZGNG5RSpPTPoWTyQgXR" \
-            -H "Authorization: Bearer $TOKEN" \
-            -H "Content-Type: application/json" \
-            -o /tmp/promote-response.json
-          cat /tmp/promote-response.json
+          printf '%s\n' "$RESULT" > PROMOTE_POSUDBE_RESULT.txt
+          git config user.name "SOV Deploy Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add PROMOTE_POSUDBE_RESULT.txt
+          git commit -m "Ops result: Posudbe promotion" || true
+          git push origin HEAD:agent/oruzar-posudbe-simple
+          exit 0
