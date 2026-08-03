@@ -1,35 +1,4 @@
-# SOV web build v6.1.53
-
-## v6.1.53 — Oružarstvo: Posudbe
-
-- produkcijski release pokrenut je nakon prolaska cijelog pre-release audita;
-- aktivni posao podijeljen je na jasne redove **Za izdati** i **Izdano vani**;
-- zahtjevi i aktivne posudbe prikazuju se kao jednostavni radni zapisi umjesto webshop kartica;
-- aktivne posudbe sortiraju se po roku, a prošli rok dobiva jasnu oznaku;
-- djelomično vraćena oprema ostaje među aktivnim posudbama;
-- ručni zahtjev i zatvorene posudbe sklopljeni su dok nisu potrebni;
-- plutajuća članska košarica više ne prekriva gumbe na admin ekranu;
-- desktop i mobilni prikaz usklađeni su s novim jednostavnijim Oružarstvom;
-- Supabase struktura, RLS i postojeći postupci izdavanja i povrata nisu mijenjani.
-
-## v6.1.49 — Izleti single-loader hotfix
-
-- uklonjen je dodatni `loadTrips` wrapper iz novog vizualnog sloja;
-- izvorna Izleti stranica ponovno je jedini vlasnik Supabase učitavanja, cachea i autosynca;
-- vizualni sloj više ne prepisuje refresh gumb niti pokreće vlastite pozive bazi;
-- uklonjena je MutationObserver DOM petlja na karticama;
-- human CSS i JS učitavaju se jednom, uz kratko skrivanje starog stila dok novi nije spreman;
-- release audit više nema write pristup i ne smije automatski prepisivati source ni vraćati staru verziju.
-
-## v6.1.48 — Oružarstvo
-
-- članski katalog opreme dobio je topliji, jednostavniji SOV izgled bez neon/SaaS estetike;
-- filteri, kategorije i podkategorije složeni su u čišći pregled;
-- korisnici vide samo dostupnost, bez točnih količina inventara;
-- košarica i zahtjevi rade urednije na desktopu i mobitelu;
-- katalog i zahtjevi automatski se osvježavaju pri povratku na stranicu, povratku interneta, Supabase promjenama i svakih 60 sekundi;
-- poslovna logika, Supabase tablice, RLS i autentikacija nisu mijenjani.
-
+# SOV web build v6.1.45ax
 
 ## v6.1.45ax — Gmail, Izleti, status i vizualno čišćenje
 

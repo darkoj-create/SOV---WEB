@@ -1,23 +1,23 @@
 {
   "app": "SOV web",
-  "version": "6.1.49",
-  "versionName": "v6.1.49-trips-single-loader",
-  "build": "sov-web-build-v6.1.49-trips-single-loader",
-  "createdAt": "2026-07-23T20:45:00+02:00",
-  "cacheBust": "6149-trips-single-loader",
-  "base": "sov-web-build-v6.1.48",
-  "requiresSql": false,
-  "sqlFiles": [],
-  "releaseType": "trips-single-loader-hotfix",
+  "version": "6.1.47",
+  "versionName": "v6.1.47-cloud-preuzimanja",
+  "build": "sov-web-build-v6.1.47-cloud-preuzimanja",
+  "createdAt": "2026-07-21T03:20:00+02:00",
+  "cacheBust": "6147-cloud-preuzimanja",
+  "base": "sov-web-build-v6.1.46-objekti-izleti-karta-ui",
+  "requiresSql": true,
+  "sqlFiles": [
+    "SUPABASE_SYNC_APK_OBJEKTI_20260721.sql"
+  ],
+  "releaseType": "dashboard-downloads",
   "changedFiles": [
-    "assets/sov-trips-human-v6146.js",
+    "dashboard.html",
+    "assets/sov-refine-v6146.css",
     "assets/sov-version.js",
-    ".github/workflows/pre-release-audit.yml",
-    "tools/fix_trips_default_upcoming.py",
-    "README.md",
     "VERSION.txt",
     "BUILD_VERSION.txt",
     "update.json"
   ],
-  "notes": "Izleti human layer is presentation-only again: it no longer wraps loadTrips, starts database refreshes, replaces the original refresh handler, or loops on identical DOM mutations. The original page remains the single owner of Supabase loading, cache and autosync. The pre-release audit is read-only and cannot auto-commit old release metadata."
+  "notes": "Cloud naslovnica: dvije nove kartice za preuzimanje - SOV 2.0 Android (APK) i SOV Field Hub (Windows), s inline SVG ikonama, otvaraju se u novoj kartici."
 }

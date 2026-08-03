@@ -1,501 +1,153 @@
-/* SOV dashboard — human club portal pass v6.1.45
-   Članski prostor, ne SaaS sučelje: teren, papir, jasni alati. */
+/* SOV dashboard daily UX polish v6.1.45s
+   Cilj: manje onboarding teksta, pravi logo, jasne akcije i AA focus stanja. */
 
-body.dashboard-page{
-  --dash-paper:#eee8dc;
-  --dash-paper-2:#f8f4eb;
-  --dash-ink:#252a24;
-  --dash-muted:#68685f;
-  --dash-green:#193b32;
-  --dash-green-2:#285548;
-  --dash-rust:#9a5535;
-  --dash-gold:#d2ad65;
-  --dash-line:#c9c0ae;
-  color:var(--dash-ink)!important;
-  background:
-    radial-gradient(circle at 15% 0%,rgba(255,255,255,.72),transparent 30%),
-    linear-gradient(180deg,#e9e2d5 0%,#f3eee5 44%,#e8e0d2 100%)!important;
-  font-family:Arial,Helvetica,sans-serif;
+body.dashboard-page .sov-dashboard-top{
+  gap:16px;
+  align-items:center;
+  border:1px solid rgba(255,255,255,.10);
+  background:linear-gradient(180deg,rgba(8,13,12,.88),rgba(8,13,12,.66));
+  backdrop-filter:blur(18px);
 }
 
-body.dashboard-page::before{
-  content:""!important;
-  position:fixed!important;
-  inset:0!important;
-  z-index:-1!important;
-  pointer-events:none!important;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.78' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E")!important;
-  mask-image:none!important;
-  background-size:180px 180px!important;
+body.dashboard-page .sov-dashboard-brand{
+  min-width:0;
+  text-decoration:none;
+  color:#f2fff8;
+  border-radius:999px;
+  padding:6px 10px 6px 6px;
+  background:rgba(255,255,255,.045);
+  border:1px solid rgba(255,255,255,.10);
 }
 
-body.dashboard-page .sov-shell{
-  width:min(1180px,calc(100% - 36px))!important;
-  margin:0 auto!important;
-  padding:0 0 68px!important;
+body.dashboard-page .sov-dashboard-brand:hover{
+  border-color:rgba(119,255,198,.38);
+  background:rgba(119,255,198,.08);
 }
 
-body.dashboard-page main{
-  display:grid!important;
-  gap:22px!important;
-  margin-top:0!important;
+body.dashboard-page .sov-brand-logo{
+  width:46px;
+  height:46px;
+  flex:0 0 auto;
+  border-radius:999px;
+  object-fit:contain;
+  background:#07100d;
+  box-shadow:0 0 0 1px rgba(255,255,255,.18),0 10px 30px rgba(0,0,0,.35);
 }
 
-body.dashboard-page .sov-member-top{
-  width:100%!important;
-  margin:0 auto 18px!important;
-  padding:13px 0!important;
-  border:0!important;
-  border-bottom:1px solid rgba(50,55,47,.22)!important;
-  border-radius:0!important;
-  background:transparent!important;
-  box-shadow:none!important;
-  backdrop-filter:none!important;
-  -webkit-backdrop-filter:none!important;
+body.dashboard-page .sov-brand-copy{
+  display:grid;
+  gap:1px;
+  min-width:0;
 }
-body.dashboard-page .sov-member-brand{
-  gap:10px!important;
-  color:var(--dash-ink)!important;
-  padding:0!important;
-}
-body.dashboard-page .sov-member-logo{
-  width:46px!important;
-  height:46px!important;
-  border:1px solid rgba(37,42,36,.18)!important;
-  box-shadow:0 4px 12px rgba(43,37,26,.12)!important;
-}
-body.dashboard-page .sov-member-brand-text strong{
-  font-size:0!important;
-  color:var(--dash-ink)!important;
-  font-family:Georgia,'Times New Roman',serif!important;
-}
-body.dashboard-page .sov-member-brand-text strong::after{
-  content:"SOV Velebit";
-  font-size:16px;
+
+body.dashboard-page .sov-brand-copy strong{
+  font-size:15px;
+  line-height:1.05;
   letter-spacing:.01em;
 }
-body.dashboard-page .sov-member-brand-text small{
-  font-size:0!important;
-  color:var(--dash-muted)!important;
-}
-body.dashboard-page .sov-member-brand-text small::after{
-  content:"Članski dio";
+
+body.dashboard-page .sov-brand-copy small{
+  color:rgba(226,244,236,.68);
   font-size:12px;
-  font-weight:700;
-}
-body.dashboard-page .sov-member-nav{gap:6px!important}
-body.dashboard-page .sov-member-link{
-  min-height:38px!important;
-  padding:8px 12px!important;
-  border:0!important;
-  border-radius:3px!important;
-  background:transparent!important;
-  color:#394039!important;
-  font-size:13px!important;
-  font-weight:800!important;
-}
-body.dashboard-page .sov-member-link:hover{
-  background:rgba(25,59,50,.08)!important;
-  color:var(--dash-green)!important;
-}
-body.dashboard-page .sov-member-link[href="dashboard.html"]{
-  background:var(--dash-green)!important;
-  color:#fffaf0!important;
-}
-body.dashboard-page .sov-member-logout{
-  color:#7c382a!important;
-  border-left:1px solid rgba(37,42,36,.18)!important;
-  margin-left:4px!important;
+  font-weight:800;
 }
 
-body.dashboard-page .sov-hero.clean-v609{
-  position:relative!important;
-  overflow:hidden!important;
-  min-height:420px!important;
-  padding:46px!important;
-  border:0!important;
-  border-radius:5px!important;
-  background:
-    linear-gradient(90deg,rgba(13,33,28,.93) 0%,rgba(13,33,28,.82) 43%,rgba(13,33,28,.36) 70%,rgba(13,33,28,.2) 100%),
-    url('news/demonstracija-tehnickog-penjanja_gorana-peric.jpg') center 42%/cover no-repeat!important;
-  box-shadow:0 18px 45px rgba(53,43,29,.2)!important;
+body.dashboard-page .sov-dashboard-nav{
+  gap:10px;
+  flex-wrap:wrap;
 }
-body.dashboard-page .sov-hero.clean-v609::after{
-  content:"foto: Gorana Perić";
-  position:absolute;
-  right:13px;
-  bottom:10px;
-  color:rgba(255,255,255,.72);
-  font-size:10px;
-  letter-spacing:.04em;
-  text-shadow:0 1px 3px rgba(0,0,0,.55);
+
+body.dashboard-page .sov-dashboard-nav a{
+  min-height:42px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:999px;
+  padding:10px 14px;
+  line-height:1;
+  font-weight:900;
+  text-decoration:none;
 }
-body.dashboard-page .sov-hero-grid{
-  position:relative!important;
-  z-index:1!important;
-  min-height:326px!important;
-  display:grid!important;
-  grid-template-columns:minmax(0,1fr) 280px!important;
-  gap:46px!important;
-  align-items:center!important;
+
+body.dashboard-page .sov-dashboard-nav .public-home{
+  color:#07100d;
+  background:linear-gradient(135deg,#d7f66f,#74ffd0);
+  border:1px solid rgba(215,246,111,.55);
+  box-shadow:0 12px 26px rgba(116,255,208,.13);
 }
-body.dashboard-page .v609-hero-copy{align-self:center!important}
-body.dashboard-page .sov-eyebrow{
-  display:inline-block!important;
-  padding:0 0 7px!important;
-  border:0!important;
-  border-bottom:1px solid rgba(239,222,181,.62)!important;
-  border-radius:0!important;
-  background:transparent!important;
-  color:#ead8ad!important;
-  font-size:0!important;
-  font-weight:800!important;
-  letter-spacing:.12em!important;
+
+body.dashboard-page .sov-dashboard-nav .logout-link{
+  color:#f2fff8;
+  background:rgba(255,255,255,.055);
+  border:1px solid rgba(255,255,255,.14);
 }
-body.dashboard-page .sov-eyebrow::after{
-  content:"ČLANSKI PROSTOR";
-  font-size:11px;
+
+body.dashboard-page .sov-dashboard-nav .logout-link:hover{
+  border-color:rgba(255,188,188,.38);
+  background:rgba(255,120,120,.09);
 }
-body.dashboard-page .v609-hero-copy h1{
-  max-width:720px!important;
-  margin:18px 0 10px!important;
-  color:#fffaf0!important;
-  font-family:Georgia,'Times New Roman',serif!important;
-  font-size:clamp(50px,7vw,86px)!important;
-  line-height:.94!important;
-  letter-spacing:-.045em!important;
-  text-shadow:0 3px 18px rgba(0,0,0,.28)!important;
+
+body.dashboard-page .sov-dashboard-brand:focus-visible,
+body.dashboard-page .sov-dashboard-nav a:focus-visible,
+body.dashboard-page .sov-btn:focus-visible,
+body.dashboard-page .sov-module:focus-visible{
+  outline:3px solid rgba(116,255,208,.95);
+  outline-offset:4px;
+  box-shadow:0 0 0 6px rgba(116,255,208,.16);
 }
-body.dashboard-page .v609-hero-copy p{
-  max-width:38ch!important;
-  margin:0!important;
-  color:rgba(255,250,240,.82)!important;
-  font-size:17px!important;
-  line-height:1.55!important;
-}
-body.dashboard-page .v609-action-row{
-  display:flex!important;
-  flex-wrap:wrap!important;
-  gap:8px!important;
-  margin-top:24px!important;
-}
-body.dashboard-page .sov-btn{
-  min-height:42px!important;
-  padding:0 15px!important;
-  border:1px solid rgba(255,250,240,.42)!important;
-  border-radius:3px!important;
-  background:rgba(9,24,20,.28)!important;
-  color:#fffaf0!important;
-  box-shadow:none!important;
-  font-size:13px!important;
-  font-weight:800!important;
-}
-body.dashboard-page .sov-btn:hover{
-  transform:translateY(-1px)!important;
-  background:rgba(255,250,240,.13)!important;
-  border-color:#fffaf0!important;
-}
-body.dashboard-page .sov-btn.main{
-  background:#f1dfb7!important;
-  color:#1b342d!important;
-  border-color:#f1dfb7!important;
-  box-shadow:0 6px 18px rgba(0,0,0,.16)!important;
+
+body.dashboard-page .sov-hero.clean-v609 p{
+  max-width:54ch;
 }
 
 body.dashboard-page .v609-status-card{
-  align-self:center!important;
-  padding:21px 20px!important;
-  border:1px solid rgba(91,72,43,.24)!important;
-  border-radius:2px!important;
-  background:#f4ecd9!important;
-  color:#2c302a!important;
-  box-shadow:7px 9px 0 rgba(20,38,32,.22),0 18px 40px rgba(0,0,0,.18)!important;
-  transform:rotate(1deg)!important;
+  align-self:stretch;
 }
-body.dashboard-page .v609-status-card::before{
-  content:"";
-  position:absolute;
-  width:72px;
-  height:18px;
-  left:50%;
-  top:-10px;
-  transform:translateX(-50%) rotate(-2deg);
-  background:rgba(216,192,139,.72);
-  box-shadow:0 1px 1px rgba(80,61,34,.15);
-}
+
 body.dashboard-page .v609-status-card h3{
-  margin:0 0 14px!important;
-  color:#26342d!important;
-  font-family:Georgia,'Times New Roman',serif!important;
-  font-size:19px!important;
+  margin-bottom:12px;
 }
-body.dashboard-page .v609-status-list{gap:0!important}
-body.dashboard-page .v609-status-item{
-  padding:12px 0!important;
-  border:0!important;
-  border-top:1px solid rgba(58,61,53,.18)!important;
-  border-radius:0!important;
-  background:transparent!important;
-}
-body.dashboard-page .v609-status-item span{
-  color:#777266!important;
-  font-size:10px!important;
-  letter-spacing:.08em!important;
-}
-body.dashboard-page .v609-status-item b{
-  color:#213a31!important;
-  font-size:17px!important;
+
+body.dashboard-page .v609-subtle-note,
+body.dashboard-page .v609-zone-tag{
+  display:none!important;
 }
 
 body.dashboard-page .v609-zone-head{
-  margin:15px 0 0!important;
-  padding:0 0 10px!important;
-  border-bottom:1px solid var(--dash-line)!important;
+  margin-top:22px;
+  margin-bottom:12px;
 }
+
 body.dashboard-page .v609-zone-head h2{
-  margin:0!important;
-  color:#2c332d!important;
-  font-family:Georgia,'Times New Roman',serif!important;
-  font-size:31px!important;
-  line-height:1.05!important;
-  letter-spacing:-.025em!important;
+  margin:0;
 }
 
-body.dashboard-page .sov-grid,
-body.dashboard-page .v609-grid-primary,
-body.dashboard-page .v609-grid-role{
-  display:grid!important;
-  grid-template-columns:repeat(3,minmax(0,1fr))!important;
-  gap:13px!important;
-}
-body.dashboard-page .sov-module.v609-module,
-body.dashboard-page .sov-panel{
-  position:relative!important;
-  overflow:hidden!important;
-  min-height:184px!important;
-  padding:20px 20px 50px!important;
-  border:1px solid var(--dash-line)!important;
-  border-radius:4px!important;
-  background:rgba(250,247,239,.94)!important;
-  color:var(--dash-ink)!important;
-  box-shadow:0 5px 15px rgba(56,47,34,.08)!important;
-  text-decoration:none!important;
-  transform:none!important;
-}
-body.dashboard-page .sov-module.v609-module::before{
-  content:"";
-  position:absolute;
-  left:0;
-  top:0;
-  width:100%;
-  height:4px;
-  background:var(--dash-green)!important;
-  opacity:.9;
-}
-body.dashboard-page .sov-module.v609-module:nth-child(3n+2)::before{background:var(--dash-rust)!important}
-body.dashboard-page .sov-module.v609-module:nth-child(3n+3)::before{background:#7e7045!important}
-body.dashboard-page a.sov-module:hover{
-  transform:translateY(-2px)!important;
-  border-color:#a79d89!important;
-  box-shadow:0 10px 24px rgba(56,47,34,.14)!important;
-}
-body.dashboard-page .sov-icon{
-  display:grid!important;
-  place-items:center!important;
-  width:38px!important;
-  height:38px!important;
-  border:1px solid rgba(61,66,57,.16)!important;
-  border-radius:50%!important;
-  background:#ebe3d3!important;
-  color:var(--dash-green)!important;
-  box-shadow:none!important;
-  font-size:19px!important;
-}
-body.dashboard-page .sov-icon svg{
-  width:22px!important;
-  height:22px!important;
-  stroke:currentColor!important;
-}
-body.dashboard-page .sov-module h3{
-  margin:15px 0 7px!important;
-  color:#253128!important;
-  font-family:Georgia,'Times New Roman',serif!important;
-  font-size:21px!important;
-  line-height:1.08!important;
-  letter-spacing:-.015em!important;
-}
-body.dashboard-page .sov-module p{
-  margin:0!important;
-  color:#68675f!important;
-  font-size:14px!important;
-  line-height:1.48!important;
-}
-body.dashboard-page .sov-module-foot{
-  position:absolute!important;
-  left:20px!important;
-  right:20px!important;
-  bottom:15px!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:space-between!important;
-  gap:8px!important;
-  border-top:1px solid rgba(84,82,72,.14)!important;
-  padding-top:10px!important;
-}
-body.dashboard-page .sov-soft{
-  color:#53625a!important;
-  font-size:12px!important;
-  font-weight:800!important;
-}
-body.dashboard-page .sov-tag{
-  min-height:22px!important;
-  padding:0 7px!important;
-  border:1px solid rgba(25,59,50,.22)!important;
-  border-radius:2px!important;
-  background:rgba(25,59,50,.07)!important;
-  color:var(--dash-green)!important;
-  font-size:10px!important;
-  font-weight:800!important;
-  text-transform:uppercase!important;
-  letter-spacing:.04em!important;
+@media(max-width:760px){
+  body.dashboard-page .sov-dashboard-top{
+    align-items:flex-start;
+  }
+  body.dashboard-page .sov-dashboard-brand{
+    width:100%;
+  }
+  body.dashboard-page .sov-dashboard-nav{
+    width:100%;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+  }
+  body.dashboard-page .sov-dashboard-nav a{
+    width:100%;
+  }
+  body.dashboard-page .sov-brand-logo{
+    width:42px;
+    height:42px;
+  }
 }
 
-body.dashboard-page .sov-module.v609-module.sov-download{
-  background:#213d34!important;
-  border-color:#213d34!important;
-  color:#fff8ea!important;
-}
-body.dashboard-page .sov-module.v609-module.sov-download::before{background:var(--dash-gold)!important}
-body.dashboard-page .sov-module.v609-module.sov-download .sov-icon{
-  background:rgba(255,248,234,.1)!important;
-  border-color:rgba(255,248,234,.18)!important;
-  color:#efd59b!important;
-}
-body.dashboard-page .sov-module.v609-module.sov-download h3{color:#fff8ea!important}
-body.dashboard-page .sov-module.v609-module.sov-download p{color:rgba(255,248,234,.72)!important}
-body.dashboard-page .sov-module.v609-module.sov-download .sov-module-foot{border-top-color:rgba(255,248,234,.16)!important}
-body.dashboard-page .sov-module.v609-module.sov-download .sov-soft{color:#f0dba8!important}
-body.dashboard-page .sov-module.v609-module.sov-download .sov-tag{
-  color:#f0dba8!important;
-  border-color:rgba(240,219,168,.32)!important;
-  background:rgba(240,219,168,.08)!important;
-}
-
-body.dashboard-page article.sov-module{
-  padding-bottom:20px!important;
-}
-body.dashboard-page .v609-mini-actions{
-  display:grid!important;
-  gap:7px!important;
-  margin-top:15px!important;
-}
-body.dashboard-page .v609-mini-actions a{
-  min-height:42px!important;
-  padding:10px 11px!important;
-  border:1px solid rgba(74,76,68,.18)!important;
-  border-radius:2px!important;
-  background:#eee7da!important;
-  color:#28352e!important;
-  box-shadow:none!important;
-}
-body.dashboard-page .v609-mini-actions a:hover{
-  background:#e5dccb!important;
-  border-color:#a79d89!important;
-}
-body.dashboard-page .v609-mini-actions a small{
-  color:#6d6a60!important;
-  font-size:11px!important;
-}
-
-body.dashboard-page .sov-member-link:focus-visible,
-body.dashboard-page .sov-member-brand:focus-visible,
-body.dashboard-page .sov-btn:focus-visible,
-body.dashboard-page .sov-module:focus-visible,
-body.dashboard-page .v609-mini-actions a:focus-visible{
-  outline:3px solid #b46b43!important;
-  outline-offset:3px!important;
-  box-shadow:none!important;
-}
-
-@media(max-width:980px){
-  body.dashboard-page .sov-shell{width:min(100% - 24px,900px)!important}
-  body.dashboard-page .sov-hero.clean-v609{
-    min-height:0!important;
-    padding:36px!important;
-    background-position:62% 44%!important;
+@media(max-width:390px){
+  body.dashboard-page .sov-dashboard-nav{
+    grid-template-columns:1fr;
   }
-  body.dashboard-page .sov-hero-grid{
-    grid-template-columns:minmax(0,1fr) 250px!important;
-    gap:28px!important;
+  body.dashboard-page .sov-hero.clean-v609 h1{
+    font-size:clamp(2.05rem,15vw,3rem);
   }
-  body.dashboard-page .sov-grid,
-  body.dashboard-page .v609-grid-primary,
-  body.dashboard-page .v609-grid-role{grid-template-columns:repeat(2,minmax(0,1fr))!important}
-}
-
-@media(max-width:720px){
-  body.dashboard-page .sov-shell{width:100%!important;padding:0 12px 44px!important}
-  body.dashboard-page .sov-member-top{
-    width:100%!important;
-    margin:0 0 12px!important;
-    padding:10px 0!important;
-    flex-direction:row!important;
-    align-items:center!important;
-    gap:10px!important;
-  }
-  body.dashboard-page .sov-member-brand{width:auto!important;flex:1 1 auto!important}
-  body.dashboard-page .sov-member-logo{width:40px!important;height:40px!important}
-  body.dashboard-page .sov-member-brand-text strong::after{font-size:14px!important}
-  body.dashboard-page .sov-member-brand-text small::after{font-size:11px!important}
-  body.dashboard-page .sov-member-nav{
-    width:auto!important;
-    display:flex!important;
-    grid-template-columns:none!important;
-    gap:3px!important;
-  }
-  body.dashboard-page .sov-member-link{
-    width:auto!important;
-    min-height:34px!important;
-    padding:8px 9px!important;
-    font-size:11px!important;
-  }
-  body.dashboard-page .sov-member-link[href="dashboard.html"]{display:none!important}
-  body.dashboard-page .sov-member-logout{margin-left:0!important}
-  body.dashboard-page .sov-hero.clean-v609{
-    padding:28px 22px 25px!important;
-    border-radius:3px!important;
-    background:
-      linear-gradient(180deg,rgba(12,32,27,.92) 0%,rgba(12,32,27,.78) 56%,rgba(12,32,27,.48) 100%),
-      url('news/demonstracija-tehnickog-penjanja_gorana-peric.jpg') 61% center/cover no-repeat!important;
-  }
-  body.dashboard-page .sov-hero-grid{
-    min-height:0!important;
-    grid-template-columns:1fr!important;
-    gap:26px!important;
-  }
-  body.dashboard-page .v609-hero-copy h1{font-size:clamp(46px,15vw,64px)!important}
-  body.dashboard-page .v609-hero-copy p{font-size:15px!important}
-  body.dashboard-page .v609-action-row{display:grid!important;grid-template-columns:1fr 1fr!important}
-  body.dashboard-page .sov-btn{width:100%!important;padding:0 9px!important;font-size:12px!important}
-  body.dashboard-page .v609-status-card{
-    width:min(100% - 18px,320px)!important;
-    justify-self:center!important;
-    transform:rotate(.5deg)!important;
-  }
-  body.dashboard-page .v609-zone-head h2{font-size:27px!important}
-  body.dashboard-page .sov-grid,
-  body.dashboard-page .v609-grid-primary,
-  body.dashboard-page .v609-grid-role{grid-template-columns:1fr!important;gap:10px!important}
-  body.dashboard-page .sov-module.v609-module,
-  body.dashboard-page .sov-panel{min-height:158px!important;padding:18px 18px 47px!important}
-  body.dashboard-page article.sov-module{padding-bottom:18px!important}
-  body.dashboard-page .sov-module-foot{left:18px!important;right:18px!important;bottom:13px!important}
-}
-
-@media(max-width:420px){
-  body.dashboard-page .sov-member-brand-text small{display:none!important}
-  body.dashboard-page .sov-member-link{padding:8px 7px!important;font-size:10.5px!important}
-  body.dashboard-page .v609-action-row{grid-template-columns:1fr!important}
-  body.dashboard-page .sov-hero.clean-v609{padding:24px 18px!important}
-  body.dashboard-page .sov-hero.clean-v609::after{font-size:9px!important}
 }

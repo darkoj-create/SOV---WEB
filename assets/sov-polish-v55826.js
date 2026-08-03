@@ -24,8 +24,6 @@
   }
   function polishHomepage(){
     if(PAGE!=='index.html') return;
-    const obsoleteSubtitle=document.querySelector('.portal-hero .portal-sub');
-    if(obsoleteSubtitle) obsoleteSubtitle.remove();
     const actions=document.querySelector('.hero-actions');
     if(actions && !actions.querySelector('.hero-cloud')){
       const cloud=document.createElement('a'); cloud.className='hero-cloud'; cloud.href='dashboard.html'; cloud.textContent='Otvori SOV Cloud';

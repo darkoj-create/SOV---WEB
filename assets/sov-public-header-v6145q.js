@@ -1,4 +1,4 @@
-// Homepage retro loader is also backed by a direct HTML stylesheet link.
+
 (function(){
   const navItems=[
     ['index.html','Novosti'],
@@ -14,16 +14,6 @@
     if(p==='') p='index.html';
     return p;
   }
-  function loadHomepageRetroStyle(){
-    if(pageName()!=='index.html')return;
-    if(document.querySelector('link[data-sov-home-retro]'))return;
-    const link=document.createElement('link');
-    link.rel='stylesheet';
-    link.href='assets/sov-home-retro-v6151.css?v=6.1.51';
-    link.setAttribute('data-sov-home-retro','');
-    document.head.appendChild(link);
-  }
-  loadHomepageRetroStyle();
   function isActive(href,current){
     if(current==='index.html' && href==='index.html') return true;
     if(current==='vijest.html' && href==='vijesti.html') return true;
@@ -59,37 +49,6 @@
       document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ header.classList.remove('is-open'); btn.setAttribute('aria-expanded','false'); }});
     }
   }
-  function normalizeHomepageHero(){
-    if(pageName()!=='index.html') return;
-    document.body.classList.add('sov-home-retro');
-    document.body.classList.remove('index-menu-open');
-    document.querySelectorAll('.index-menu-toggle,.index-hero-chips').forEach(el=>el.remove());
-    const hero=document.querySelector('.portal-hero');
-    const title=hero&&hero.querySelector('h1');
-    if(title)title.textContent='Speleološki odsjek Velebit';
-    hero&&hero.querySelectorAll('.portal-sub').forEach(el=>el.remove());
-    const actions=hero&&hero.querySelector('.hero-actions');
-    if(actions){
-      actions.innerHTML=`
-        <a class="hero-join" href="pridruzi-nam-se.html">Pridruži nam se</a>
-        <a class="hero-ghost" href="speleoskola.html">Speleoškola</a>
-        <div class="hero-utility-links" aria-label="Brzi linkovi">
-          <a href="#galerija">Galerija</a>
-          <a href="dashboard.html">SOV Cloud</a>
-          <a href="vijesti.html">Sve vijesti</a>
-        </div>`;
-    }
-    const stats=hero&&hero.querySelector('.hero-stats');
-    if(stats){
-      stats.classList.add('home-stats-strip');
-      hero.insertAdjacentElement('afterend',stats);
-    }
-  }
-  function simplifyHomepageCards(){
-    if(pageName()!=='index.html')return;
-    document.querySelectorAll('.news-copy em,.quick-inner a p,.video-mini p,.link-card p,.section-head p').forEach(el=>el.remove());
-    document.querySelectorAll('.news-card,.news-side-card,.news-featured').forEach(card=>card.classList.add('sov-title-only-card'));
-  }
   function fixAboutSubnav(){
     const nav=document.querySelector('.public-tabs-v609');
     if(!nav) return;
@@ -117,8 +76,6 @@
     document.body.classList.add('sov-public-final');
     normalizeLinks();
     installHeader();
-    normalizeHomepageHero();
-    simplifyHomepageCards();
     normalizeLinks();
     fixAboutSubnav();
     fixThumbs();

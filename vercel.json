@@ -2,8 +2,6 @@
   "cleanUrls": false,
   "trailingSlash": false,
   "redirects": [
-    {"source":"/:path*","has":[{"type":"host","value":"sov-web.vercel.app"}],"destination":"https://www.so-velebit.hr/:path*","permanent":true},
-    {"source":"/:path*","has":[{"type":"host","value":"so-velebit.hr"}],"destination":"https://www.so-velebit.hr/:path*","permanent":true},
     {"source":"/system-status","destination":"/system-status.html","permanent":false},
     {"source":"/system-status/","destination":"/system-status.html","permanent":false},
     {"source":"/sov-system-status","destination":"/system-status.html","permanent":false},

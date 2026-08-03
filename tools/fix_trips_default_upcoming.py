@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
-"""Ensure Trips opens on fresh, upcoming items without changing release metadata."""
+"""Make Trips open on fresh, upcoming items for the visible month."""
 from __future__ import annotations
 
+import json
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -9,6 +11,13 @@ PAGE = ROOT / 'izleti-cloud.html'
 
 text = PAGE.read_text(encoding='utf-8')
 original = text
+
+text = re.sub(
+    r'<script src="assets/sov-trips-cloud\.js\?v=[^"]+"></script>',
+    '<script src="assets/sov-trips-cloud.js?v=6.1.45ay"></script>',
+    text,
+    count=1,
+)
 
 text = text.replace(
     '<select class="select" id="statusFilter"><option value="">Svi statusi</option>',
@@ -42,11 +51,19 @@ text = text.replace(
     1,
 )
 
+text = re.sub(
+    r'<script defer="" src="assets/sov-version\.js\?v=[^"]+"></script>',
+    '<script defer="" src="assets/sov-version.js?v=6.1.45ay"></script>',
+    text,
+    count=1,
+)
+
 required = [
     'value="upcoming" selected>Nadolazeći ovaj mjesec',
     "status==='upcoming'",
     "loadTrips({force:true}).finally(startTripsAutoSync)",
     'Nema nadolazećih izleta u ovom mjesecu.',
+    'sov-trips-cloud.js?v=6.1.45ay',
 ]
 for marker in required:
     if marker not in text:
@@ -56,4 +73,41 @@ if text != original:
     PAGE.write_text(text, encoding='utf-8')
     print('izleti-cloud.html')
 
-print('Trips default upcoming behavior is ready; release metadata was not changed.')
+(ROOT / 'VERSION.txt').write_text('6.1.45ay\n', encoding='utf-8')
+(ROOT / 'BUILD_VERSION.txt').write_text('sov-web-build-v6.1.45ay-trips-auto-upcoming\n', encoding='utf-8')
+
+version_path = ROOT / 'assets' / 'sov-version.js'
+version = version_path.read_text(encoding='utf-8')
+version = re.sub(r"const FALLBACK_VERSION='[^']+';", "const FALLBACK_VERSION='6.1.45ay';", version, count=1)
+version = re.sub(r"const FALLBACK_CACHE='[^']+';", "const FALLBACK_CACHE='6145ay-trips-auto-upcoming';", version, count=1)
+version = re.sub(r"const FALLBACK_BUILD='[^']+';", "const FALLBACK_BUILD='sov-web-build-v6.1.45ay-trips-auto-upcoming';", version, count=1)
+version = re.sub(r"const FALLBACK_NAME='[^']+';", "const FALLBACK_NAME='v6.1.45ay-trips-auto-upcoming';", version, count=1)
+version_path.write_text(version, encoding='utf-8')
+
+manifest_path = ROOT / 'update.json'
+manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
+manifest.update({
+    'version': '6.1.45ay',
+    'versionName': 'v6.1.45ay-trips-auto-upcoming',
+    'build': 'sov-web-build-v6.1.45ay-trips-auto-upcoming',
+    'createdAt': '2026-07-21T00:10:00+02:00',
+    'cacheBust': '6145ay-trips-auto-upcoming',
+    'base': 'sov-web-build-v6.1.45ax-gmail-trips-status-visual',
+    'requiresSql': False,
+    'sqlFiles': [],
+    'releaseType': 'trips-default-and-autoload',
+    'changedFiles': [
+        'izleti-cloud.html',
+        'tools/fix_trips_default_upcoming.py',
+        'tools/trips_default_upcoming_test.mjs',
+        '.github/workflows/pre-release-audit.yml',
+        'VERSION.txt',
+        'BUILD_VERSION.txt',
+        'assets/sov-version.js',
+        'update.json'
+    ],
+    'notes': 'Trips now force-load fresh data on entry, keep cached rows visible while loading, auto-refresh in the background, and default to upcoming planned/active trips in the visible month.'
+})
+manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+
+print('Trips default upcoming fix ready.')
