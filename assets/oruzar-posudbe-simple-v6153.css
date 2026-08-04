@@ -1,0 +1,75 @@
+/* v6.1.53 — Posudbe: compact operational workspace. */
+body.oruzar-page-posudbe{background:linear-gradient(180deg,#e8e0d3 0,#f4efe6 45%,#ebe3d6 100%)!important;color:#252a24!important}
+body.oruzar-page-posudbe::before{display:none!important}
+.oruzar-page-posudbe .cm-shell{width:min(1180px,calc(100% - 32px))!important;margin:0 auto!important;padding:0 0 56px!important}
+.oruzar-page-posudbe .sov-member-top{width:100%!important;margin-bottom:8px!important}
+.oruzar-page-posudbe .cm-hero{margin:0 0 16px!important;padding:22px 0 17px!important;border:0!important;border-bottom:1px solid #c9c0ae!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
+.oruzar-page-posudbe .cm-hero::after{display:none!important}
+.oruzar-page-posudbe .cm-hero::before{content:"ORUŽARSTVO";display:block;margin-bottom:6px;color:#9a5037;font-size:11px;font-weight:900;letter-spacing:.14em}
+.oruzar-page-posudbe .cm-hero h1{margin:0!important;color:#193b32!important;font-size:0!important;line-height:.96!important;letter-spacing:-.05em!important}
+.oruzar-page-posudbe .cm-hero h1::after{content:"Posudbe";font-size:clamp(38px,5vw,54px)}
+.oruzar-page-posudbe .cm-hero p,.oruzar-page-posudbe .cm-hero .eyebrow{display:none!important}
+
+.oruzar-page-posudbe .shop-page-intro{margin:0 0 12px!important;padding:14px 16px!important;border:1px solid #c9c0ae!important;border-radius:5px!important;background:#fffdf7!important;box-shadow:none!important;color:#252a24!important}
+.oruzar-page-posudbe .shop-page-intro h2{color:#193b32!important;font-size:22px!important}
+.oruzar-page-posudbe .shop-page-intro .cta{align-items:center!important}
+.oruzar-page-posudbe .shop-page-intro .badge{border-radius:3px!important;padding:7px 10px!important;background:#eee7da!important;border-color:#c9c0ae!important;color:#394039!important}
+.oruzar-page-posudbe .shop-page-intro .badge.warn{background:#f5e7c8!important;border-color:#d4b873!important;color:#6e4b13!important}
+.oruzar-page-posudbe .shop-page-intro .badge.ok{background:#dfece5!important;border-color:#9cb9a9!important;color:#214a3b!important}
+
+.oruzar-page-posudbe .shop-loan-board{grid-template-columns:1.15fr .85fr!important;gap:12px!important;margin-top:0!important}
+.oruzar-page-posudbe .shop-lane{min-height:0!important;padding:16px!important;border:1px solid #c9c0ae!important;border-radius:5px!important;background:#fffdf7!important;box-shadow:0 7px 18px rgba(59,49,34,.06)!important;color:#252a24!important}
+.oruzar-page-posudbe .shop-lane-head{align-items:center!important;margin-bottom:10px!important;padding-bottom:9px!important;border-bottom:1px solid #ddd4c5!important}
+.oruzar-page-posudbe .shop-lane-head h2{margin:0!important;color:#193b32!important;font-size:0!important}
+.oruzar-page-posudbe .shop-loan-board .shop-lane:first-child .shop-lane-head h2::after{content:"Za izdati";font-size:24px}
+.oruzar-page-posudbe .shop-loan-board .shop-lane:nth-child(2) .shop-lane-head h2::after{content:"Izdano vani";font-size:24px}
+.oruzar-page-posudbe #loansRoot>section.shop-lane .shop-lane-head h2::after{content:"Zatvorene posudbe";font-size:21px}
+.oruzar-page-posudbe .shop-lane-count{min-width:34px;height:34px;border-radius:3px!important;background:#eee7da!important;border-color:#c9c0ae!important;color:#193b32!important}
+
+.oruzar-page-posudbe .shop-loan-card{margin-bottom:8px!important;padding:13px!important;border:1px solid #d4ccbe!important;border-left:4px solid #193b32!important;border-radius:4px!important;background:#fff!important;color:#252a24!important;box-shadow:none!important}
+.oruzar-page-posudbe .shop-loan-card .top{align-items:flex-start!important}
+.oruzar-page-posudbe .shop-loan-card b{color:#20372e!important;font-size:16px!important}
+.oruzar-page-posudbe .shop-loan-card small{color:#666b65!important}
+.oruzar-page-posudbe .shop-order-items{margin:9px 0!important;gap:5px!important}
+.oruzar-page-posudbe .shop-pill{border-radius:3px!important;padding:5px 7px!important;background:#eee7da!important;border-color:#d4ccbe!important;color:#394039!important;font-size:11px!important}
+.oruzar-page-posudbe .shop-loan-actions{margin-top:10px!important;gap:7px!important}
+.oruzar-page-posudbe .shop-loan-actions button{padding:9px 11px!important;border:1px solid #bcb29f!important;border-radius:3px!important;background:#f4eee3!important;color:#394039!important;font-size:12px!important}
+.oruzar-page-posudbe .shop-loan-actions button.primary{background:#193b32!important;border-color:#193b32!important;color:#fffaf0!important}
+.oruzar-page-posudbe .badge{border-radius:3px!important}
+
+.oruzar-page-posudbe .shop-manual-box{margin-top:12px!important;padding-top:12px!important;border-top:1px dashed #c9c0ae!important}
+.oruzar-page-posudbe .shop-manual-box h3{margin:0!important;color:#6b6e68!important;font-size:0!important;cursor:pointer}
+.oruzar-page-posudbe .shop-manual-box h3::after{content:"Ručni zahtjev";font-size:15px}
+.oruzar-page-posudbe .shop-manual-grid{margin-top:9px!important;grid-template-columns:1.2fr 1fr .45fr!important}
+.oruzar-page-posudbe .shop-manual-grid input,.oruzar-page-posudbe .shop-manual-grid textarea{border:1px solid #bfb5a3!important;border-radius:3px!important;background:#fffdf7!important;color:#252a24!important;font-weight:700!important}
+.oruzar-page-posudbe .shop-manual-grid .btn{border-radius:3px!important;background:#193b32!important;color:#fffaf0!important}
+
+.oruzar-page-posudbe #loansRoot>section.shop-lane{margin-top:12px!important;padding:12px 16px!important;background:rgba(255,253,247,.65)!important;box-shadow:none!important}
+.oruzar-page-posudbe #loansRoot>section.shop-lane .shop-order-list{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+.oruzar-page-posudbe .shop-order-card{padding:12px!important;border:1px solid #d4ccbe!important;border-radius:4px!important;background:#fff!important;box-shadow:none!important}
+.oruzar-page-posudbe .shop-order-top h3{color:#20372e!important;font-size:16px!important}
+.oruzar-page-posudbe .shop-order-top small,.oruzar-page-posudbe .shop-order-meta{color:#666b65!important}
+.oruzar-page-posudbe .shop-pipeline{display:none!important}
+.oruzar-page-posudbe .shop-empty{padding:18px!important;border:1px dashed #c9c0ae!important;border-radius:4px!important;background:#f7f2e8!important;color:#6b6e68!important}
+.oruzar-page-posudbe .shop-floating-cart{display:none!important}
+
+@media(max-width:900px){
+  .oruzar-page-posudbe .shop-loan-board{grid-template-columns:1fr!important}
+  .oruzar-page-posudbe #loansRoot>section.shop-lane .shop-order-list{grid-template-columns:1fr!important}
+}
+@media(max-width:760px){
+  .oruzar-page-posudbe .cm-shell{width:min(100% - 20px,1180px)!important;padding-bottom:40px!important}
+  .oruzar-page-posudbe .cm-hero{padding:15px 0 13px!important;margin-bottom:12px!important}
+  .oruzar-page-posudbe .cm-hero h1::after{font-size:39px!important}
+  .oruzar-page-posudbe .shop-page-intro{display:flex!important;align-items:center!important;padding:12px!important}
+  .oruzar-page-posudbe .shop-page-intro h2{font-size:20px!important}
+  .oruzar-page-posudbe .shop-lane{padding:12px!important}
+  .oruzar-page-posudbe .shop-loan-actions{display:grid!important;grid-template-columns:1fr 1fr!important}
+  .oruzar-page-posudbe .shop-loan-actions button{width:100%!important}
+  .oruzar-page-posudbe .shop-manual-grid,.oruzar-page-posudbe .shop-manual-grid[style]{grid-template-columns:1fr!important}
+}
+@media(max-width:430px){
+  .oruzar-page-posudbe .shop-page-intro{display:grid!important}
+  .oruzar-page-posudbe .shop-page-intro .cta{justify-content:flex-start!important}
+  .oruzar-page-posudbe .shop-loan-actions{grid-template-columns:1fr!important}
+}
