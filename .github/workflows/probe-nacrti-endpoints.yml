@@ -9,28 +9,65 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: Probe current drawings fast-search endpoint
+      - name: Compare Android 2.0.6 with live drawings index
         shell: bash
         run: |
-          set +e
-          base='https://script.google.com/macros/s/AKfycbx1Hg_s6mAdWgB7p559USC8dAMIhteJQ3RFhFgp8rkqzYEVqMfwZm-lrl2v7UmW8gvSyg/exec'
-          urls=(
-            "$base?action=listDrawings&limit=2000"
-            "$base?action=search&query=Kopitarka"
-            "$base?action=searchDrawings&query=Kopitarka"
-          )
-          i=0
-          for u in "${urls[@]}"; do
-            i=$((i+1))
-            echo "=== CURRENT $i ==="
-            curl -L -sS --connect-timeout 10 --max-time 60 -D /tmp/h$i.txt -o /tmp/b$i.txt "$u"
-            rc=$?
-            echo "curl_rc=$rc"
-            echo "--- headers ---"
-            sed -n '1,50p' /tmp/h$i.txt
-            echo "--- body first 16000 bytes ---"
-            head -c 16000 /tmp/b$i.txt
-            echo
-            echo "--- body size ---"
-            wc -c /tmp/b$i.txt
+          set -euo pipefail
+          apk='https://github.com/darkoj-create/SOV-APP/releases/download/v2.0.6-mbtiles-open-with/app-release.apk'
+          endpoint='https://script.google.com/macros/s/AKfycbx1Hg_s6mAdWgB7p559USC8dAMIhteJQ3RFhFgp8rkqzYEVqMfwZm-lrl2v7UmW8gvSyg/exec?action=listDrawings&limit=2000'
+          echo 'Downloading Android APK...'
+          curl -L --fail --retry 3 -sS -o /tmp/app.apk "$apk"
+          echo "APK bytes: $(stat -c%s /tmp/app.apk)"
+          idx=$(unzip -Z1 /tmp/app.apk | grep -E '(^|/)nacrti_bundled/index\.json$' | head -1)
+          echo "Android index path: $idx"
+          test -n "$idx"
+          unzip -p /tmp/app.apk "$idx" > /tmp/android-index.json
+          curl -L --fail --retry 3 -sS -o /tmp/web-index.json "$endpoint"
+          python - <<'PY'
+          import json,re,unicodedata
+          A=json.load(open('/tmp/android-index.json',encoding='utf-8'))
+          W=json.load(open('/tmp/web-index.json',encoding='utf-8'))
+          def norm(s):
+              s=unicodedata.normalize('NFC',str(s or '')).lower().strip()
+              s=re.sub(r'\.(webp|png|jpe?g|tiff?|gif|pdf)$','',s)
+              s=re.sub(r'[^0-9a-zčćžšđ]+','_',s).strip('_')
+              return s
+          verified=[d for d in A.get('drawings',[]) if d.get('matchStatus')=='verified' and d.get('recordId')]
+          web=W.get('drawings',[])
+          by={}
+          for d in web:
+              by.setdefault(norm(d.get('fileName') or d.get('name')),[]).append(d)
+          matched=[]; missing=[]; ambiguous=[]
+          for d in verified:
+              c=by.get(norm(d.get('fileName')),[])
+              if len(c)==1: matched.append((d,c[0]))
+              elif len(c)>1: ambiguous.append((d,c))
+              else: missing.append(d)
+          print('ANDROID_TOTAL',A.get('count') or A.get('totalCount'))
+          print('ANDROID_VERIFIED_FILES',len(verified))
+          print('ANDROID_VERIFIED_OBJECTS',len({str(d['recordId']) for d in verified}))
+          print('WEB_ENDPOINT_FILES',len(web))
+          print('MATCHED_FILES',len(matched))
+          print('MATCHED_OBJECTS',len({str(d['recordId']) for d,_ in matched}))
+          print('AMBIGUOUS_FILES',len(ambiguous))
+          print('MISSING_FILES',len(missing))
+          print('MISSING_OBJECTS',len({str(d['recordId']) for d in missing}))
+          print('MISSING_BYTES',sum(int(d.get('sizeBytes') or 0) for d in missing))
+          for name in ('Kopitarka','Kozje tajne','Ledeno gnijezdo'):
+              rows=[d for d in missing if name.lower() in str(d.get('fileName','')).lower()]
+              print('TEST',name,[(r.get('fileName'),r.get('recordId'),r.get('sizeBytes')) for r in rows])
+          if matched:
+              d,w=matched[0]
+              print('PUBLIC_PROBE_ID',w.get('fileId'))
+              print('PUBLIC_PROBE_NAME',w.get('fileName'))
+              open('/tmp/probe-id','w').write(str(w.get('fileId') or ''))
+          PY
+          id=$(cat /tmp/probe-id)
+          echo "Testing unauthenticated web-index Drive file: $id"
+          for u in "https://drive.google.com/thumbnail?id=$id&sz=w420" "https://drive.google.com/uc?export=download&id=$id"; do
+            curl -L -sS --max-time 30 -D /tmp/h -o /tmp/body "$u"
+            echo "URL=$u"
+            tail -n 25 /tmp/h
+            file /tmp/body
+            wc -c /tmp/body
           done
