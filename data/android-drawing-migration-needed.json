@@ -1,0 +1,692 @@
+{
+  "androidVerifiedFiles": 961,
+  "androidVerifiedObjects": 499,
+  "canonicalCount": 1039,
+  "safeMatchedFiles": 876,
+  "safeMatchedObjects": 454,
+  "neededFiles": 85,
+  "neededObjects": 58,
+  "neededBytes": 60069545,
+  "needed": [
+    {
+      "fileName": "05-1026_Magični portal_nacrt.pdf",
+      "recordId": "1607",
+      "mimeType": "application/pdf",
+      "sizeBytes": 1790861,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "05-1026_Uske muke_nacrt.pdf",
+      "recordId": "1621",
+      "mimeType": "application/pdf",
+      "sizeBytes": 925819,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "05-1105_Zečev ponor_nacrt.webp",
+      "recordId": "477",
+      "mimeType": "image/webp",
+      "sizeBytes": 97902,
+      "matchStatus": "verified",
+      "candidateCount": 2
+    },
+    {
+      "fileName": "05-1105_Zečev ponor_nacrt_2.webp",
+      "recordId": "477",
+      "mimeType": "image/webp",
+      "sizeBytes": 99272,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "05-1125_Speleološki odušak_nacrt.pdf",
+      "recordId": "1617",
+      "mimeType": "application/pdf",
+      "sizeBytes": 1583552,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "05-1127_Mišolovka_nacrt.pdf",
+      "recordId": "1609",
+      "mimeType": "application/pdf",
+      "sizeBytes": 846659,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "05-1128_Malo gnijezdo_nacrt.pdf",
+      "recordId": "1608",
+      "mimeType": "application/pdf",
+      "sizeBytes": 919646,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "05-1162_Sponzoruša_nacrt.pdf",
+      "recordId": "1618",
+      "mimeType": "application/pdf",
+      "sizeBytes": 771714,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "05-1163_But_nacrt.pdf",
+      "recordId": "1588",
+      "mimeType": "application/pdf",
+      "sizeBytes": 471367,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "05-1167_Seksipilna vaga_nacrt.pdf",
+      "recordId": "1615",
+      "mimeType": "application/pdf",
+      "sizeBytes": 515097,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "05-1170_Zzzzzz_nacrt.pdf",
+      "recordId": "1623",
+      "mimeType": "application/pdf",
+      "sizeBytes": 385557,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "05-1173_Špilja pod tugama_nacrt.pdf",
+      "recordId": "1619",
+      "mimeType": "application/pdf",
+      "sizeBytes": 513131,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "05-1176_Halapenjo_nacrt.pdf",
+      "recordId": "1592",
+      "mimeType": "application/pdf",
+      "sizeBytes": 563065,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "05-1177_Kilava sarma_nacrt.pdf",
+      "recordId": "1598",
+      "mimeType": "application/pdf",
+      "sizeBytes": 859341,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "05-1178_Mjesečev meandar_nacrt.pdf",
+      "recordId": "1610",
+      "mimeType": "application/pdf",
+      "sizeBytes": 625043,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "05-1179_Jamica s pogledom na Velikom Rajincu_nacrt.pdf",
+      "recordId": "1596",
+      "mimeType": "application/pdf",
+      "sizeBytes": 582161,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "05-1180_Kozje tajne_nacrt.pdf",
+      "recordId": "1601",
+      "mimeType": "application/pdf",
+      "sizeBytes": 888648,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "05-1183_La jama desnuda_nacrt.pdf",
+      "recordId": "1604",
+      "mimeType": "application/pdf",
+      "sizeBytes": 1816430,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "05-1185_Jedina od četiri_nacrt.pdf",
+      "recordId": "1597",
+      "mimeType": "application/pdf",
+      "sizeBytes": 912595,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "05-1186_Hvala na strpljenju_nacrt.pdf",
+      "recordId": "1593",
+      "mimeType": "application/pdf",
+      "sizeBytes": 814081,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "05-1187_Ledeno gnijezdo_nacrt.pdf",
+      "recordId": "1605",
+      "mimeType": "application/pdf",
+      "sizeBytes": 762127,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "05-1188_U potrazi za izgubljenim logorom_nacrt.pdf",
+      "recordId": "1620",
+      "mimeType": "application/pdf",
+      "sizeBytes": 1349122,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "05-1189_Fata je fata_nacrt.pdf",
+      "recordId": "1590",
+      "mimeType": "application/pdf",
+      "sizeBytes": 2631339,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "05-1192_Jama izgubljenog reflektora_nacrt.pdf",
+      "recordId": "1589",
+      "mimeType": "application/pdf",
+      "sizeBytes": 958668,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "05-1198_Utješna_nacrt.pdf",
+      "recordId": "1622",
+      "mimeType": "application/pdf",
+      "sizeBytes": 1117208,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "05-1199_Balov_nacrt.pdf",
+      "recordId": "1587",
+      "mimeType": "application/pdf",
+      "sizeBytes": 1587643,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "05-1201_Gorski prištić_nacrt.pdf",
+      "recordId": "1591",
+      "mimeType": "application/pdf",
+      "sizeBytes": 864281,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "05-1205_Puževa smrt_nacrt.pdf",
+      "recordId": "1614",
+      "mimeType": "application/pdf",
+      "sizeBytes": 615660,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "05-1209_Lojtrica_nacrt.pdf",
+      "recordId": "1606",
+      "mimeType": "application/pdf",
+      "sizeBytes": 1740237,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "05-1210_Klekača_nacrt.pdf",
+      "recordId": "1599",
+      "mimeType": "application/pdf",
+      "sizeBytes": 557679,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "05-1212_Overkill klekača_nacrt.pdf",
+      "recordId": "1612",
+      "mimeType": "application/pdf",
+      "sizeBytes": 1209981,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "05-1213_Nije duga_nacrt.pdf",
+      "recordId": "1611",
+      "mimeType": "application/pdf",
+      "sizeBytes": 980497,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "05-1247_(Ne)radni disto_nacrt.pdf",
+      "recordId": "1586",
+      "mimeType": "application/pdf",
+      "sizeBytes": 596834,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "05-215 Nedam-i-se_nacrt.pdf",
+      "recordId": "950",
+      "mimeType": "application/pdf",
+      "sizeBytes": 3764224,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "05-215 Nedam-i-se_nacrt.webp",
+      "recordId": "950",
+      "mimeType": "image/webp",
+      "sizeBytes": 68534,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "05-708_Vinkino neshvaćanje_nacrt.pdf",
+      "recordId": "1388",
+      "mimeType": "application/pdf",
+      "sizeBytes": 1836156,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "05-726_Kokobre_nacrt.pdf",
+      "recordId": "1376",
+      "mimeType": "application/pdf",
+      "sizeBytes": 1811236,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "05-851_Torov čekić_nacrt.pdf",
+      "recordId": "969",
+      "mimeType": "application/pdf",
+      "sizeBytes": 804297,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "05-896_Krušljiva čokolada_nacrt.pdf",
+      "recordId": "1602",
+      "mimeType": "application/pdf",
+      "sizeBytes": 904217,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "05-921_Čierna Diera_nacrt.pdf",
+      "recordId": "878",
+      "mimeType": "application/pdf",
+      "sizeBytes": 1292028,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "Dru_U017eanica_II__Dru_U017eanica_II.webp",
+      "recordId": "488",
+      "mimeType": "image/webp",
+      "sizeBytes": 274424,
+      "matchStatus": "verified",
+      "candidateCount": 2
+    },
+    {
+      "fileName": "Druzanica_II.webp",
+      "recordId": "488",
+      "mimeType": "image/webp",
+      "sizeBytes": 274424,
+      "matchStatus": "verified",
+      "candidateCount": 2
+    },
+    {
+      "fileName": "Grgo_U0161eva_U0161pilja__Grgo_U0161eva_U0161pilja.webp",
+      "recordId": "101",
+      "mimeType": "image/webp",
+      "sizeBytes": 189048,
+      "matchStatus": "verified",
+      "candidateCount": 2
+    },
+    {
+      "fileName": "Jama za stijenama_nacrt.webp",
+      "recordId": "692",
+      "mimeType": "image/webp",
+      "sizeBytes": 68734,
+      "matchStatus": "verified",
+      "candidateCount": 2
+    },
+    {
+      "fileName": "Jama za stijenama_nacrt_2.webp",
+      "recordId": "692",
+      "mimeType": "image/webp",
+      "sizeBytes": 52980,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "Jambrisakovo_vrelo__05-947_Jambrisakovo_vrelo_nacrt.webp",
+      "recordId": "486",
+      "mimeType": "image/webp",
+      "sizeBytes": 88808,
+      "matchStatus": "verified",
+      "candidateCount": 2
+    },
+    {
+      "fileName": "Klekača.pdf",
+      "recordId": "1599",
+      "mimeType": "application/pdf",
+      "sizeBytes": 590450,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "Klekača_ispravak.pdf",
+      "recordId": "1599",
+      "mimeType": "application/pdf",
+      "sizeBytes": 557658,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "Kolarska_gora_I__Kolarska_gora_I_nacrt.webp",
+      "recordId": "613",
+      "mimeType": "image/webp",
+      "sizeBytes": 101302,
+      "matchStatus": "verified",
+      "candidateCount": 2
+    },
+    {
+      "fileName": "Kolarska_gora_IV__05-828_Kolarska_gora_IV_nacrt.webp",
+      "recordId": "1011",
+      "mimeType": "image/webp",
+      "sizeBytes": 75628,
+      "matchStatus": "verified",
+      "candidateCount": 2
+    },
+    {
+      "fileName": "Krušljiva čokolada - nacrt.pdf",
+      "recordId": "1602",
+      "mimeType": "application/pdf",
+      "sizeBytes": 488939,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "La jama desnuda.pdf",
+      "recordId": "1604",
+      "mimeType": "application/pdf",
+      "sizeBytes": 2293471,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "Mamet_nacrt_1968.webp",
+      "recordId": "801",
+      "mimeType": "image/webp",
+      "sizeBytes": 134314,
+      "matchStatus": "verified",
+      "candidateCount": 2
+    },
+    {
+      "fileName": "Mamet_nacrt_1968_2.webp",
+      "recordId": "801",
+      "mimeType": "image/webp",
+      "sizeBytes": 128918,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "Mišolovka_nacrt.pdf",
+      "recordId": "1609",
+      "mimeType": "application/pdf",
+      "sizeBytes": 1180881,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "Overkill_klekača.pdf",
+      "recordId": "1612",
+      "mimeType": "application/pdf",
+      "sizeBytes": 1250806,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "punjeta.pdf",
+      "recordId": "1613",
+      "mimeType": "application/pdf",
+      "sizeBytes": 1359821,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "Rokina bezdana_veliki nacrt.webp",
+      "recordId": "75",
+      "mimeType": "image/webp",
+      "sizeBytes": 307142,
+      "matchStatus": "verified",
+      "candidateCount": 2
+    },
+    {
+      "fileName": "Rokina bezdana_veliki nacrt_2.webp",
+      "recordId": "75",
+      "mimeType": "image/webp",
+      "sizeBytes": 216720,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "sponzoruša.pdf",
+      "recordId": "1618",
+      "mimeType": "application/pdf",
+      "sizeBytes": 230582,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "Talijanova buža_nacrt(1).webp",
+      "recordId": "640",
+      "mimeType": "image/webp",
+      "sizeBytes": 37558,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "Talijanova buža_nacrt.webp",
+      "recordId": "640",
+      "mimeType": "image/webp",
+      "sizeBytes": 37558,
+      "matchStatus": "verified",
+      "candidateCount": 2
+    },
+    {
+      "fileName": "U potrazi za izgubljenim logorom.pdf",
+      "recordId": "1620",
+      "mimeType": "application/pdf",
+      "sizeBytes": 2125901,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "Vitkovača_nacrt(1).webp",
+      "recordId": "732",
+      "mimeType": "image/webp",
+      "sizeBytes": 41562,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "Vitkovača_nacrt.webp",
+      "recordId": "732",
+      "mimeType": "image/webp",
+      "sizeBytes": 41562,
+      "matchStatus": "verified",
+      "candidateCount": 2
+    },
+    {
+      "fileName": "Vražić špilja_nacrt(1).webp",
+      "recordId": "81",
+      "mimeType": "image/webp",
+      "sizeBytes": 273046,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "Vražić špilja_nacrt.webp",
+      "recordId": "81",
+      "mimeType": "image/webp",
+      "sizeBytes": 273046,
+      "matchStatus": "verified",
+      "candidateCount": 2
+    },
+    {
+      "fileName": "Zazidana (Suva) pećina_nacrt_2023(1).webp",
+      "recordId": "857",
+      "mimeType": "image/webp",
+      "sizeBytes": 131942,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "Zazidana (Suva) pećina_nacrt_2023.webp",
+      "recordId": "857",
+      "mimeType": "image/webp",
+      "sizeBytes": 131942,
+      "matchStatus": "verified",
+      "candidateCount": 2
+    },
+    {
+      "fileName": "Zzzzzz_nacrt.pdf",
+      "recordId": "1623",
+      "mimeType": "application/pdf",
+      "sizeBytes": 242775,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "Špilja s kaskadama_nacrt(1).webp",
+      "recordId": "52",
+      "mimeType": "image/webp",
+      "sizeBytes": 286498,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "Špilja s kaskadama_nacrt.webp",
+      "recordId": "52",
+      "mimeType": "image/webp",
+      "sizeBytes": 286498,
+      "matchStatus": "verified",
+      "candidateCount": 2
+    },
+    {
+      "fileName": "Špilja u kamenolomu Debeljača_nacrt(1).webp",
+      "recordId": "239",
+      "mimeType": "image/webp",
+      "sizeBytes": 147646,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "Špilja u kamenolomu Debeljača_nacrt.webp",
+      "recordId": "239",
+      "mimeType": "image/webp",
+      "sizeBytes": 147646,
+      "matchStatus": "verified",
+      "candidateCount": 2
+    },
+    {
+      "fileName": "Špilja u kamenolomu Tounj_nacrt(1).webp",
+      "recordId": "1195",
+      "mimeType": "image/webp",
+      "sizeBytes": 571032,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "Špilja u kamenolomu Tounj_nacrt.webp",
+      "recordId": "1195",
+      "mimeType": "image/webp",
+      "sizeBytes": 571032,
+      "matchStatus": "verified",
+      "candidateCount": 2
+    },
+    {
+      "fileName": "Špilja u kanjonu Dobre_nacrt(1).webp",
+      "recordId": "190",
+      "mimeType": "image/webp",
+      "sizeBytes": 875452,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "Špilja u kanjonu Dobre_nacrt.webp",
+      "recordId": "190",
+      "mimeType": "image/webp",
+      "sizeBytes": 875452,
+      "matchStatus": "verified",
+      "candidateCount": 3
+    },
+    {
+      "fileName": "Špilja u kanjonu Dobre_nacrt_2.webp",
+      "recordId": "190",
+      "mimeType": "image/webp",
+      "sizeBytes": 72704,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "Špilja_pod_tugama.pdf",
+      "recordId": "1619",
+      "mimeType": "application/pdf",
+      "sizeBytes": 793873,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "Jama u šumi na pločama 1_nacrt.pdf",
+      "recordId": "528",
+      "mimeType": "application/pdf",
+      "sizeBytes": 28595,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "Jama u šumi na pločama 1_skenirani nacrt.pdf",
+      "recordId": "528",
+      "mimeType": "application/pdf",
+      "sizeBytes": 69833,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "05-219 MR_skenirani nacrt.webp",
+      "recordId": "1570",
+      "mimeType": "image/webp",
+      "sizeBytes": 650178,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "MR_poligonski vlak_profil.pdf",
+      "recordId": "1570",
+      "mimeType": "application/pdf",
+      "sizeBytes": 5367,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    },
+    {
+      "fileName": "Patkov gušt_nacrt.webp",
+      "recordId": "543",
+      "mimeType": "image/webp",
+      "sizeBytes": 51888,
+      "matchStatus": "verified",
+      "candidateCount": 0
+    }
+  ]
+}
