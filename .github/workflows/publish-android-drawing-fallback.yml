@@ -43,7 +43,6 @@ jobs:
           w=json.load(open('/tmp/web-index.json',encoding='utf-8'))
           z=zipfile.ZipFile('/tmp/app.apk')
           names=z.namelist()
-          by_nfc={unicodedata.normalize('NFC',n):n for n in names}
 
           def norm(s):
               s=unicodedata.normalize('NFC',str(s or '')).lower().strip()
@@ -55,7 +54,36 @@ jobs:
           for d in w.get('drawings',[]):
               web_by.setdefault(norm(d.get('fileName') or d.get('name')),[]).append(d)
 
-          out=[]; fallback=[]; drive=0; ambiguous=0; missing=0
+          zip_assets=[]
+          zip_by_norm={}
+          for member in names:
+              if not member.startswith('assets/nacrti_bundled/') or member.endswith('/') or member.endswith('/index.json'):
+                  continue
+              base=member.rsplit('/',1)[-1]
+              zip_assets.append((member,base))
+              zip_by_norm.setdefault(norm(base),[]).append((member,base))
+
+          def resolve_apk_asset(original):
+              exact='assets/nacrti_bundled/'+original
+              if exact in names:
+                  return exact,original
+              cands=zip_by_norm.get(norm(original),[])
+              if not cands:
+                  raise SystemExit(f'APK asset missing by normalized name: {original}')
+              original_ext=Path(original).suffix.lower()
+              same_ext=[x for x in cands if Path(x[1]).suffix.lower()==original_ext]
+              if same_ext:
+                  cands=same_ext
+              else:
+                  preferred=[x for x in cands if Path(x[1]).suffix.lower() in ('.webp','.png','.jpg','.jpeg')]
+                  if preferred:
+                      cands=preferred
+              cands=sorted(cands,key=lambda x:(0 if Path(x[1]).suffix.lower()=='.webp' else 1,len(x[1]),x[1]))
+              chosen=cands[0]
+              print('APK_VARIANT',original,'->',chosen[1], 'candidates=',len(cands))
+              return chosen
+
+          out=[]; fallback=[]; drive=0; ambiguous=0; missing=0; variants=0
           verified=[d for d in a.get('drawings',[]) if d.get('matchStatus')=='verified' and d.get('recordId')]
           for d in verified:
               original=str(d.get('fileName') or '')
@@ -81,19 +109,20 @@ jobs:
               else:
                   ambiguous += int(len(candidates)>1)
                   missing += int(len(candidates)==0)
-                  ext=Path(original).suffix.lower() or '.bin'
+                  member,actual_name=resolve_apk_asset(original)
+                  variants += int(actual_name != original)
+                  ext=Path(actual_name).suffix.lower() or '.bin'
                   safe=f"d_{entry['object_id']}_{hashlib.sha1(original.encode('utf-8')).hexdigest()[:16]}{ext}"
-                  member='assets/nacrti_bundled/'+original
-                  member=by_nfc.get(unicodedata.normalize('NFC',member),member)
-                  if member not in names:
-                      raise SystemExit(f'APK member missing: {original}')
                   target=Path('/tmp/fallback-assets')/safe
                   target.write_bytes(z.read(member))
+                  actual_mime=mimetypes.guess_type(actual_name)[0] or entry['mime_type'] or 'application/octet-stream'
                   entry.update({
                       'drive_file_id':'',
+                      'mime_type':actual_mime,
+                      'file_size':target.stat().st_size,
                       'public_url':f'https://github.com/darkoj-create/SOV---WEB/releases/download/drawings-android-v206-v3/{safe}',
                       'source':'android_v206_release_fallback',
-                      'source_file_name':original,
+                      'source_file_name':actual_name,
                   })
                   fallback.append(entry)
               out.append(entry)
@@ -107,12 +136,13 @@ jobs:
               'fallback_files':len(fallback),
               'ambiguous_hosted':ambiguous,
               'missing_hosted':missing,
+              'apk_variants_resolved':variants,
               'drawings':out,
           }
           js='// Generated from SOV Android 2.0.6 bundled matcher v3 + live drawings fast index.\nwindow.SOVAndroidDrawingSources='+json.dumps(payload,ensure_ascii=False,separators=(',',':'))+';\n'
           Path('assets/android-nacrti-sources.js').write_text(js,encoding='utf-8')
-          print(json.dumps({k:payload[k] for k in ('android_files','verified_files','verified_objects','drive_files','fallback_files','ambiguous_hosted','missing_hosted')},ensure_ascii=False))
-          print('fallback_bytes',sum(Path('/tmp/fallback-assets',p.name).stat().st_size for p in Path('/tmp/fallback-assets').iterdir()))
+          print(json.dumps({k:payload[k] for k in ('android_files','verified_files','verified_objects','drive_files','fallback_files','ambiguous_hosted','missing_hosted','apk_variants_resolved')},ensure_ascii=False))
+          print('fallback_bytes',sum(p.stat().st_size for p in Path('/tmp/fallback-assets').iterdir() if p.is_file()))
           PY
 
       - name: Create or update public fallback release
