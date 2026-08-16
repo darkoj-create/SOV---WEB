@@ -1,0 +1,72 @@
+name: Apply Android drawing map
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/apply-android-nacrti-map.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch-karta:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Patch karta to use Android verified drawing links
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('karta.html')
+          text = path.read_text(encoding='utf-8')
+
+          map_script = '<script src="assets/android-nacrti-map.js?v=2.0.6"></script>'
+          anchor = '<script src="assets/sov-map-db.js?v=5.58.26"></script>'
+          if map_script not in text:
+              if anchor not in text:
+                  raise SystemExit('sov-map-db script anchor not found')
+              text = text.replace(anchor, anchor + '\n' + map_script, 1)
+
+          old_lookup = "function drawingsForObject(o){return drawingsByObject.get(String(o.id))||drawingsByObject.get(String(o.source_id))||[]}"
+          new_lookup = "function drawingsForObject(o){return drawingsByObject.get(String(o.object_id))||drawingsByObject.get(String(o.id))||drawingsByObject.get(String(o.source_id))||[]}"
+          if old_lookup in text:
+              text = text.replace(old_lookup, new_lookup, 1)
+          elif new_lookup not in text:
+              raise SystemExit('drawingsForObject anchor not found')
+
+          old_loader = "async function loadDrawings(){try{const sb=window.SOVAuth&&SOVAuth.getClient&&SOVAuth.getClient();if(!sb)return;const {data,error}=await sb.from('speleo_object_drawings').select('object_id,drive_file_id,drive_file_name,mime_type,file_size,match_score,match_status,metadata').limit(10000);if(error)throw error;(data||[]).forEach(r=>{const k=String(r.object_id||'');if(!k)return;if(!drawingsByObject.has(k))drawingsByObject.set(k,[]);drawingsByObject.get(k).push({...r,name:r.drive_file_name})})}catch(e){console.warn('Nacrti nisu učitani',e)}}"
+          new_loader = "async function loadDrawings(){try{const sb=window.SOVAuth&&SOVAuth.getClient&&SOVAuth.getClient();if(!sb)return;let androidMap={};try{androidMap=await(window.SOVAndroidDrawingMap||Promise.resolve({}))}catch(e){console.warn('Android nacrti map nije učitan, koristim web veze',e)}const normName=s=>String(s||'').normalize('NFC').toLowerCase().replace(/\\.(png|jpg|jpeg|tif|tiff|gif)$/i,'.webp');const androidByNorm=new Map(Object.entries(androidMap||{}).map(([name,id])=>[normName(name),String(id)]));const {data,error}=await sb.from('speleo_object_drawings').select('object_id,drive_file_id,drive_file_name,mime_type,file_size,match_score,match_status,metadata').limit(10000);if(error)throw error;let androidMatched=0,remapped=0;(data||[]).forEach(r=>{const file=String(r.drive_file_name||'');const androidId=(androidMap&&androidMap[file])||androidByNorm.get(normName(file))||'';const webId=String(r.object_id||'');const k=String(androidId||webId);if(!k)return;if(androidId){androidMatched++;if(webId&&webId!==String(androidId))remapped++}if(!drawingsByObject.has(k))drawingsByObject.set(k,[]);drawingsByObject.get(k).push({...r,object_id:k,name:r.drive_file_name,android_record_id:androidId||null})});window.SOV_DRAWINGS_STATUS={loaded:(data||[]).length,androidVerified:Object.keys(androidMap||{}).length,androidMatched,remapped,objects:drawingsByObject.size}}catch(e){console.warn('Nacrti nisu učitani',e)}}"
+          if old_loader in text:
+              text = text.replace(old_loader, new_loader, 1)
+          elif new_loader not in text:
+              raise SystemExit('loadDrawings anchor not found')
+
+          path.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Verify patch
+        run: |
+          grep -q 'android-nacrti-map.js?v=2.0.6' karta.html
+          grep -q 'SOV_DRAWINGS_STATUS' karta.html
+          git diff --check
+
+      - name: Commit patch
+        run: |
+          if git diff --quiet; then
+            echo "Karta already patched."
+            exit 0
+          fi
+          git config user.name "SOV Web Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add karta.html
+          git commit -m "fix(karta): use Android verified drawing associations"
+          git pull --rebase origin main
+          git push origin HEAD:main
