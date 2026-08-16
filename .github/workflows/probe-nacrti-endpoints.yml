@@ -8,83 +8,30 @@ permissions:
 jobs:
   probe:
     runs-on: ubuntu-latest
-    env:
-      APK_URL: https://github.com/darkoj-create/SOV-APP/releases/download/v2.0.6-mbtiles-open-with/app-release.apk
-      DRAWINGS_ENDPOINT: https://script.google.com/macros/s/AKfycbx1Hg_s6mAdWgB7p559USC8dAMIhteJQ3RFhFgp8rkqzYEVqMfwZm-lrl2v7UmW8gvSyg/exec?action=listDrawings&limit=2000
     steps:
       - uses: actions/checkout@v4
         with:
           ref: main
           fetch-depth: 0
-      - name: Build exact migration-needed manifest
-        shell: bash
+      - name: Flatten true missing drawings
         run: |
-          set -euo pipefail
-          curl -L --fail --retry 3 -sS -o /tmp/app.apk "$APK_URL"
-          curl -L --fail --retry 3 -sS -o /tmp/web-index.json "$DRAWINGS_ENDPOINT"
-          idx=$(unzip -Z1 /tmp/app.apk | grep -E '(^|/)nacrti_bundled/index\.json$' | head -1)
-          unzip -p /tmp/app.apk "$idx" > /tmp/android-index.json
           python - <<'PY'
-          import json,re,unicodedata
+          import json
           from pathlib import Path
-          A=json.load(open('/tmp/android-index.json',encoding='utf-8'))
-          W=json.load(open('/tmp/web-index.json',encoding='utf-8'))
-          def nfc(s): return unicodedata.normalize('NFC',str(s or '')).strip()
-          def norm(s):
-              s=nfc(s).lower()
-              s=re.sub(r'\.(webp|png|jpe?g|tiff?|gif|pdf|svg)$','',s)
-              s=re.sub(r'[^0-9a-zčćžšđ]+','_',s).strip('_')
-              return s
-          web=W.get('drawings',[])
-          by={}
-          for d in web: by.setdefault(norm(d.get('fileName') or d.get('name')),[]).append(d)
-          verified=[d for d in A.get('drawings',[]) if d.get('matchStatus')=='verified' and d.get('recordId')]
-          needed=[]; matched=[]
-          for d in verified:
-              fn=nfc(d.get('fileName'))
-              size=int(d.get('sizeBytes') or 0)
-              c=by.get(norm(fn),[])
-              chosen=[]
-              if len(c)==1:
-                  chosen=c
-              elif len(c)>1:
-                  exact=[x for x in c if nfc(x.get('fileName') or x.get('name'))==fn]
-                  exact_size=[x for x in exact if size and int(x.get('sizeBytes') or x.get('fileSize') or 0)==size]
-                  any_size=[x for x in c if size and int(x.get('sizeBytes') or x.get('fileSize') or 0)==size]
-                  if len(exact_size)==1: chosen=exact_size
-                  elif len(exact)==1: chosen=exact
-                  elif len(any_size)==1: chosen=any_size
-              if chosen:
-                  matched.append({'fileName':fn,'recordId':str(d['recordId']),'webFileId':str(chosen[0].get('fileId') or '')})
-              else:
-                  needed.append({
-                    'fileName':fn,
-                    'recordId':str(d['recordId']),
-                    'mimeType':str(d.get('mimeType') or ''),
-                    'sizeBytes':size,
-                    'matchStatus':'verified',
-                    'candidateCount':len(c)
-                  })
-          payload={
-            'androidVerifiedFiles':len(verified),
-            'androidVerifiedObjects':len({str(d['recordId']) for d in verified}),
-            'canonicalCount':len(web),
-            'safeMatchedFiles':len(matched),
-            'safeMatchedObjects':len({x['recordId'] for x in matched}),
-            'neededFiles':len(needed),
-            'neededObjects':len({x['recordId'] for x in needed}),
-            'neededBytes':sum(x['sizeBytes'] for x in needed),
-            'needed':needed
-          }
-          Path('data/android-drawing-migration-needed.json').write_text(json.dumps(payload,ensure_ascii=False,indent=2),encoding='utf-8')
-          print(json.dumps({k:v for k,v in payload.items() if k!='needed'},ensure_ascii=False))
-          for x in needed: print('NEEDED',x['recordId'],x['sizeBytes'],x['candidateCount'],x['fileName'])
+          p=json.load(open('data/android-drawing-migration-needed.json',encoding='utf-8'))
+          rows=[x for x in p['needed'] if int(x.get('candidateCount') or 0)==0]
+          lines=['recordId\tsizeBytes\tmimeType\tfileName']
+          lines += [f"{x['recordId']}\t{x['sizeBytes']}\t{x['mimeType']}\t{x['fileName']}" for x in rows]
+          Path('data/android-drawing-migration-copy.tsv').write_text('\n'.join(lines)+'\n',encoding='utf-8')
+          print('TRUE_MISSING_FILES',len(rows))
+          print('TRUE_MISSING_OBJECTS',len({x['recordId'] for x in rows}))
+          print('TRUE_MISSING_BYTES',sum(x['sizeBytes'] for x in rows))
           PY
-      - name: Commit manifest
+      - name: Commit flat manifest
         run: |
           git config user.name 'SOV Web Bot'
           git config user.email 'actions@users.noreply.github.com'
-          git add data/android-drawing-migration-needed.json
-          git commit -m 'chore: record Android drawing migration gap'
+          git add data/android-drawing-migration-copy.tsv
+          git commit -m 'chore: flatten true Android drawing gap'
           git pull --rebase origin main
           git push origin HEAD:main
