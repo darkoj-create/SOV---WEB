@@ -65,3 +65,24 @@ body.sov-arhivar-embedded .sov-member-top{display:none!important}
   .sov-member-brand-text strong{font-size:13px}
   .sov-member-brand-text small{font-size:11px}
 }
+
+/* SOV v6.1.45aj — karta: čitljiv puni opis objekta u desnoj kartici. */
+.details .aw-map-section > summary{
+  font-family:var(--sov-font-sans,"Segoe UI",Arial,sans-serif)!important;
+  font-size:13px!important;
+  line-height:1.35!important;
+  letter-spacing:.01em!important;
+}
+.details .aw-map-section > div{
+  font-family:var(--sov-font-reading,"Segoe UI",Arial,sans-serif)!important;
+  font-size:16.5px!important;
+  line-height:1.68!important;
+  font-weight:400!important;
+  letter-spacing:0!important;
+  color:#eef6f3!important;
+  overflow-wrap:anywhere;
+  text-wrap:pretty;
+}
+@media(max-width:760px){
+  .details .aw-map-section > div{font-size:16px!important;line-height:1.7!important}
+}
