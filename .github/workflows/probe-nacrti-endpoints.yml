@@ -9,26 +9,28 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: Probe legacy drawing endpoints
+      - name: Probe Android drawing Drive access
         shell: bash
         run: |
           set +e
+          id='1V51-WMbssZIlKnr6AO3p0YyUDSCbsUVz'
           urls=(
-            'https://script.google.com/macros/s/AKfycbzwlsS5no_CKOBOifofJ2ORxdaW3DVoxodLiytGr43HqOlaeF5YhKS2R472CMkFkpAkEg/exec'
-            'https://script.google.com/macros/s/AKfycbzouUA3OsI9bis6WGDpBy2c8SIKs4ejkwZRGIHoy0MLCLNPyp35zJoBMiV1bYIlvEkmpw/exec'
+            "https://drive.google.com/uc?export=download&id=$id"
+            "https://drive.usercontent.google.com/download?id=$id&export=download&confirm=t"
+            "https://drive.google.com/thumbnail?id=$id&sz=w420"
+            "https://drive.google.com/file/d/$id/preview"
           )
           i=0
           for u in "${urls[@]}"; do
             i=$((i+1))
-            echo "=== ENDPOINT $i ==="
+            echo "=== DRIVE $i ==="
             curl -L -sS --connect-timeout 10 --max-time 30 -D /tmp/h$i.txt -o /tmp/b$i.txt "$u"
             rc=$?
             echo "curl_rc=$rc"
             echo "--- headers ---"
-            sed -n '1,40p' /tmp/h$i.txt
-            echo "--- body first 12000 bytes ---"
-            head -c 12000 /tmp/b$i.txt
-            echo
-            echo "--- body size ---"
+            sed -n '1,50p' /tmp/h$i.txt
+            echo "--- body signature ---"
+            file /tmp/b$i.txt
             wc -c /tmp/b$i.txt
+            head -c 40 /tmp/b$i.txt | xxd
           done
