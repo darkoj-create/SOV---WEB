@@ -234,7 +234,51 @@ function fitCurrent(){const pts=visible.filter(hasMapPoint);if(!pts.length){map.
 function fitAllOnBoot(){const pts=all.filter(hasMapPoint);if(!pts.length){map.setView([44.86,15.45],7);return}const b=L.latLngBounds(pts.map(o=>[Number(o.lat),Number(o.lon)]));setTimeout(()=>{map.invalidateSize();map.fitBounds(b,{padding:[56,56],maxZoom:12})},80)}function toggleMarkers(){markersVisible=!markersVisible;drawMarkers()}
 function kmlFor(arr){let k='<?xml version="1.0" encoding="UTF-8"?><kml xmlns="http://www.opengis.net/kml/2.2"><Document><name>Karta objekata export</name>';arr.filter(hasMapPoint).forEach(o=>{k+='<Placemark><name>'+esc(o.name)+'</name><description>'+esc([statusLabel(o),o.object_type_final,o.cadastral_number,o.nearest_place].filter(Boolean).join(' | '))+'</description><Point><coordinates>'+o.lon+','+o.lat+',0</coordinates></Point></Placemark>'});return k+'</Document></kml>'}function downloadBlob(data,name,type){const blob=new Blob([data],{type});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}function exportVisibleKml(){downloadBlob(kmlFor(visible),'sov-karta-rezultati.kml','application/vnd.google-earth.kml+xml')}function exportOneKml(id){const o=all.find(x=>String(mapDetailId(x))===String(id)||String(x.id)===String(id)||String(x.source_id)===String(id));if(o)downloadBlob(kmlFor([o]),'sov-'+safeName(o.name||o.object_name)+'.kml','application/vnd.google-earth.kml+xml')}
 function drawingsForObject(o){return drawingsByObject.get(String(o.object_id))||drawingsByObject.get(String(o.id))||drawingsByObject.get(String(o.source_id))||[]}function drawingThumbUrl(d,large=false){const id=d.drive_file_id||d.id;if(!id)return '';const n=String(d.name||d.drive_file_name||'').toLowerCase();if(/\.(jpg|jpeg|png|webp|gif|svg|pdf)$/i.test(n)||String(d.mime_type||d.mimeType||'').includes('image'))return 'https://drive.google.com/thumbnail?id='+encodeURIComponent(id)+'&sz='+(large?'w2000':'w420');return ''}function drawingPreviewUrl(d){const id=d.drive_file_id||d.id;if(!id)return '';const n=String(d.name||d.drive_file_name||'').toLowerCase();if(/\.(jpg|jpeg|png|webp|gif|svg)$/i.test(n)||String(d.mime_type||d.mimeType||'').includes('image'))return drawingThumbUrl(d,true);return 'https://drive.google.com/file/d/'+encodeURIComponent(id)+'/preview'}function renderDrawings(arr){if(!arr.length)return '';return '<div class="sectionTitle">Nacrti</div><div class="drawingList">'+arr.slice(0,8).map((d,i)=>{const name=d.name||d.drive_file_name||'Nacrt';const th=drawingThumbUrl(d,false);return '<div class="drawingItem" onclick="openPreviewForSelected('+i+')">'+(th?'<img src="'+escAttr(th)+'" loading="lazy" alt="'+escAttr(name)+'">':'<div></div>')+'<div><b>'+esc(name)+'</b><small>Otvori pregled</small></div></div>'}).join('')+'</div>'}function openPreviewForSelected(i){const arr=selected?drawingsForObject(selected):[];const d=arr[i];if(!d)return;const title=d.name||d.drive_file_name||'Nacrt';$('previewTitle').textContent=title;const url=drawingPreviewUrl(d);$('previewBody').innerHTML=url?(url.includes('/preview')?'<iframe src="'+escAttr(url)+'"></iframe>':'<img src="'+escAttr(url)+'" alt="'+escAttr(title)+'">'):'<p class="meta">Nema preview URL-a.</p>';$('previewOverlay').classList.add('show')}function closePreview(){$('previewOverlay').classList.remove('show');$('previewBody').innerHTML=''}
-async function loadDrawings(){try{const sb=window.SOVAuth&&SOVAuth.getClient&&SOVAuth.getClient();if(!sb)return;let androidMap={};try{androidMap=await(window.SOVAndroidDrawingMap||Promise.resolve({}))}catch(e){console.warn('Android nacrti map nije učitan, koristim web veze',e)}const normName=s=>String(s||'').normalize('NFC').toLowerCase().replace(/\.(png|jpg|jpeg|tif|tiff|gif)$/i,'.webp');const androidByNorm=new Map(Object.entries(androidMap||{}).map(([name,id])=>[normName(name),String(id)]));const {data,error}=await sb.from('speleo_object_drawings').select('object_id,drive_file_id,drive_file_name,mime_type,file_size,match_score,match_status,metadata').limit(10000);if(error)throw error;let androidMatched=0,remapped=0;(data||[]).forEach(r=>{const file=String(r.drive_file_name||'');const androidId=(androidMap&&androidMap[file])||androidByNorm.get(normName(file))||'';const webId=String(r.object_id||'');const k=String(androidId||webId);if(!k)return;if(androidId){androidMatched++;if(webId&&webId!==String(androidId))remapped++}if(!drawingsByObject.has(k))drawingsByObject.set(k,[]);drawingsByObject.get(k).push({...r,object_id:k,name:r.drive_file_name,android_record_id:androidId||null})});window.SOV_DRAWINGS_STATUS={loaded:(data||[]).length,androidVerified:Object.keys(androidMap||{}).length,androidMatched,remapped,objects:drawingsByObject.size}}catch(e){console.warn('Nacrti nisu učitani',e)}}
+async function loadDrawings(){
+  drawingsByObject.clear();
+  let androidMap={};
+  try{androidMap=await(window.SOVAndroidDrawingMap||Promise.resolve({}))}catch(e){console.warn('Android nacrti map nije učitan',e)}
+  const normName=s=>String(s||'').normalize('NFC').toLowerCase().replace(/\.(png|jpg|jpeg|tif|tiff|gif)$/i,'.webp');
+  const androidByNorm=new Map(Object.entries(androidMap||{}).map(([name,id])=>[normName(name),String(id)]));
+  const seen=new Set();
+  let canonicalLoaded=0,canonicalMatched=0,supabaseLoaded=0,remapped=0;
+  const add=(r,webId='')=>{
+    const file=String(r.fileName||r.drive_file_name||r.name||'');
+    const androidId=(androidMap&&androidMap[file])||androidByNorm.get(normName(file))||'';
+    const k=String(androidId||webId||'');
+    if(!k)return false;
+    const driveId=String(r.fileId||r.drive_file_id||r.id||'');
+    const dedupe=driveId||k+'|'+file;
+    if(seen.has(dedupe))return false;
+    seen.add(dedupe);
+    if(androidId&&webId&&webId!==String(androidId))remapped++;
+    const row={...r,object_id:k,drive_file_id:driveId,drive_file_name:file,name:file,mime_type:r.mimeType||r.mime_type||'',file_size:r.sizeBytes||r.file_size||'',android_record_id:androidId||null};
+    if(!drawingsByObject.has(k))drawingsByObject.set(k,[]);
+    drawingsByObject.get(k).push(row);
+    return !!androidId;
+  };
+  try{
+    const base=String(window.SOV_DRAWINGS_SYNC_ENDPOINT||'').trim();
+    if(base){
+      const res=await fetch(base+(base.includes('?')?'&':'?')+'action=listDrawings&limit=2000',{cache:'no-store'});
+      if(!res.ok)throw new Error('Drawings index HTTP '+res.status);
+      const payload=await res.json();
+      const rows=Array.isArray(payload?.drawings)?payload.drawings:[];
+      canonicalLoaded=rows.length;
+      rows.forEach(r=>{if(add(r,''))canonicalMatched++});
+    }
+  }catch(e){console.warn('Canonical nacrti index nije dostupan, koristim Supabase fallback',e)}
+  try{
+    const sb=window.SOVAuth&&SOVAuth.getClient&&SOVAuth.getClient();
+    if(sb){
+      const {data,error}=await sb.from('speleo_object_drawings').select('object_id,drive_file_id,drive_file_name,mime_type,file_size,match_score,match_status,metadata').limit(10000);
+      if(error)throw error;
+      supabaseLoaded=(data||[]).length;
+      (data||[]).forEach(r=>add(r,String(r.object_id||'')));
+    }
+  }catch(e){console.warn('Supabase nacrti fallback nije učitan',e)}
+  window.SOV_DRAWINGS_STATUS={source:canonicalLoaded?'canonical+supabase':'supabase',canonicalLoaded,canonicalMatched,supabaseLoaded,androidVerified:Object.keys(androidMap||{}).length,remapped,objects:drawingsByObject.size,total:[...drawingsByObject.values()].reduce((n,a)=>n+a.length,0)};
+}
 function applyPointFromParams(params){const lat=Number(params.get('lat')),lon=Number(params.get('lon'));if(!validCoord(lat,-90,90)||!validCoord(lon,-180,180)||(lat===0&&lon===0))return false;const name=params.get('name')||'Odabrani objekt';map.setView([lat,lon],Number(params.get('zoom')||15));paramPointMarker=L.circleMarker([lat,lon],{radius:12,color:'#071013',weight:3,fillColor:'#d7f66f',fillOpacity:.98}).addTo(map).bindPopup('<div class="objectPopup"><h3>'+esc(name)+'</h3><div class="pmeta">'+lat.toFixed(6)+', '+lon.toFixed(6)+'</div></div>').openPopup();return true}
 async function boot(){try{updateBaseStatus();if(window.SOVAuth&&SOVAuth.ready)await SOVAuth.ready();all=await SOVMapDB.loadObjects(DATA_URL);await loadDrawings();const pts=all.filter(hasMapPoint).length;$('dataStatus').innerHTML='<b>'+all.length+'</b> objekata · <b>'+pts+'</b> s koordinatama';const params=new URLSearchParams(location.search);const q=params.get('q');if(q)$('q').value=q;render();const oid=params.get('object')||params.get('id');if(oid){const o=all.find(x=>String(mapDetailId(x))===String(oid)||String(x.id)===String(oid)||String(x.source_id)===String(oid));if(o)openObject(o,true);else applyPointFromParams(params)}else if(!applyPointFromParams(params)){fitAllOnBoot()}if(location.hash==='#predaj-jamu')setTimeout(()=>window.SOVSpeleoSubmissions&&SOVSpeleoSubmissions.open(),500)}catch(e){console.error(e);$('dataStatus').textContent='Greška učitavanja baze';$('results').innerHTML='<div class="empty">Ne mogu učitati kartu: '+esc(e.message||e)+'</div>'}}
 boot();
