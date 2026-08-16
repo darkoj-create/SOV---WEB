@@ -9,65 +9,33 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: Compare Android 2.0.6 with live drawings index
+      - name: Rebuild live drawings index and verify Kopitarka
         shell: bash
         run: |
           set -euo pipefail
-          apk='https://github.com/darkoj-create/SOV-APP/releases/download/v2.0.6-mbtiles-open-with/app-release.apk'
-          endpoint='https://script.google.com/macros/s/AKfycbx1Hg_s6mAdWgB7p559USC8dAMIhteJQ3RFhFgp8rkqzYEVqMfwZm-lrl2v7UmW8gvSyg/exec?action=listDrawings&limit=2000'
-          echo 'Downloading Android APK...'
-          curl -L --fail --retry 3 -sS -o /tmp/app.apk "$apk"
-          echo "APK bytes: $(stat -c%s /tmp/app.apk)"
-          idx=$(unzip -Z1 /tmp/app.apk | grep -E '(^|/)nacrti_bundled/index\.json$' | head -1)
-          echo "Android index path: $idx"
-          test -n "$idx"
-          unzip -p /tmp/app.apk "$idx" > /tmp/android-index.json
-          curl -L --fail --retry 3 -sS -o /tmp/web-index.json "$endpoint"
+          base='https://script.google.com/macros/s/AKfycbx1Hg_s6mAdWgB7p559USC8dAMIhteJQ3RFhFgp8rkqzYEVqMfwZm-lrl2v7UmW8gvSyg/exec'
+          echo '=== rebuild ==='
+          curl -L --fail --retry 2 -sS "$base?action=rebuildDrawingsIndex" | tee /tmp/rebuild.json
+          echo
           python - <<'PY'
-          import json,re,unicodedata
-          A=json.load(open('/tmp/android-index.json',encoding='utf-8'))
-          W=json.load(open('/tmp/web-index.json',encoding='utf-8'))
-          def norm(s):
-              s=unicodedata.normalize('NFC',str(s or '')).lower().strip()
-              s=re.sub(r'\.(webp|png|jpe?g|tiff?|gif|pdf)$','',s)
-              s=re.sub(r'[^0-9a-zčćžšđ]+','_',s).strip('_')
-              return s
-          verified=[d for d in A.get('drawings',[]) if d.get('matchStatus')=='verified' and d.get('recordId')]
-          web=W.get('drawings',[])
-          by={}
-          for d in web:
-              by.setdefault(norm(d.get('fileName') or d.get('name')),[]).append(d)
-          matched=[]; missing=[]; ambiguous=[]
-          for d in verified:
-              c=by.get(norm(d.get('fileName')),[])
-              if len(c)==1: matched.append((d,c[0]))
-              elif len(c)>1: ambiguous.append((d,c))
-              else: missing.append(d)
-          print('ANDROID_TOTAL',A.get('count') or A.get('totalCount'))
-          print('ANDROID_VERIFIED_FILES',len(verified))
-          print('ANDROID_VERIFIED_OBJECTS',len({str(d['recordId']) for d in verified}))
-          print('WEB_ENDPOINT_FILES',len(web))
-          print('MATCHED_FILES',len(matched))
-          print('MATCHED_OBJECTS',len({str(d['recordId']) for d,_ in matched}))
-          print('AMBIGUOUS_FILES',len(ambiguous))
-          print('MISSING_FILES',len(missing))
-          print('MISSING_OBJECTS',len({str(d['recordId']) for d in missing}))
-          print('MISSING_BYTES',sum(int(d.get('sizeBytes') or 0) for d in missing))
-          for name in ('Kopitarka','Kozje tajne','Ledeno gnijezdo'):
-              rows=[d for d in missing if name.lower() in str(d.get('fileName','')).lower()]
-              print('TEST',name,[(r.get('fileName'),r.get('recordId'),r.get('sizeBytes')) for r in rows])
-          if matched:
-              d,w=matched[0]
-              print('PUBLIC_PROBE_ID',w.get('fileId'))
-              print('PUBLIC_PROBE_NAME',w.get('fileName'))
-              open('/tmp/probe-id','w').write(str(w.get('fileId') or ''))
+          import json
+          p=json.load(open('/tmp/rebuild.json',encoding='utf-8'))
+          print('REBUILD_OK',p.get('ok'))
+          print('REBUILD_VERSION',p.get('version'))
+          print('REBUILD_COUNT',p.get('count') or p.get('totalCount'))
+          if not p.get('ok'):
+              raise SystemExit('rebuild failed')
           PY
-          id=$(cat /tmp/probe-id)
-          echo "Testing unauthenticated web-index Drive file: $id"
-          for u in "https://drive.google.com/thumbnail?id=$id&sz=w420" "https://drive.google.com/uc?export=download&id=$id"; do
-            curl -L -sS --max-time 30 -D /tmp/h -o /tmp/body "$u"
-            echo "URL=$u"
-            tail -n 25 /tmp/h
-            file /tmp/body
-            wc -c /tmp/body
-          done
+          echo '=== search Kopitarka ==='
+          curl -L --fail --retry 2 -sS "$base?action=searchDrawings&query=Kopitarka" | tee /tmp/kop.json
+          echo
+          python - <<'PY'
+          import json
+          p=json.load(open('/tmp/kop.json',encoding='utf-8'))
+          print('SEARCH_OK',p.get('ok'))
+          print('SEARCH_COUNT',p.get('count'))
+          for d in p.get('drawings',[]):
+              print('FOUND',d.get('fileId'),d.get('fileName'),d.get('mimeType'))
+          if not p.get('ok') or not p.get('drawings'):
+              raise SystemExit('Kopitarka not found after rebuild')
+          PY
