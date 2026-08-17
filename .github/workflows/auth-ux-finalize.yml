@@ -14,8 +14,9 @@ jobs:
           ref: main
           fetch-depth: 0
       - name: Patch landing and auth guard
-        shell: python
+        shell: bash
         run: |
+          python - <<'PY'
           from pathlib import Path
 
           idx=Path('index.html')
@@ -57,18 +58,14 @@ jobs:
           old="  async function logout(){ const sb=getClient(); if(sb) await sb.auth.signOut(); profileCache=null; permissionCache=null; try{localStorage.removeItem('SOV_OPEN_PREVIEW_MODE');}catch(e){} location.href='index.html'; }"
           new="  async function logout(){ setAuthPagePending(true); const sb=getClient(); if(sb) await sb.auth.signOut(); profileCache=null; permissionCache=null; try{localStorage.removeItem('SOV_OPEN_PREVIEW_MODE');}catch(e){} authGo('login.html?loggedout=1'); }"
           if old in s: s=s.replace(old,new,1)
-
-          old="      location.href = 'login.html?next=' + next;"
-          if old in s: s=s.replace(old,"      authGo('login.html?next=' + next);",1)
-
-          repl={
+          s=s.replace("      location.href = 'login.html?next=' + next;","      authGo('login.html?next=' + next);",1)
+          for a,b in {
             "location.href='dashboard.html?denied=admin'":"authGo('dashboard.html?denied=admin')",
             "location.href='dashboard.html?denied=webmaster'":"authGo('dashboard.html?denied=webmaster')",
             "location.href='dashboard.html?denied=editor'":"authGo('dashboard.html?denied=editor')",
             "location.href='dashboard.html?denied=armory'":"authGo('dashboard.html?denied=armory')",
             "location.href='dashboard.html?denied=archive'":"authGo('dashboard.html?denied=archive')"
-          }
-          for a,b in repl.items(): s=s.replace(a,b)
+          }.items(): s=s.replace(a,b)
 
           old="""  readyPromise = new Promise(resolve=>{
     document.addEventListener('DOMContentLoaded', async()=>{ await autoProtect(); resolve(true); });
@@ -83,6 +80,7 @@ jobs:
           if old not in s: raise SystemExit('readyPromise anchor missing')
           s=s.replace(old,new,1)
           p.write_text(s,encoding='utf-8')
+          PY
       - name: Remove one-shot workflow
         run: git rm .github/workflows/auth-ux-finalize.yml
       - name: Commit final auth UX
