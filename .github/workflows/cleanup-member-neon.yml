@@ -1,0 +1,58 @@
+name: Cleanup legacy member neon
+
+on:
+  push:
+    paths:
+      - '.github/workflows/cleanup-member-neon.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Remove obsolete neon and Bricolage assets
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          pages = [
+              Path('predaj-novu-jamu.html'),
+              Path('izleti-cloud.html'),
+              Path('napisi-clanak.html'),
+              Path('karta.html'),
+          ]
+          patterns = [
+              r'<link\b[^>]*fonts\.googleapis\.com/css2\?family=Bricolage\+Grotesque[^>]*>\s*',
+              r'<link\b[^>]*href=["\']https://fonts\.googleapis\.com["\'][^>]*>\s*',
+              r'<link\b[^>]*href=["\']https://fonts\.gstatic\.com["\'][^>]*>\s*',
+              r'<link\b[^>]*sov-wow-v6\.css[^>]*>\s*',
+              r'<link\b[^>]*sov-wow-app-v6\.css[^>]*>\s*',
+              r'<script\b[^>]*sov-wow-v6\.js[^>]*>\s*</script>\s*',
+          ]
+          for path in pages:
+              text = path.read_text(encoding='utf-8')
+              original = text
+              for pattern in patterns:
+                  text = re.sub(pattern, '', text, flags=re.I)
+              if text != original:
+                  path.write_text(text, encoding='utf-8')
+                  print('cleaned', path)
+              else:
+                  print('no legacy refs', path)
+          PY
+      - name: Commit cleaned pages
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add predaj-novu-jamu.html izleti-cloud.html napisi-clanak.html karta.html
+          if git diff --cached --quiet; then
+            echo "Nothing to clean"
+            exit 0
+          fi
+          git commit -m "chore: remove obsolete neon member assets"
+          git push
