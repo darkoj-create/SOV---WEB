@@ -1,0 +1,77 @@
+name: Member docs and map cleanup
+
+on:
+  push:
+    paths:
+      - '.github/workflows/member-docs-map-cleanup.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply paper documents UI and map controls
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          docs=[Path('zapisnici-native.html'),Path('zapisnici-najave.html'),Path('dokumentacija.html'),Path('novi-zapisnik.html')]
+          all_pages=docs+[Path('karta.html')]
+
+          legacy_patterns=[
+            r'<link\b[^>]*fonts\.googleapis\.com[^>]*>\s*',
+            r'<link\b[^>]*fonts\.gstatic\.com[^>]*>\s*',
+            r'<link\b[^>]*sov-wow-v6\.css[^>]*>\s*',
+            r'<link\b[^>]*sov-wow-app-v6\.css[^>]*>\s*',
+            r'<script\b[^>]*sov-wow-v6\.js[^>]*>\s*</script>\s*',
+          ]
+
+          for p in all_pages:
+            s=p.read_text(encoding='utf-8')
+            for pat in legacy_patterns:
+              s=re.sub(pat,'',s,flags=re.I)
+            s=re.sub(r'assets/sov-version\.js(?:\?v=[^"\'<> ]+)?','assets/sov-version.js?v=6.1.52',s)
+            s=s.replace('<meta content="#0b0f14" name="theme-color"/>','<meta content="#e9e2d5" name="theme-color"/>')
+            p.write_text(s,encoding='utf-8')
+
+          for p in docs:
+            s=p.read_text(encoding='utf-8')
+            if 'sov-documents-human-v6152.css' not in s:
+              marker='<link rel="stylesheet" href="assets/sov-member-header-v6145ai.css">'
+              inject=marker+'\n<link rel="stylesheet" href="assets/sov-documents-human-v6152.css?v=6.1.52">'
+              if marker in s:s=s.replace(marker,inject,1)
+              else:s=s.replace('</head>','<link rel="stylesheet" href="assets/sov-documents-human-v6152.css?v=6.1.52">\n</head>',1)
+            # old/duplicate purely visual layers on Dokumentacija / Novi zapisnik
+            if p.name=='dokumentacija.html':
+              s=re.sub(r'<link\b[^>]*sov-public-polish-v608\.css[^>]*>\s*','',s,flags=re.I)
+              s=re.sub(r'<link\b[^>]*sov-inbox\.css\?v=4\.90[^>]*>\s*','',s,flags=re.I)
+              s=re.sub(r'<script\b[^>]*sov-inbox\.js\?v=4\.90[^>]*>\s*</script>\s*','',s,flags=re.I)
+              s=s.replace('class="public-polish-v608"','')
+            if p.name=='novi-zapisnik.html':
+              s=re.sub(r'<link\b[^>]*sov-inbox\.css\?v=4\.90[^>]*>\s*','',s,flags=re.I)
+            p.write_text(s,encoding='utf-8')
+
+          kp=Path('karta.html')
+          s=kp.read_text(encoding='utf-8')
+          if 'sov-map-controls-v6152.css' not in s:
+            marker='<link rel="stylesheet" href="assets/sov-member-header-v6145ai.css">'
+            s=s.replace(marker,marker+'\n<link rel="stylesheet" href="assets/sov-map-controls-v6152.css?v=6.1.52">',1)
+          if 'sov-map-controls-v6152.js' not in s:
+            marker='<script defer="" src="assets/sov-version.js?v=6.1.52"></script>'
+            s=s.replace(marker,'<script defer="" src="assets/sov-map-controls-v6152.js?v=6.1.52"></script>'+marker,1)
+          kp.write_text(s,encoding='utf-8')
+
+          print('patched',*[str(p) for p in all_pages])
+          PY
+      - name: Commit cleanup
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add zapisnici-native.html zapisnici-najave.html dokumentacija.html novi-zapisnik.html karta.html
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "style: align documents and map controls"
+          git push
