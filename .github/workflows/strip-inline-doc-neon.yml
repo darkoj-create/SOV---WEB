@@ -1,0 +1,47 @@
+name: Strip inline document neon
+
+on:
+  push:
+    paths:
+      - '.github/workflows/strip-inline-doc-neon.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  clean:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Replace old inline visuals with structural layout
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          doc=Path('dokumentacija.html')
+          s=doc.read_text(encoding='utf-8')
+          structural='''<style>\n.doc-hero{padding:40px 0 22px}.new-record{margin:24px auto 26px;padding:28px;display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center}.new-record p{margin:0}.new-record a{display:inline-flex;align-items:center;gap:10px;text-decoration:none;white-space:nowrap}.doc-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin:28px auto 80px}.doc-card{position:relative;overflow:hidden;min-height:280px;padding:26px}.doc-icon{display:grid;place-items:center}.doc-list{display:grid;gap:10px;margin-top:22px}.doc-link{display:flex;justify-content:space-between;gap:12px;align-items:center;text-decoration:none}.doc-link-static{cursor:default}.dev-open{display:none}@media(max-width:920px){.new-record{grid-template-columns:1fr}.doc-grid{grid-template-columns:1fr}.doc-card{min-height:220px}}\n</style>'''
+          s=re.sub(r'<style>.*?</style>',structural,s,count=1,flags=re.S|re.I)
+          s=s.replace('<a class="doc-link" href="javascript:void(0)"><span>Upute za teren</span></a>','<div class="doc-link doc-link-static"><span>Upute za teren</span><small>u pripremi</small></div>')
+          s=s.replace('<a class="doc-link" href="javascript:void(0)"><span>Upute za SOV Cloud</span></a>','<div class="doc-link doc-link-static"><span>Upute za SOV Cloud</span><small>u pripremi</small></div>')
+          s=s.replace('<a class="doc-link" href="javascript:void(0)"><span>Upute za opremu</span></a>','<div class="doc-link doc-link-static"><span>Upute za opremu</span><small>u pripremi</small></div>')
+          doc.write_text(s,encoding='utf-8')
+
+          rec=Path('novi-zapisnik.html')
+          s=rec.read_text(encoding='utf-8')
+          structural='''<style>\n.rec-shell{width:min(1480px,calc(100% - 34px));margin:0 auto 70px}.rec-hero{padding:58px 0 22px;display:grid;grid-template-columns:1fr auto;gap:22px;align-items:end}.rec-hero p{max-width:760px;margin:0}.hero-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}.btn{display:inline-flex;align-items:center;text-decoration:none;cursor:pointer}.btn:disabled{opacity:.45;cursor:not-allowed}.rec-grid{display:grid;grid-template-columns:minmax(360px,560px) 1fr;gap:22px;align-items:start}.editor-panel,.preview-panel{overflow:hidden}.panel-title{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px 20px}.form{padding:20px;display:grid;gap:16px}.field{display:grid;gap:7px}.field input,.field textarea{width:100%;box-sizing:border-box;font:inherit;outline:none}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.section-card{padding:14px}.section-card textarea{min-height:150px;resize:vertical}.status{display:none}.status.show{display:block}.preview-wrap{padding:26px;max-height:calc(100vh - 190px);overflow:auto}.paper{background:#fff;color:#111;width:min(860px,100%);min-height:980px;margin:0 auto;padding:76px 76px 60px;box-sizing:border-box;font-family:Georgia,'Times New Roman',serif}.paper .org{text-align:center;font-weight:700;margin-bottom:60px}.paper h2{text-align:left;font-size:25px;margin:0 0 24px;font-weight:700}.paper h3{font-size:17px;margin:25px 0 8px;font-weight:800;text-transform:uppercase;letter-spacing:.03em}.paper p{white-space:pre-wrap;line-height:1.44;margin:0 0 13px}.paper .footer-meta{margin-top:40px;display:grid;gap:6px}.paper .empty{color:#777;font-style:italic}.send-box{margin-top:16px;padding:16px;line-height:1.55}.dev-open{display:none}@media(max-width:1050px){.rec-hero{grid-template-columns:1fr}.hero-actions{justify-content:flex-start}.rec-grid{grid-template-columns:1fr}.preview-wrap{max-height:none}.paper{padding:42px 28px}.row{grid-template-columns:1fr}}\n</style>'''
+          s=re.sub(r'<style>.*?</style>',structural,s,count=1,flags=re.S|re.I)
+          old='<div class="send-box"><b>Kako radi slanje:</b> u ovoj statičkoj verziji “Spremi i pošalji” sprema zapisnik u pending listu urednika i automatski skida DOCX. Kad spojimo Supabase/Drive, isti gumb šalje dokument uredniku bez lokalnog storagea.</div>'
+          new='<div class="send-box"><b>Spremanje:</b> “Spremi draft” čuva radnu verziju u ovom pregledniku. “Spremi i pošalji” dodaje zapisnik na listu za pregled i preuzima DOCX kopiju.</div>'
+          s=s.replace(old,new)
+          rec.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit cleanup
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dokumentacija.html novi-zapisnik.html
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "chore: remove obsolete inline document visuals"
+          git push
