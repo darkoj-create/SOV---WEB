@@ -20,14 +20,17 @@
       btn.id='drawingsOnlyChip';
       btn.textContent='Samo s nacrtima';
       btn.setAttribute('aria-pressed','false');
-      btn.addEventListener('click',()=>{
-        drawingsOnly=!drawingsOnly;
+      const syncButton=()=>{
         btn.classList.toggle('active',drawingsOnly);
         btn.setAttribute('aria-pressed',String(drawingsOnly));
-        render();
-      });
+      };
+      btn.addEventListener('click',()=>{drawingsOnly=!drawingsOnly;syncButton();render();});
       chips.appendChild(btn);
-      window.SOVMapDrawingsOnly={get active(){return drawingsOnly},set active(v){drawingsOnly=!!v;btn.classList.toggle('active',drawingsOnly);btn.setAttribute('aria-pressed',String(drawingsOnly));render();}};
+      if(typeof setFilter==='function'){
+        const nativeSetFilter=setFilter;
+        setFilter=function(f){nativeSetFilter(f);syncButton();};
+      }
+      window.SOVMapDrawingsOnly={get active(){return drawingsOnly},set active(v){drawingsOnly=!!v;syncButton();render();}};
     }catch(e){console.warn('[SOV Karta] drawings-only filter skipped',e)}
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
