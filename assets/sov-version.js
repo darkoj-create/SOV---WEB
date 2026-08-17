@@ -2,10 +2,10 @@
 // Also injects approved, page-specific member helpers.
 (function(){
   'use strict';
-  const FALLBACK_VERSION='6.1.49';
-  const FALLBACK_CACHE='6149-trips-single-loader';
-  const FALLBACK_BUILD='sov-web-build-v6.1.49-trips-single-loader';
-  const FALLBACK_NAME='v6.1.49-trips-single-loader';
+  const FALLBACK_VERSION='6.1.51';
+  const FALLBACK_CACHE='6151-member-human-audit';
+  const FALLBACK_BUILD='sov-web-build-v6.1.51-member-human-audit';
+  const FALLBACK_NAME='v6.1.51-member-human-audit';
   window.SOV_BUILD={version:FALLBACK_VERSION,versionName:FALLBACK_NAME,build:FALLBACK_BUILD,cacheBust:FALLBACK_CACHE};
 
   function safeSetText(sel,value){
@@ -66,6 +66,38 @@
     }catch(e){console.warn('Article draft helper skipped',e);}
   }
 
+  function injectHumanAuditLayer(){
+    try{
+      if(document.querySelector('link[data-sov-human-audit]'))return;
+      const link=document.createElement('link');
+      link.rel='stylesheet';
+      link.href='assets/sov-human-audit-v6151.css?v=6.1.51';
+      link.setAttribute('data-sov-human-audit','6.1.51');
+      document.head.appendChild(link);
+    }catch(e){console.warn('Human audit CSS skipped',e);}
+  }
+
+  function injectMemberInbox(){
+    try{
+      if(!document.querySelector('[data-sov-member-header]'))return;
+      if(!document.querySelector('link[data-sov-inbox-style]')){
+        const css=document.createElement('link');css.rel='stylesheet';css.href='assets/sov-inbox.css?v=6.1.51';css.setAttribute('data-sov-inbox-style','');document.head.appendChild(css);
+      }
+      if(!document.querySelector('script[data-sov-inbox-script]')){
+        const js=document.createElement('script');js.src='assets/sov-inbox.js?v=6.1.51';js.setAttribute('data-sov-inbox-script','');document.body.appendChild(js);
+      }
+    }catch(e){console.warn('Member inbox skipped',e);}
+  }
+
+  function injectAdminUsersHelper(){
+    try{
+      const path=String(location.pathname||'').toLowerCase();
+      if(!path.endsWith('/admin-users.html')&&!path.endsWith('admin-users.html'))return;
+      if(document.querySelector('script[data-sov-admin-users-human]'))return;
+      const js=document.createElement('script');js.src='assets/sov-admin-users-human-v6151.js?v=6.1.51';js.setAttribute('data-sov-admin-users-human','');document.body.appendChild(js);
+    }catch(e){console.warn('Admin users human helper skipped',e);}
+  }
+
   function injectTripsHumanLayerOnce(){
     try{
       const path=String(location.pathname||'').toLowerCase();
@@ -119,6 +151,9 @@
     normalizeMemberPageCopy();
     injectNacrtDashboardCard();
     injectArticleDraftHelper();
+    injectHumanAuditLayer();
+    injectMemberInbox();
+    injectAdminUsersHelper();
     try{
       const res=await fetch('/update.json?cb='+Date.now(),{cache:'no-store'});
       if(!res.ok)throw new Error('HTTP '+res.status);
@@ -138,9 +173,13 @@
     normalizeMemberPageCopy();
     injectNacrtDashboardCard();
     injectArticleDraftHelper();
+    injectHumanAuditLayer();
+    injectMemberInbox();
+    injectAdminUsersHelper();
   }
 
   injectTripsHumanLayerOnce();
+  injectHumanAuditLayer();
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',loadManifest);
   else loadManifest();
   setTimeout(injectNacrtDashboardCard,350);
