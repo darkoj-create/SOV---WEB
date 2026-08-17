@@ -1,23 +1,26 @@
 {
   "app": "SOV web",
-  "version": "6.1.49",
-  "versionName": "v6.1.49-trips-single-loader",
-  "build": "sov-web-build-v6.1.49-trips-single-loader",
-  "createdAt": "2026-07-23T20:45:00+02:00",
-  "cacheBust": "6149-trips-single-loader",
-  "base": "sov-web-build-v6.1.48",
+  "version": "6.1.51",
+  "versionName": "v6.1.51-member-human-audit",
+  "build": "sov-web-build-v6.1.51-member-human-audit",
+  "createdAt": "2026-08-17T18:30:00+02:00",
+  "cacheBust": "6151-member-human-audit-b",
+  "base": "sov-web-build-v6.1.49-trips-single-loader",
   "requiresSql": false,
   "sqlFiles": [],
-  "releaseType": "trips-single-loader-hotfix",
+  "releaseType": "member-human-audit",
   "changedFiles": [
-    "assets/sov-trips-human-v6146.js",
+    "assets/sov-human-audit-v6151.css",
+    "assets/sov-admin-users-human-v6151.js",
+    "assets/sov-drawings-preview-v6151.css",
+    "assets/sov-drawings-preview-v6151.js",
+    "assets/sov-inbox.css",
     "assets/sov-version.js",
-    ".github/workflows/pre-release-audit.yml",
-    "tools/fix_trips_default_upcoming.py",
-    "README.md",
-    "VERSION.txt",
-    "BUILD_VERSION.txt",
-    "update.json"
+    "predaj-novu-jamu.html",
+    "izleti-cloud.html",
+    "napisi-clanak.html",
+    "karta.html",
+    "admin-users.html"
   ],
-  "notes": "Izleti human layer is presentation-only again: it no longer wraps loadTrips, starts database refreshes, replaces the original refresh handler, or loops on identical DOM mutations. The original page remains the single owner of Supabase loading, cache and autosync. The pre-release audit is read-only and cannot auto-commit old release metadata."
+  "notes": "Usklađen papirnati članski UI i kontrasti; uklonjeni legacy Bricolage/sov-wow resursi s očišćenih stranica; admin korisnici razdvojeni na zahtjeve i aktivirane; novi zahtjev za aktivaciju automatski stvara SOV Inbox obavijest za admin/webmaster; Karta prikazuje stvarne vizualne nacrte i PDF preview umjesto samo naziva datoteke."
 }
