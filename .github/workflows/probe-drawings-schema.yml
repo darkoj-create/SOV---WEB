@@ -1,0 +1,24 @@
+name: Probe drawings schema
+
+on:
+  push:
+    paths:
+      - '.github/workflows/probe-drawings-schema.yml'
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch drawing index sample
+        run: |
+          python3 - <<'PY'
+          import json, urllib.request
+          url='https://script.google.com/macros/s/AKfycbx1Hg_s6mAdWgB7p559USC8dAMIhteJQ3RFhFgp8rkqzYEVqMfwZm-lrl2v7UmW8gvSyg/exec?action=listDrawings&limit=2'
+          with urllib.request.urlopen(url, timeout=30) as r:
+              data=json.load(r)
+          rows=data.get('drawings') or []
+          print('count',len(rows))
+          if rows:
+              print('keys',sorted(rows[0].keys()))
+              print('sample',json.dumps(rows[0],ensure_ascii=False)[:5000])
+          PY
