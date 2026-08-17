@@ -1,0 +1,101 @@
+name: Humanize admin workbench pages
+
+on:
+  push:
+    paths:
+      - '.github/workflows/admin-workbench-humanize.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply admin paper theme and remove legacy visual layers
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          pages=[Path('arhivar-dashboard.html'),Path('arhivar-predane-jame.html'),Path('topodroid-import.html'),Path('news-editor.html'),Path('system-status.html')]
+          legacy=[
+            r'<link\b[^>]*fonts\.googleapis\.com[^>]*>\s*',
+            r'<link\b[^>]*fonts\.gstatic\.com[^>]*>\s*',
+            r'<link\b[^>]*sov-wow-v6\.css[^>]*>\s*',
+            r'<link\b[^>]*sov-wow-app-v6\.css[^>]*>\s*',
+            r'<script\b[^>]*sov-wow-v6\.js[^>]*>\s*</script>\s*',
+          ]
+          for p in pages:
+            s=p.read_text(encoding='utf-8')
+            for pat in legacy:s=re.sub(pat,'',s,flags=re.I)
+            s=re.sub(r'assets/sov-version\.js(?:\?v=[^"\'<> ]+)?','assets/sov-version.js?v=6.1.53',s)
+            s=s.replace('<meta content="#0b0f14" name="theme-color"/>','<meta content="#e9e2d5" name="theme-color"/>')
+            s=s.replace('<meta name="theme-color" content="#0b0f14"/>','<meta name="theme-color" content="#e9e2d5"/>')
+            if 'sov-admin-workbench-v6153.css' not in s:
+              marker='<link rel="stylesheet" href="assets/sov-member-header-v6145ai.css">'
+              if marker in s:s=s.replace(marker,marker+'\n<link rel="stylesheet" href="assets/sov-admin-workbench-v6153.css?v=6.1.53">',1)
+              else:s=s.replace('</head>','<link rel="stylesheet" href="assets/sov-admin-workbench-v6153.css?v=6.1.53">\n</head>',1)
+            if 'sov-version.js' not in s:
+              s=s.replace('</body>','<script defer src="assets/sov-version.js?v=6.1.53"></script>\n</body>',1)
+            p.write_text(s,encoding='utf-8')
+
+          # Arhivar dashboard: remove AI-ish copy.
+          p=Path('arhivar-dashboard.html');s=p.read_text(encoding='utf-8')
+          s=s.replace('<h1>Arhivar, bez lutanja.</h1>','<h1>Arhivar</h1>')
+          s=s.replace('Tri glavna posla su sada na jednom mjestu: predaje članova, uređivanje postojeće arhive i izvoz. Zahvati i nacrti ostaju dostupni kao pomoćne radnje.','Predaje članova, uređivanje arhive i izvoz podataka na jednom mjestu.')
+          if 'name="theme-color"' not in s:s=s.replace('</head>','<meta name="theme-color" content="#e9e2d5">\n</head>',1)
+          p.write_text(s,encoding='utf-8')
+
+          # Predane jame: plain Croatian labels.
+          p=Path('arhivar-predane-jame.html');s=p.read_text(encoding='utf-8')
+          s=s.replace('Arhivar inbox <span class="as-badge submitted">review</span>','Arhivar <span class="as-badge submitted">predaje</span>')
+          s=s.replace('Ovdje dolaze nove jame koje članovi šalju iz Karte/Baze. Arhivar pregleda zapisnik, fotke, nacrt, KML/GPX i TopoDroid paket, pa odobri u bazu ili jasno označi što fali.','Nove predaje članova. Pregledaj zapisnik i priloge, zatim odobri predaju ili zatraži dopunu.')
+          s=s.replace('Čeka review','Čeka pregled')
+          s=s.replace('Approve ili “fali nešto”','Odobri ili zatraži dopunu')
+          s=s.replace('Inbox predaja','Predaje')
+          s=s.replace('Lijevo su predaje, desno detalj i akcije. Na mobitelu prvo odaberi predaju pa skrolaj na detalj.','Odaberi predaju za pregled detalja i priloga.')
+          p.write_text(s,encoding='utf-8')
+
+          # TopoDroid: structural inline CSS only + user copy.
+          p=Path('topodroid-import.html');s=p.read_text(encoding='utf-8')
+          structural='''<style>\n*{box-sizing:border-box}.wrap{max-width:1180px;margin:0 auto;padding:24px}.grid{display:grid;grid-template-columns:380px 1fr;gap:16px}.card{padding:18px}.hero{margin-bottom:16px}.drop{display:block;padding:22px;cursor:pointer}.field{margin:12px 0}.field label{display:block;font-size:13px;margin-bottom:6px}input,textarea,select{width:100%;box-sizing:border-box;padding:11px}.chips,.rowActions{display:flex;gap:8px;flex-wrap:wrap}.chip{font-size:12px;padding:6px 9px}.table{width:100%;border-collapse:collapse;margin-top:12px}.table th,.table td{text-align:left;padding:10px;font-size:13px}.status{margin-top:12px;padding:12px}@media(max-width:900px){.grid{grid-template-columns:1fr}}\n</style>'''
+          s=re.sub(r'<style>.*?</style>',structural,s,count=1,flags=re.S|re.I)
+          s=s.replace('<body>','<body class="topodroid-import-page">',1)
+          s=s.replace('<title>Batch import za nacrte i TopoDroid exporte. — SOV Velebit</title>','<title>TopoDroid i nacrti — SOV Velebit</title>')
+          s=s.replace('<h1>Batch import za nacrte i TopoDroid exporte.</h1>','<h1>TopoDroid i nacrti</h1>')
+          s=s.replace('Ovdje pripremamo fileove, matchamo ih s objektima i šaljemo u review queue. Objavljivanje ide u canonical <code>speleo_object_drawings</code> tablicu, s audit tragom.','Učitaj nacrte ili TopoDroid datoteke, provjeri kojem objektu pripadaju i spremi pripremljene veze.')
+          s=s.replace('ne dira bazu objekata','objekti ostaju nepromijenjeni').replace('RLS ostaje uključen','zaštićen pristup').replace('write samo Admin/Arhivar','spremanje: Arhivar/Admin')
+          s=s.replace('Pripremi match','Pronađi objekte').replace('2. Review queue','2. Pregled').replace('Spremi batch u Supabase','Spremi pripremljeno').replace('Naziv batcha','Naziv uvoza')
+          p.write_text(s,encoding='utf-8')
+
+          # News editor: structural CSS only + plain labels.
+          p=Path('news-editor.html');s=p.read_text(encoding='utf-8')
+          structural='''<style>\n*{box-sizing:border-box}.editor-shell{width:min(1380px,calc(100% - 28px));margin:0 auto;padding:22px 0 80px}.top{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:18px}.top h1{margin:0}.top p{margin:8px 0 0;max-width:760px}.top-actions,.toolbar,.form-actions,.upload-row,.toggles,.badges{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;cursor:pointer}.layout{display:grid;grid-template-columns:390px minmax(0,1fr);gap:18px}.panel{overflow:hidden}.panel-head{padding:18px;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}.filters{padding:14px 18px;display:grid;gap:10px}.filters input,.filters select{width:100%;padding:12px}.news-list{max-height:calc(100vh - 270px);overflow:auto;padding:12px;display:grid;gap:10px}.news-row{display:grid;grid-template-columns:82px 1fr;gap:11px;align-items:center;padding:9px;cursor:pointer;text-align:left}.thumb{height:70px;background:center/cover no-repeat}.news-row strong{display:block}.editor-form{padding:18px;display:grid;gap:14px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.full{grid-column:1/-1}label{display:grid;gap:7px}input,textarea,select{width:100%;padding:12px;font:inherit}textarea{min-height:110px;resize:vertical}.body-box{min-height:300px}.cover-preview{min-height:260px;background:center/cover no-repeat;display:flex;align-items:end;overflow:hidden}.cover-preview span{display:block;width:100%;padding:45px 16px 14px}.toggles input{width:auto}.status{min-height:22px}.preview-card{overflow:hidden}.preview-card .img{height:230px;background:center/cover no-repeat}.preview-card .copy{padding:18px}.two-cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}.danger-zone{padding-top:14px;margin-top:4px}@media(max-width:980px){.layout{grid-template-columns:1fr}.news-list{max-height:none}.form-grid,.two-cols{grid-template-columns:1fr}.full{grid-column:auto}.cover-preview{min-height:200px}}\n</style>'''
+          s=re.sub(r'<style>.*?</style>',structural,s,count=1,flags=re.S|re.I)
+          s=s.replace('<body>','<body class="news-editor-page">',1)
+          s=s.replace('<h1>Vijesti i urednik</h1>','<h1>Vijesti</h1>')
+          s=s.replace('Sve postojeće novosti i članski draftovi žive u bazi. Urednik može uređivati tekst, fotke, galerije i status objave.','Uredi postojeće vijesti, pregledaj predane članke ili dodaj novu objavu.')
+          s=s.replace('<option value="featured">Featured</option>','<option value="featured">Istaknute</option>')
+          s=s.replace('Velika/featured vijest','Istaknuta velika vijest')
+          p.write_text(s,encoding='utf-8')
+
+          # System status: remove monolithic WOW skin, use structural + admin theme.
+          p=Path('system-status.html');s=p.read_text(encoding='utf-8')
+          s=re.sub(r'<link rel="stylesheet" href="/assets/sov-system-status-wow-v6145au\.css[^>]*>\s*','',s,flags=re.I)
+          marker='<link rel="stylesheet" href="assets/sov-member-header-v6145ai.css">'
+          replacement='<link rel="stylesheet" href="/assets/sov-system-status-layout-v6153.css?v=6.1.53">\n      '+marker
+          s=s.replace(marker,replacement,1)
+          s=s.replace('<body>','<body class="system-status-page">',1)
+          if 'name="theme-color"' not in s:s=s.replace('</head>','  <meta name="theme-color" content="#e9e2d5">\n</head>',1)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit workbench cleanup
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add arhivar-dashboard.html arhivar-predane-jame.html topodroid-import.html news-editor.html system-status.html
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "style: humanize admin workbench pages"
+          git push
