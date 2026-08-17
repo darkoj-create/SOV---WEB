@@ -2,6 +2,27 @@
 window.SOV_SUPABASE_URL = 'https://ncomefzkuixyfixisrhi.supabase.co';
 window.SOV_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jb21lZnprdWl4eWZpeGlzcmhpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1ODQwOTYsImV4cCI6MjA5NTE2MDA5Nn0.WFSiENYXv48Npaz7vFcY-ksYvg_Ja40iNGsEqb1nUDk';
 
+// Password recovery fallback. If Supabase/email template sends the user to Site URL (/),
+// preserve the auth payload and continue on the dedicated reset form instead of leaving them on home.
+(function(){
+  try{
+    const name=(location.pathname||'/').split('/').filter(Boolean).pop()||'index.html';
+    if(name!=='index.html') return;
+    const q=new URLSearchParams(location.search||'');
+    const h=new URLSearchParams((location.hash||'').replace(/^#/,''));
+    const type=String(q.get('type')||h.get('type')||'').toLowerCase();
+    let pending=false;
+    try{pending=localStorage.getItem('sov_password_recovery_pending')==='1'}catch(e){}
+    const recovery=type==='recovery'||(!!h.get('access_token')&&type==='recovery')||(!!q.get('code')&&pending);
+    const recoveryError=(type==='recovery')&&(q.get('error')||q.get('error_code')||h.get('error')||h.get('error_code'));
+    if(recovery||recoveryError){
+      document.documentElement.style.visibility='hidden';
+      location.replace('reset-password.html'+(location.search||'')+(location.hash||''));
+      return;
+    }
+  }catch(e){console.warn('[SOV auth] recovery landing skipped',e)}
+})();
+
 // Auth pre-check: protected member pages stay hidden until auth.js assigns an approved role.
 // Prevents a logged-out visitor from seeing a flash of dashboard/member content before redirect.
 (function(){
