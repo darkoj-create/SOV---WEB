@@ -6,15 +6,24 @@
     style.id=STYLE_ID;
     style.textContent=`
       .sov-password-wrap{position:relative;display:block;width:100%}
-      .sov-password-wrap>input{padding-right:52px!important}
-      .sov-password-toggle{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:38px;height:38px;border:0;border-radius:999px;background:transparent;color:inherit;display:grid;place-items:center;cursor:pointer;opacity:.78;padding:0;z-index:2}
-      .sov-password-toggle:hover,.sov-password-toggle:focus-visible{opacity:1;background:rgba(255,255,255,.08);outline:1px solid rgba(255,255,255,.18)}
-      .sov-password-toggle svg{width:20px;height:20px;display:block;pointer-events:none}
+      .sov-password-wrap>input{padding-right:104px!important}
+      .sov-password-toggle{position:absolute;right:8px;top:50%;transform:translateY(-50%);height:38px;min-width:84px;border:0;border-radius:999px;background:rgba(255,255,255,.045);color:inherit;display:inline-flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;opacity:.88;padding:0 10px;z-index:2;font:800 12px/1 system-ui,-apple-system,"Segoe UI",sans-serif}
+      .sov-password-toggle:hover,.sov-password-toggle:focus-visible{opacity:1;background:rgba(255,255,255,.1);outline:1px solid rgba(255,255,255,.18)}
+      .sov-password-toggle svg{width:17px;height:17px;display:block;pointer-events:none;flex:0 0 auto}
+      .sov-password-toggle span{pointer-events:none}
+      @media(max-width:420px){.sov-password-wrap>input{padding-right:94px!important}.sov-password-toggle{right:6px;min-width:76px;padding:0 8px;font-size:11px}}
     `;
     document.head.appendChild(style);
   }
   const eyeOpen='<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>';
   const eyeClosed='<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 18 18"/><path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"/><path d="M9.9 5.1A11 11 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-2.1 3.1"/><path d="M6.6 6.6C3.6 8.4 2 12 2 12s3.5 7 10 7a10 10 0 0 0 4.1-.9"/></svg>';
+  function renderButton(btn,shown){
+    const label=shown?'Sakrij':'Prikaži';
+    btn.setAttribute('aria-label',label+' lozinku');
+    btn.setAttribute('title',label+' lozinku');
+    btn.setAttribute('aria-pressed',shown?'true':'false');
+    btn.innerHTML=(shown?eyeClosed:eyeOpen)+'<span>'+label+'</span>';
+  }
   function enhance(input){
     if(!input || input.dataset.sovPasswordUi==='1') return;
     input.dataset.sovPasswordUi='1';
@@ -26,15 +35,11 @@
     const btn=document.createElement('button');
     btn.type='button';
     btn.className='sov-password-toggle';
-    btn.setAttribute('aria-label','Prikaži lozinku');
-    btn.setAttribute('title','Prikaži lozinku');
-    btn.innerHTML=eyeOpen;
+    renderButton(btn,false);
     btn.addEventListener('click',()=>{
       const show=input.type==='password';
       input.type=show?'text':'password';
-      btn.setAttribute('aria-label',show?'Sakrij lozinku':'Prikaži lozinku');
-      btn.setAttribute('title',show?'Sakrij lozinku':'Prikaži lozinku');
-      btn.innerHTML=show?eyeClosed:eyeOpen;
+      renderButton(btn,show);
       input.focus({preventScroll:true});
       try{input.setSelectionRange(input.value.length,input.value.length)}catch(e){}
     });
