@@ -1,0 +1,94 @@
+name: Finalize auth UX
+on:
+  push:
+    paths:
+      - '.github/workflows/auth-ux-finalize.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Patch landing and auth guard
+        shell: python
+        run: |
+          from pathlib import Path
+
+          idx=Path('index.html')
+          s=idx.read_text(encoding='utf-8')
+          tag='<script src="assets/sov-auth-landing.js?v=1"></script>'
+          if tag not in s:
+              marker='<meta content="width=device-width, initial-scale=1" name="viewport"/>'
+              if marker in s:
+                  s=s.replace(marker, marker+tag, 1)
+              else:
+                  s=s.replace('<head>', '<head>'+tag, 1)
+              idx.write_text(s,encoding='utf-8')
+
+          p=Path('assets/auth.js')
+          s=p.read_text(encoding='utf-8')
+          anchor='  let readyPromise = null;\n'
+          guard="""  let authRedirecting = false;
+  function setAuthPagePending(on=true){
+    try{
+      const p = pageName();
+      if(!REGISTERED_PAGES.has(p)) return;
+      let st=document.getElementById('sov-auth-pending-style');
+      if(!st){
+        st=document.createElement('style');
+        st.id='sov-auth-pending-style';
+        st.textContent='html.sov-auth-pending body{visibility:hidden!important}html.sov-auth-pending{background:#e8e0d3!important}';
+        document.head.appendChild(st);
+      }
+      document.documentElement.classList.toggle('sov-auth-pending',!!on);
+    }catch(e){}
+  }
+  function authGo(url){ authRedirecting=true; setAuthPagePending(true); location.replace(url); }
+  setAuthPagePending(true);
+"""
+          if 'function authGo(url)' not in s:
+              if anchor not in s: raise SystemExit('auth anchor missing')
+              s=s.replace(anchor, anchor+guard, 1)
+
+          old="  async function logout(){ const sb=getClient(); if(sb) await sb.auth.signOut(); profileCache=null; permissionCache=null; try{localStorage.removeItem('SOV_OPEN_PREVIEW_MODE');}catch(e){} location.href='index.html'; }"
+          new="  async function logout(){ setAuthPagePending(true); const sb=getClient(); if(sb) await sb.auth.signOut(); profileCache=null; permissionCache=null; try{localStorage.removeItem('SOV_OPEN_PREVIEW_MODE');}catch(e){} authGo('login.html?loggedout=1'); }"
+          if old in s: s=s.replace(old,new,1)
+
+          old="      location.href = 'login.html?next=' + next;"
+          if old in s: s=s.replace(old,"      authGo('login.html?next=' + next);",1)
+
+          repl={
+            "location.href='dashboard.html?denied=admin'":"authGo('dashboard.html?denied=admin')",
+            "location.href='dashboard.html?denied=webmaster'":"authGo('dashboard.html?denied=webmaster')",
+            "location.href='dashboard.html?denied=editor'":"authGo('dashboard.html?denied=editor')",
+            "location.href='dashboard.html?denied=armory'":"authGo('dashboard.html?denied=armory')",
+            "location.href='dashboard.html?denied=archive'":"authGo('dashboard.html?denied=archive')"
+          }
+          for a,b in repl.items(): s=s.replace(a,b)
+
+          old="""  readyPromise = new Promise(resolve=>{
+    document.addEventListener('DOMContentLoaded', async()=>{ await autoProtect(); resolve(true); });
+  });"""
+          new="""  readyPromise = new Promise(resolve=>{
+    document.addEventListener('DOMContentLoaded', async()=>{
+      await autoProtect();
+      if(!authRedirecting) setAuthPagePending(false);
+      resolve(true);
+    });
+  });"""
+          if old not in s: raise SystemExit('readyPromise anchor missing')
+          s=s.replace(old,new,1)
+          p.write_text(s,encoding='utf-8')
+      - name: Remove one-shot workflow
+        run: git rm .github/workflows/auth-ux-finalize.yml
+      - name: Commit final auth UX
+        run: |
+          git config user.name "SOV Web Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add index.html assets/auth.js
+          git commit -m "fix(auth): route recovery correctly and prevent member-page flash"
+          git push origin main
