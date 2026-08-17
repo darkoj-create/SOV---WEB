@@ -98,6 +98,19 @@
     }catch(e){console.warn('Admin users human helper skipped',e);}
   }
 
+  function injectDrawingPreviewHelper(){
+    try{
+      const path=String(location.pathname||'').toLowerCase();
+      if(!path.endsWith('/karta.html')&&!path.endsWith('karta.html'))return;
+      if(!document.querySelector('link[data-sov-drawing-preview]')){
+        const css=document.createElement('link');css.rel='stylesheet';css.href='assets/sov-drawings-preview-v6151.css?v=6.1.51';css.setAttribute('data-sov-drawing-preview','');document.head.appendChild(css);
+      }
+      if(!document.querySelector('script[data-sov-drawing-preview]')){
+        const js=document.createElement('script');js.src='assets/sov-drawings-preview-v6151.js?v=6.1.51';js.setAttribute('data-sov-drawing-preview','');document.body.appendChild(js);
+      }
+    }catch(e){console.warn('Drawing preview helper skipped',e);}
+  }
+
   function injectTripsHumanLayerOnce(){
     try{
       const path=String(location.pathname||'').toLowerCase();
@@ -154,6 +167,7 @@
     injectHumanAuditLayer();
     injectMemberInbox();
     injectAdminUsersHelper();
+    injectDrawingPreviewHelper();
     try{
       const res=await fetch('/update.json?cb='+Date.now(),{cache:'no-store'});
       if(!res.ok)throw new Error('HTTP '+res.status);
@@ -176,6 +190,7 @@
     injectHumanAuditLayer();
     injectMemberInbox();
     injectAdminUsersHelper();
+    injectDrawingPreviewHelper();
   }
 
   injectTripsHumanLayerOnce();
