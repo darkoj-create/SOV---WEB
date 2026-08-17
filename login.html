@@ -26,20 +26,39 @@
 </main>
 <script>
 const tabs=[...document.querySelectorAll('.tab')];
-const views=[document.getElementById('loginForm'),document.getElementById('registerForm'),document.getElementById('recoveryPanel')];
+const loginForm=document.getElementById('loginForm');
+const registerForm=document.getElementById('registerForm');
+const recoveryPanel=document.getElementById('recoveryPanel');
+const recoveryForm=document.getElementById('recoveryForm');
+const recoveryDone=document.getElementById('recoveryDone');
+const recoveryDoneText=document.getElementById('recoveryDoneText');
+const loginEmail=document.getElementById('loginEmail');
+const loginPass=document.getElementById('loginPass');
+const loginButton=document.getElementById('loginButton');
+const recoverEmail=document.getElementById('recoverEmail');
+const recoverButton=document.getElementById('recoverButton');
+const regPass=document.getElementById('regPass');
+const regPass2=document.getElementById('regPass2');
+const registerButton=document.getElementById('registerButton');
+const views=[loginForm,registerForm,recoveryPanel];
 function activateView(id){views.forEach(x=>x&&x.classList.toggle('active',x.id===id));tabs.forEach(x=>x.classList.toggle('active',x.dataset.tab===id))}
 tabs.forEach(btn=>btn.addEventListener('click',()=>activateView(btn.dataset.tab)));
 function show(id,msg,type=''){const el=document.getElementById(id);el.textContent=msg;el.className='msg show'+(type?' '+type:'')}
 function clearMsg(id){const el=document.getElementById(id);el.textContent='';el.className='msg'}
 
-document.getElementById('loginForm').addEventListener('submit',async e=>{e.preventDefault();clearMsg('loginMsg');loginButton.disabled=true;loginButton.textContent='Prijavljujem...';const r=await SOVAuth.login(loginEmail.value,loginPass.value);if(!r.ok){show('loginMsg',r.msg,'bad');loginButton.disabled=false;loginButton.textContent='Prijavi se';return}const next=new URLSearchParams(location.search).get('next')||'dashboard.html';location.href=next});
+loginForm.addEventListener('submit',async e=>{e.preventDefault();clearMsg('loginMsg');loginButton.disabled=true;loginButton.textContent='Prijavljujem...';const r=await SOVAuth.login(loginEmail.value,loginPass.value);if(!r.ok){show('loginMsg',r.msg,'bad');loginButton.disabled=false;loginButton.textContent='Prijavi se';return}const next=new URLSearchParams(location.search).get('next')||'dashboard.html';location.href=next});
 
 document.getElementById('forgotPass').addEventListener('click',()=>{recoverEmail.value=(loginEmail.value||'').trim();clearMsg('recoverMsg');recoveryDone.classList.remove('show');recoveryForm.hidden=false;activateView('recoveryPanel');setTimeout(()=>recoverEmail.focus(),0)});
 document.getElementById('backToLogin').addEventListener('click',()=>{if(recoverEmail.value&&!loginEmail.value)loginEmail.value=recoverEmail.value;activateView('loginForm');setTimeout(()=>loginEmail.focus(),0)});
-document.getElementById('recoveryForm').addEventListener('submit',async e=>{e.preventDefault();clearMsg('recoverMsg');const email=(recoverEmail.value||'').trim().toLowerCase();if(!email||!recoverEmail.checkValidity()){show('recoverMsg','Upiši valjanu email adresu.','bad');recoverEmail.focus();return}const sb=SOVAuth.getClient();if(!sb){show('recoverMsg','Sustav za prijavu trenutno nije dostupan.','bad');return}recoverButton.disabled=true;recoverButton.textContent='Šaljem...';const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:'https://www.so-velebit.hr/reset-password.html'});recoverButton.disabled=false;recoverButton.textContent='Pošalji poveznicu';if(error){console.warn('Password reset request failed',error);show('recoverMsg','Poveznicu trenutno nije moguće poslati. Pokušaj ponovno malo kasnije.','bad');return}recoveryForm.hidden=true;recoveryDone.classList.add('show');recoveryDoneText.textContent='Ako račun postoji, poveznica je poslana na '+email+'.'});
+recoveryForm.addEventListener('submit',async e=>{e.preventDefault();clearMsg('recoverMsg');const email=(recoverEmail.value||'').trim().toLowerCase();if(!email||!recoverEmail.checkValidity()){show('recoverMsg','Upiši valjanu email adresu.','bad');recoverEmail.focus();return}const sb=SOVAuth.getClient();if(!sb){show('recoverMsg','Sustav za prijavu trenutno nije dostupan.','bad');return}recoverButton.disabled=true;recoverButton.textContent='Šaljem...';const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:'https://www.so-velebit.hr/reset-password.html'});recoverButton.disabled=false;recoverButton.textContent='Pošalji poveznicu';if(error){console.warn('Password reset request failed',error);show('recoverMsg','Poveznicu trenutno nije moguće poslati. Pokušaj ponovno malo kasnije.','bad');return}recoveryForm.hidden=true;recoveryDone.classList.add('show');recoveryDoneText.textContent='Ako račun postoji, poveznica je poslana na '+email+'.'});
 
 function regPassMatchState(){const a=regPass.value||'';const b=regPass2.value||'';const h=document.getElementById('regPass2Hint');if(!h)return true;if(!b){h.textContent='';h.className='hint';return false}if(a!==b){h.textContent='Lozinke se ne podudaraju.';h.className='hint bad';return false}h.textContent='Lozinke se podudaraju.';h.className='hint good';return true}
 regPass.addEventListener('input',regPassMatchState);regPass2.addEventListener('input',regPassMatchState);
-document.getElementById('registerForm').addEventListener('submit',async e=>{e.preventDefault();clearMsg('regMsg');const p1=regPass.value||'',p2=regPass2.value||'';if(p1.length<8){show('regMsg','Lozinka mora imati najmanje 8 znakova.','bad');regPass.focus();return}if(p1!==p2){show('regMsg','Lozinke se ne podudaraju.','bad');regPass2.focus();return}registerButton.disabled=true;registerButton.textContent='Šaljem...';const r=await SOVAuth.register({name:regName.value,email:regEmail.value,password:p1,passwordConfirm:p2,note:regNote.value});show('regMsg',r.msg,r.ok?'good':'bad');registerButton.disabled=false;registerButton.textContent='Pošalji zahtjev';if(r.ok){e.target.reset();const h=document.getElementById('regPass2Hint');if(h){h.textContent='';h.className='hint'}}});
+registerForm.addEventListener('submit',async e=>{e.preventDefault();clearMsg('regMsg');const p1=regPass.value||'',p2=regPass2.value||'';if(p1.length<8){show('regMsg','Lozinka mora imati najmanje 8 znakova.','bad');regPass.focus();return}if(p1!==p2){show('regMsg','Lozinke se ne podudaraju.','bad');regPass2.focus();return}registerButton.disabled=true;registerButton.textContent='Šaljem...';const r=await SOVAuth.register({name:document.getElementById('regName').value,email:document.getElementById('regEmail').value,password:p1,passwordConfirm:p2,note:document.getElementById('regNote').value});show('regMsg',r.msg,r.ok?'good':'bad');registerButton.disabled=false;registerButton.textContent='Pošalji zahtjev';if(r.ok){e.target.reset();const h=document.getElementById('regPass2Hint');if(h){h.textContent='';h.className='hint'}}});
+
+if(new URLSearchParams(location.search).get('reset')==='1'){
+  activateView('recoveryPanel');
+  setTimeout(()=>recoverEmail.focus(),0);
+}
 </script>
 <script src="assets/sov-inbox.js?v=4.90"></script><script defer src="assets/sov-foundation-v55822.js"></script><script defer src="assets/sov-shell-v55825.js"></script><script defer src="assets/sov-polish-v55826.js"></script><script defer src="assets/sov-wow-v6.js?v=6.1.43"></script><script defer src="assets/sov-version.js?v=6.1.43"></script><script defer src="assets/sov-client-logger.js?v=6.1.45ax"></script></body></html>
