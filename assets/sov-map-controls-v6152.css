@@ -1,0 +1,18 @@
+/* SOV v6.1.52 — Karta controls: static, readable, non-floating. */
+body:has(#map){font-family:"Aptos","Segoe UI Variable","Segoe UI",Roboto,Arial,sans-serif!important}
+body:has(#map) .intro h1,body:has(#map) .details h2,body:has(#map) .objectPopup h3{font-family:Georgia,"Times New Roman",serif!important;letter-spacing:-.025em!important}
+body:has(#map) .searchCard{position:static!important;top:auto!important;z-index:auto!important;margin:4px 0 14px!important;padding:14px!important;border:1px solid #c9c0ae!important;border-radius:4px!important;background:#faf7ef!important;box-shadow:none!important;color:#252a24!important}
+body:has(#map) .search{min-height:46px!important;border:1px solid #b9af9e!important;border-radius:3px!important;background:#fffdf7!important;color:#252a24!important;font-family:"Aptos","Segoe UI Variable","Segoe UI",Roboto,Arial,sans-serif!important;font-size:16px!important;font-weight:600!important;padding:11px 12px!important;box-shadow:none!important}
+body:has(#map) .search::placeholder{color:#85867f!important;opacity:1!important}
+body:has(#map) .search:focus{border-color:#567c6e!important;box-shadow:0 0 0 3px rgba(40,85,72,.10)!important}
+body:has(#map) .chips{gap:6px!important;margin-top:10px!important}
+body:has(#map) .chip{min-height:36px!important;border:1px solid #c9c0ae!important;border-radius:3px!important;background:#f4efe6!important;color:#354039!important;font-family:"Aptos","Segoe UI Variable","Segoe UI",Roboto,Arial,sans-serif!important;font-size:12px!important;font-weight:800!important;padding:7px 9px!important;box-shadow:none!important}
+body:has(#map) .chip:hover{background:#eee7da!important;border-color:#aaa18f!important}
+body:has(#map) .chip.active{background:#193b32!important;border-color:#193b32!important;color:#fffaf0!important}
+body:has(#map) .chip.sov-drawings-only{margin-left:4px!important;border-left-width:3px!important}
+body:has(#map) .dataLine{margin-top:10px!important;color:#686b64!important;font-size:12px!important;font-weight:700!important}
+body:has(#map) .dataLine b{color:#193b32!important}
+body:has(#map) .sectionTitle{font-family:"Aptos","Segoe UI Variable","Segoe UI",Roboto,Arial,sans-serif!important;letter-spacing:.08em!important}
+body:has(#map) .resultName{font-family:Georgia,"Times New Roman",serif!important;font-weight:700!important;letter-spacing:-.01em!important}
+body:has(#map) .resultStatus,body:has(#map) .resultType,body:has(#map) .meta{font-family:"Aptos","Segoe UI Variable","Segoe UI",Roboto,Arial,sans-serif!important}
+@media(max-width:768px){body:has(#map) .searchCard{position:static!important;top:auto!important;margin-top:0!important}}
