@@ -1,0 +1,180 @@
+/* SOV v6.1.51 — human/member visual audit.
+   Scoped visual overrides only: readable paper UI, consistent typography and logo shell.
+   No data, auth or workflow behaviour lives here. */
+
+:root{
+  --sov-paper:#f4efe6;
+  --sov-paper-2:#fffdf7;
+  --sov-paper-3:#eee7da;
+  --sov-ink:#252a24;
+  --sov-green:#193b32;
+  --sov-green-2:#285548;
+  --sov-muted:#686b64;
+  --sov-line:#c9c0ae;
+  --sov-rust:#8a4d35;
+}
+
+/* ---------- shared member typography ---------- */
+body.sov-form-page,
+body:has(#articleForm),
+body.sov-trips-human,
+body:has(#users){
+  color:var(--sov-ink)!important;
+  font-family:"Aptos","Segoe UI Variable","Segoe UI",Roboto,Arial,sans-serif!important;
+  -webkit-font-smoothing:antialiased;
+}
+body.sov-form-page h1,body.sov-form-page h2,body.sov-form-page h3,
+body:has(#articleForm) h1,body:has(#articleForm) h2,body:has(#articleForm) h3,
+body.sov-trips-human h1,body.sov-trips-human h2,body.sov-trips-human h3,
+body:has(#users) h1,body:has(#users) h2,body:has(#users) h3{
+  font-family:Georgia,"Times New Roman",serif!important;
+  letter-spacing:-.02em!important;
+}
+body.sov-form-page input::placeholder,body.sov-form-page textarea::placeholder,
+body:has(#articleForm) input::placeholder,body:has(#articleForm) textarea::placeholder,
+body.sov-trips-human input::placeholder,body.sov-trips-human textarea::placeholder{
+  color:#85867f!important;opacity:1!important;
+}
+
+/* ---------- Predaj novu jamu ---------- */
+body.sov-form-page:before{display:none!important}
+body.sov-form-page .sf-shell{width:min(1120px,calc(100% - 34px))!important;max-width:none!important}
+body.sov-form-page .sf-hero{min-height:190px!important;padding:30px 34px!important}
+body.sov-form-page .sf-hero h1{font-size:clamp(42px,6vw,68px)!important;line-height:.96!important;letter-spacing:-.045em!important}
+body.sov-form-page .sf-field,
+body.sov-form-page .sf-checks label,
+body.sov-form-page .sf-mini-head,
+body.sov-form-page .sf-details summary,
+body.sov-form-page .sf-more-toggle,
+body.sov-form-page .sf-link-btn{color:#354039!important}
+body.sov-form-page .sf-field{font-size:13px!important;font-weight:800!important}
+body.sov-form-page .req{color:#9a4f34!important}
+body.sov-form-page input,body.sov-form-page textarea,body.sov-form-page select{
+  min-height:44px!important;background:var(--sov-paper-2)!important;color:var(--sov-ink)!important;
+  border:1px solid #b9af9e!important;border-radius:3px!important;box-shadow:none!important
+}
+body.sov-form-page textarea{line-height:1.55!important}
+body.sov-form-page select option{background:#fffdf7!important;color:#252a24!important}
+body.sov-form-page .sf-mini-block,body.sov-form-page .sf-details{
+  border:1px solid #d0c5b3!important;border-radius:3px!important;background:#f3ede2!important;color:var(--sov-ink)!important
+}
+body.sov-form-page .sf-details{overflow:hidden!important}
+body.sov-form-page .sf-details summary{padding:13px 14px!important;background:#eee7da!important;font:700 16px/1.3 Georgia,"Times New Roman",serif!important}
+body.sov-form-page .sf-details>div{padding:14px!important}
+body.sov-form-page .sf-checks label,body.sov-form-page .sf-filebox{
+  border:1px solid #d0c5b3!important;border-radius:3px!important;background:#fffdf7!important;color:#3c463f!important
+}
+body.sov-form-page .sf-filebox .sf-hint{display:block!important;color:#77776f!important;font-size:12px!important;font-weight:600!important}
+body.sov-form-page .sf-mini-head small{display:inline!important;color:#77776f!important;font-weight:600!important}
+body.sov-form-page .sf-draft-tools small{color:#686b64!important}
+body.sov-form-page .sf-btn{background:#f7f1e7!important;color:#354039!important;border:1px solid #b9af9e!important;box-shadow:none!important}
+body.sov-form-page .sf-btn.primary{background:var(--sov-green)!important;color:#fffaf0!important;border-color:var(--sov-green)!important}
+body.sov-form-page .sf-more-toggle{background:#eee7da!important;border:1px solid #c9c0ae!important;color:#193b32!important}
+body.sov-form-page .sf-more-toggle span{color:#77776f!important}
+body.sov-form-page .sf-link-btn{color:#245244!important;text-decoration:underline!important;text-underline-offset:3px!important}
+body.sov-form-page .sf-status{border:1px solid #c9c0ae!important;border-radius:3px!important;background:#f3ede2!important;color:#4f5953!important}
+body.sov-form-page .sf-status.ok{background:#e8f0e9!important;border-color:#adc1b3!important;color:#27533f!important}
+body.sov-form-page .sf-status.bad{background:#f6e9e5!important;border-color:#d3aca0!important;color:#813f31!important}
+body.sov-form-page .sf-submit-panel{border-left:4px solid var(--sov-green)!important}
+
+/* ---------- Napiši članak ---------- */
+body:has(#articleForm):before{display:none!important}
+.shell:has(#articleForm){width:min(940px,calc(100% - 34px))!important}
+.shell:has(#articleForm) .hero{min-height:170px!important;padding:30px 34px!important}
+.shell:has(#articleForm) .hero h1{font-size:clamp(42px,6vw,66px)!important;line-height:.96!important;letter-spacing:-.045em!important}
+.shell:has(#articleForm) .eyebrow{font-family:"Aptos","Segoe UI Variable","Segoe UI",Arial,sans-serif!important;font-size:11px!important;letter-spacing:.1em!important}
+.shell:has(#articleForm) .panel{padding:22px!important}
+.shell:has(#articleForm) label{
+  color:#3e4842!important;font-size:13px!important;font-weight:800!important;
+  text-transform:none!important;letter-spacing:0!important
+}
+.shell:has(#articleForm) input,.shell:has(#articleForm) textarea,.shell:has(#articleForm) select{
+  min-height:44px!important;background:var(--sov-paper-2)!important;color:var(--sov-ink)!important;
+  border:1px solid #b9af9e!important;border-radius:3px!important
+}
+.shell:has(#articleForm) select option{background:#fffdf7!important;color:#252a24!important}
+.shell:has(#articleForm) textarea{line-height:1.58!important}
+.shell:has(#articleForm) .preview{min-height:165px!important;background-color:#e8e0d2!important;border:1px solid #b9af9e!important}
+.shell:has(#articleForm) .preview span{background:linear-gradient(transparent,rgba(25,36,30,.84))!important;color:#fffaf0!important}
+.shell:has(#articleForm) .status{color:#6e572d!important;font-weight:800!important}
+.shell:has(#articleForm) .btn{min-height:42px!important;padding:10px 14px!important}
+
+/* ---------- Izleti: finish the human layer, remove leftover neon/low contrast ---------- */
+body.sov-trips-human:before{display:none!important}
+body.sov-trips-human .muted,body.sov-trips-human .desc,body.sov-trips-human .tinyHelp,
+body.sov-trips-human .teamMeta,body.sov-trips-human .weatherMeta,
+body.sov-trips-human .weatherMiniDay span{color:#666a62!important}
+body.sov-trips-human .tripTitle,body.sov-trips-human .detailTitle,body.sov-trips-human .modalTitle,
+body.sov-trips-human .memberName,body.sov-trips-human .teamName,
+body.sov-trips-human .weatherCondition{color:#20372e!important}
+body.sov-trips-human .sectionTitle,body.sov-trips-human .infoBox b,
+body.sov-trips-human .weatherMetric b,body.sov-trips-human .transportStat b{
+  color:#6f5736!important;font-family:"Aptos","Segoe UI Variable","Segoe UI",Arial,sans-serif!important;
+  letter-spacing:.06em!important
+}
+body.sov-trips-human .infoBox,body.sov-trips-human .memberRow,body.sov-trips-human .teamCard,
+body.sov-trips-human .transportRow,body.sov-trips-human .transportStat,
+body.sov-trips-human .weatherMetric,body.sov-trips-human .weatherMiniDay{
+  border:1px solid #d0c5b3!important;border-radius:3px!important;background:#fffdf7!important;color:#354039!important
+}
+body.sov-trips-human .transportRow.head{background:#eee7da!important;color:#193b32!important}
+body.sov-trips-human .weatherShell{
+  border:1px solid #c8bdab!important;border-radius:4px!important;background:#f1eadf!important;
+  box-shadow:none!important;color:#354039!important
+}
+body.sov-trips-human .weatherShell:before{display:none!important}
+body.sov-trips-human .weatherIcon{border:1px solid #c8bdab!important;border-radius:3px!important;background:#fffdf7!important;box-shadow:none!important}
+body.sov-trips-human .weatherTemp{color:#193b32!important}
+body.sov-trips-human .weatherMetric span{color:#354039!important}
+body.sov-trips-human .weatherMiniDay b{color:#20372e!important}
+body.sov-trips-human .weatherUnavailable,body.sov-trips-human .weatherLoading{
+  border:1px dashed #c8bdab!important;border-radius:3px!important;background:#f3ede2!important;color:#5f655f!important;animation:none!important
+}
+body.sov-trips-human .warning{border-radius:3px!important;background:#f3e8dc!important;border-color:#d3b89e!important;color:#78472f!important}
+body.sov-trips-human .modalCard{background:#faf7ef!important;color:#252a24!important}
+body.sov-trips-human .modalCard input,body.sov-trips-human .modalCard textarea,body.sov-trips-human .modalCard select{
+  background:#fffdf7!important;color:#252a24!important;border:1px solid #b9af9e!important;border-radius:3px!important
+}
+body.sov-trips-human .modalCard label{color:#3e4842!important}
+body.sov-trips-human .linkBtn{color:#245244!important}
+body.sov-trips-human .hero:after{background:none!important}
+body.sov-trips-human .chip{font-family:"Aptos","Segoe UI Variable","Segoe UI",Arial,sans-serif!important}
+
+/* ---------- Admin users ---------- */
+body:has(#users){margin:0!important;min-height:100vh!important;background:linear-gradient(180deg,#e9e2d5,#f5f0e7 52%,#e8e0d2)!important}
+body:has(#users) .admin{width:min(1080px,calc(100% - 34px))!important;max-width:none!important;margin:0 auto 72px!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
+body:has(#users) .admin>.eyebrow{margin-top:16px!important;color:#7b6040!important}
+body:has(#users) .admin>h1{margin:6px 0 18px!important;color:#193b32!important;font-size:clamp(36px,5vw,54px)!important}
+body:has(#users) .admin>.lead{display:none!important}
+body:has(#users) .toolbar{display:none!important}
+body:has(#users) #users{display:grid!important;gap:14px!important}
+body:has(#users) .sov-user-section{border:1px solid #c9c0ae;border-radius:4px;background:#faf7ef;box-shadow:0 10px 26px rgba(62,51,36,.08);overflow:hidden}
+body:has(#users) .sov-user-section-head,body:has(#users) .sov-user-summary{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px;background:#eee7da;border-bottom:1px solid #c9c0ae;color:#193b32}
+body:has(#users) .sov-user-section-head h2,body:has(#users) .sov-user-summary h2{margin:0;font-size:23px!important}
+body:has(#users) .sov-user-count{display:inline-grid;place-items:center;min-width:30px;height:30px;padding:0 8px;border-radius:3px;background:#193b32;color:#fffaf0;font-weight:900;font-size:13px}
+body:has(#users) details.sov-user-section>summary{list-style:none;cursor:pointer}
+body:has(#users) details.sov-user-section>summary::-webkit-details-marker{display:none}
+body:has(#users) .sov-user-list{padding:8px 14px 14px}
+body:has(#users) .user{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:14px!important;align-items:center!important;margin:8px 0!important;padding:14px 4px 14px 12px!important;border:0!important;border-bottom:1px solid #ddd3c3!important;border-radius:0!important;background:transparent!important;color:#252a24!important}
+body:has(#users) .user:last-child{border-bottom:0!important}
+body:has(#users) .user b{color:#20372e!important;font:700 18px/1.2 Georgia,"Times New Roman",serif!important}
+body:has(#users) .user .muted{margin:5px 0 0!important;color:#676b64!important;font-size:13px!important}
+body:has(#users) .pill{margin-left:7px!important;padding:3px 6px!important;border:1px solid #d0c5b3!important;border-radius:2px!important;background:#f1eadf!important;color:#5d625c!important}
+body:has(#users) .actions{justify-content:flex-end!important}
+body:has(#users) .roleSelect{min-height:40px!important;border:1px solid #b9af9e!important;border-radius:3px!important;background:#fffdf7!important;color:#252a24!important;padding:8px 10px!important}
+body:has(#users) .btn{min-height:40px!important;border:1px solid #b9af9e!important;border-radius:3px!important;background:#f7f1e7!important;color:#354039!important;padding:9px 11px!important}
+body:has(#users) .btn.ok{background:#193b32!important;color:#fffaf0!important;border-color:#193b32!important}
+body:has(#users) .btn.bad{background:transparent!important;color:#8a4230!important;border-color:#c9a99d!important}
+body:has(#users) .sov-users-empty{padding:28px 18px;text-align:center;color:#6c7069;background:#fffdf7}
+body:has(#users) .sov-user-search{padding:12px 16px 4px}
+body:has(#users) .sov-user-search input{width:100%;box-sizing:border-box;min-height:42px;border:1px solid #b9af9e;border-radius:3px;background:#fffdf7;color:#252a24;padding:10px 12px;font:inherit}
+
+@media(max-width:760px){
+  body.sov-form-page .sf-shell,.shell:has(#articleForm),body:has(#users) .admin{width:min(100% - 20px,1120px)!important}
+  body.sov-form-page .sf-hero,.shell:has(#articleForm) .hero{padding:23px 20px!important;min-height:150px!important}
+  body.sov-form-page .sf-mini-head small{display:block!important;margin-top:4px!important}
+  body.sov-trips-human .weatherChips,body.sov-trips-human .weatherMiniGrid,body.sov-trips-human .transportSummary{grid-template-columns:1fr!important}
+  body:has(#users) .user{grid-template-columns:1fr!important;padding:13px 4px!important}
+  body:has(#users) .actions{justify-content:flex-start!important}
+  body:has(#users) .roleSelect{min-width:150px!important;flex:1 1 150px!important}
+}
