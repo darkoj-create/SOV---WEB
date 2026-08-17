@@ -9,34 +9,38 @@
     if(!d)return '';
     const direct=d.drive_file_id||d.driveFileId||d.fileId||d.file_id||d.googleDriveId||d.google_drive_id||d.id;
     if(direct && /^[a-zA-Z0-9_-]{10,}$/.test(String(direct)))return String(direct);
-    for(const k of ['webViewLink','web_view_link','previewUrl','preview_url','downloadUrl','download_url','thumbnailUrl','thumbnail_url','thumbnailLink','url']){
+    for(const k of ['webViewUrl','webViewLink','web_view_link','previewUrl','preview_url','downloadUrl','download_url','thumbnailUrl','thumbnail_url','thumbnailLink','url']){
       const id=idFromUrl(d[k]);if(id)return id;
     }
     return '';
   }
   function extOf(d){const n=nameOf(d).toLowerCase();const m=n.match(/\.([a-z0-9]{2,5})$/);return m?m[1]:'';}
   function isImage(d){return /^(jpg|jpeg|png|webp|gif|svg)$/.test(extOf(d))||mimeOf(d).startsWith('image/');}
-  function isPdf(d){return extOf(d)==='pdf'||mimeOf(d).includes('pdf');}
+  function downloadOf(d){return String(d&& (d.downloadUrl||d.download_url||d.webContentLink||d.web_content_link)||'');}
   function directThumb(d){return String(d&& (d.thumbnailUrl||d.thumbnail_url||d.thumbnailLink||d.thumbUrl||d.thumb_url)||'');}
-  function directPreview(d){return String(d&& (d.previewUrl||d.preview_url||d.webViewLink||d.web_view_link||d.downloadUrl||d.download_url||d.webContentLink||d.url)||'');}
+  function directPreview(d){return String(d&& (d.previewUrl||d.preview_url||d.webViewUrl||d.webViewLink||d.web_view_link||d.downloadUrl||d.download_url||d.webContentLink||d.url)||'');}
+  function driveThumb(id,size){return id?'https://drive.google.com/thumbnail?id='+encodeURIComponent(id)+'&sz='+size:'';}
   function thumbUrl(d,large){
-    const id=fileId(d);
-    if(id)return 'https://drive.google.com/thumbnail?id='+encodeURIComponent(id)+'&sz='+(large?'w2000':'w900');
+    const dl=downloadOf(d);
+    if(isImage(d)&&dl)return dl;
     const t=directThumb(d);if(t)return t;
+    const id=fileId(d);
+    if(id)return driveThumb(id,large?'w2000':'w900');
     if(isImage(d))return directPreview(d);
     return '';
   }
   function previewUrl(d){
-    const id=fileId(d);
+    const id=fileId(d),dl=downloadOf(d);
+    if(isImage(d)&&dl)return {url:dl,kind:'image'};
     if(id){
-      if(isImage(d))return {url:'https://drive.google.com/thumbnail?id='+encodeURIComponent(id)+'&sz=w2400',kind:'image'};
+      if(isImage(d))return {url:driveThumb(id,'w2400'),kind:'image'};
       return {url:'https://drive.google.com/file/d/'+encodeURIComponent(id)+'/preview',kind:'frame'};
     }
     const p=directPreview(d);
     if(!p)return {url:'',kind:'none'};
     return {url:p,kind:isImage(d)?'image':'frame'};
   }
-  function typeLabel(d){const e=extOf(d);if(e)return e.toUpperCase();const m=mimeOf(d);if(m.includes('/'))return m.split('/').pop().toUpperCase();return 'NACRT';}
+  function typeLabel(d){const n=nameOf(d).toLowerCase(),m=n.match(/\.([a-z0-9]{2,5})$/);if(m)return m[1].toUpperCase();const mt=mimeOf(d);if(mt.includes('/'))return mt.split('/').pop().toUpperCase();return 'NACRT';}
 
   window.renderDrawings=function(arr){
     if(!Array.isArray(arr)||!arr.length)return '';
@@ -69,6 +73,5 @@
     }catch(e){console.warn('[SOV nacrti] preview nije otvoren',e);}
   };
 
-  // Keep original names available to other code while teaching it the newer canonical field names.
   window.SOVDrawingPreview={fileId,thumbUrl,previewUrl,nameOf,typeLabel};
 })();
