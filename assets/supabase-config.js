@@ -1,13 +1,37 @@
 // SOV Cloud Supabase config
-// 1) U Supabase Project settings > API kopiraj Project URL i anon public key.
-// 2) Upisi ih ovdje prije deploya na Vercel.
 window.SOV_SUPABASE_URL = 'https://ncomefzkuixyfixisrhi.supabase.co';
 window.SOV_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jb21lZnprdWl4eWZpeGlzcmhpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1ODQwOTYsImV4cCI6MjA5NTE2MDA5Nn0.WFSiENYXv48Npaz7vFcY-ksYvg_Ja40iNGsEqb1nUDk';
 
+// Auth pre-check: protected member pages stay hidden until auth.js assigns an approved role.
+// Prevents a logged-out visitor from seeing a flash of dashboard/member content before redirect.
+(function(){
+  try{
+    const name=(location.pathname||'/').split('/').filter(Boolean).pop()||'index.html';
+    const protectedExact=new Set(['dashboard.html','karta.html','pregled-baze.html','izleti.html','izleti-cloud.html','kalendar-izleta.html','dokumentacija.html','dokumenti.html','pregled-zapisnika.html','zapisnici-skupstine.html','zapisnici-aktualni-2026.html','zapisnici-arhiva-2017-2022.html','zapisnici-cijela-arhiva.html','zapisnici-import.html','zapisnici-najave.html','novi-zapisnik.html','speleo-zapisnik.html','topodroid.html','napisi-clanak.html','predaj-novu-jamu.html','admin-users.html','admin-notifications.html','role-manager.html','news-editor.html','sync-status.html','audit-status.html','system-status.html','sov-system-status.html','status.html']);
+    const protectedPrefix=/^(arhivar|oruzar-master|oruzarstvo-import|speleo-sql-)/;
+    if(!protectedExact.has(name)&&!protectedPrefix.test(name)) return;
+    const st=document.createElement('style');
+    st.id='sov-auth-precheck-style';
+    st.textContent='html.sov-auth-precheck body{visibility:hidden!important}html.sov-auth-precheck{background:#e8e0d3!important}';
+    document.head.appendChild(st);
+    document.documentElement.classList.add('sov-auth-precheck');
+    const approved=()=>{
+      const b=document.body;
+      if(!b) return false;
+      return ['role-webmaster','role-admin','role-editor','role-oruzar','role-arhivar','role-user'].some(c=>b.classList.contains(c));
+    };
+    const release=()=>{if(approved())document.documentElement.classList.remove('sov-auth-precheck')};
+    document.addEventListener('DOMContentLoaded',()=>{
+      release();
+      if(document.body)new MutationObserver(release).observe(document.body,{attributes:true,attributeFilter:['class']});
+      document.addEventListener('click',e=>{if(e.target&&e.target.closest&&e.target.closest('[data-logout]'))document.documentElement.classList.add('sov-auth-precheck')},{capture:true});
+      setTimeout(()=>{if(location.pathname.toLowerCase().endsWith(name.toLowerCase())&&approved())release()},1200);
+    },{once:true});
+  }catch(e){console.warn('[SOV auth] pre-check skipped',e)}
+})();
+
 // v5.30 Nacrti sync endpoint — SOV Drawings Index WebApp v2.0.2 FAST SEARCH.
-// Web sync sada cita cached index preko ?action=listDrawings&limit=2000, ne skenira Drive iz browsera.
 window.SOV_DRAWINGS_SYNC_ENDPOINT = window.SOV_DRAWINGS_SYNC_ENDPOINT || 'https://script.google.com/macros/s/AKfycbx1Hg_s6mAdWgB7p559USC8dAMIhteJQ3RFhFgp8rkqzYEVqMfwZm-lrl2v7UmW8gvSyg/exec';
-// Legacy fallback ostaje prazan namjerno; primarni izvor je Apps Script fast-search endpoint.
 window.SOV_GOOGLE_DRIVE_API_KEY = window.SOV_GOOGLE_DRIVE_API_KEY || '';
 
 // v5.24 hard-restored trips calendar Apps Script endpoint
