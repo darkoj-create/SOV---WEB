@@ -1,0 +1,18 @@
+/* SOV v6.1.51 — map drawing previews */
+.app:has(#map) .drawingList{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;margin-top:8px!important}
+.app:has(#map) .drawingVisual{display:block!important;width:100%!important;padding:0!important;overflow:hidden!important;text-align:left!important;border:1px solid #c9c0ae!important;border-radius:3px!important;background:#fffdf7!important;color:#252a24!important;cursor:pointer!important;box-shadow:0 5px 14px rgba(58,48,34,.07)!important}
+.app:has(#map) .drawingVisual:hover{border-color:#87958c!important;box-shadow:0 8px 20px rgba(58,48,34,.11)!important}
+.app:has(#map) .drawingVisualFrame{position:relative!important;height:180px!important;display:grid!important;place-items:center!important;overflow:hidden!important;background:#eee8dc!important;border-bottom:1px solid #d5cbbb!important}
+.app:has(#map) .drawingVisualFrame img{display:block!important;width:100%!important;height:100%!important;object-fit:contain!important;background:#f7f2e8!important;border:0!important;border-radius:0!important}
+.app:has(#map) .drawingVisualFallback{display:grid!important;place-items:center!important;width:100%!important;height:100%!important;color:#6c7069!important;font:700 28px/1 Georgia,'Times New Roman',serif!important;background:linear-gradient(135deg,#eee7da,#f8f3e9)!important}
+.app:has(#map) .drawingVisualType{position:absolute!important;right:7px!important;top:7px!important;padding:4px 6px!important;border-radius:2px!important;background:rgba(25,59,50,.92)!important;color:#fffaf0!important;font:800 10px/1 'Aptos','Segoe UI',Arial,sans-serif!important;letter-spacing:.06em!important;text-transform:uppercase!important}
+.app:has(#map) .drawingVisualMeta{padding:9px 10px 10px!important}
+.app:has(#map) .drawingVisualMeta b{display:block!important;color:#20372e!important;font:700 14px/1.25 Georgia,'Times New Roman',serif!important;overflow-wrap:anywhere!important}
+.app:has(#map) .drawingVisualMeta small{display:block!important;margin-top:4px!important;color:#6d6b62!important;font:700 11px/1.25 'Aptos','Segoe UI',Arial,sans-serif!important}
+.app:has(#map) .previewOverlay{background:rgba(31,29,24,.84)!important;backdrop-filter:blur(4px)!important}
+.app:has(#map) .previewBox{border:1px solid #b9af9e!important;border-radius:5px!important;background:#f4efe6!important;box-shadow:0 28px 90px rgba(25,22,17,.34)!important}
+.app:has(#map) .previewHead{background:#eee7da!important;border-bottom:1px solid #c9c0ae!important;color:#193b32!important}
+.app:has(#map) .previewHead b{font:700 17px/1.2 Georgia,'Times New Roman',serif!important}
+.app:has(#map) .previewBody{background:#d9d1c4!important}
+.app:has(#map) .previewBody img{background:#fff!important}
+@media(max-width:620px){.app:has(#map) .drawingList{grid-template-columns:1fr!important}.app:has(#map) .drawingVisualFrame{height:220px!important}}
