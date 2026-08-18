@@ -1,6 +1,6 @@
 /**
  * SOV Nacrt loader — corpus-informed semantic renderer v6 + layered editor + geometry editor.
- * Active stack: core + TopoDroid parser fix + renderer v2 + official branding + semantic SVG modules + corpus style v6 + corrected PDS logo + non-destructive editor + cloud persistence bridge + node geometry overrides.
+ * Active stack: core + TopoDroid parser fix + renderer v2 + official branding + semantic SVG modules + corpus style v6 + corrected PDS logo + non-destructive editor + node geometry overrides + clean export + cloud persistence bridge.
  */
 try { document.documentElement.style.visibility = 'hidden'; } catch (e) {}
 document.addEventListener('DOMContentLoaded', async () => {
@@ -26,5 +26,6 @@ document.write(
   '<script src="nacrt-pds-logo-fix.js?v=6145at"></' + 'script>' +
   '<script src="assets/sov-nacrt-editor-v6157.js?v=6157"></' + 'script>' +
   '<script src="assets/sov-nacrt-geometry-editor-v6159.js?v=6159"></' + 'script>' +
+  '<script src="assets/sov-nacrt-export-guard-v6160.js?v=6160"></' + 'script>' +
   '<script src="assets/sov-nacrt-editor-cloud-v6158.js?v=6158"></' + 'script>'
 );
