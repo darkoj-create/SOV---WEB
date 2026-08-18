@@ -22,7 +22,7 @@ async function pdf(){
   await doc.svg(c,{x:0,y:0,width:W,height:H});doc.setProperties({title:name(),subject:'Speleološki nacrt — SOV Velebit',creator:'SOV Nacrt Generator'});doc.save(name()+'.pdf');
  }catch(e){console.error('Geometry PDF export',e)}
 }
-function click(e){const id=e.target?.closest?.('button')?.id;if(!['btnSvg','btnPng','btnPdf'].includes(id)||!q('#preview svg'))return;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();if(id==='btnSvg')svg();else if(id==='btnPng')png();else pdf()}
+function click(e){const b=e.target?.closest?.('button'),id=b?.id;if(id==='sovNacrtEditorToggle'){setTimeout(()=>{if(document.body.classList.contains('sov-nacrt-editing'))window.SOVNacrtGeometryEditor?.activate?.()},0);return}if(!['btnSvg','btnPng','btnPdf'].includes(id)||!q('#preview svg'))return;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();if(id==='btnSvg')svg();else if(id==='btnPng')png();else pdf()}
 function boot(){document.addEventListener('click',click,true);let n=0,t=setInterval(()=>{const E=window.SOVNacrtEditor;if(E){E.serializeSvg=text;clearInterval(t)}else if(++n>60)clearInterval(t)},100)}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 window.SOVNacrtExportGuard={version:'6.1.60',serialize:text};
