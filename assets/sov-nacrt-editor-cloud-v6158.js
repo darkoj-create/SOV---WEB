@@ -39,7 +39,8 @@ function resetEditorForSurvey(survey,file){
 }
 function wrapSetSurvey(){
   const p=P();
-  if(!p?.setSurvey||p.__sovEditorCloudWrapped)return false;
+  if(!p?.setSurvey)return false;
+  if(p.__sovEditorCloudWrapped)return true;
   const original=p.setSurvey;
   p.setSurvey=function(survey,file){
     resetEditorForSurvey(survey,file);
@@ -64,7 +65,7 @@ async function cloudSave(){
   }catch(e){
     console.warn('SOV editor cloud save',e);
     const st=$('geoStatus');
-    if(st)st.insertAdjacentHTML('beforeend',' <span class="geo-error">Dorade nacrta nisu spremljene u cloud.</span>');
+    if(st&&!st.querySelector('.sov-editor-cloud-error'))st.insertAdjacentHTML('beforeend',' <span class="geo-error sov-editor-cloud-error">Dorade nacrta nisu spremljene u cloud.</span>');
   }
 }
 async function cloudLoad(){
@@ -84,6 +85,8 @@ async function cloudLoad(){
 function watchPlacement(){
   const save=$('geoSave'),status=$('geoStatus');
   if(!save||!status)return false;
+  if(status.dataset.sovEditorCloudWatch==='1')return true;
+  status.dataset.sovEditorCloudWatch='1';
   let saveRequested=false,loading=false;
   save.addEventListener('click',()=>{saveRequested=true;});
   new MutationObserver(()=>{
