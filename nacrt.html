@@ -5,17 +5,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Nacrt — SOV Velebit</title>
 <meta name="robots" content="noindex,nofollow"/>
+<meta name="theme-color" content="#e9e2d5"/>
 <link href="assets/sov-foundation-v55822.css" rel="stylesheet"/>
 <link href="assets/sov-shell-v55825.css" rel="stylesheet"/>
 <link href="assets/sov-polish-v55826.css" rel="stylesheet"/>
 <link href="assets/sov-member-header-v6145ai.css" rel="stylesheet"/>
+<link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet"/>
+<link href="assets/sov-nacrt-placement-v6156.css?v=6.1.56" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/supabase-config.js"></script>
 <script src="assets/auth.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="nacrt.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@4.2.1/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/svg2pdf.js@2.7.0/dist/svg2pdf.umd.min.js"></script>
+<script src="nacrt.js?v=6.1.56"></script>
+<script src="assets/sov-drawing-geo-core-v6156.js?v=6.1.56"></script>
+<script src="assets/sov-nacrt-placement-v6156.js?v=6.1.56"></script>
+<script src="assets/sov-nacrt-pdf-v6156.js?v=6.1.56"></script>
 <style>
-:root{--paper:#eee8dc;--paper2:#faf7ef;--ink:#252a24;--muted:#6d6b62;--green:#193b32;--line:#c9c0ae;--rust:#9a5535}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:linear-gradient(180deg,#e9e2d5,#f5f0e7 52%,#e8e0d2);color:var(--ink);font-family:Arial,Helvetica,sans-serif}.container{width:min(960px,calc(100% - 28px));margin:0 auto;padding:0 0 72px}.nacrt-head{min-height:190px;display:flex;align-items:flex-end;margin-bottom:14px;padding:28px 30px;border-radius:5px;background:linear-gradient(90deg,rgba(13,33,28,.95),rgba(13,33,28,.62)),url('assets/news/demonstracija-tehnickog-penjanja_gorana-peric.jpg') center/cover;color:#fffaf0;box-shadow:0 14px 34px rgba(45,38,28,.15)}h1{margin:0;font:700 clamp(44px,7vw,68px)/.92 Georgia,'Times New Roman',serif;letter-spacing:-.05em}.dropzone{border:2px dashed #aaa18f;border-radius:4px;padding:52px 24px;text-align:center;cursor:pointer;background:var(--paper2);transition:.15s ease}.dropzone:hover,.dropzone.dragover{border-color:var(--green);background:#fffdf7}.dropzone-icon{font-size:2.2rem;margin-bottom:10px}.dropzone-text{color:var(--muted);font-size:.95rem;line-height:1.55}.dropzone-text strong{display:block;color:var(--green);font:700 22px/1.1 Georgia,'Times New Roman',serif;margin-bottom:5px}.dropzone-text small{display:none}.status{margin-top:14px;padding:12px 14px;border-radius:3px;font-size:.85rem;display:none}.status.error{display:block;background:#f2e4dc;color:#7b422e;border:1px solid #d9b7a5}.status.info{display:block;background:#e8eff0;color:#395d62;border:1px solid #b9cbce}.status.ok{display:block;background:#e5eee8;color:#315b49;border:1px solid #adc4b7}.form-section{margin-top:16px;display:none}.form-section.visible{display:block}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}.form-group{display:flex;flex-direction:column;gap:5px}.form-group label{font-size:.72rem;color:#596159;text-transform:uppercase;letter-spacing:.06em;font-weight:800}.form-group input{background:#fffdf7;border:1px solid #bfb5a3;border-radius:3px;padding:10px;color:var(--ink);font-size:.9rem;outline:none}.form-group input:focus{border-color:#527866;box-shadow:0 0 0 3px rgba(40,85,72,.12)}.stats-bar{display:flex;gap:12px;flex-wrap:wrap;margin:14px 0;padding:12px 14px;background:#f2ece1;border-radius:3px;border:1px solid #d2c8b7}.stat{display:flex;flex-direction:column}.stat-label{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}.stat-value{font-size:1rem;font-weight:700;color:var(--green)}.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.btn{padding:10px 16px;border:1px solid #bfb5a3;border-radius:3px;font-size:.9rem;font-weight:800;cursor:pointer}.btn-primary{background:var(--green);border-color:var(--green);color:#fffaf0}.btn-secondary{background:#f7f2e8;color:#354039}.preview-container{margin-top:14px;background:#fff;border-radius:4px;overflow:auto;max-height:80vh;border:1px solid var(--line)}.preview-container svg{display:block;width:100%;height:auto}.parse-info{margin-top:10px;font-size:.8rem;color:var(--muted)}.parse-info details{margin-top:6px}.parse-info summary{cursor:pointer;color:#395d62}.parse-info pre{margin-top:6px;padding:10px;background:#f2ece1;border-radius:3px;overflow-x:auto;font-size:.78rem;color:#555d57;border:1px solid #d2c8b7;white-space:pre-wrap}@media(max-width:600px){.container{width:calc(100% - 20px)}.nacrt-head{min-height:150px;padding:22px 20px}.form-grid{grid-template-columns:1fr}.dropzone{padding:42px 18px}}
+:root{--paper:#eee8dc;--paper2:#faf7ef;--ink:#252a24;--muted:#6d6b62;--green:#193b32;--line:#c9c0ae;--rust:#9a5535}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:linear-gradient(180deg,#e9e2d5,#f5f0e7 52%,#e8e0d2);color:var(--ink);font-family:Arial,Helvetica,sans-serif}.container{width:min(960px,calc(100% - 28px));margin:0 auto;padding:0 0 72px}.nacrt-head{min-height:190px;display:flex;align-items:flex-end;margin-bottom:14px;padding:28px 30px;border-radius:5px;background:linear-gradient(90deg,rgba(13,33,28,.95),rgba(13,33,28,.62)),url('assets/news/demonstracija-tehnickog-penjanja_gorana-peric.jpg') center/cover;color:#fffaf0;box-shadow:0 14px 34px rgba(45,38,28,.15)}h1{margin:0;font:700 clamp(44px,7vw,68px)/.92 Georgia,'Times New Roman',serif;letter-spacing:-.05em}.dropzone{border:2px dashed #aaa18f;border-radius:4px;padding:52px 24px;text-align:center;cursor:pointer;background:var(--paper2);transition:.15s ease}.dropzone:hover,.dropzone.dragover{border-color:var(--green);background:#fffdf7}.dropzone-icon{font-size:2.2rem;margin-bottom:10px}.dropzone-text{color:var(--muted);font-size:.95rem;line-height:1.55}.dropzone-text strong{display:block;color:var(--green);font:700 22px/1.1 Georgia,'Times New Roman',serif;margin-bottom:5px}.dropzone-text small{display:none}.status{margin-top:14px;padding:12px 14px;border-radius:3px;font-size:.85rem;display:none}.status.error{display:block;background:#f2e4dc;color:#7b422e;border:1px solid #d9b7a5}.status.info{display:block;background:#e8eff0;color:#395d62;border:1px solid #b9cbce}.status.ok{display:block;background:#e5eee8;color:#315b49;border:1px solid #adc4b7}.form-section{margin-top:16px;display:none}.form-section.visible{display:block}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}.form-group{display:flex;flex-direction:column;gap:5px}.form-group label{font-size:.72rem;color:#596159;text-transform:uppercase;letter-spacing:.06em;font-weight:800}.form-group input{background:#fffdf7;border:1px solid #bfb5a3;border-radius:3px;padding:10px;color:var(--ink);font-size:.9rem;outline:none}.form-group input:focus{border-color:#527866;box-shadow:0 0 0 3px rgba(40,85,72,.12)}.stats-bar{display:flex;gap:12px;flex-wrap:wrap;margin:14px 0;padding:12px 14px;background:#f2ece1;border-radius:3px;border:1px solid #d2c8b7}.stat{display:flex;flex-direction:column}.stat-label{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}.stat-value{font-size:1rem;font-weight:700;color:var(--green)}.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.btn{padding:10px 16px;border:1px solid #bfb5a3;border-radius:3px;font-size:.9rem;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}.btn:disabled{opacity:.55;cursor:wait}.btn-primary{background:var(--green);border-color:var(--green);color:#fffaf0}.btn-secondary{background:#f7f2e8;color:#354039}.preview-container{margin-top:14px;background:#fff;border-radius:4px;overflow:auto;max-height:80vh;border:1px solid var(--line)}.preview-container:empty{display:none}.preview-container svg{display:block;width:100%;height:auto}.parse-info{margin-top:10px;font-size:.8rem;color:var(--muted)}.parse-info details{margin-top:6px}.parse-info summary{cursor:pointer;color:#395d62}.parse-info pre{margin-top:6px;padding:10px;background:#f2ece1;border-radius:3px;overflow-x:auto;font-size:.78rem;color:#555d57;border:1px solid #d2c8b7;white-space:pre-wrap}@media(max-width:600px){.container{width:calc(100% - 20px)}.nacrt-head{min-height:150px;padding:22px 20px}.form-grid{grid-template-columns:1fr}.dropzone{padding:42px 18px}}
 </style>
 </head>
 <body>
@@ -37,7 +46,7 @@
 <div class="form-group"><label>Katastarski broj</label><input type="text" id="fCadNum" placeholder="HR-1234"></div>
 <div class="form-group"><label>Lokacija</label><input type="text" id="fLocation" placeholder="Lokalitet"></div>
 </div>
-<div class="btn-row"><button class="btn btn-primary" id="btnRender">Izradi nacrt</button><button class="btn btn-secondary" id="btnSvg">SVG</button><button class="btn btn-secondary" id="btnPng">PNG</button></div>
+<div class="btn-row"><button class="btn btn-primary" id="btnRender" type="button">Izradi nacrt</button><button class="btn btn-secondary" id="btnSvg" type="button">SVG</button><button class="btn btn-secondary" id="btnPng" type="button">PNG</button></div>
 <div class="preview-container" id="preview"></div>
 <div class="parse-info" id="parseInfo"></div>
 </div>
@@ -69,23 +78,26 @@
       document.getElementById('fDate').value=s.date||'';
       document.getElementById('fTeam').value=s.team||'';
       const stats=sql.stats;
-      statsBar.innerHTML=[stat('Duljina',stats.duljina.toFixed(1).replace('.',',')+' m'),stat('Horizontalna',stats.horizontalna.toFixed(1).replace('.',',')+' m'),stat('Dubina',stats.dubina.toFixed(1).replace('.',',')+' m'),stat('Mjerenja',sql.legs.length+' leg'+(sql.legs.length!==1?'s':'')),stat('Tlocrt',s.plan?s.plan.stations.length+' st, '+s.plan.lines.length+' ln':'—'),stat('Profil',s.profile?s.profile.stations.length+' st, '+s.profile.lines.length+' ln':'—')].join('');
+      statsBar.innerHTML=[stat('Duljina',stats.duljina.toFixed(1).replace('.',',')+' m'),stat('Horizontalna',stats.horizontalna.toFixed(1).replace('.',',')+' m'),stat('Dubina',stats.dubina.toFixed(1).replace('.',',')+' m'),stat('Mjerenja',sql.legs.length),stat('Tlocrt',s.plan?s.plan.stations.length+' st · '+s.plan.lines.length+' linija':'—'),stat('Profil',s.profile?s.profile.stations.length+' st · '+s.profile.lines.length+' linija':'—')].join('');
       let details=`Ime: ${s.name}\nDatum: ${s.date}\nTim: ${s.team}\n`;
       details+=`Deklinacija: ${sql.declination} (${sql.survey&&sql.survey.declination===1080?'sentinel → 0':'set'})\n\n`;
-      details+=`Legs (${sql.legs.length}):\n`;
-      sql.legs.forEach(l=>details+=`  ${l.fStation}→${l.tStation}: ${l.distance}m, azimut=${l.bearing}°, nagib=${l.clino}°\n`);
+      details+=`Mjerenja (${sql.legs.length}):\n`;
+      sql.legs.forEach(l=>details+=`  ${l.fStation}→${l.tStation}: ${l.distance} m, azimut=${l.bearing}°, nagib=${l.clino}°\n`);
       details+=`\nIzbrisani (${sql.deleted.length}):\n`;
-      sql.deleted.forEach(d=>details+=`  ${d.fStation}→${d.tStation||'-'}: ${d.distance}m\n`);
+      sql.deleted.forEach(d=>details+=`  ${d.fStation}→${d.tStation||'-'}: ${d.distance} m\n`);
       details+=`\nSplays: ${sql.splays.length}\n\nStanice:\n`;
       for(const [name,c] of Object.entries(sql.stationCoords))details+=`  ${name}: E=${c.e.toFixed(3)}, N=${c.n.toFixed(3)}, Z=${c.z.toFixed(3)}\n`;
       parseInfo.innerHTML=`<details><summary>Detalji parsiranja</summary><pre>${escHtml(details)}</pre></details>`;
-      formSection.classList.add('visible');showStatus(`Učitano: ${file.name}`,'ok');doRender();
+      formSection.classList.add('visible');
+      doRender();
+      window.SOVNacrtPlacement?.setSurvey(currentSurvey,file);
+      showStatus(`Učitano: ${file.name}`,'ok');
     }catch(err){showStatus('Greška: '+err.message,'error');console.error(err);}
   }
   function doRender(){if(!currentSurvey)return;const opts={title:document.getElementById('fTitle').value,date:document.getElementById('fDate').value,team:document.getElementById('fTeam').value,club:document.getElementById('fClub').value,cadastreNum:document.getElementById('fCadNum').value,location:document.getElementById('fLocation').value};currentSvg=NacrtRenderer.render(currentSurvey,opts);preview.innerHTML=currentSvg;}
   function downloadBlob(blob,name){const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},200);}
   document.getElementById('btnRender').addEventListener('click',doRender);
-  document.getElementById('btnSvg').addEventListener('click',()=>{if(!currentSvg)return doRender();const blob=new Blob([currentSvg],{type:'image/svg+xml'});const name=(currentSurvey?currentSurvey.name:'nacrt').replace(/[^a-zA-Z0-9_čćžšđČĆŽŠĐ -]/g,'_')+'.svg';downloadBlob(blob,name);});
+  document.getElementById('btnSvg').addEventListener('click',()=>{if(!currentSvg)doRender();if(!currentSvg)return;const blob=new Blob([currentSvg],{type:'image/svg+xml'});const name=(currentSurvey?currentSurvey.name:'nacrt').replace(/[^a-zA-Z0-9_čćžšđČĆŽŠĐ -]/g,'_')+'.svg';downloadBlob(blob,name);});
   document.getElementById('btnPng').addEventListener('click',()=>{if(!currentSvg)doRender();if(!currentSvg)return;const svgBlob=new Blob([currentSvg],{type:'image/svg+xml;charset=utf-8'});const url=URL.createObjectURL(svgBlob);const img=new Image();img.onload=()=>{const scale=2;const canvas=document.createElement('canvas');canvas.width=img.naturalWidth*scale;canvas.height=img.naturalHeight*scale;const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0,canvas.width,canvas.height);canvas.toBlob(blob=>{const name=(currentSurvey?currentSurvey.name:'nacrt').replace(/[^a-zA-Z0-9_čćžšđČĆŽŠĐ -]/g,'_')+'.png';downloadBlob(blob,name);},'image/png');URL.revokeObjectURL(url);};img.onerror=()=>{showStatus('PNG export greška. Pokušaj SVG.','error');URL.revokeObjectURL(url);};img.src=url;});
   function stat(label,value){return `<div class="stat"><span class="stat-label">${label}</span><span class="stat-value">${value}</span></div>`;}
   function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
@@ -94,6 +106,6 @@
 <script defer src="assets/sov-foundation-v55822.js"></script>
 <script defer src="assets/sov-shell-v55825.js"></script>
 <script defer src="assets/sov-polish-v55826.js"></script>
-<script defer src="assets/sov-version.js?v=6.1.50"></script>
+<script defer src="assets/sov-version.js?v=6.1.56"></script>
 </body>
 </html>
