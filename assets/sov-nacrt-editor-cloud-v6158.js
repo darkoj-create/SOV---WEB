@@ -20,13 +20,21 @@ const DEFAULT_LAYERS={
 
 function clone(v){return JSON.parse(JSON.stringify(v));}
 function slug(v){return String(v||'radni').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'radni';}
-function surveyToken(survey,file){return String(survey?.sql?.survey?.id||survey?.sql?.survey?.name||survey?.name||file?.name||'');}
+function surveyToken(survey,file){return [survey?.name,survey?.date,file?.name].filter(Boolean).join('|')||String(survey?.sql?.survey?.name||'');}
 function record(){try{return P()?.getRecord?.()||null}catch(_){return null;}}
 function stableKey(r=record()){return `sov:nacrt-editor:cloud-v1:${slug(r?.survey_key||r?.survey_name||$('fTitle')?.value)}`;}
 function titleKey(r=record()){return `sov:nacrt-editor:v1:${slug(r?.survey_name||$('fCadNum')?.value||$('fTitle')?.value)}`;}
 function blank(){return {schema:'sov-nacrt-editor',version:1,layers:clone(DEFAULT_LAYERS),objects:[]};}
-function hasLocalDraft(r=record()){
-  try{return !!(localStorage.getItem(stableKey(r))||localStorage.getItem(titleKey(r)))}catch(_){return false;}
+function readLocalDraft(r=record()){
+  try{
+    for(const key of [stableKey(r),titleKey(r)]){
+      const raw=localStorage.getItem(key);
+      if(!raw)continue;
+      const state=JSON.parse(raw);
+      if(state?.schema==='sov-nacrt-editor'&&Array.isArray(state.objects))return state;
+    }
+  }catch(_){}
+  return null;
 }
 function saveLocalStable(state,r=record()){
   try{localStorage.setItem(stableKey(r),JSON.stringify(state))}catch(_){}
@@ -73,7 +81,9 @@ async function cloudLoad(){
     const r=record(),sb=SB(),editor=E();
     if(!r?.object_id||!r?.survey_key||!sb||!editor?.getState||!editor?.setState)return;
     const current=editor.getState();
-    if(hasLocalDraft(r)||(current?.objects?.length||0)>0)return;
+    if((current?.objects?.length||0)>0)return;
+    const local=readLocalDraft(r);
+    if(local){editor.setState(local);saveLocalStable(local,r);return;}
     const {data,error}=await sb.from('speleo_drawing_georefs').select('metadata').eq('object_id',r.object_id).eq('survey_key',r.survey_key).maybeSingle();
     if(error)throw error;
     const state=data?.metadata?.editor_state;
